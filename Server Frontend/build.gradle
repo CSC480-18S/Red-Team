@@ -50,29 +50,6 @@ project(":desktop") {
     }
 }
 
-project(":html") {
-    apply plugin: "gwt"
-    apply plugin: "war"
-
-
-    dependencies {
-        compile project(":core")
-        compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
-        compile "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"
-        compile "com.badlogicgames.gdx:gdx-ai:$aiVersion:sources"
-        compile "com.badlogicgames.ashley:ashley:$ashleyVersion:sources"
-        compile "de.tomgrill.gdxdialogs:gdx-dialogs-html:1.2.5"
-        compile "de.tomgrill.gdxdialogs:gdx-dialogs-html:1.2.5:sources"
-        compile "de.tomgrill.gdxdialogs:gdx-dialogs-core:1.2.5:sources"
-        compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.4:sources"
-        compile "com.kotcrab.vis:vis-ui:1.3.0:sources"
-        compile "com.github.czyzby:gdx-kiwi:1.9.1.9.6:sources"
-        compile "com.github.czyzby:gdx-lml:1.9.1.9.6:sources"
-        
-    }
-}
-
 project(":core") {
     apply plugin: "java"
 
