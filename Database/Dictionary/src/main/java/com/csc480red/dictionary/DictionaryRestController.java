@@ -51,6 +51,6 @@ public class DictionaryRestController {
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = "validate")
 	public boolean isValid(@Param("word") String word) {
-		return repository.existsByWord(word);
+		return repository.existsByWordIgnoreCase(word);
 	}
 }
