@@ -40,5 +40,5 @@ public interface WordRepository extends JpaRepository<Word, Long>{
 	 * @param word word to search
 	 * @return whether the word exists in this repository
 	 */
-	boolean existsByWord(String word);
+	boolean existsByWordIgnoreCase(String word);
 }
