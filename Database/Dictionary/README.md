@@ -21,7 +21,7 @@ $ spring-boot:run
 #### Packaging and then running the executable jar
 ```
 $ mvn package
-$ java -jar target/dictionary-0.0.1-SNAPSHOT.jar
+$ java -jar target/dictionary-<version>.jar
 ```
 
 ## Using the REST API
