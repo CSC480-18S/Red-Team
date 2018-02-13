@@ -1,0 +1,24 @@
+{
+  "name": "server-backend",
+  "version": "1.0.0",
+  "description": "Backend server",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "mocha; exit 0",
+    "cover": "istanbul --include-all-sources cover _mocha; exit 0"
+  },
+  "author": "CSC 480-18S",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "ejs": "^2.5.7",
+    "express": "^4.16.2"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "istanbul": "^0.4.5",
+    "mocha": "^5.0.0",
+    "nodemon": "^1.14.12"
+  }
+}
