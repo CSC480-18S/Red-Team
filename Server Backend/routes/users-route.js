@@ -9,6 +9,10 @@ const router = express.Router();
  */
 var users = [];
 
+/**
+ * Route that creates a user
+ */
+
 router.post("/createUser", function (req, res, next) {
     /**
      * Create new user object
