@@ -9,10 +9,15 @@ const router = express.Router();
  */
 var users = [];
 
+router.get("/allUsers", function (req, res, next) {
+	res.json({
+		all_users: users
+	});
+});
+
 /**
  * Route that creates a user
  */
-
 router.post("/createUser", function (req, res, next) {
     /**
      * Create new user object
@@ -25,7 +30,7 @@ router.post("/createUser", function (req, res, next) {
     /** 
      * Add new user object to users array
      */
-	users.push(newUser);
+    users.push(newUser);
 });
 
 /**
