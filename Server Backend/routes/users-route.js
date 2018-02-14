@@ -9,6 +9,13 @@ const router = express.Router();
  */
 var users = [];
 
+
+router.get("/allUsers", function (req, res, next) {
+	res.json({
+		all_users: users
+	});
+});
+
 router.get("/createUser", function (req, res, next) {
     const newUser = {
         "userName": req.body.userName,
