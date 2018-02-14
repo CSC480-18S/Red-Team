@@ -10,13 +10,17 @@ const router = express.Router();
 var users = [];
 
 router.post("/createUser", function (req, res, next) {
-    // Create new user object
+    /**
+     * Create new user object
+     */
     const newUser = {
         "userName": req.body.userName,
         "timeCreated": new Date()
     }
 
-    // Add new user object to users array
+    /** 
+     * Add new user object to users array
+     */
 	users.push(newUser);
 });
 
