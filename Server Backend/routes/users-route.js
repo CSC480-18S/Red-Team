@@ -9,7 +9,11 @@ const router = express.Router();
  */
 var users = [];
 
-
+router.get("/allusers", function (req, res, next) {
+	res.json(JSON.stringify({
+		all_users: users
+	}));
+});
 /**
  * Exports this file so it can be used by other files.  Keep this at the bottom.
  */
