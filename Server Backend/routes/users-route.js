@@ -31,14 +31,28 @@ router.post("/createUser", function (req, res, next) {
      * Create new user object
      */
     const newUser = {
-        "userName": req.body.userName,
-        "timeCreated": new Date()
+        userName: req.body.userName,
+        timeCreated: new Date()
     }
 
     /** 
      * Add new user object to users array
      */
     users.push(newUser);
+
+    console.log("User: " + newUser.userName + " added.")
+
+    res.json(newUser);
+});
+
+router.delete("/deleteUser", function(req, res, next){
+    const index = req.body.user;
+    const user = users[index];
+
+    users.splice(user, 1);
+
+    console.log("User: "+ user.userName + " deleted.");
+    res.sendStatus(users[index] !== user ? 200 : 400);
 });
 
 /**
