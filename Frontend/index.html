@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" type="text/css" href="views/styles.css">
+    
+    <title></title>
+</head>
+
+<body>
+    <div id="root">
+        
+        <table>
+            
+            <tr>
+                <td id="td00" @dragover="onDragOver" @drop="onDrop"></td>
+                <td id="td01" @dragover="onDragOver" @drop="onDrop"></td>
+                <td id="td02" @dragover="onDragOver" @drop="onDrop"></td>
+                <td id="td03" @dragover="onDragOver" @drop="onDrop"></td>
+                <td id="td04" @dragover="onDragOver" @drop="onDrop"></td>
+            </tr>
+            
+            <tr>
+                <td id="td10" @dragover="onDragOver" @drop="onDrop"></td>
+                <td id="td11" @dragover="onDragOver" @drop="onDrop"></td>
+                <td id="td12" @dragover="onDragOver" @drop="onDrop"></td>
+                <td id="td13" @dragover="onDragOver" @drop="onDrop"></td>
+                <td id="td14" @dragover="onDragOver" @drop="onDrop"></td>
+            </tr>
+            
+            <tr>
+                <td id="td20" @dragover="onDragOver" @drop="onDrop"></td>
+                <td id="td21" @dragover="onDragOver" @drop="onDrop"></td>
+                <td id="td22" @dragover="onDragOver" @drop="onDrop"></td>
+                <td id="td23" @dragover="onDragOver" @drop="onDrop"></td>
+                <td id="td24" @dragover="onDragOver" @drop="onDrop"></td>
+            </tr>
+            
+            <tr>
+                <td id="td30" @dragover="onDragOver" @drop="onDrop"></td>
+                <td id="td31" @dragover="onDragOver" @drop="onDrop"></td>
+                <td id="td32" @dragover="onDragOver" @drop="onDrop"></td>
+                <td id="td33" @dragover="onDragOver" @drop="onDrop"></td>
+                <td id="td34" @dragover="onDragOver" @drop="onDrop"></td>
+            </tr>
+            
+            <tr>
+                <td id="td40" @dragover="onDragOver" @drop="onDrop"></td>
+                <td id="td41" @dragover="onDragOver" @drop="onDrop"></td>
+                <td id="td42" @dragover="onDragOver" @drop="onDrop"></td>
+                <td id="td43" @dragover="onDragOver" @drop="onDrop"></td>
+                <td id="td44" @dragover="onDragOver" @drop="onDrop"></td>
+            </tr>
+
+        </table>
+    
+        <table>
+
+            <tr>
+                
+                <td id="slot0" @dragover="onDragOver" @drop="onDrop">
+                    <img id="tile0" src="resources/images/tile.svg" draggable="true" @dragstart="onDragStart">
+                </td>
+                
+                <td id="slot1" @dragover="onDragOver" @drop="onDrop">
+                    <img id="tile1" src="resources/images/tile.svg" draggable="true" @dragstart="onDragStart">
+                </td>
+                
+                <td id="slot2" @dragover="onDragOver" @drop="onDrop">
+                    <img id="tile2" src="resources/images/tile.svg" draggable="true" @dragstart="onDragStart">
+                </td>
+                
+                <td id="slot3" @dragover="onDragOver" @drop="onDrop">
+                    <img id="tile3" src="resources/images/tile.svg" draggable="true" @dragstart="onDragStart">
+                </td>
+                
+                <td id="slot4" @dragover="onDragOver" @drop="onDrop">
+                    <img id="tile4" src="resources/images/tile.svg" draggable="true" @dragstart="onDragStart">
+                </td>
+                
+            </tr>
+
+        </table>
+        
+    </div>
+    
+    <script src="view-models/vue.js"></script>
+        
+    <script src="models/game-board-model.js"></script>
+    <script src="view-models/game-board-view-model.js"></script>    
+    
+</body>
+</html>
