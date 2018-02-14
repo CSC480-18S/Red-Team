@@ -88,7 +88,7 @@ router.delete("/deleteUser", function(req, res, next){
     /**
      * Removes the user from the list
      */
-    users.splice(user, 1);
+    users.splice(index, 1);
 
     /**
      * Logs to the console what user was added
