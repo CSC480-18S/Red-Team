@@ -9,6 +9,14 @@ const router = express.Router();
  */
 var users = [];
 
+router.get("/addUserPage", function(req, res, next){
+    res.render("addUser");
+});
+
+router.get("/usersPage", function(req, res, next){
+    res.render("allUsers");
+});
+
 router.get("/allUsers", function (req, res, next) {
 	res.json({
 		all_users: users
