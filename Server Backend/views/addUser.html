@@ -6,23 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>User Creation</title>
+
+    <style>
+        #input{
+            width: 30%;
+            margin-bottom: 20px;
+        }
+    </style>
+
 </head>
 
 <body>
-    <main>
+    <main style="margin-top: 20px; margin-left: 20px;">
         <h1>Create a User:</h1>
         <section>
             <form action="/api/createUser" method="post">
                 <div>
                     <label for="userName">Please enter your username</label>
-                    <input name="userName">
+                    <input type="text" class="form-control" id="input" name="userName">
                 </div>
                 <div>
-                    <button>Submit</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
             </form>
         </section>
     </main>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+        crossorigin="anonymous">
+
 </body>
 
 </html>
