@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>All Users</title>
+
+    <style>
+        table {
+            width: 50% !important;
+            margin: 0 auto;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <div style="text-align: center">
+            <button class="btn btn-primary" type="button" style="margin-top: 20px;" id="getUsersButton">Get All Users</button>
+            <button class="btn btn-danger" type="button" style="margin-top: 20px;" id="clearTable">Clear Table</button>
+        </div>
+        <div id="allUsersArea">
+            <table class="table table-striped">
+                <tr>
+                    <th>User Name</th>
+                    <th>Time Created</th>
+                    <th>Delete User</th>
+                </tr>
+                <tbody id="tbody">
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+        crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+        crossorigin="anonymous"></script>
+
+    <script>
+        $("#clearTable").click(function () {
+            $('#tbody').find('tr').remove();
+        });
+
+        $(document).on('click', '.deleteButton', function () {
+            var id = $(this).closest("tr").index();
+
+            $.ajax({
+                type: "DELETE",
+                data: { user: id },
+                context: $(this),
+                url: "/api/deleteUser",
+                statusCode: {
+                    200: function () {
+                        $(this).closest("tr").remove();
+                    },
+                    400: function () {
+                        alert("User could not be deleted.");
+                    }
+                }
+            });
+        });
+
+        $("#getUsersButton").click(function () {
+            $.ajax({
+                type: "GET",
+                url: "/api/allUsers", success: function (result) {
+                    $('#tbody').find('tr').remove();
+                    var $table = $('#tbody');
+                    var res = result.all_users;
+                    console.log(res);
+
+                    for (var i = 0; i < res.length; i++) {
+                        $table.append('<tr><td>' + res[i].userName + '</td><td>' + res[i].timeCreated + '</td><td><button type="button" class="btn btn-danger deleteButton" id="' + i + '">Delete</button></td></tr>');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
