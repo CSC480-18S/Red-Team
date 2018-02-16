@@ -1,10 +1,10 @@
-package com.mygdx.game.GUI;
+package com.csc480.game.GUI;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.mygdx.game.OswebbleGame;
+import com.csc480.game.OswebbleGame;
 
 /**
  * A bare bones example of a screen

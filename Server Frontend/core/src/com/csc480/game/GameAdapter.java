@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.csc480.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 

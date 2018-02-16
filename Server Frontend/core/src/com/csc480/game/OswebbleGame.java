@@ -1,8 +1,9 @@
-package com.mygdx.game;
+package com.csc480.game;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.mygdx.game.GUI.GameScreen;
+import com.csc480.game.GUI.GameScreen;
 
 /**
  * The Game class has slightly more overhead when changing screens,
@@ -18,6 +19,7 @@ public class OswebbleGame extends Game {
 
     @Override
     public void create () {
+        Gdx.graphics.setTitle("Oswebble");
         batch = new SpriteBatch();
         theGameScreen = new GameScreen(this);
 
