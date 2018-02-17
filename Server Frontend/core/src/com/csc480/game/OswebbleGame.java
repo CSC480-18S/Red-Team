@@ -3,6 +3,7 @@ package com.csc480.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.csc480.game.Engine.TestingPOCScreen;
 import com.csc480.game.GUI.GameScreen;
 
 /**
@@ -25,7 +26,7 @@ public class OswebbleGame extends Game {
 
         //set the screen that the game will use as
         //  the top level view
-        setScreen(theGameScreen);
+        setScreen(new TestingPOCScreen(11));
     }
 
     @Override
