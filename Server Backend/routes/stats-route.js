@@ -1,34 +1,55 @@
 /**
- * Imports the `express` and `router` modules
+ * Imports the `express` and `router` modules.
  */
 const express = require("express");
 const router = express.Router();
 
 /**
- * This endpoint gets the collective score for green team
+ * This endpoint gets the collective score for green team.
  */
-router.get("/greenScore", function(req, res, next){
+router.get("/gameScore", function(req, res, next) {
     
 });
 
 /**
- * This endpoint gets the collective score for gold team
+ * This endpoint gets the <x amount> most valuable words ever played.
  */
-router.get("/goldScore", function(req, res, next){
+router.get("/bestWords", function(req, res, next) {
 
 });
 
 /**
- * This endpoint gets the largest word currently in play
+ * This endpoint provides a list of the top <x amount> users.   
  */
-router.get("/largeWords", function(req, res, next){
+router.get("/topPlayers", function(req, res, next) {
 
 });
 
 /**
- * This endpoint provides a list of top users
+ * This endpoint provides the game score of the game containing the highest game score.
  */
-router.get("/topPlayers", function(req, res, next){
+router.get("/highestGameScore", function(req, res, next) {
+    
+});
+
+/**
+ * This endpoint provides the cumulative team scores.
+ */
+router.get("/cumulativeTeamScores", function(req, res, next) {
+    
+});
+
+/**
+ * This endpoint provides a list of the <x amount> most-played words.
+ */
+router.get("/mostPlayedWords", function(req, res, next) {
+    
+});
+
+/**
+ * This endpoint provides the total number of times each team has won.
+ */
+router.get("/totalTeamWins", function(req, res, next) {
     
 });
 
