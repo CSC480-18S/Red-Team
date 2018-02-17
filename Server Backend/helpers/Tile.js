@@ -1,7 +1,7 @@
 'use strict'
 
 class Tile {
-  constructor (x, y, multiplier) {
+  constructor(x, y, multiplier) {
     this._x = x
     this._y = y
     this._multiplier = multiplier
@@ -9,43 +9,43 @@ class Tile {
     this._letter = ''
   }
 
-  set x (x) {
+  set x(x) {
     this._x = x
   }
 
-  set y (y) {
+  set y(y) {
     this._y = y
   }
 
-  set multiplier (multiplier) {
+  set multiplier(multiplier) {
     this._multiplier = multiplier
   }
 
-  set wordPlaced (placed) {
+  set wordPlaced(placed) {
     this._wordPlaced = placed
   }
 
-  set letter (letter) {
+  set letter(letter) {
     this._letter = letter
   }
 
-  get x () {
+  get x() {
     return this._x
   }
 
-  get y () {
+  get y() {
     return this._y
   }
 
-  get multiplier () {
+  get multiplier() {
     return this._multiplier
   }
 
-  get wordPlaced () {
+  get wordPlaced() {
     return this._wordPlaced
   }
 
-  get letter () {
+  get letter() {
     return this._letter
   }
 }

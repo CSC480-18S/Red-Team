@@ -2,18 +2,29 @@
 const Tile = require('../helpers/Tile')
 
 class Gameboard {
-  constructor (size) {
-    this._height = size
-    this._width = size
-    this._board = new Array(this._width)
+  constructor(size) {
+    this._size = size
+    this._board = new Array(this._size)
     this._initialized = false
   }
 
-  init () {
+  set size(size) {
+    this._size = size
+  }
+
+  get size() {
+    return this._size
+  }
+
+  get initialized() {
+    return this._initialized
+  }
+
+  init() {
     if (this._initialized) return
 
     for (let i = 0; i < this._board.length; i++) {
-      this._board[i] = new Array(this._height)
+      this._board[i] = new Array(this._size)
 
       for (let j = 0; j < this._board[0].length; j++) {
         this._board[i][j] = new Tile(j, i, '1')
