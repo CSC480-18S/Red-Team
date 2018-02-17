@@ -46,3 +46,19 @@ test('Tile should be have a multiplier of 2W', t => {
 
   t.deepEqual(tile.multiplier, '2W')
 })
+
+test('Tile should be the letter "Q"', t => {
+  const tile = new Tile(1, 1, '0')
+
+  tile.letter = 'Q'
+
+  t.deepEqual(tile.letter, 'Q')
+})
+
+test('Tile have a letter placed', t => {
+  const tile = new Tile(1, 1, '0')
+
+  tile.letter = 'Q'
+
+  t.true(tile.letterPlaced)
+})
