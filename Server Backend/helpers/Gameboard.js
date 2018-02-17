@@ -1,5 +1,5 @@
 'use strict'
-const t = require('../helpers/Tile')
+const Tile = require('../helpers/Tile')
 
 class Gameboard {
   constructor (size) {
@@ -16,7 +16,7 @@ class Gameboard {
       this._board[i] = new Array(this._height)
 
       for (let j = 0; j < this._board[0].length; j++) {
-        this._board[i][j] = new t(j, i, '1')
+        this._board[i][j] = new Tile(j, i, '1')
       }
     }
 
