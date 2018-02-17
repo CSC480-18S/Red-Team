@@ -5,7 +5,7 @@ class Tile {
     this._x = x
     this._y = y
     this._multiplier = multiplier
-    this._wordPlaced = false
+    this._letterPlaced = false
     this._letter = ''
   }
 
@@ -21,12 +21,9 @@ class Tile {
     this._multiplier = multiplier
   }
 
-  set wordPlaced(placed) {
-    this._wordPlaced = placed
-  }
-
   set letter(letter) {
     this._letter = letter
+    this._letterPlaced = true
   }
 
   get x() {
@@ -41,8 +38,8 @@ class Tile {
     return this._multiplier
   }
 
-  get wordPlaced() {
-    return this._wordPlaced
+  get letterPlaced() {
+    return this._letterPlaced
   }
 
   get letter() {
