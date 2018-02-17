@@ -34,6 +34,6 @@ img {
     margin: 0 auto;
 }
 
-#td00, #td04, #td40, #td44, #td21, #td12, #td23, #td32 {
+#square00, #square04, #square40, #square44, #square21, #square12, #square23, #square32 {
     background-color: rgb(19,147,80);
 }
