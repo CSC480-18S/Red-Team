@@ -6,9 +6,13 @@ var app = new Vue({
     
     methods: {
         
+        // Mouse Click
         onDragStart: drag,
         onDragOver: allowDrop,
-        onDrop: drop
+        onDrop: drop,
         
+        // Screen Tap
+        onClickTile: selectAndDeselectTile,
+        onClickSquare: putTileInSquare
     }    
 })
