@@ -1,0 +1,14 @@
+language: nodejs
+node_js:
+  - "stable"
+before_install:
+  - node --version
+  - npm --version
+  - cd Server\ Backend/
+install:
+  - npm install
+cache:
+  directories:
+    - Server\ Backend/node_modules
+script:
+  - npm run test
