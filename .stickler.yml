@@ -1,7 +1,0 @@
----
-linters:
-  eslint:
-    config: './Server Backend/.eslintrc.json'
-    fixer: true
-fixers:
-    enable: true
