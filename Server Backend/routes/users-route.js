@@ -40,6 +40,9 @@ router.post("/createUser", function (req, res, next) {
     res.json(newUser);
 });
 
+/**
+ * Route that updates a user's score
+ */
 router.put("/updateScore", function (req, res, next) {
     /**
      * The word score to be updated
@@ -49,7 +52,7 @@ router.put("/updateScore", function (req, res, next) {
     /**
      * The player score to be updated
      */
-    const wscore = req.body.user;
+    const pscore = req.body.user;
     
     /**
      * TODO update scores on the database
@@ -62,6 +65,9 @@ router.put("/updateScore", function (req, res, next) {
     
 });
 
+/**
+ * Route that gets a user's data
+ */
 router.get("/getUser", function (req, res, next) {
     /**
      * The JWT of the user to be retreived
@@ -79,6 +85,9 @@ router.get("/getUser", function (req, res, next) {
     res.json();
 });
 
+/**
+ * Route that returns the user's team
+ */
 router.get("/currentTeam", function (req, res, next) {
     /**
      * The JWT of the user to be retreived
@@ -96,6 +105,9 @@ router.get("/currentTeam", function (req, res, next) {
     
 });
 
+/**
+ * Route that sets the user's team manually
+ */
 router.put("/setTeam", function (req, res, next) {
     /**
      * The JWT of the user to be retreived
@@ -118,6 +130,9 @@ router.put("/setTeam", function (req, res, next) {
     
 });
 
+/**
+ * Route that adds the user to the current game
+ */
 router.put("/addUser", function (req, res, next) {
     /**
      * The JWT of the user to be added
@@ -133,35 +148,6 @@ router.put("/addUser", function (req, res, next) {
      * TODO Returns a success/fail boolean
      */
     
-});
-
-/**
- * Route that deletes a user
- */
-router.delete("/deleteUser", function(req, res, next){
-    /**
-     * The index of the user to be deleted
-     */
-    const index = req.body.user;
-    /**
-     * The user to be deleted
-     */
-    const user = users[index];
-
-    /**
-     * Removes the user from the list
-     */
-    users.splice(index, 1);
-
-    /**
-     * Logs to the console what user was deleted
-     */
-    console.log("User: "+ user.userName + " deleted.");
-
-    /**
-     * Sends back a status code of whether or not a user was successfully deleted or not
-     */
-    res.sendStatus(users[index] !== user ? 200 : 400);
 });
 
 /**
