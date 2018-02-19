@@ -1,6 +1,7 @@
 /**
  * Imports the `express` and `router` modules
  */
+<<<<<<< HEAD
 const express = require("express");
 const router = express.Router();
 
@@ -176,8 +177,12 @@ router.get("/allUsers", function (req, res, next) {
 		all_users: users
 	});
 });
+=======
+const express = require('express')
+const router = express.Router()
+>>>>>>> CSC480-18S/dev
 
 /**
  * Exports this file so it can be used by other files.  Keep this at the bottom.
  */
-module.exports = router;
+module.exports = router
