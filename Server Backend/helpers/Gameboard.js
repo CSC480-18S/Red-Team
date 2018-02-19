@@ -1,5 +1,7 @@
 'use strict'
-
+/**
+ * Imports the lodash library
+ */
 const _ = require('lodash')
 /**
  * Imports the Tile class
@@ -57,6 +59,11 @@ class Gameboard {
     this._initialized = true
   }
 
+  /**
+   * @param {Object} startCoords - object structured as such: {x: x, y: y}
+   * @param {Object} endCoords - object structured as such: {x: x, y: y}
+   * @param {String} word - word that will be placed on the board
+   */
   placeWord(startCoords, endCoords, word) {
     for (let i = startCoords.x; i <= endCoords.x; i++) {
       for (let j = startCoords.y; j <= endCoords.y; j++) {
