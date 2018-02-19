@@ -7,7 +7,8 @@
     "start": "nodemon server.js",
     "test": "ava Tests/*.js -v; exit 0",
     "cover": "nyc npm run test",
-    "report": "nyc --reporter=lcov npm run test"
+    "report": "nyc --reporter=lcov npm run test",
+    "lint": "eslint **/*.js --ignore-pattern node_modules/; exit 0"
   },
   "author": "CSC 480-18S",
   "license": "MIT",
