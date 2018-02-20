@@ -1,5 +1,9 @@
 'use strict'
 /**
+ * Imports the lodash library
+ */
+const _ = require('lodash')
+/**
  * Imports the Tile class
  */
 const Tile = require('../helpers/Tile')
@@ -15,17 +19,17 @@ class Gameboard {
   }
 
   /**
-   * Size setter
-   */
-  set size(size) {
-    this._size = size
-  }
-
-  /**
    * Size getter
    */
   get size() {
     return this._size
+  }
+
+  /**
+   * Board getter
+   */
+  get board() {
+    return this._board
   }
 
   /**
@@ -40,7 +44,9 @@ class Gameboard {
    * If this method has already been run, it returns before it can recreate the double array
    */
   init() {
-    if (this._initialized) return
+    if (this._initialized) {
+      return true
+    }
 
     for (let i = 0; i < this._board.length; i++) {
       this._board[i] = new Array(this._size)
@@ -51,6 +57,23 @@ class Gameboard {
     }
 
     this._initialized = true
+  }
+
+  /**
+   * @param {Object} startCoords - object structured as such: {x: x, y: y}
+   * @param {Object} endCoords - object structured as such: {x: x, y: y}
+   * @param {String} word - word that will be placed on the board
+   */
+  placeWord(startCoords, endCoords, word) {
+    for (let i = startCoords.x; i <= endCoords.x; i++) {
+      for (let j = startCoords.y; j <= endCoords.y; j++) {
+        if (startCoords.x === endCoords.x) {
+          this._board[j][i].letter = word[j - startCoords.y].toUpperCase()
+        } else {
+          this._board[j][i].letter = word[i - startCoords.x].toUpperCase()
+        }
+      }
+    }
   }
 }
 

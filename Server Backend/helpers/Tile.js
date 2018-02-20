@@ -11,28 +11,7 @@ class Tile {
     this._y = y
     this._multiplier = multiplier
     this._letterPlaced = false
-    this._letter = ''
-  }
-
-  /**
-   * X Setter
-   */
-  set x(x) {
-    this._x = x
-  }
-
-  /**
-   * Y Setter
-   */
-  set y(y) {
-    this._y = y
-  }
-
-  /**
-   * Multiplier Setter
-   */
-  set multiplier(multiplier) {
-    this._multiplier = multiplier
+    this._letter = '.'
   }
 
   /**

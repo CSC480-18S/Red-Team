@@ -7,14 +7,16 @@
     "start": "nodemon server.js",
     "test": "ava Tests/*.js -v; exit 0",
     "cover": "nyc npm run test",
-    "report": "nyc report --reporter=lcov npm run test"
+    "report": "nyc --reporter=lcov npm run test",
+    "lint": "eslint **/*.js --ignore-pattern node_modules/; exit 0"
   },
   "author": "CSC 480-18S",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.18.2",
     "ejs": "^2.5.7",
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "lodash": "^4.17.5"
   },
   "devDependencies": {
     "ava": "^0.25.0",
