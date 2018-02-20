@@ -12,6 +12,11 @@ cache:
     - Server\ Backend/node_modules
 script:
   - npm run test
-notifications:
-  webhooks:
-    - https://discordapp.com/api/webhooks/415299843217555467/6GiUJHlEdTQUyMLKSF6AmxB6fpGfQc9eNtLkn3AGVaAdGZLTf0YZVpedpoIFMEQNEt75
+after_success:
+  - wget https://raw.githubusercontent.com/k3rn31p4nic/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - ./send.sh success $WEBHOOK_URL
+after_failure:
+  - wget https://raw.githubusercontent.com/k3rn31p4nic/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - ./send.sh failure $WEBHOOK_URL
