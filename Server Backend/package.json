@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
-    "test": "ava Tests/*.js -v; exit 0",
+    "test": "node tests/setup.js",
     "cover": "nyc npm run test",
     "report": "nyc --reporter=lcov npm run test",
     "lint": "eslint **/*.js --ignore-pattern node_modules/; exit 0"
@@ -19,15 +19,22 @@
     "lodash": "^4.17.5"
   },
   "devDependencies": {
-    "ava": "^0.25.0",
-    "chai": "^4.1.2",
     "eslint": "^4.18.0",
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jasmine": "^2.9.2",
     "eslint-plugin-node": "^6.0.0",
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1",
+    "jasmine": "^3.0.0",
+    "jasmine-console-reporter": "^2.0.1",
     "nodemon": "^1.14.12",
-    "nyc": "^11.4.1"
+    "nyc": "^11.4.1",
+    "path": "^0.12.7"
+  },
+  "nyc": {
+    "exclude": [
+      "tests/setup.js"
+    ]
   }
 }

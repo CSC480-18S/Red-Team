@@ -1,118 +1,118 @@
-/*eslint-disable */ /* ava needs to be imported, by eslint doesn't like it, so its ignored */
-import test, { ava } from 'ava'
-/* eslint-enable */
-
 const GB = require('../helpers/Gameboard')
 const Tile = require('../helpers/Tile')
 
-test('Gameboard should be created', t => {
-  t.truthy(new GB(15))
-})
+describe('Gameboard tests', () => {
+  it('Gameboard should be created', () => {
+    expect(new GB(15)).toBeTruthy()
+  })
 
-test('Gameboard should be initialized', t => {
-  const g = new GB(15)
+  it('Gameboard should be initialized', () => {
+    const g = new GB(15)
 
-  g.init()
+    g.init()
 
-  t.true(g.initialized)
-})
+    expect(g.initialized).toBe(true)
+  })
 
-test('Gameboard should not be re-initialized', t => {
-  const g = new GB(15)
+  it('Gameboard should not be re-initialized', () => {
+    const g = new GB(15)
 
-  g.init()
+    g.init()
 
-  t.true(g.init())
-})
+    expect(g.init()).toBe(true)
+  })
 
-test('Gameboard size should be 15', t => {
-  const g = new GB(15)
+  it('Gameboard size should be 15', () => {
+    const g = new GB(15)
 
-  t.deepEqual(g.size, 15)
-})
+    expect(g.size).toBe(15)
+  })
 
-test('Gameboard should place word "OSWEGO" horizontally from (2,2) to (7, 2)', t => {
-  const g = new GB(15)
+  it('Gameboard should place word "OSWEGO" horizontally from (2,2) to (7, 2)', () => {
+    const g = new GB(15)
 
-  g.init()
+    g.init()
 
-  const word = 'OSWEGO'
-  const startX = 2
-  const startY = 2
-  const endX = 7
-  const endY = 2
+    const word = 'OSWEGO'
+    const startX = 2
+    const startY = 2
+    const endX = 7
+    const endY = 2
 
-  g.placeWord({ x: startX, y: startY }, { x: endX, y: endY }, word)
+    g.placeWord({ x: startX, y: startY }, { x: endX, y: endY }, word)
 
-  for (let i = startX; i <= endX; i++) {
-    for (let j = startY; j <= endY; j++) {
-      t.deepEqual(g.board[j][i].letter.toUpperCase(), word[i - startX].toUpperCase())
+    for (let i = startX; i <= endX; i++) {
+      for (let j = startY; j <= endY; j++) {
+        expect(g.board[j][i].letter.toUpperCase()).toEqual(word[i - startX].toUpperCase())
+      }
     }
-  }
-})
+  })
 
-test('Gameboard should place word "OSWEGO" vertically from (2,2) to (2, 7)', t => {
-  const g = new GB(15)
+  it('Gameboard should place word "OSWEGO" vertically from (2,2) to (2, 7)', () => {
+    const g = new GB(15)
 
-  g.init()
+    g.init()
 
-  const word = 'OSWEGO'
-  const startX = 2
-  const startY = 2
-  const endX = 2
-  const endY = 7
+    const word = 'OSWEGO'
+    const startX = 2
+    const startY = 2
+    const endX = 2
+    const endY = 7
 
-  g.placeWord({ x: startX, y: startY }, { x: endX, y: endY }, word)
+    g.placeWord({ x: startX, y: startY }, { x: endX, y: endY }, word)
 
-  for (let i = startX; i <= endX; i++) {
-    for (let j = startY; j <= endY; j++) {
-      t.deepEqual(g.board[j][i].letter.toUpperCase(), word[j - startY].toUpperCase())
+    for (let i = startX; i <= endX; i++) {
+      for (let j = startY; j <= endY; j++) {
+        expect(g.board[j][i].letter.toUpperCase()).toEqual(word[j - startY].toUpperCase())
+      }
     }
-  }
+  })
 })
 
-test('Tile should be created', t => {
-  const tile = new Tile(1, 1, '0')
+describe('Tile tests', () => {
+  it('Tile should be created', () => {
+    const tile = new Tile(1, 1, '0')
 
-  t.truthy(tile)
-})
+    expect(tile).toBeTruthy()
+  })
 
-test('Tile should be at x = 1', t => {
-  const tile = new Tile(1, 1, '0')
+  it('Tile should be at x = 1', () => {
+    const tile = new Tile(1, 1, '0')
 
-  t.deepEqual(tile.x, 1)
-})
+    expect(tile.x).toBe(1)
+  })
 
-test('Tile should be at y = 1', t => {
-  const tile = new Tile(1, 1, '0')
+  it('Tile should be at y = 1', () => {
+    const tile = new Tile(1, 1, '0')
 
-  t.deepEqual(tile.y, 1)
-})
+    expect(tile.y).toBe(1)
+  })
 
-test('Tile should be have a multiplier of 2W', t => {
-  const tile = new Tile(1, 1, '2W')
+  it('Tile should be have a multiplier of 2W', () => {
+    const tile = new Tile(1, 1, '2W')
 
-  t.deepEqual(tile.multiplier, '2W')
-})
+    expect(tile.multiplier).toBe('2W')
+  })
 
-test('Tile should be the letter "Q"', t => {
-  const tile = new Tile(1, 1, '0')
+  it('Tile should be the letter "Q"', () => {
+    const tile = new Tile(1, 1, '0')
 
-  tile.letter = 'Q'
+    tile.letter = 'Q'
 
-  t.deepEqual(tile.letter, 'Q')
-})
+    expect(tile.letter).toBe('Q')
+  })
 
-test('Tile should have a letter placed', t => {
-  const tile = new Tile(1, 1, '0')
+  it('Tile should have a letter placed', () => {
+    const tile = new Tile(1, 1, '0')
 
-  tile.letter = 'Q'
+    tile.letter = 'Q'
 
-  t.true(tile.letterPlaced)
-})
+    expect(tile.letterPlaced).toBe(true)
+  })
 
-test('Tile should not have a letter placed', t => {
-  const tile = new Tile(1, 1, '0')
+  it('Tile should not have a letter placed', () => {
+    const tile = new Tile(1, 1, '0')
 
-  t.false(tile.letterPlaced)
+    expect(tile.letterPlaced).toBe(false)
+  })
 })
