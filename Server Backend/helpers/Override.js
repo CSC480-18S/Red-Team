@@ -14,7 +14,7 @@ function json(res) {
     let overallResponse = {}
 
     const metaData = {
-      'copyright': 'Copyright ' + new Date().getFullYear() + ' CSC480-18S.',
+      'copyright': 'Copyright ' + new Date().getFullYear() + ' CSC480-18S Red Team.',
       'version': packageFile['version'],
       'license': packageFile['license']
     }
@@ -49,6 +49,9 @@ function json(res) {
   }
 }
 
+/**
+ * Exports this file so it can be used by other files.  Keep this at the bottom.
+ */
 module.exports = {
   json: json
 }
