@@ -100,6 +100,34 @@ describe('Gameboard tests', () => {
       }
     }
   })
+
+  it('Gameboard should place a horizontal word in the cross section of a vertical word', () => {
+    const g = new GB(15)
+
+    g.init()
+
+    // Vertical Word
+    const word = 'OSWEGO'
+    const startX = 2
+    const startY = 2
+    const endX = 2
+    const endY = 7
+
+    const word2 = 'BED'
+    const startX2 = 1
+    const startY2 = 5
+    const endX2 = 3
+    const endY2 = 5
+
+    g.placeWord({ x: startX, y: startY }, { x: endX, y: endY }, word)
+    g.placeWord({ x: startX2, y: startY2 }, { x: endX2, y: endY2 }, word2)
+
+    for (let i = startX2; i <= endX2; i++) {
+      for (let j = startY2; j <= endY2; j++) {
+        expect(g.board[j][i].letter.toUpperCase()).toEqual(word2[i - startX2])
+      }
+    }
+  })
 })
 
 describe('Tile tests', () => {
