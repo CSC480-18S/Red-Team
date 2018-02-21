@@ -18,6 +18,10 @@ class Gameboard {
     this._initialized = false
   }
 
+  set board(board) {
+    this._board = board
+  }
+
   /**
    * Size getter
    */
@@ -65,15 +69,35 @@ class Gameboard {
    * @param {String} word - word that will be placed on the board
    */
   placeWord(startCoords, endCoords, word) {
+    let tempBoard = _.cloneDeep(this.board)
     for (let i = startCoords.x; i <= endCoords.x; i++) {
       for (let j = startCoords.y; j <= endCoords.y; j++) {
         if (startCoords.x === endCoords.x) {
-          this._board[j][i].letter = word[j - startCoords.y].toUpperCase()
+          if (!this.validateWordPlacement(tempBoard[j][i].letter, word[j - startCoords.y].toUpperCase())) {
+            return false
+          }
+          tempBoard[j][i].letter = word[j - startCoords.y].toUpperCase()
         } else {
-          this._board[j][i].letter = word[i - startCoords.x].toUpperCase()
+          if (!this.validateWordPlacement(tempBoard[j][i].letter, word[i - startCoords.x].toUpperCase())) {
+            return false
+          }
+          tempBoard[j][i].letter = word[i - startCoords.x].toUpperCase()
         }
       }
     }
+
+    this.board = tempBoard
+    return true
+  }
+
+  validateWordPlacement(currentLetter, toBePlacedLetter) {
+    if (currentLetter === '.') {
+      return true
+    } else if (currentLetter === toBePlacedLetter) {
+      return true
+    }
+
+    return false
   }
 }
 
