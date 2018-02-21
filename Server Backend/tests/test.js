@@ -1,5 +1,9 @@
 const GB = require('../helpers/Gameboard')
 const Tile = require('../helpers/Tile')
+/**
+ * Imports the lodash library
+ */
+const _ = require('lodash')
 
 describe('Gameboard tests', () => {
   it('Gameboard should be created', () => {
@@ -55,8 +59,8 @@ describe('Gameboard tests', () => {
 
     const word = 'OSWEGO'
     const startX = 2
-    const startY = 2
     const endX = 2
+    const startY = 2
     const endY = 7
 
     g.placeWord({ x: startX, y: startY }, { x: endX, y: endY }, word)
@@ -64,6 +68,35 @@ describe('Gameboard tests', () => {
     for (let i = startX; i <= endX; i++) {
       for (let j = startY; j <= endY; j++) {
         expect(g.board[j][i].letter.toUpperCase()).toEqual(word[j - startY].toUpperCase())
+      }
+    }
+  })
+
+  it('Gameboard should not place a horizontal word in the cross section of a vertical word', () => {
+    const g = new GB(15)
+
+    g.init()
+
+    // Vertical Word
+    const word = 'OSWEGO'
+    const startX = 2
+    const startY = 2
+    const endX = 2
+    const endY = 7
+
+    const word2 = 'BAD'
+    const startX2 = 1
+    const startY2 = 5
+    const endX2 = 3
+    const endY2 = 5
+
+    g.placeWord({ x: startX, y: startY }, { x: endX, y: endY }, word)
+    const validBoard = _.cloneDeep(g.board)
+    g.placeWord({ x: startX2, y: startY2 }, { x: endX2, y: endY2 }, word2)
+
+    for (let i = 0; i < g.board.length; i++) {
+      for (let j = 0; j < g.board[0].length; j++) {
+        expect(g.board[j][i].letter.toUpperCase()).toEqual(validBoard[j][i].letter.toUpperCase())
       }
     }
   })
