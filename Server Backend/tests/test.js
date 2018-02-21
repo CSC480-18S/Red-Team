@@ -7,11 +7,11 @@ const _ = require('lodash')
 
 describe('Gameboard tests', () => {
   it('Gameboard should be created', () => {
-    expect(new GB(15)).toBeTruthy()
+    expect(new GB(11)).toBeTruthy()
   })
 
   it('Gameboard should be initialized', () => {
-    const g = new GB(15)
+    const g = new GB(11)
 
     g.init()
 
@@ -19,21 +19,21 @@ describe('Gameboard tests', () => {
   })
 
   it('Gameboard should not be re-initialized', () => {
-    const g = new GB(15)
+    const g = new GB(11)
 
     g.init()
 
     expect(g.init()).toBe(true)
   })
 
-  it('Gameboard size should be 15', () => {
-    const g = new GB(15)
+  it('Gameboard size should be 11', () => {
+    const g = new GB(11)
 
-    expect(g.size).toBe(15)
+    expect(g.size).toBe(11)
   })
 
   it('Gameboard should place word "OSWEGO" horizontally from (2,2) to (7, 2)', () => {
-    const g = new GB(15)
+    const g = new GB(11)
 
     g.init()
 
@@ -53,7 +53,7 @@ describe('Gameboard tests', () => {
   })
 
   it('Gameboard should place word "OSWEGO" vertically from (2,2) to (2, 7)', () => {
-    const g = new GB(15)
+    const g = new GB(11)
 
     g.init()
 
@@ -73,7 +73,7 @@ describe('Gameboard tests', () => {
   })
 
   it('Gameboard should not place a horizontal word in the cross section of a vertical word', () => {
-    const g = new GB(15)
+    const g = new GB(11)
 
     g.init()
 
@@ -84,6 +84,7 @@ describe('Gameboard tests', () => {
     const endX = 2
     const endY = 7
 
+    // Horizontal Word
     const word2 = 'BAD'
     const startX2 = 1
     const startY2 = 5
@@ -102,7 +103,7 @@ describe('Gameboard tests', () => {
   })
 
   it('Gameboard should place a horizontal word in the cross section of a vertical word', () => {
-    const g = new GB(15)
+    const g = new GB(11)
 
     g.init()
 
@@ -113,6 +114,7 @@ describe('Gameboard tests', () => {
     const endX = 2
     const endY = 7
 
+    // Horizontal Word
     const word2 = 'BED'
     const startX2 = 1
     const startY2 = 5
@@ -125,6 +127,65 @@ describe('Gameboard tests', () => {
     for (let i = startX2; i <= endX2; i++) {
       for (let j = startY2; j <= endY2; j++) {
         expect(g.board[j][i].letter.toUpperCase()).toEqual(word2[i - startX2])
+      }
+    }
+  })
+
+  it('Gameboard should not place a vertical word in the cross section of a horizontal word', () => {
+    const g = new GB(11)
+
+    g.init()
+
+    // Horitontal Word
+    const word = 'BAD'
+    const startX = 1
+    const startY = 5
+    const endX = 3
+    const endY = 5
+
+    // Vertical Word
+    const word2 = 'OSWEGO'
+    const startX2 = 2
+    const startY2 = 2
+    const endX2 = 2
+    const endY2 = 7
+
+    g.placeWord({ x: startX, y: startY }, { x: endX, y: endY }, word)
+    const validBoard = _.cloneDeep(g.board)
+    g.placeWord({ x: startX2, y: startY2 }, { x: endX2, y: endY2 }, word2)
+
+    for (let i = 0; i < g.board.length; i++) {
+      for (let j = 0; j < g.board[0].length; j++) {
+        expect(g.board[j][i].letter.toUpperCase()).toEqual(validBoard[j][i].letter.toUpperCase())
+      }
+    }
+  })
+
+  it('Gameboard should place a vertical word in the cross section of a horizontal word', () => {
+    const g = new GB(11)
+
+    g.init()
+
+    // Horizontal Word
+    const word = 'BED'
+    const startX = 1
+    const startY = 5
+    const endX = 3
+    const endY = 5
+
+    // Vertical Word
+    const word2 = 'OSWEGO'
+    const startX2 = 2
+    const startY2 = 2
+    const endX2 = 2
+    const endY2 = 7
+
+    g.placeWord({ x: startX, y: startY }, { x: endX, y: endY }, word)
+    g.placeWord({ x: startX2, y: startY2 }, { x: endX2, y: endY2 }, word2)
+
+    for (let i = startX2; i <= endX2; i++) {
+      for (let j = startY2; j <= endY2; j++) {
+        expect(g.board[j][i].letter.toUpperCase()).toEqual(word2[j - startY2])
       }
     }
   })
