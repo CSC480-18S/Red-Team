@@ -18,6 +18,10 @@ class Gameboard {
     this._initialized = false
   }
 
+  set board(board) {
+    this._board = board
+  }
+
   /**
    * Size getter
    */
@@ -60,20 +64,39 @@ class Gameboard {
   }
 
   /**
+   * Method that places a word on the baord
    * @param {Object} startCoords - object structured as such: {x: x, y: y}
    * @param {Object} endCoords - object structured as such: {x: x, y: y}
    * @param {String} word - word that will be placed on the board
    */
   placeWord(startCoords, endCoords, word) {
+    const tempBoard = _.cloneDeep(this.board)
+    const val = this.validatePosition
+
     for (let i = startCoords.x; i <= endCoords.x; i++) {
       for (let j = startCoords.y; j <= endCoords.y; j++) {
-        if (startCoords.x === endCoords.x) {
-          this._board[j][i].letter = word[j - startCoords.y].toUpperCase()
-        } else {
-          this._board[j][i].letter = word[i - startCoords.x].toUpperCase()
+        let l = tempBoard[j][i].letter
+        let w = startCoords.x === endCoords.x ? word[j - startCoords.y].toUpperCase() : word[i - startCoords.x].toUpperCase()
+
+        if (!val(l, w)) {
+          return false
         }
+
+        tempBoard[j][i].letter = w
       }
     }
+
+    this.board = tempBoard
+    return true
+  }
+
+  /**
+   * Validates whether a letter can be placed in the current position
+   * @param {String} currentLetter - the letter that is currently on the board
+   * @param {String} toBePlacedLetter - the letter that is to be placed on the board
+   */
+  validatePosition(currentLetter, toBePlacedLetter) {
+    return currentLetter === '.' || currentLetter === toBePlacedLetter
   }
 }
 
