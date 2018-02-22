@@ -1,20 +1,26 @@
 package com.csc480.game.Engine;
 
 import com.badlogic.gdx.math.Vector2;
-
 import java.util.ArrayList;
 
+/**
+ * This is the data structure that holds the board state. It provides functionality for word verification.
+ */
 public class Board {
     public TileData[][] the_game_board;
     public boolean debugging = false;
 
 
-    Board(int size){
+    public Board(int size){
        if(size % 2 != 1) System.err.println("Board isnt of n even size: "+size);
        the_game_board = new TileData[size][size];
 
     }
 
+    /**
+     * Will add a word to the board weither it is valid or not
+     * @param placements the tiles to be updated, exclusive of existing tiles
+     */
     public void addWord(ArrayList<Placement> placements){
         TileData temp;
         for(Placement p : placements){
@@ -25,12 +31,14 @@ public class Board {
         }
     }
 
+    /**
+     * Determines if a set of placements is in fact a valid move given the state of the board
+     * @param placements the tiles to be updated, exclusive of existing tiles
+     * @return true iff the move is valid
+     */
     public boolean verifyWordPlacement(ArrayList<Placement> placements){
-        System.out.println("verifying word placement, for placements:");
+        System.out.println("verifying word placement.");
         if(placements.isEmpty()) return false;
-        for(Placement p : placements){
-            System.out.print(p.letter+" ");
-        }
         //assume it is both
         boolean isHorrizontal = true;
         boolean isVertical = true;
@@ -336,6 +344,15 @@ public class Board {
         return true;
     }
 
+    /**
+     * Determins if a set of placements is valid from a min to max start position given a hypothetical board state
+     * @param minX the start X position
+     * @param maxX the End X position
+     * @param Y the row to check
+     * @param toBePlaced the set of new placemnts to check
+     * @param temp the hypothetical board state
+     * @return true iff it forms a valid word
+     */
     private boolean isHorizontalValid(int minX, int maxX, int Y, ArrayList<Placement> toBePlaced, TileData[][] temp){
         TileData[][] test_game_board = temp;
         //all y positions in placements are equal
@@ -371,6 +388,15 @@ public class Board {
 
     }
 
+    /**
+     * Determins if a set of placements is valid from a min to max start position given a hypothetical board state
+     * @param minY the start Y position
+     * @param maxY the End Y position
+     * @param X the column to check
+     * @param toBePlaced the set of new placemnts to check
+     * @param temp the hypothetical board state
+     * @return true iff it forms a valid word
+     */
     private boolean isVerticalValid(int minY, int maxY, int X,  ArrayList<Placement> toBePlaced, TileData[][] temp){
         TileData[][] test_game_board = temp;
 
