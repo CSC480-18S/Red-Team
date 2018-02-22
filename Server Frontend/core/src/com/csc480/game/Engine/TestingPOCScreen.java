@@ -6,11 +6,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
 import java.util.ArrayList;
 
 
 /**
+ * THIS CLASS IS ONLY TO BE USED FOR TESTING PURPOSES, AND SHOULD NOT BE USED IN THE FINAL PROJECT!
  * This is just a POC game screen to aid in testing the feasibility of the engine's algorithms.
  */
 public class TestingPOCScreen implements com.badlogic.gdx.Screen {
@@ -39,7 +39,7 @@ public class TestingPOCScreen implements com.badlogic.gdx.Screen {
 
     @Override
     public void show() {
-        //THIS WILL CHANGE WITH ACTUAL IMPLEMENTATION
+        //THIS WILL CHANGE WITH ACTUAL IMPLEMENTATION(input will come from the Socket, not the Keyboard)
         Gdx.input.setInputProcessor(new TestingInputProcessor(this));
     }
 

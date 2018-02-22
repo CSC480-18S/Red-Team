@@ -2,6 +2,9 @@ package com.csc480.game.Engine;
 
 import com.badlogic.gdx.math.Vector2;
 
+/**
+ * This is a data node to hold information relevant to a certain tile on the board
+ */
 public class TileData {
     public final Vector2 my_position;
     public final int letter_value;
@@ -13,7 +16,7 @@ public class TileData {
     private Vector2 next_vertical;
 
 
-    TileData(Vector2 pos, char the_letter, int value){
+    public TileData(Vector2 pos, char the_letter, int value){
         my_position = pos;
         letter = the_letter;
         letter_value = value;
