@@ -8,7 +8,7 @@ const router = express.Router()
  * This endpoint gets the highest valued word played by the repsective team.
  */
 router.get('/team/topValueWord', function(req, res, next) {
-    
+
 })
 
 /**
