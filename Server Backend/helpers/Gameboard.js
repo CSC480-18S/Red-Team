@@ -63,6 +63,10 @@ class Gameboard {
     this._initialized = true
   }
 
+  consumeInput(x, y, h, word) {
+    return this.placeWord({x: x, y: y}, {x: h ? x + word.length - 1 : x, y: h ? y : y + word.length - 1}, word)
+  }
+
   /**
    * Method that places a word on the baord
    * @param {Object} startCoords - object structured as such: {x: x, y: y}
@@ -75,11 +79,20 @@ class Gameboard {
 
     for (let i = startCoords.x; i <= endCoords.x; i++) {
       for (let j = startCoords.y; j <= endCoords.y; j++) {
+        if (tempBoard[j][i] === undefined) {
+          return {
+            reason: 'Word placed out of the bounds of the board',
+            word: word
+          }
+        }
         let l = tempBoard[j][i].letter
         let w = startCoords.x === endCoords.x ? word[j - startCoords.y].toUpperCase() : word[i - startCoords.x].toUpperCase()
 
         if (!val(l, w)) {
-          return false
+          return {
+            reason: 'Invalid word placement',
+            word: word
+          }
         }
 
         tempBoard[j][i].letter = w
