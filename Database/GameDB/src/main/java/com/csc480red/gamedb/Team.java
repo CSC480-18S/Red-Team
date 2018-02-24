@@ -31,14 +31,27 @@ public class Team {
 	
 	protected Team() {}
 
-	public Team(String name, String topValueWord, int highestValue, String longestWord, int higestSingleGameScore,
+	/**
+	 *
+	 * @param name - name
+	 * @param topValueWord - highest score word
+	 * @param highestValue - highest word score
+	 * @param longestWord - longest word
+	 * @param highestSingleGameScore - highest single game score
+	 * @param freqPlayedWord - most frequently played word
+	 * @param amountBonusesUsed - total amount of bonuses used
+	 * @param totalScore - total score
+	 * @param winCount - win count
+	 * @param loseCount - lose count
+	 */
+	public Team(String name, String topValueWord, int highestValue, String longestWord, int highestSingleGameScore,
 			String freqPlayedWord, int amountBonusesUsed, int totalScore, int winCount, int loseCount) {
 		super();
 		this.name = name;
 		this.topValueWord = topValueWord;
 		this.highestValue = highestValue;
 		this.longestWord = longestWord;
-		this.higestSingleGameScore = higestSingleGameScore;
+		this.higestSingleGameScore = highestSingleGameScore;
 		this.freqPlayedWord = freqPlayedWord;
 		this.amountBonusesUsed = amountBonusesUsed;
 		this.totalScore = totalScore;
@@ -46,18 +59,34 @@ public class Team {
 		this.loseCount = loseCount;
 	}
 
+	/**
+	 *
+	 * @return id
+	 */
 	public Long getId() {
 		return id;
 	}
 
+	/**
+	 *
+	 * @return name
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 *
+	 * @return highest score word
+	 */
 	public String getTopValueWord() {
 		return topValueWord;
 	}
 
+	/**
+	 *
+	 * @return highest word score
+	 */
 	public int getHighestValue() {
 		return highestValue;
 	}
@@ -66,26 +95,50 @@ public class Team {
 		return longestWord;
 	}
 
+	/**
+	 *
+	 * @return highest single game score
+	 */
 	public int getHigestSingleGameScore() {
 		return higestSingleGameScore;
 	}
 
+	/**
+	 *
+	 * @return most frequently played word
+	 */
 	public String getFreqPlayedWord() {
 		return freqPlayedWord;
 	}
 
+	/**
+	 *
+	 * @return total amount of bonuses used
+	 */
 	public int getAmountBonusesUsed() {
 		return amountBonusesUsed;
 	}
 
+	/**
+	 *
+	 * @return total score
+	 */
 	public int getTotalScore() {
 		return totalScore;
 	}
 
+	/**
+	 *
+	 * @return win count
+	 */
 	public int getWinCount() {
 		return winCount;
 	}
 
+	/**
+	 *
+	 * @return lose count
+	 */
 	public int getLoseCount() {
 		return loseCount;
 	}
