@@ -27,6 +27,18 @@ public class PlayedWord {
 	
 	protected PlayedWord() {}
 
+	/**
+	 *
+	 * @param word - the word that was played
+	 * @param value - the value of the played word
+	 * @param length = the length of the played word
+	 * @param standalone - is the word a standalone word
+	 * @param dw - was the word played over a double word tile
+	 * @param tw - was the word played over a triple word tile
+	 * @param dl - was the word played over a double letter tile
+	 * @param tl - was the word played over a triple letter tile
+	 * @param player - the player that played the word
+	 */
 	public PlayedWord(String word, int value, int length, boolean standalone, boolean dw, boolean tw, boolean dl,
 			boolean tl, Player player) {
 		super();
@@ -41,42 +53,82 @@ public class PlayedWord {
 		this.player = player;
 	}
 
+	/**
+	 *
+	 * @return id
+	 */
 	public Long getId() {
 		return id;
 	}
 
+	/**
+	 *
+	 * @return the actual word
+	 */
 	public String getWord() {
 		return word;
 	}
 
+	/**
+	 *
+	 * @return value
+	 */
 	public int getValue() {
 		return value;
 	}
 
+	/**
+	 *
+	 * @return length
+	 */
 	public int getLength() {
 		return length;
 	}
 
+	/**
+	 *
+	 * @return is it standalone
+	 */
 	public boolean isStandalone() {
 		return standalone;
 	}
 
+	/**
+	 *
+	 * @return over a double word tile
+	 */
 	public boolean isDw() {
 		return dw;
 	}
 
+	/**
+	 *
+	 * @return over a triple word tile
+	 */
 	public boolean isTw() {
 		return tw;
 	}
 
+	/**
+	 *
+	 * @return over a double letter tile
+	 */
 	public boolean isDl() {
 		return dl;
 	}
 
+	/**
+	 *
+	 * @return over a triple letter tile
+	 */
 	public boolean isTl() {
 		return tl;
 	}
 
+	/**
+	 *
+	 * @return player that played this word
+	 */
 	public Player getPlayer() {
 		return player;
 	}

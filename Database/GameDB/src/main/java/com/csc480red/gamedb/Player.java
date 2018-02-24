@@ -31,9 +31,22 @@ public class Player {
 	
 	protected Player() {}
 
+	/**
+	 *
+	 * @param username - username
+	 * @param shortId - shortID
+	 * @param team - team
+	 * @param topValueWord - highest valued word
+	 * @param highestValue - highest word score
+	 * @param longestWord - longest word
+	 * @param highestSingleGameScore - single game high score
+	 * @param freqPlayedWord - most frequently played word
+	 * @param amountBonusesUsed - amount of bonuses the player has used
+	 * @param totalScore - total score across all games played
+	 */
 	public Player(String username, String shortId, Team team, String topValueWord, int highestValue,
-			String longestWord, int highestSingleGameScore, String freqPlayedWord, int amountBonusesUsed,
-			int totalScore) {
+				  String longestWord, int highestSingleGameScore, String freqPlayedWord, int amountBonusesUsed,
+				  int totalScore) {
 		super();
 		this.username = username;
 		this.shortId = shortId;
@@ -47,46 +60,90 @@ public class Player {
 		this.totalScore = totalScore;
 	}
 
+	/**
+	 *
+	 * @return ID
+	 */
 	public Long getId() {
 		return id;
 	}
 
+	/**
+	 *
+	 * @return username
+	 */
 	public String getUsername() {
 		return username;
 	}
 
+	/**
+	 *
+	 * @return shortID
+	 */
 	public String getShortId() {
 		return shortId;
 	}
 
-	public Team getTeam() {
+	/**
+	 *
+	 * @return team
+	 */
+	public com.csc480red.gamedb.Team getTeam() {
 		return team;
 	}
 
+	/**
+	 *
+	 * @return highest valued word
+	 */
 	public String getTopValueWord() {
 		return topValueWord;
 	}
 
+	/**
+	 *
+	 * @return highest value word score
+	 */
 	public int getHighestValue() {
 		return highestValue;
 	}
 
+	/**
+	 *
+	 * @return longest word
+	 */
 	public String getLongestWord() {
 		return longestWord;
 	}
 
+	/**
+	 *
+	 * @return highest single game score
+	 */
 	public int getHighestSingleGameScore() {
 		return highestSingleGameScore;
 	}
 
+	/**
+	 *
+	 * @return most frequently played word
+	 */
 	public String getFreqPlayedWord() {
 		return freqPlayedWord;
 	}
 
+	/**
+	 *
+	 * @return total amount of bonuses played
+	 */
 	public int getAmountBonusesUsed() {
 		return amountBonusesUsed;
 	}
 
+	/**
+	 *
+	 * @return total score across all games
+	 */
 	public int getTotalScore() {
 		return totalScore;
 	}
