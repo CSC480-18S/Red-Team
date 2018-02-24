@@ -68,7 +68,8 @@ app.set('json spaces', 2)
  * Setting the routes to be used
  */
 app.use('/', indexRoute)
-app.use('/api', [gameRoute, statsRoute, usersRoute])
+app.use('/api', [statsRoute, usersRoute])
+app.use('/api/game/', gameRoute)
 
 /**
  * Called when the server is ready and it listens on the specified port
