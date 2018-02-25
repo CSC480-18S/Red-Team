@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Gameboard</title>
+    <style>
+        h1{
+            display: inline;
+        }
+    </style>
+</head>
+<body>
+    <%if (board) { %>
+        <table class="table">
+            <th></th>
+        <% for(var i=0; i<board.length; i++) {%>
+            <th><%= i %></th>
+        <% } %>
+        <% for(var i=0; i<board.length; i++) {%>
+            <tr>
+            <th><%= i %></th>
+            <% for(var j=0; j<board[0].length; j++) {%>
+                <td><%= board[i][j].letter %></td>
+            <% } %>
+            </tr>
+        <% } %>
+        </table>
+    <% } %>
+
+    <script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+        crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+        crossorigin="anonymous"></script>
+</body>
+</html>
