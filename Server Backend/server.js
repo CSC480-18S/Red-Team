@@ -14,6 +14,11 @@ const statsRoute = require('./routes/stats-route')
 const usersRoute = require('./routes/users-route')
 
 /**
+ * Imports Override.js
+ */
+const override = require('./helpers/Override')
+
+/**
  * Port the server listens on
  */
 const port = 3000
@@ -26,9 +31,18 @@ const app = express()
 /**
  * Set the headers the server accepts
  */
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT')
+  next()
+})
+
+/**
+ * Overrides res.json
+ */
+app.use(function(req, res, next) {
+  override.json(res)
+
   next()
 })
 
@@ -43,7 +57,7 @@ app.set('view engine', 'html')
  * Body-parser middleware
  */
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.urlencoded({ extended: false }))
 
 /**
  * Sets the JSON spacing for JSON data that is sent back to the user
@@ -59,6 +73,6 @@ app.use('/api', [gameRoute, statsRoute, usersRoute])
 /**
  * Called when the server is ready and it listens on the specified port
  */
-app.listen(port, function () {
+app.listen(port, function() {
   console.log('Server started on port ' + port)
 })
