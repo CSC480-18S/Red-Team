@@ -1,4 +1,4 @@
-package com.csc480.game.Engine;
+package com.csc480.game.Engine.Model;
 
 /**
  * A simple data structure to hold letter placements and their position
