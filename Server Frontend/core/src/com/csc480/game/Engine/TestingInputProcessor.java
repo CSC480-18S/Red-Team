@@ -1,10 +1,11 @@
 package com.csc480.game.Engine;
 
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector3;
+import com.csc480.game.Engine.Model.Placement;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * THIS CLASS IS FOR TESTING PURPOSES ONLY. SHOULD NOT BE USED AT ALL IN THE FINAL BUILD!
@@ -49,6 +50,21 @@ public class TestingInputProcessor implements InputProcessor {
             if(isValid)
                 screenToUpdate.board.addWord(screenToUpdate.placements);
                 screenToUpdate.placements.clear();
+        }
+        else if(character == '\\'){
+            System.out.println("Finding all words for queue");
+            Long startTime = System.nanoTime();
+            String hand = "";
+            for(Placement p : screenToUpdate.placements){
+                hand+= p.letter;
+            }
+            char[] constraints = new char[hand.length()];
+            Arrays.fill(constraints,' ');
+            ArrayList<String> results = WordVerification.getInstance().getWordsFromHand(hand,constraints);
+            System.out.println("finding all possible words took nanos: "+(System.nanoTime()-startTime));
+            for (String s : results)
+                System.out.println(s);
+
         }
         else{
             System.out.println("changing to "+character);
