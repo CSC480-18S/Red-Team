@@ -16,6 +16,7 @@ class Gameboard {
     this._size = size
     this._board = new Array(this._size)
     this._initialized = false
+    this.sameLetters = 0
   }
 
   set board(board) {
@@ -62,9 +63,32 @@ class Gameboard {
 
     this._initialized = true
   }
-
+  /**
+   * Method consumes the user's input.  If the word is not valid, it does not attempt to place the word on the board and will send back to the user that the word is invalid
+   * @param {Number} x - start x
+   * @param {Number} y - start y
+   * @param {Boolean} h - is the word horizontal
+   * @param {String} word - the word to be validated
+   */
   consumeInput(x, y, h, word) {
-    return this.placeWord({x: x, y: y}, {x: h ? x + word.length - 1 : x, y: h ? y : y + word.length - 1}, word)
+    if (this.wordIsValid(word)) {
+      return this.placeWord({ x: x, y: y }, { x: h ? x + word.length - 1 : x, y: h ? y : y + word.length - 1 }, word)
+    }
+
+    return {
+      reason: 'Not a valid word',
+      word: word
+    }
+  }
+
+  /**
+   * Method that checks to see if the word is in the DB
+   * @param {String} word - the word to be checked against the DB
+   */
+  wordIsValid(word) {
+    // TODO: Change this to work with the DB
+    // This is always true for now for testing purposes
+    return true
   }
 
   /**
@@ -74,28 +98,42 @@ class Gameboard {
    * @param {String} word - word that will be placed on the board
    */
   placeWord(startCoords, endCoords, word) {
+    this.sameLetters = 0
     const tempBoard = _.cloneDeep(this.board)
-    const val = this.validatePosition
 
     for (let i = startCoords.x; i <= endCoords.x; i++) {
       for (let j = startCoords.y; j <= endCoords.y; j++) {
+        /**
+         * Check to see if the word was somehow placed out of bounds
+         */
         if (tempBoard[j][i] === undefined) {
           return {
-            reason: 'Word placed out of the bounds of the board',
+            reason: 'Placed out of the bounds of the board',
             word: word
           }
         }
         let l = tempBoard[j][i].letter
         let w = startCoords.x === endCoords.x ? word[j - startCoords.y].toUpperCase() : word[i - startCoords.x].toUpperCase()
 
-        if (!val(l, w)) {
+        /**
+         * Validate the letter to be placed
+         */
+        if (!this.validatePosition(l, w)) {
           return {
-            reason: 'Invalid word placement',
+            reason: 'Invalid placement',
             word: word
           }
         }
-
         tempBoard[j][i].letter = w
+      }
+    }
+    /**
+     * Duplicate word checker
+     */
+    if (this.sameLetters === word.length) {
+      return {
+        reason: 'Word: ' + word + ' placed on top of same word: ' + word,
+        word: word
       }
     }
 
@@ -109,7 +147,14 @@ class Gameboard {
    * @param {String} toBePlacedLetter - the letter that is to be placed on the board
    */
   validatePosition(currentLetter, toBePlacedLetter) {
-    return currentLetter === '.' || currentLetter === toBePlacedLetter
+    if (currentLetter === '.') {
+      return true
+    } else if (currentLetter === toBePlacedLetter) {
+      this.sameLetters++
+      return true
+    }
+
+    return false
   }
 }
 

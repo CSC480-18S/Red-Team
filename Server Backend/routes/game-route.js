@@ -7,13 +7,19 @@ const GB = require('../helpers/Gameboard')
 
 const g = new GB(11)
 g.init()
-g.placeWord({ x: 2, y: 2 }, { x: 7, y: 2 }, 'oswego')
-g.placeWord({ x: 7, y: 1 }, { x: 7, y: 4 }, 'doge')
+// g.placeWord({ x: 2, y: 2 }, { x: 7, y: 2 }, 'oswego')
+// g.placeWord({ x: 7, y: 1 }, { x: 7, y: 4 }, 'doge')
 
+/**
+ * Returns the game board to the user
+ */
 router.get('/gameBoard', function(req, res, next) {
   res.render('gameboard', {board: g._board})
 })
 
+/**
+ * This route will be changed, no documentation as of now
+ */
 router.post('/playWord', function(req, res, next) {
   const r = req.body
   const x = r.x
@@ -23,7 +29,7 @@ router.post('/playWord', function(req, res, next) {
 
   const valid = g.consumeInput(x, y, h, w)
 
-  // TODO: Fix this so the route is not doing the work
+  // TODO: Fix this so the route is not doing the work @Landon
   if (valid === true) {
     res.json({invalid: false})
   } else {
@@ -33,7 +39,6 @@ router.post('/playWord', function(req, res, next) {
       word: valid.word.toUpperCase()
     })
   }
-  res.json(valid)
 })
 
 /**
