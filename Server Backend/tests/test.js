@@ -102,6 +102,32 @@ describe('Gameboard tests', () => {
     }
   })
 
+  it('Gameboard should not place a word on top of the same word', () => {
+    const g = new GB(11)
+
+    g.init()
+
+    // Vertical Word
+    const word = 'DOGE'
+    const x = 0
+    const y = 0
+    const h = true
+
+    // Horizontal Word
+    const word2 = 'DOGE'
+    const x2 = 0
+    const y2 = 0
+    const h2 = true
+
+    g.consumeInput(x, y, h, word)
+    const result = g.consumeInput(x2, y2, h2, word2)
+
+    expect(result).toEqual({
+      reason: 'Word: ' + word + ' placed on top of same word: ' + word,
+      word: word
+    })
+  })
+
   it('Gameboard should place a horizontal word in the cross section of a vertical word', () => {
     const g = new GB(11)
 
