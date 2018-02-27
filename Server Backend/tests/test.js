@@ -38,16 +38,15 @@ describe('Gameboard tests', () => {
     g.init()
 
     const word = 'OSWEGO'
-    const startX = 2
-    const startY = 2
-    const endX = 7
-    const endY = 2
+    const x = 2
+    const y = 2
+    const h = true
 
-    g.placeWord({ x: startX, y: startY }, { x: endX, y: endY }, word)
+    g.consumeInput(x, y, h, word)
 
-    for (let i = startX; i <= endX; i++) {
-      for (let j = startY; j <= endY; j++) {
-        expect(g.board[j][i].letter.toUpperCase()).toEqual(word[i - startX].toUpperCase())
+    for (let i = x; i < word.length; i++) {
+      for (let j = y; j <= y; j++) {
+        expect(g.board[j][i].letter.toUpperCase()).toEqual(word[i - x].toUpperCase())
       }
     }
   })
@@ -58,16 +57,15 @@ describe('Gameboard tests', () => {
     g.init()
 
     const word = 'OSWEGO'
-    const startX = 2
-    const endX = 2
-    const startY = 2
-    const endY = 7
+    const x = 2
+    const y = 2
+    const h = false
 
-    g.placeWord({ x: startX, y: startY }, { x: endX, y: endY }, word)
+    g.consumeInput(x, y, h, word)
 
-    for (let i = startX; i <= endX; i++) {
-      for (let j = startY; j <= endY; j++) {
-        expect(g.board[j][i].letter.toUpperCase()).toEqual(word[j - startY].toUpperCase())
+    for (let i = x; i <= x; i++) {
+      for (let j = y; j < word.length; j++) {
+        expect(g.board[j][i].letter.toUpperCase()).toEqual(word[j - y].toUpperCase())
       }
     }
   })
@@ -79,21 +77,19 @@ describe('Gameboard tests', () => {
 
     // Vertical Word
     const word = 'OSWEGO'
-    const startX = 2
-    const startY = 2
-    const endX = 2
-    const endY = 7
+    const x = 2
+    const y = 2
+    const h = false
 
     // Horizontal Word
     const word2 = 'BAD'
-    const startX2 = 1
-    const startY2 = 5
-    const endX2 = 3
-    const endY2 = 5
+    const x2 = 1
+    const y2 = 5
+    const h2 = true
 
-    g.placeWord({ x: startX, y: startY }, { x: endX, y: endY }, word)
+    g.consumeInput(x, y, h, word)
     const validBoard = _.cloneDeep(g.board)
-    g.placeWord({ x: startX2, y: startY2 }, { x: endX2, y: endY2 }, word2)
+    g.consumeInput(x2, y2, h2, word2)
 
     for (let i = 0; i < g.board.length; i++) {
       for (let j = 0; j < g.board[0].length; j++) {
@@ -135,24 +131,22 @@ describe('Gameboard tests', () => {
 
     // Vertical Word
     const word = 'OSWEGO'
-    const startX = 2
-    const startY = 2
-    const endX = 2
-    const endY = 7
+    const x = 2
+    const y = 2
+    const h = false
 
     // Horizontal Word
     const word2 = 'BED'
-    const startX2 = 1
-    const startY2 = 5
-    const endX2 = 3
-    const endY2 = 5
+    const x2 = 1
+    const y2 = 5
+    const h2 = true
 
-    g.placeWord({ x: startX, y: startY }, { x: endX, y: endY }, word)
-    g.placeWord({ x: startX2, y: startY2 }, { x: endX2, y: endY2 }, word2)
+    g.consumeInput(x, y, h, word)
+    g.consumeInput(x2, y2, h2, word2)
 
-    for (let i = startX2; i <= endX2; i++) {
-      for (let j = startY2; j <= endY2; j++) {
-        expect(g.board[j][i].letter.toUpperCase()).toEqual(word2[i - startX2])
+    for (let i = x2; i < word2.length; i++) {
+      for (let j = y2; j <= y2; j++) {
+        expect(g.board[j][i].letter.toUpperCase()).toEqual(word2[i - x2])
       }
     }
   })
@@ -164,21 +158,19 @@ describe('Gameboard tests', () => {
 
     // Horitontal Word
     const word = 'BAD'
-    const startX = 1
-    const startY = 5
-    const endX = 3
-    const endY = 5
+    const x = 1
+    const y = 5
+    const h = true
 
     // Vertical Word
     const word2 = 'OSWEGO'
-    const startX2 = 2
-    const startY2 = 2
-    const endX2 = 2
-    const endY2 = 7
+    const x2 = 2
+    const y2 = 2
+    const h2 = false
 
-    g.placeWord({ x: startX, y: startY }, { x: endX, y: endY }, word)
+    g.consumeInput(x, y, h, word)
     const validBoard = _.cloneDeep(g.board)
-    g.placeWord({ x: startX2, y: startY2 }, { x: endX2, y: endY2 }, word2)
+    g.consumeInput(x2, y2, h2, word2)
 
     for (let i = 0; i < g.board.length; i++) {
       for (let j = 0; j < g.board[0].length; j++) {
@@ -194,26 +186,60 @@ describe('Gameboard tests', () => {
 
     // Horizontal Word
     const word = 'BED'
-    const startX = 1
-    const startY = 5
-    const endX = 3
-    const endY = 5
+    const x = 1
+    const y = 5
+    const h = true
 
     // Vertical Word
     const word2 = 'OSWEGO'
-    const startX2 = 2
-    const startY2 = 2
-    const endX2 = 2
-    const endY2 = 7
+    const x2 = 2
+    const y2 = 2
+    const h2 = false
 
-    g.placeWord({ x: startX, y: startY }, { x: endX, y: endY }, word)
-    g.placeWord({ x: startX2, y: startY2 }, { x: endX2, y: endY2 }, word2)
+    g.consumeInput(x, y, h, word)
+    g.consumeInput(x2, y2, h2, word2)
 
-    for (let i = startX2; i <= endX2; i++) {
-      for (let j = startY2; j <= endY2; j++) {
-        expect(g.board[j][i].letter.toUpperCase()).toEqual(word2[j - startY2])
+    for (let i = x2; i <= x2; i++) {
+      for (let j = y2; j < word2.length; j++) {
+        expect(g.board[j][i].letter.toUpperCase()).toEqual(word2[j - y2])
       }
     }
+  })
+
+  it('Gameboard should return error trying to place an invalid word', () => {
+    const g = new GB(11)
+
+    g.init()
+
+    const word = ''
+    const x = 9
+    const y = 5
+    const h = true
+
+    const result = g.consumeInput(x, y, h, word)
+
+    expect(result).toEqual({
+      reason: 'Not a valid word',
+      word: word
+    })
+  })
+
+  it('Gameboard should return error trying to place a word outside the bounds of the board', () => {
+    const g = new GB(11)
+
+    g.init()
+
+    const word = 'BED'
+    const x = 9
+    const y = 5
+    const h = true
+
+    const result = g.consumeInput(x, y, h, word)
+
+    expect(result).toEqual({
+      reason: 'Placed out of the bounds of the board',
+      word: word
+    })
   })
 })
 
