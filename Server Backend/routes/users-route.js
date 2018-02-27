@@ -7,7 +7,6 @@ const router = express.Router()
 const jwt = require('jsonwebtoken')
 const config = require('../config')
 const VerifyToken = require('../helpers/VerifyTokens')
-const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 
 router.use(cookieParser())
@@ -25,7 +24,7 @@ router.post('/createUser', function(req, res, next) {
      * Create new user object
      */
   const newUser = {
-    userName: req.body.userName
+    username: req.body.username
   }
 
   /**
@@ -37,7 +36,17 @@ router.post('/createUser', function(req, res, next) {
      * Take the user's parameters and create a
      * token for them
      */
-  if (!newUser) return res.status(500).send('There was a problem registering the user.')
+  for (let i = 0; i < users.length; i++) {
+    if (newUser.username === users[i].username) {
+      res.status(400).json({code: 'U1', title: 'User error', desc: 'Username already taken'})
+      return
+    }
+  }
+  if (!newUser) {
+    res.status(500).json(
+      {code: 'U2', title: 'User error', desc: 'There was a problem registering the user.'})
+    return
+  }
   // create a token
   var token = jwt.sign({ id: newUser._id }, config.secret, {
     expiresIn: '1 year' // expires in 1 year
@@ -52,7 +61,7 @@ router.post('/createUser', function(req, res, next) {
   /**
      * Returns to the user a JSON object containing the new user
      */
-  res.json(newUser.userName)
+  res.json({username: newUser.username})
 })
 
 /**
@@ -87,7 +96,7 @@ router.get('/getUser', VerifyToken, function(req, res, next) {
      */
   var found = null
   for (var i = 0; i < users.length; i++) {
-    if (users[i].userName === req.query.userName) {
+    if (users[i].username === req.query.username) {
       found = users[i]
     }
   }
@@ -95,9 +104,9 @@ router.get('/getUser', VerifyToken, function(req, res, next) {
   /**
      * TODO returns a JSON containing better user information
      */
-  if (!found) res.send('User was not found')
+  if (!found) res.status(400).json({code: 'U3', title: 'User error', desc: 'User was not found'})
   else {
-    res.send('You have been logged in!')
+    res.json({success: 'You have been logged in!'})
   }
 })
 
