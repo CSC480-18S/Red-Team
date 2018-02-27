@@ -38,7 +38,7 @@ router.post('/createUser', function(req, res, next) {
      */
   for (let i = 0; i < users.length; i++) {
     if (newUser.username === users[i].username) {
-      res.status(400).json({code: 'U1', title: 'User error', desc: 'Username already taken'})
+      res.status(500).json({code: 'U1', title: 'User error', desc: 'Username already taken'})
       return
     }
   }
