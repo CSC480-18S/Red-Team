@@ -34,12 +34,18 @@ function json(res) {
       case 400:
         error['code'] = 'To be added Later'
         error['message'] = 'Bad Request'
+        error['code'] = data.code
+        error['title'] = data.title
+        error['description'] = data.desc
 
         overallResponse['error'] = error
         break
       case 500:
         error['code'] = 'To be added Later'
         error['message'] = 'Internal Server Error'
+        error['code'] = data.code
+        error['title'] = data.title
+        error['description'] = data.desc
 
         overallResponse['error'] = error
         break
