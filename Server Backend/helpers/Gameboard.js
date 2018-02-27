@@ -87,7 +87,9 @@ class Gameboard {
    */
   wordIsValid(word) {
     // TODO: Change this to work with the DB
-    // This is always true for now for testing purposes
+    if (word === '') {
+      return false
+    }
     return true
   }
 
