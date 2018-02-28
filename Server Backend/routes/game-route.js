@@ -4,6 +4,7 @@
 const express = require('express')
 const router = express.Router()
 const GB = require('../helpers/Gameboard')
+const VerifyToken = require('../helpers/VerifyTokens')
 
 const g = new GB(11)
 g.init()
@@ -13,7 +14,7 @@ g.init()
 /**
  * Returns the game board to the user
  */
-router.get('/gameBoard', function(req, res, next) {
+router.get('/gameBoard', VerifyToken, function(req, res, next) {
   res.render('gameboard', {board: g._board})
 })
 

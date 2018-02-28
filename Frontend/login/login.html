@@ -13,7 +13,7 @@
     }
 
     body {
-      background-image: url("assets/finalboard.JPG");
+      background-image: url("/assets/finalboard.JPG");
       background-repeat: no-repeat;
       background-position: center;
       background-attachment: fixed;
@@ -39,24 +39,46 @@
 
 <body>
   <div class="center">
-    <img src="assets/oswebblelogo.jpg" img style='height: 100%; width: 100%; object-fit: contain' />
-      <input type="text" id="username" placeholder=Username>
-      <p>New User? Join the game <a href="teamselection.html">here.</a></p>
-      <br>
-      <input type="submit" value="Login" onclick="loginPostRequest()">
+    <img src="/assets/oswebblelogo.jpg" img style='height: 100%; width: 100%; object-fit: contain' />
+    <input type="text" id="username" placeholder=Username>
+    <p>New User? Join the game
+      <a href="teamselection">here.</a>
+    </p>
+    <br>
+    <input type="submit" value="Login" onclick="loginGetRequest()">
 
-      <script>
-        function loginPostRequest() {
-          var xhr = new XMLHttpRequest();
-          var username = document.getElementById("username").value;
-          console.log(username);
-          var url = "http://localhost:3000/api/createUser";
-          xhr.open("POST", url, true);
-          xhr.setRequestHeader("Content-type", "application/json");
-          var data = JSON.stringify({"username": username});
-          xhr.send(data);
+    <script>
+      function loginGetRequest() {
+        var xhr = new XMLHttpRequest();
+
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            var data = xhr.responseText;
+            var jsonResponse = JSON.parse(data);
+            alertUser(xhr)
+          }
         }
-      </script>
+        var username = document.getElementById("username").value;
+        var url = "http://localhost:3000/api/getUser?username=" + username;
+        xhr.open("GET", url, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.send();
+      }
+
+      function alertUser(res) {
+        var data = res.responseText;
+        var jsonResponse = JSON.parse(data);
+
+        switch (res.status) {
+          case 200:
+            alert(jsonResponse["data"].success)
+            break;
+          case 400:
+          case 500:
+            alert(jsonResponse["error"].description)
+        }
+      }
+    </script>
 
   </div>
 </body>

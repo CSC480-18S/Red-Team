@@ -24,7 +24,8 @@ router.post('/createUser', function(req, res, next) {
      * Create new user object
      */
   const newUser = {
-    username: req.body.username
+    username: req.body.username,
+    team: req.body.team
   }
 
   /**
@@ -37,7 +38,7 @@ router.post('/createUser', function(req, res, next) {
      * token for them
      */
   for (let i = 0; i < users.length; i++) {
-    if (newUser.username === users[i].username) {
+    if (newUser.username.toUpperCase() === users[i].username.toUpperCase()) {
       res.status(500).json({code: 'U1', title: 'User error', desc: 'Username already taken'})
       return
     }
@@ -61,7 +62,7 @@ router.post('/createUser', function(req, res, next) {
   /**
      * Returns to the user a JSON object containing the new user
      */
-  res.json({username: newUser.username})
+  res.json(newUser)
 })
 
 /**
@@ -98,6 +99,7 @@ router.get('/getUser', VerifyToken, function(req, res, next) {
   for (var i = 0; i < users.length; i++) {
     if (users[i].username === req.query.username) {
       found = users[i]
+      break
     }
   }
 
@@ -159,7 +161,7 @@ router.put('/addUser', VerifyToken, function(req, res, next) {
 /**
  * Route that returns all of the users
  */
-router.get('/allUsers', function(req, res, next) {
+router.get('/allUsers', VerifyToken, function(req, res, next) {
   /**
      * Sends the user a JSON object containing all of the users
      */

@@ -1,35 +1,87 @@
 <!DOCTYPE html>
 <html>
 <style>
-    body {background-color: #787878}
+    body {
+        background-color: #787878
+    }
 
-.green {color: #1A3F28; font-size: 24px}
-.gold {color: #C19A24; font-size: 24px}
+    .green {
+        color: #1A3F28;
+        font-size: 24px
+    }
 
-.center {
-    margin: auto;
-    width: 20%;
-    height: 10%;
-    padding: 5px;
-    text-align: center;
-    border: 3px solid black; 
+    .gold {
+        color: #C19A24;
+        font-size: 24px
+    }
+
+    .center {
+        margin: auto;
+        width: 20%;
+        height: 10%;
+        padding: 5px;
+        text-align: center;
+        border: 3px solid black;
     }
 </style>
+
 <body>
-<div class="center">
-    <p> Welcome to the game!</p>
-<input type="text" name="username" placeholder=Username>
-<div class="green">
-  <button onclick="rulesFunction()">Join Green Team </button>
+    <div class="center">
+        <p> Welcome to the game!</p>
+        <form>
+            <input type="text" id="username" placeholder=Username required>
+            <div class="green">
+                <button onclick="createNewUserPostRequest('Green')">Join Green Team </button>
+            </div>
+            <div class="gold">
+                <button onclick="createNewUserPostRequest('Gold')">Join Gold Team</button>
+            </div>
+        </form>
+        <script>
+            function createNewUserPostRequest(team) {
+                var username = document.getElementById("username").value;
+                if(username === '') return;
+
+                var xhr = new XMLHttpRequest();
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4) {
+                        var data = xhr.responseText;
+                        var jsonResponse = JSON.parse(data);
+                        alertUser(xhr)
+                    }
+                }
+                var url = "http://localhost:3000/api/createUser";
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-type", "application/json");
+                var data = JSON.stringify({ username: username, team: team })
+                xhr.send(data);
+            }
+
+
+            function alertUser(res) {
+                var data = res.responseText;
+                var jsonResponse = JSON.parse(data);
+
+                switch (res.status) {
+                    case 200:
+                        var username = jsonResponse["data"].username
+                        var team = jsonResponse["data"].team
+                        alert(
+                            `Welcome to the ${team} Team ${username}!`
+                        )
+                        alert(
+                            'Here are the Rules!\n 1. Words may be played left to right or top to bottom.\n 2. Thats it.'
+                        )
+                        window.location.href = "login"
+                        break;
+                    case 400:
+                    case 500:
+                        alert(jsonResponse["error"].description)
+                }
+            }
+        </script>
     </div>
-<div class="gold">
-<button onclick="rulesFunction()">Join Gold Team</button>
-    </div>
-      <script>
-          function rulesFunction() {
-              alert('Oswebble Rules:\n 1. Words may be played left to right or top to bottom.\n 2. etc.\n 3. etc');
-          }
-    </script>
-</div>
 </body>
+
 </html>
