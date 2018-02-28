@@ -72,6 +72,7 @@
         switch (res.status) {
           case 200:
             alert(jsonResponse["data"].success)
+            window.location.href = "/api/game/gameboard"
             break;
           case 400:
           case 500:
