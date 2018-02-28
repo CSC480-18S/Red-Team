@@ -62,6 +62,11 @@ public class SocketManager {
             public void call(Object... args) {
                 System.out.println("disconnection");
             }
+        }).on(Socket.EVENT_MESSAGE, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+
+            }
         });
     }
 
@@ -122,4 +127,11 @@ public class SocketManager {
         return null;
     }
 
+    private void UpdateGameState(JSONObject json){
+
+    }
+
+    public void BroadcastAIPlay(String word, int startX, int starty, boolean isHorizontal){
+
+    }
 }

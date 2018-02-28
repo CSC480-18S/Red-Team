@@ -31,6 +31,7 @@ public class TestingPOCScreen implements com.badlogic.gdx.Screen {
         theCamera = new OrthographicCamera();
         theCamera.setToOrtho(false,size+0.0f,size+0.0f);
         font = new BitmapFont();
+        font.setColor(0,0,0,1);
         fontBatch = new SpriteBatch();
         font.getData().setScale(1/16f);
         font.setUseIntegerPositions(false);
@@ -43,7 +44,7 @@ public class TestingPOCScreen implements com.badlogic.gdx.Screen {
     @Override
     public void show() {
         //THIS WILL CHANGE WITH ACTUAL IMPLEMENTATION(input will come from the Socket, not the Keyboard)
-        Gdx.input.setInputProcessor(new TestingInputProcessor(this));
+        Gdx.input.setInputProcessor(new TestingInputProcessor(theCamera));
     }
 
     @Override
