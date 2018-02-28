@@ -32,16 +32,46 @@ public class WordVerification {
             System.out.println("Starting Creating HashSet");
             file = new File(Gdx.files.internal("words.txt").path());
             inFileScanner = new Scanner(file);
+            int c = 0;
             while (inFileScanner.hasNext()){
+                c++;
                 validWords.add(inFileScanner.nextLine());
             }
-            System.out.println("Finished Creating HashSet total nanos: "+(System.nanoTime()-startTime));
+            System.out.println("Finished Creating HashSet total num = "+c+", nanos: "+(System.nanoTime()-startTime));
         }catch (FileNotFoundException e){
             System.err.println(e);
         }
 
     }
 
+    public ArrayList<String> getWordsFromHand(String hand, char[] constraints){
+        String handAndReleventBoardTiles = hand;
+        for(int i = 0; i < constraints.length; i++)
+            if(constraints[i] != ' ')
+                handAndReleventBoardTiles += constraints[i];
+        ArrayList<String> possibleWords = new ArrayList<String>();
+        for(String e: validWords){
+            String temp = handAndReleventBoardTiles;
+            boolean isGoodFlag = true;
+            if(e.length() <= constraints.length){
+                for(int i = 0; i < e.length(); i++){
+                    if(temp.contains(e.charAt(i)+"")){
+                        temp.replace(e.charAt(i),'_');
+                    }else {
+                        isGoodFlag = false;
+                    }
+                }
+                if(isGoodFlag){
+                    //MORE CHECKS NEED TO BE DONE HERE
+                    //VERIFY CAN FIT IN LINE WITH THE CONSTRAINTS
+                    possibleWords.add(e);
+                }
+            }
+        }
+        System.out.println("Found "+possibleWords.size()+" possible words.");
+        return possibleWords;
+
+    }
     /**
      * This function will verify that a string is a valid word in our data set
      * @param word the string to verify

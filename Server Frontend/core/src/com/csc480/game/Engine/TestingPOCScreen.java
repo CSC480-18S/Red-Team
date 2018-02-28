@@ -1,11 +1,14 @@
 package com.csc480.game.Engine;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.csc480.game.Engine.Model.AI;
+import com.csc480.game.Engine.Model.Board;
+import com.csc480.game.Engine.Model.Placement;
+
 import java.util.ArrayList;
 
 
@@ -28,6 +31,7 @@ public class TestingPOCScreen implements com.badlogic.gdx.Screen {
         theCamera = new OrthographicCamera();
         theCamera.setToOrtho(false,size+0.0f,size+0.0f);
         font = new BitmapFont();
+        font.setColor(0,0,0,1);
         fontBatch = new SpriteBatch();
         font.getData().setScale(1/16f);
         font.setUseIntegerPositions(false);
@@ -40,7 +44,7 @@ public class TestingPOCScreen implements com.badlogic.gdx.Screen {
     @Override
     public void show() {
         //THIS WILL CHANGE WITH ACTUAL IMPLEMENTATION(input will come from the Socket, not the Keyboard)
-        Gdx.input.setInputProcessor(new TestingInputProcessor(this));
+        Gdx.input.setInputProcessor(new TestingInputProcessor(theCamera));
     }
 
     @Override

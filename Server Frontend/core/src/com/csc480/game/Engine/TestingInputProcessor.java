@@ -1,23 +1,27 @@
 package com.csc480.game.Engine;
 
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
+import com.csc480.game.Engine.Model.Placement;
+import com.csc480.game.GUI.GameScreen;
+import javafx.scene.Camera;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * THIS CLASS IS FOR TESTING PURPOSES ONLY. SHOULD NOT BE USED AT ALL IN THE FINAL BUILD!
  * This class provides a way to take input that comes directly from the tester, not the Server
  */
 public class TestingInputProcessor implements InputProcessor {
-    TestingPOCScreen screenToUpdate;
     private char lastInput = ' ';
     private boolean inClick = false;
+    private OrthographicCamera gameScreen;
 
 
-    TestingInputProcessor(TestingPOCScreen toUpdate){
-        screenToUpdate = toUpdate;
+    public TestingInputProcessor(OrthographicCamera myCam){
+        gameScreen = myCam;
     }
     @Override
     public boolean keyDown(int keycode) {
@@ -39,16 +43,31 @@ public class TestingInputProcessor implements InputProcessor {
     public boolean keyTyped(char character) {
         if(character == '='){
             System.out.println("clearing");
-            screenToUpdate.placements.clear();
+            GameManager.getInstance().placementsUnderConsideration.clear();
         }
         else if(character == '\'') {
             System.out.println("entering");
             Long startTime = System.nanoTime();
-            boolean isValid = screenToUpdate.board.verifyWordPlacement(screenToUpdate.placements);
+            boolean isValid = GameManager.getInstance().theBoard.verifyWordPlacement(GameManager.getInstance().placementsUnderConsideration);
             System.out.println("verification took nanos: "+(System.nanoTime()-startTime));
             if(isValid)
-                screenToUpdate.board.addWord(screenToUpdate.placements);
-                screenToUpdate.placements.clear();
+                GameManager.getInstance().theBoard.addWord(GameManager.getInstance().placementsUnderConsideration);
+            GameManager.getInstance().placementsUnderConsideration.clear();
+        }
+        else if(character == '\\'){
+            System.out.println("Finding all words for queue");
+            Long startTime = System.nanoTime();
+            String hand = "";
+            for(Placement p : GameManager.getInstance().placementsUnderConsideration){
+                hand+= p.letter;
+            }
+            char[] constraints = new char[hand.length()];
+            Arrays.fill(constraints,' ');
+            ArrayList<String> results = WordVerification.getInstance().getWordsFromHand(hand,constraints);
+            System.out.println("finding all possible words took nanos: "+(System.nanoTime()-startTime));
+            for (String s : results)
+                System.out.println(s);
+
         }
         else{
             System.out.println("changing to "+character);
@@ -68,14 +87,14 @@ public class TestingInputProcessor implements InputProcessor {
      */
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        Vector3 test = screenToUpdate.theCamera.unproject(new Vector3(screenX, screenY, 0));
+        Vector3 test = gameScreen.unproject(new Vector3(screenX, screenY, 0));
 
-        //System.out.println("test clicked @: " + (int)test.x + ", " + (int)test.y);
+        System.out.println("test clicked @: " + (int)test.x + ", " + (int)test.y);
 
         if(inClick == false) {
             inClick = true;
             Placement p = new Placement(lastInput,(int)test.x, (int)test.y);
-            screenToUpdate.placements.add(p);
+            GameManager.getInstance().placementsUnderConsideration.add(p);
             System.out.println("Queued "+ lastInput +" at" + (int)test.x + ", " + (int)test.y);
 
         }

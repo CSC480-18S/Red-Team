@@ -24,6 +24,7 @@ public class GameAdapter extends ApplicationAdapter {
 	
 	@Override
 	public void dispose () {
+
 		oswebbleGame.dispose();
 	}
 }

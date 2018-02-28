@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" tiledversion="1.1.1" orientation="orthogonal" renderorder="left-up" width="11" height="11" tilewidth="8" tileheight="8" infinite="0" nextobjectid="1">
+ <tileset firstgid="1" source="POCBoardTileset.tsx"/>
+ <layer name="Tile Layer 1" width="11" height="11">
+  <data encoding="csv">
+3,4,3,4,3,4,3,4,3,4,3,
+4,3,4,3,4,3,4,3,4,3,4,
+3,4,3,4,3,4,3,4,3,4,3,
+4,3,4,3,4,3,4,3,4,3,4,
+3,4,3,4,3,4,3,4,3,4,3,
+4,3,4,3,4,2,4,3,4,3,4,
+3,4,3,4,3,4,3,4,3,4,3,
+4,3,4,3,4,3,4,3,4,3,4,
+3,4,3,4,3,4,3,4,3,4,3,
+4,3,4,3,4,3,4,3,4,3,4,
+3,4,3,4,3,4,3,4,3,4,3
+</data>
+ </layer>
+</map>
