@@ -12,6 +12,7 @@ const indexRoute = require('./routes/index-route')
 const gameRoute = require('./routes/game-route')
 const statsRoute = require('./routes/stats-route')
 const usersRoute = require('./routes/users-route')
+const testRoute = require('./routes/test-route')
 
 /**
  * Imports Override.js
@@ -49,7 +50,7 @@ app.use(function(req, res, next) {
 /**
  * Sets the view engine for the server
  */
-app.set('views', path.join(__dirname, '/views'))
+app.set('views', [path.join(__dirname, './views/'), path.join(__dirname, '../Frontend')])
 app.engine('html', require('ejs').renderFile)
 app.set('view engine', 'html')
 
@@ -70,6 +71,8 @@ app.set('json spaces', 2)
 app.use('/', indexRoute)
 app.use('/api', [statsRoute, usersRoute])
 app.use('/api/game/', gameRoute)
+app.use('/api/test', testRoute)
+app.use('/assets', express.static(path.join(__dirname, '../Frontend/login/assets')))
 
 /**
  * Called when the server is ready and it listens on the specified port
