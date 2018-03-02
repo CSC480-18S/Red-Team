@@ -13,7 +13,6 @@
   "author": "CSC 480-18S",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.18.0",
     "body-parser": "^1.18.2",
     "cookie-parser": "^1.4.3",
     "ejs": "^2.5.7",
