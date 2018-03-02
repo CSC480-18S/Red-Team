@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 
 /**
  * This is a data node to hold information relevant to a certain tile on the board
+ * This may be able to be refactored to remove all getters and setters for prev/next. not sure if theyre needed yet
  */
 public class TileData {
     public final Vector2 my_position;

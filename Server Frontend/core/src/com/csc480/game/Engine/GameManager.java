@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 /**
- * The Class that will hold all
+ * The Class that will hold all the game state and route Events to the GUI, SocketManager, and AI
  */
 public class GameManager {
     private static GameManager instance;

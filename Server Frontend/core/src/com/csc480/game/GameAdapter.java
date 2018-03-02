@@ -1,6 +1,8 @@
 package com.csc480.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.csc480.game.Engine.GameManager;
+import com.csc480.game.GUI.GameScreen;
 
 
 /**
@@ -24,7 +26,7 @@ public class GameAdapter extends ApplicationAdapter {
 	
 	@Override
 	public void dispose () {
-
 		oswebbleGame.dispose();
+		GameManager.getInstance().Dispose();
 	}
 }

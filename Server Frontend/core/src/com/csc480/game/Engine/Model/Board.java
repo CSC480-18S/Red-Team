@@ -6,12 +6,11 @@ import com.csc480.game.Engine.WordVerification;
 import java.util.ArrayList;
 
 /**
- * This is the data structure that holds the board state. It provides functionality for word verification.
+ * This is the data structure that holds the board state.
+ * It provides functionality for word verification based on board state.
  */
 public class Board {
     public TileData[][] the_game_board;
-    public boolean debugging = false;
-
 
     public Board(int size){
        if(size % 2 != 1) System.err.println("Board isnt of n even size: "+size);
@@ -53,7 +52,6 @@ public class Board {
         int minY = myCopyOfPlacements.get(0).yPos;
         int maxX = myCopyOfPlacements.get(0).xPos;
         int maxY = myCopyOfPlacements.get(0).yPos;
-
 
         //Ensure the tiles are not overlapping any existing tiles
         for(Placement p : myCopyOfPlacements){
@@ -142,8 +140,6 @@ public class Board {
             }
             if(!inCenter) return false;
         }
-
-
 
         //Directional Logic assumes that more than one tile is being placed
         if(myCopyOfPlacements.size() > 1) {
