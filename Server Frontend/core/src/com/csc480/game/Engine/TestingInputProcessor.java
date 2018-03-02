@@ -62,8 +62,8 @@ public class TestingInputProcessor implements InputProcessor {
                 hand+= p.letter;
             }
             char[] constraints = new char[hand.length()];
-            Arrays.fill(constraints,' ');
-            ArrayList<String> results = WordVerification.getInstance().getWordsFromHand(hand,constraints);
+            Arrays.fill(constraints,(char)0);
+            ArrayList<String> results = WordVerification.getInstance().getWordsFromHand(hand,constraints, new Placement(' ',5,5), 5);
             System.out.println("finding all possible words took nanos: "+(System.nanoTime()-startTime));
             for (String s : results)
                 System.out.println(s);
