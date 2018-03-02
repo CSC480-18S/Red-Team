@@ -1,6 +1,7 @@
 package com.csc480.game.Engine;
 
 import com.badlogic.gdx.Gdx;
+import com.csc480.game.Engine.Model.Placement;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -44,10 +45,10 @@ public class WordVerification {
 
     }
 
-    public ArrayList<String> getWordsFromHand(String hand, char[] constraints){
+    public ArrayList<String> getWordsFromHand(String hand, char[] constraints, Placement currentTile, int index){
         String handAndReleventBoardTiles = hand;
         for(int i = 0; i < constraints.length; i++)
-            if(constraints[i] != ' ')
+            if(constraints[i] != 0)
                 handAndReleventBoardTiles += constraints[i];
         ArrayList<String> possibleWords = new ArrayList<String>();
         for(String e: validWords){
