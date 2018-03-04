@@ -27,12 +27,12 @@ package com.csc480red.dictionary;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * Repository to manage {@link Word}s.
+ * Repository to manage valid {@link Word}s.
  * 
  * @author Shakhar Dasgupta
  *
  */
-public interface WordRepository extends JpaRepository<Word, Long>{
+public interface WordRepository<T extends Word> extends JpaRepository<T, Long>{
 	
 	/**
 	 * Checks whether a word exists in this repository.
