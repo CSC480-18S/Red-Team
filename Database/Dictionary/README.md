@@ -15,7 +15,7 @@ The application can be run in two ways:
 
 #### Using the Spring Boot Maven Plugin
 ```
-$ spring-boot:run
+$ mvn spring-boot:run
 ```
 
 #### Packaging and then running the executable jar
@@ -25,7 +25,7 @@ $ java -jar target/dictionary-<version>.jar
 ```
 
 ## Using the REST API
-* Check whether a word is in the dictionary: `GET /dictionary/validate?word=<word>`
+* Check whether each word of the word list is valid, bad and special: `GET /dictionary/validate?words=word1,word2,word3,...`
 
 ## Built With
 * [Spring](http://spring.io/)
