@@ -21,7 +21,7 @@ router.get('/players/:player', function(req, res, next) {
   const name = req.params.player
 
   /* Path to access the database */
-  const path = 'http://localhost:8080/players/search/findByUsername?username=' + name
+  const path = 'http://localhost:8082/players/search/findByUsername?username=' + name
 
   returnPlayer(res, path)
 })
