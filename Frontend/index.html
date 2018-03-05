@@ -13,47 +13,9 @@
     <div id="root">
         
         <table>
-            
-            <tr>
-                <td id="square00" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square00')"></td>
-                <td id="square01" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square01')"></td>
-                <td id="square02" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square02')"></td>
-                <td id="square03" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square03')"></td>
-                <td id="square04" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square04')"></td>
+            <tr v-for="row in rows">
+                <td v-for="square in squares" v-if="square.xAxis === row" :id="square.id" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare(square.id)" :class="{'green-square': square.isSquareGreen}"></td>
             </tr>
-            
-            <tr>
-                <td id="square10" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square10')"></td>
-                <td id="square11" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square11')"></td>
-                <td id="square12" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square12')"></td>
-                <td id="square13" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square13')"></td>
-                <td id="square14" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square14')"></td>
-            </tr>
-            
-            <tr>
-                <td id="square20" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square20')"></td>
-                <td id="square21" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square21')"></td>
-                <td id="square22" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square22')"></td>
-                <td id="square23" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square23')"></td>
-                <td id="square24" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square24')"></td>
-            </tr>
-            
-            <tr>
-                <td id="square30" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square30')"></td>
-                <td id="square31" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square31')"></td>
-                <td id="square32" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square32')"></td>
-                <td id="square33" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square33')"></td>
-                <td id="square34" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square34')"></td>
-            </tr>
-            
-            <tr>
-                <td id="square40" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square40')"></td>
-                <td id="square41" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square41')"></td>
-                <td id="square42" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square42')"></td>
-                <td id="square43" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square43')"></td>
-                <td id="square44" @dragover="onDragOver" @drop="onDrop" @click="onClickSquare('square44')"></td>
-            </tr>
-
         </table>
     
         <table class="tileSlots">
@@ -61,28 +23,68 @@
             <tr>
                 
                 <td id="slot0" @dragover="onDragOver" @drop="onDrop">
-                    <img id="tile0" src="resources/images/tile.svg" draggable="true" @dragstart="onDragStart" @click="onClickTile('tile0')">
+                    
+                    <svg id="tile0" draggable="true" @dragstart="onDragStart" @click="onClickTile('tile0')">
+                        <rect x="0" y="0" stroke="black" stroke-width="1px" width="100%" height="100%" fill="#f4dc00"/>
+                        <text x="50%" y="60%" alignment-baseline="middle" text-anchor="middle">O</text> 
+                    </svg>
+                    
                 </td>
                 
                 <td id="slot1" @dragover="onDragOver" @drop="onDrop">
-                    <img id="tile1" src="resources/images/tile.svg" draggable="true" @dragstart="onDragStart" @click="onClickTile('tile1')">
+                    
+                    <svg id="tile1" draggable="true" @dragstart="onDragStart" @click="onClickTile('tile1')">
+                        <rect x="0" y="0" stroke="black" stroke-width="1px" width="100%" height="100%" fill="#f4dc00"/>
+                        <text x="50%" y="60%" alignment-baseline="middle" text-anchor="middle">L</text> 
+                    </svg>
+  
                 </td>
                 
                 <td id="slot2" @dragover="onDragOver" @drop="onDrop">
-                    <img id="tile2" src="resources/images/tile.svg" draggable="true" @dragstart="onDragStart" @click="onClickTile('tile2')">
+                    <svg id="tile2" draggable="true" @dragstart="onDragStart" @click="onClickTile('tile2')">
+                        <rect x="0" y="0" stroke="black" stroke-width="1px" width="100%" height="100%" fill="#f4dc00"/>
+                        <text x="50%" y="60%" alignment-baseline="middle" text-anchor="middle">V</text> 
+                    </svg>
+
                 </td>
                 
                 <td id="slot3" @dragover="onDragOver" @drop="onDrop">
-                    <img id="tile3" src="resources/images/tile.svg" draggable="true" @dragstart="onDragStart" @click="onClickTile('tile3')">
+                    <svg id="tile3" draggable="true" @dragstart="onDragStart" @click="onClickTile('tile3')">
+                        <rect x="0" y="0" stroke="black" stroke-width="1px" width="100%" height="100%" fill="#f4dc00"/>
+                        <text x="50%" y="60%" alignment-baseline="middle" text-anchor="middle">E</text> 
+                    </svg>
+
                 </td>
                 
                 <td id="slot4" @dragover="onDragOver" @drop="onDrop">
-                    <img id="tile4" src="resources/images/tile.svg" draggable="true" @dragstart="onDragStart" @click="onClickTile('tile4')">
+                    <svg id="tile4" draggable="true" @dragstart="onDragStart" @click="onClickTile('tile4')">
+                        <rect x="0" y="0" stroke="black" stroke-width="1px" width="100%" height="100%" fill="#f4dc00"/>
+                        <text x="50%" y="60%" alignment-baseline="middle" text-anchor="middle">G</text> 
+                    </svg>
+
+                </td>
+
+                <td id="slot5" @dragover="onDragOver" @drop="onDrop">
+                    <svg id="tile5" draggable="true" @dragstart="onDragStart" @click="onClickTile('tile5')">
+                        <rect x="0" y="0" stroke="black" stroke-width="1px" width="100%" height="100%" fill="#f4dc00"/>
+                        <text x="50%" y="60%" alignment-baseline="middle" text-anchor="middle">D</text> 
+                    </svg>
+
+                </td>
+
+                <td id="slot6" @dragover="onDragOver" @drop="onDrop">
+                    <svg id="tile6" draggable="true" @dragstart="onDragStart" @click="onClickTile('tile6')">
+                        <rect x="0" y="0" stroke="black" stroke-width="1px" width="100%" height="100%" fill="#f4dc00"/>
+                        <text x="50%" y="60%" alignment-baseline="middle" text-anchor="middle">A</text> 
+                    </svg>
+  
                 </td>
                 
             </tr>
 
         </table>
+        
+       
         
     </div>
     

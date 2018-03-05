@@ -1,4 +1,4 @@
-var app = new Vue({
+new Vue({
     
     el: '#root',
     
