@@ -23,6 +23,16 @@ router.get('/players/:player', function(req, res, next) {
   /* Path to access the database */
   const path = 'http://localhost:8080/players/search/findByUsername?username=' + name
 
+  returnPlayer(res, path)
+})
+
+/**
+ * Sends the player JSON for the given path. If there is
+ * no such player, an empty JSON is sent.
+ * @param {*} res response to the GUI
+ * @param {String} path path for the database endpoint
+ */
+function returnPlayer(res, path) {
   /* Request player from database */
   axios.get(path).then((response) => {
     /* get returned player array */
@@ -38,7 +48,7 @@ router.get('/players/:player', function(req, res, next) {
   }).catch(error => {
     console.log('Error: ' + error)
   })
-})
+}
 
 /**
  * Exports this file so it can be used by other files.  Keep this at the bottom.
