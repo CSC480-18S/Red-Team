@@ -24,6 +24,9 @@
 
 package com.csc480red.dictionary;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +44,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class DictionaryRestController {
 	
 	@Autowired
-	WordRepository repository;
+	ValidWordRepository validWordsRepository;
+	
+	@Autowired
+	BadWordRepository badWordsRepository;
+	
+	@Autowired
+	SpecialWordRepository specialWordsRepository;
 	
 	/**
 	 * An endpoint to check if a word is in the dictionary.
@@ -50,7 +59,10 @@ public class DictionaryRestController {
 	 * @return whether the word exists in the dictionary
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = "validate")
-	public boolean isValid(@Param("word") String word) {
-		return repository.existsByWordIgnoreCase(word);
+	public List<ValidateResult> validate(@Param("words") String[] words) {
+		List<ValidateResult> results = new ArrayList<>();
+		for(String word : words)
+			results.add(new ValidateResult(word, validWordsRepository.existsByWordIgnoreCase(word), badWordsRepository.existsByWordIgnoreCase(word), specialWordsRepository.existsByWordIgnoreCase(word)));
+		return results;
 	}
 }
