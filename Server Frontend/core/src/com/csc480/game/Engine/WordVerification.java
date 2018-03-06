@@ -47,6 +47,8 @@ public class WordVerification {
 
     public ArrayList<String> getWordsFromHand(String hand, char[] constraints, Placement currentTile, int index){
         String handAndReleventBoardTiles = hand;
+        //generate the regex template for the current tile.
+        String regex = genRegex(constraints, index);
         for(int i = 0; i < constraints.length; i++)
             if(constraints[i] != 0)
                 handAndReleventBoardTiles += constraints[i];
@@ -60,12 +62,13 @@ public class WordVerification {
                         temp.replace(e.charAt(i),'_');
                     }else {
                         isGoodFlag = false;
+                        break;
                     }
                 }
                 if(isGoodFlag){
-                    //MORE CHECKS NEED TO BE DONE HERE
-                    //VERIFY CAN FIT IN LINE WITH THE CONSTRAINTS
-                    possibleWords.add(e);
+                    if(e.matches(regex)) {
+                        possibleWords.add(e);
+                    }
                 }
             }
         }
@@ -87,16 +90,41 @@ public class WordVerification {
     }
 
     /**
-     * This function will generate all permutations of a hand, based on
-     *      the constraints of size and existing tiles
-     * @param hand the chars in the AI's hand
-     * @param constraints the spots that the AI could play letters,
-     *                    with existing letters inserted into correct positions
-     * @return an arraylist of all permutations
+     * @param constraints array of the current tiles in the line of the start index
+     * @param startIndex current tile that verification is being check for
+     * @return regex template for the given start index
      */
-    public ArrayList<String> generatePermutations(char[] hand, char[] constraints){
-        ArrayList<String> toRet = new ArrayList<String>();
-
-        return toRet;
+    public String genRegex(char constraints[], int startIndex){
+        int emptySpace = 0;
+        String regex = "";
+        for(char temp: constraints){
+            //if the char value is \0 there is a blank space there
+            if(temp == '\0'){
+                emptySpace++;
+            }
+            else{
+                //if the constraint index is the start index, the char there is a mandatory char for the played word
+                if(temp == constraints[startIndex]){
+                    //any character 0 to emptySpace times, followed by the startIndex character
+                    regex += ".{0," + emptySpace + "}" + temp;
+                }
+                else {
+                    //if there is one empty space after a static character, optional statements come into play
+                    if(emptySpace == 1){
+                        //word either ends after the static character, or has a single any char followed by the static char following it
+                        regex += "($|." + temp + ")";
+                    }
+                    else {
+                        //any char 0 to emptySpace -1 then end, OR the current num of empty spaces followed by the static char
+                        regex += "(.{0," + (emptySpace-1) + "}$|{"+emptySpace+"}"+temp + ")";
+                    }
+                }
+                //reset the empty space could after it is used.
+                emptySpace = 0;
+            }
+        }
+        //constraint for the last tile to the edge of the board
+        regex += ".{0," + emptySpace + "}";
+        return regex;
     }
 }
