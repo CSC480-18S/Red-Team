@@ -47,6 +47,8 @@ public class WordVerification {
 
     public ArrayList<String> getWordsFromHand(String hand, char[] constraints, Placement currentTile, int index){
         String handAndReleventBoardTiles = hand;
+        //generate the regex template for the current tile.
+        String regex = genRegex(constraints, index);
         for(int i = 0; i < constraints.length; i++)
             if(constraints[i] != 0)
                 handAndReleventBoardTiles += constraints[i];
@@ -63,9 +65,9 @@ public class WordVerification {
                     }
                 }
                 if(isGoodFlag){
-                    //MORE CHECKS NEED TO BE DONE HERE
-                    //VERIFY CAN FIT IN LINE WITH THE CONSTRAINTS
-                    possibleWords.add(e);
+                    if(e.matches(regex)) {
+                        possibleWords.add(e);
+                    }
                 }
             }
         }
@@ -98,5 +100,32 @@ public class WordVerification {
         ArrayList<String> toRet = new ArrayList<String>();
 
         return toRet;
+    }
+
+    public String genRegex(char constraints[], int startIndex){
+        int emptySpace = 0;
+        String regex = "";
+        for(char temp: constraints){
+            if(temp == '\0'){
+                emptySpace++;
+            }
+            else{
+                if(temp == constraints[startIndex]){
+                    regex += ".{0," + emptySpace + "}" + temp;
+                }
+                else {
+                    if(emptySpace == 1){
+                        regex += "($|." + temp + ")";
+                    }
+                    else {
+                        //regex += ".{0," + emptySpace + "}" + temp;
+                        regex += "(.{0," + (emptySpace-1) + "}$|{"+emptySpace+"}"+temp + ")";
+                    }
+                }
+                emptySpace = 0;
+            }
+        }
+        regex += ".{0," + emptySpace + "}";
+        return regex;
     }
 }
