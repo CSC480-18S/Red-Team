@@ -59,7 +59,7 @@ public class WordVerification {
             if(e.length() <= constraints.length){
                 for(int i = 0; i < e.length(); i++){
                     if(temp.contains(e.charAt(i)+"")){
-                        temp.replace(e.charAt(i),'_');
+                        temp = temp.replace(e.charAt(i),'_');
                     }else {
                         isGoodFlag = false;
                         break;

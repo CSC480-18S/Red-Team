@@ -30,12 +30,12 @@ public class HandActor extends Group {
 //THIS IS JUST FOR TESTING ONLY REMOVE///////////////////////////////////////////////////
         TileActor t1,t2,t3,t4,t5,t6,t7;
         this.addTile(t1 = new TileActor('a'));
-        this.addTile(t2 = new TileActor('a'));
-        this.addTile(t3 = new TileActor('a'));
-        this.addTile(t4 = new TileActor('a'));
-        this.addTile(t5 = new TileActor('a'));
-        this.addTile(t6 = new TileActor('a'));
-        this.addTile(t7 = new TileActor('a'));
+        this.addTile(t2 = new TileActor('b'));
+        this.addTile(t3 = new TileActor('c'));
+        this.addTile(t4 = new TileActor('d'));
+        this.addTile(t5 = new TileActor('e'));
+        this.addTile(t6 = new TileActor('f'));
+        this.addTile(t7 = new TileActor('g'));
         this.removeTile(t2);
         this.removeTile(t4);
         this.removeTile(t5);

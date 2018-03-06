@@ -44,6 +44,7 @@ public class GameManager {
 
 
     public void wordHasBeenPlayed(){
+        
 
     }
     public void playerHasJoined(Player p){
@@ -56,7 +57,10 @@ public class GameManager {
     public void currentAIMakePlay(){
         Player current = thePlayers.get(currentPlayerIndex);
         if(current.isAI){
-            //if(current.)
+            ((AI)current).FindPlays(theBoard);
+            AI.PlayIdea p = ((AI)current).PlayBestWord();
+            //send to
+
         }
 
     }
