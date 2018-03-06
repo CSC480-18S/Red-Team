@@ -36,7 +36,7 @@ public class TileActor extends Image {
      * @param letter the name, and tile of the actor
      */
     public TileActor(char letter){
-        super(TiledUtils.getAllTiles().getCell(0,0).getTile().getTextureRegion());
+        super(TiledUtils.getAllTiles().getCell(TiledUtils.LetterToID(letter),0).getTile().getTextureRegion());
         this.setName(letter+"");
         this.setScale(GameScreen.GUI_UNIT_SIZE/GameScreen.TILE_PIXEL_SIZE);
 
