@@ -45,7 +45,7 @@ public class WordVerification {
 
     }
 
-    public ArrayList<String> getWordsFromHand(String hand, char[] constraints, Placement currentTile, int index){
+    public ArrayList<String> getWordsFromHand(String hand, char[] constraints, int index){
         String handAndReleventBoardTiles = hand;
         //generate the regex template for the current tile.
         String regex = genRegex(constraints, index);
