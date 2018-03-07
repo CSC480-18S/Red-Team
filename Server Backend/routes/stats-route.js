@@ -3,111 +3,52 @@
  */
 const express = require('express')
 const router = express.Router()
+const axios = require('axios')
+// const VerifyToken = require('../helpers/VerifyTokens')
 
 /**
- * This endpoint gets the highest valued word played by the repsective team.
+ * This endpoint gets all the stats for the given team.
  */
-router.get('/team/topValueWord', function(req, res, next) {
+router.get('/teams/:team', function(req, res, next) {
 
 })
 
 /**
- * This endpoint gets the score value of the highest valued word played by the respective team.
+ * This endpoint gets all the stats for the given player.
  */
-router.get('/team/highestValue', function(req, res, next) {
+router.get('/players/:player', function(req, res, next) {
+  /* Requested player's name */
+  const name = req.params.player
 
+  /* Path to access the database */
+  const path = 'http://localhost:8082/players/search/findByUsername?username=' + name
+
+  returnPlayer(res, path)
 })
 
 /**
- * This endpoint gets the longest word played by the respective team.
+ * Sends the player JSON for the given path. If there is
+ * no such player, an empty JSON is sent.
+ * @param {*} res response to the GUI
+ * @param {String} path path for the database endpoint
  */
-router.get('/team/longestWord', function(req, res, next) {
+function returnPlayer(res, path) {
+  /* Request player from database */
+  axios.get(path).then((response) => {
+    /* get returned player array */
+    const players = response.data._embedded.players
 
-})
-
-/**
- * This endpoint gets the highest single game score for the respective team.
- */
-router.get('/team/highestSingleGameScore', function(req, res, next) {
-
-})
-
-/**
- * This endpoint returns the most frequently played word by the respective team.
- */
-router.get('/team/freqPlayedWord', function(req, res, next) {
-
-})
-
-/**
- * This endpoint gets the number of bonuses cumulatively played by the respective team.
- */
-router.get('/team/amountBonusesUsed', function(req, res, next) {
-
-})
-
-/**
- * This endpoint gets the cumulative game score for the respective team.
- */
-router.get('/team/cumulativeScore', function(req, res, next) {
-
-})
-
-/**
- * This endpoint gets the total number of wins for the respective team.
- */
-router.get('/team/winCount', function(req, res, next) {
-
-})
-
-/**
- * This endpoint gets the highest valued word played by the respective player.
- */
-router.get('/player/topValueWord', function(req, res, next) {
-
-})
-
-/**
- * This endpoint gets the score value of the highest valued word played by the respective player.
- */
-router.get('/player/highestValue', function(req, res, next) {
-
-})
-
-/**
- * This endpoint gets the longest word played by the respective player.
- */
-router.get('/player/longestWord', function(req, res, next) {
-
-})
-
-/**
- * This endpoint gets the highest single game score for the respective player.
- */
-router.get('/player/highestSingleGameScore', function(req, res, next) {
-
-})
-
-/**
- * This endpoint returns the most frequently played word by the respective player.
- */
-router.get('/player/freqPlayedWord', function(req, res, next) {
-
-})
-
-/**
- * This endpoint gets the number of bonuses cumulatively played by the respective player.
- */
-router.get('/player/amountBonusesUsed', function(req, res, next) {
-
-})
-
-/**
- * This endpoint gets the cumulative score for the respective player.
- */
-router.get('/player/totalScore', function(req, res, next) {
-
-})
+    /* if the array is empty (if there is no such player) send empty JSON
+       else return the player */
+    if (players.length === 0) {
+      res.json('{}')
+    } else {
+      res.send(players[0])
+    }
+  }).catch(error => {
+    console.log('Error: ' + error)
+  })
+}
 
 /**
  * Exports this file so it can be used by other files.  Keep this at the bottom.

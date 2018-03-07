@@ -45,8 +45,14 @@ import org.springframework.core.io.Resource;
 @SpringBootApplication
 public class DictionaryApplication {
 	
-	@Value("classpath:words.txt")
-	private Resource wordsFile;
+	@Value("classpath:validwords.txt")
+	private Resource validWordsFile;
+	
+	@Value("classpath:badwords.txt")
+	private Resource badWordsFile;
+	
+	@Value("classpath:specialwords.txt")
+	private Resource specialWordsFile;
 
 	/**
 	 * Launches the Spring Boot Application.
@@ -64,10 +70,14 @@ public class DictionaryApplication {
 	 * @return bean with callback to populate the repository
 	 */
 	@Bean
-	public CommandLineRunner populate(WordRepository repository) {
+	public CommandLineRunner populate(ValidWordRepository validWordsRepository, BadWordRepository badWordsRepository, SpecialWordRepository specialWordsRepository) {
 		return (args) -> {
-			try(Stream<String> stream = new BufferedReader(new InputStreamReader(wordsFile.getInputStream())).lines()) {
-				stream.forEach((line) -> repository.save(new Word(line)));
+			try(Stream<String> validStream = new BufferedReader(new InputStreamReader(validWordsFile.getInputStream())).lines();
+					Stream<String> badStream = new BufferedReader(new InputStreamReader(badWordsFile.getInputStream())).lines();
+					Stream<String> specialStream = new BufferedReader(new InputStreamReader(specialWordsFile.getInputStream())).lines()) {
+				validStream.forEach((line) -> validWordsRepository.save(new ValidWord(line)));
+				badStream.forEach((line) -> badWordsRepository.save(new BadWord(line)));
+				specialStream.forEach((line) -> specialWordsRepository.save(new SpecialWord(line)));
 			} catch(IOException ex) {
 				ex.printStackTrace();
 			}

@@ -21,10 +21,7 @@ function json(res) {
     overallResponse['metadata'] = metaData
 
     let error = {
-      status: res.statusCode,
-      code: '',
-      title: '',
-      description: ''
+      status: res.statusCode
     }
 
     switch (res.statusCode) {
@@ -32,14 +29,11 @@ function json(res) {
         overallResponse['data'] = data
         break
       case 400:
-        error['code'] = 'To be added Later'
-        error['message'] = 'Bad Request'
-
-        overallResponse['error'] = error
-        break
       case 500:
-        error['code'] = 'To be added Later'
-        error['message'] = 'Internal Server Error'
+        error['message'] = 'Bad Request'
+        error['code'] = data.code
+        error['title'] = data.title
+        error['description'] = data.desc
 
         overallResponse['error'] = error
         break

@@ -3,15 +3,26 @@
  */
 const express = require('express')
 const router = express.Router()
-const GB = require('../helpers/Gameboard')
+const GB = require('../entities/Gameboard')
+const VerifyToken = require('../helpers/VerifyTokens')
 
-const g = new GB(15)
+let g = new GB()
 g.init()
-g.placeWord({ x: 2, y: 2 }, { x: 7, y: 2 }, 'oswego')
-g.placeWord({ x: 7, y: 1 }, { x: 7, y: 4 }, 'doge')
 
-router.get('/gameBoard', function(req, res, next) {
+/**
+ * Returns the game board to the user
+ */
+router.get('/gameBoard', VerifyToken, function(req, res, next) {
   res.render('gameboard', {board: g._board})
+})
+
+/**
+ * This route will be changed, no documentation as of now
+ */
+router.post('/playWord', VerifyToken, function(req, res, next) {
+  const r = req.body
+
+  g.consumeInput(r.x, r.y, r.h, r.word, res)
 })
 
 /**
