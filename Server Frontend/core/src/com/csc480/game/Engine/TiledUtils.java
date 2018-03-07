@@ -52,4 +52,6 @@ public class TiledUtils {
     public static int LetterToID(char l){
         return l-97;
     }
+
+    public  static char IDToLetter(char l){return (char) (l+97);}
 }

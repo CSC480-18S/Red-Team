@@ -1,6 +1,8 @@
 package com.csc480.game.Engine.Model;
 
 import com.badlogic.gdx.math.Vector2;
+import com.csc480.game.Engine.GameManager;
+import com.csc480.game.Engine.WordVerification;
 
 import java.util.ArrayList;
 
@@ -42,8 +44,33 @@ public class AI extends Player {
 
         //AI ALGORITHM HERE
 
+        char ham = GameManager.getInstance().theBoard.the_game_board[0][0].letter;
+
+        int x,y = 0;
+
+        if (GameManager.getInstance().thePlayers.get(0).isAI){
+
+
+
+
+
+
+
+
+        } else if (GameManager.getInstance().thePlayers.contains(AI.this)){
+
+
+
+        } else {
+            System.out.println("this is from ai algorithm class's else, there is no AI in thePlayers"
+                    + GameManager.getInstance().thePlayers);
+        }
+
 
     }
+
+
+
 
     private class PriorityQueue{
         public int count;
