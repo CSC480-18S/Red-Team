@@ -1,3 +1,6 @@
+var row = 11;
+var column = 11;
+
 var oswebbleData = {
     selectedTileId: '',
     selectedTileParentId: '',
@@ -8,7 +11,6 @@ var oswebbleData = {
 }
 
 function generateTableRows () {
-    var row = 11;
     var tableRows = [];
     for (var i = 0; i < row; i++) {
         tableRows.push(i);
@@ -17,8 +19,6 @@ function generateTableRows () {
 }
 
 function generateSquares () {
-    var row = 11;
-    var column = 11;
     var squares = [];
     for (var i = 0; i < row; i++) {
         for (var j = 0; j < column; j++) {
