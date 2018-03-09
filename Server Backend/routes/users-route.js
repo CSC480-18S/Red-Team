@@ -9,6 +9,7 @@ const Axios = require('axios')
 const config = require('../config')
 const VerifyToken = require('../helpers/VerifyTokens')
 const cookieParser = require('cookie-parser')
+const {URL} = require('url')
 
 router.use(cookieParser())
 
@@ -134,11 +135,6 @@ function handleErrors(username) {
  */
 router.put('/updateScore', VerifyToken, function(req, res, next) {
   /**
-     * The word score to be updated, How????
-     */
-  const wscore = req.body.user
-
-  /**
      * The player score to be updated
      */
   const pscore = req.body.user
@@ -181,22 +177,51 @@ router.get('/currentTeam', VerifyToken, function(req, res, next) {
   /**
      * Looks up the user on the database
      */
-  axios.get('players/search/findByUsername?username=' + req.query.username, {
-  })
-    .then(function(response) {
-      if (response.data._embedded.players[0]._links.team.href) {
-        res.json(response.data._embedded.players[0]._links.team.href)
-      } else {
-        throw error
-      }
+  // axios.get('players/search/findByUsername?username=' + req.query.username, {
+  // })
+  //   .then(function(response) {
+  //     if (response.data._embedded.players[0]._links.team.href) {
+  //       res.json(response.data._embedded.players[0]._links.team.href)
+  //     } else {
+  //       throw error
+  //     }
+  //   })
+  //   .catch(function(e) {
+  //     res.status(400).json({code: 'U4', title: 'Server error', desc: 'Something went wrong'})
+  //   })
+
+  getTeamLink(req.query.username, res).then(response => {
+    const teamUrl = new URL(response)
+    const path = teamUrl.pathname.substr(1)
+    axios.get(path, {
     })
+      .then(function(response) {
+        res.json(response.data)
+      })
+      .catch(function(e) {
+        res.status(400).json({code: 'U4', title: 'Server error', desc: 'Something went wrong'})
+      })
+  })
     .catch(function(e) {
       res.status(400).json({code: 'U4', title: 'Server error', desc: 'Something went wrong'})
     })
-  /**
-     * TODO returns a String for the user's team
-     */
 })
+
+/**
+ * Helper function for checking
+ * whether a username is already
+ * taken in the DB
+ */
+function getTeamLink(username, res) {
+  return axios.get('players/search/findByUsername?username=' + username, {
+  })
+    .then(function(response) {
+      return response.data._embedded.players[0]._links.team.href
+    })
+    .catch(function(e) {
+      res.status(400).json({code: 'U3', title: 'User error', desc: 'User was not found'})
+    })
+}
 
 /**
  * Route that adds the user to the current game

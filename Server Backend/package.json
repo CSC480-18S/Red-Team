@@ -34,7 +34,8 @@
     "jasmine-console-reporter": "^2.0.1",
     "nodemon": "^1.14.12",
     "nyc": "^11.4.1",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "url": "^0.11.0"
   },
   "nyc": {
     "exclude": [
