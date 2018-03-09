@@ -133,20 +133,49 @@ function handleErrors(username) {
 /**
  * Route that updates a user's score
  */
-router.put('/updateScore', VerifyToken, function(req, res, next) {
+router.patch('/updateScore', VerifyToken, function(req, res, next) {
   /**
      * The player score to be updated
      */
-  const pscore = req.body.user
+  const user = req.body.username
+  const totalScore = req.body.totalScore
 
   /**
-     * TODO update scores on the database
+     * Update score on the database
      */
-
-  /**
-     * TODO Returns a success/fail boolean
-     */
+  getUserURL(user, res).then(response => {
+    const userUrl = new URL(response)
+    const path = userUrl.pathname.substr(1)
+    axios.patch(path, {
+      totalScore: totalScore
+    })
+      .then(function(response) {
+        res.status(200).json({code: 'U2', title: 'Score updated', desc: 'Total score updated'})
+      })
+      .catch(function(e) {
+        res.status(400).json({code: 'U4', title: 'Server error', desc: 'Something went wrong'})
+      })
+  })
+    .catch(function(e) {
+      res.status(300).json({code: 'U3', title: 'User error', desc: 'User was not found'})
+    })
 })
+
+/**
+ * Helper function for getting
+ * a user's URL in order to
+ * update their total score
+ */
+function getUserURL(user, res) {
+  return axios.get('players/search/findByUsername?username=' + user, {
+  })
+    .then(function(response) {
+      return response.data._embedded.players[0]._links.self.href
+    })
+    .catch(function(e) {
+      throw e
+    })
+}
 
 /**
  * Route that gets a user's data
@@ -162,7 +191,7 @@ router.get('/getUser', VerifyToken, function(req, res, next) {
         console.log('You have been logged in')
         res.json(response.data._embedded.players[0])
       } else {
-        throw error
+        res.status(400).json({code: 'U3', title: 'User error', desc: 'User was not found'})
       }
     })
     .catch(function(e) {
@@ -175,27 +204,15 @@ router.get('/getUser', VerifyToken, function(req, res, next) {
  */
 router.get('/currentTeam', VerifyToken, function(req, res, next) {
   /**
-     * Looks up the user on the database
+     * Looks up the user's team
      */
-  // axios.get('players/search/findByUsername?username=' + req.query.username, {
-  // })
-  //   .then(function(response) {
-  //     if (response.data._embedded.players[0]._links.team.href) {
-  //       res.json(response.data._embedded.players[0]._links.team.href)
-  //     } else {
-  //       throw error
-  //     }
-  //   })
-  //   .catch(function(e) {
-  //     res.status(400).json({code: 'U4', title: 'Server error', desc: 'Something went wrong'})
-  //   })
-
   getTeamLink(req.query.username, res).then(response => {
     const teamUrl = new URL(response)
     const path = teamUrl.pathname.substr(1)
     axios.get(path, {
     })
       .then(function(response) {
+        // Returns a JSON containing team information
         res.json(response.data)
       })
       .catch(function(e) {
@@ -208,9 +225,8 @@ router.get('/currentTeam', VerifyToken, function(req, res, next) {
 })
 
 /**
- * Helper function for checking
- * whether a username is already
- * taken in the DB
+ * Helper function for getting the
+ * team URL to be called
  */
 function getTeamLink(username, res) {
   return axios.get('players/search/findByUsername?username=' + username, {
@@ -219,23 +235,9 @@ function getTeamLink(username, res) {
       return response.data._embedded.players[0]._links.team.href
     })
     .catch(function(e) {
-      res.status(400).json({code: 'U3', title: 'User error', desc: 'User was not found'})
+      throw e
     })
 }
-
-/**
- * Route that adds the user to the current game
- */
-router.put('/addUser', VerifyToken, function(req, res, next) {
-
-  /**
-     * TODO update the databse to reflect the user that joined
-     */
-
-  /**
-     * TODO Returns a success/fail boolean
-     */
-})
 
 /**
  * Route that returns all of the users
