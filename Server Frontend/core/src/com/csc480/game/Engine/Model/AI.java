@@ -21,10 +21,10 @@ public class AI extends Player {
      * CAUTION: IF A WORD ACTUALLY GETS PLAYED YOU MUST INVALIDATE THE CASHE!
      * @return the best play the AI can think of
      */
-    public PlayIdea PlayBestWord(){
+    public ArrayList<Placement> PlayBestWord(){
         if(myCashe.size ==0)
             return null;
-        PlayIdea best = myCashe.Pull();
+        ArrayList<Placement> best = myCashe.Pull();
         //myCashe.Clear();
         return best;
     }
@@ -32,6 +32,110 @@ public class AI extends Player {
         myCashe.Clear();
     }
 
+
+
+
+
+
+
+
+    public void TESTFindPlays(Board boardState){
+        //Invalidate the cashe
+        myCashe.Clear();
+
+        //AI ALGORITHM HERE
+        boolean hasFoundASinglePlayableTile = false;
+        for(int i = 0; i < boardState.the_game_board.length; i ++){
+            for(int j = 0; j < boardState.the_game_board[0].length; j++){
+                if(boardState.the_game_board[i][j] != null){
+                    System.out.println("Thinking at "+i+", "+j);
+                    hasFoundASinglePlayableTile = true;
+                    //parse horiz
+                    char[] horConstr = new char[11];
+                    for(int h = 0; h < boardState.the_game_board.length; h++){
+                        if(boardState.the_game_board[h][j] != null)
+                            horConstr[h] = boardState.the_game_board[h][j].letter;
+                    }
+                    //get all possible plays with current hand and boardstate
+                    //System.out.println("getting all possible plays horrizontally");
+                    ArrayList<ArrayList<Placement>> possiblePlays = WordVerification.getInstance()
+                            .TESTgetWordsFromHand(new String(hand), horConstr, i, boardState.the_game_board[i][j], true);
+
+                    //print out all sets of plays
+                    //System.out.println("All possible plays");
+                    for(int q = 0; q < possiblePlays.size(); q++){
+                        for (int a = 0; a  < possiblePlays.get(q).size(); a++){
+                            //System.out.print("("+possiblePlays.get(q).get(a).letter+", "+possiblePlays.get(q).get(a).xPos+", "+possiblePlays.get(q).get(a).yPos+"),");
+                        }
+                        System.out.println();
+
+                    }
+                    //verify they dont fuck with tiles around where theyd be played
+                    for(int p = 0; p < possiblePlays.size(); p++){
+                        if( boardState.verifyWordPlacement(possiblePlays.get(p))){
+                            //update that shit
+                            //System.out.println("adding to under consideration`");
+                            for(int numP = 0; numP < possiblePlays.get(p).size(); numP++){
+                                //System.out.println(possiblePlays.get(p).get(numP).letter + ": at ("+possiblePlays.get(p).get(numP).xPos+", "+possiblePlays.get(p).get(numP).yPos+")");
+                            }
+                            myCashe.Push(possiblePlays.get(p));
+                            GameManager.getInstance().placementsUnderConsideration = possiblePlays.get(p);
+//NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        }
+                    }
+                    //parse vert
+                    char[] vertConstr = new char[11];
+                    //for(int v = boardState.the_game_board.length-1; v >= 0; v--){
+                    for(int v = boardState.the_game_board.length-1; v >= 0; v--){
+                        if(boardState.the_game_board[i][v] != null)
+                            vertConstr[10-v] = boardState.the_game_board[i][v].letter;
+                    }
+                    //get all possible plays with current hand and boardstate
+                    System.out.println("getting all possible plays vertically!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    ArrayList<ArrayList<Placement>> possiblePlaysVert = WordVerification.getInstance()
+                            .TESTgetWordsFromHand(new String(hand), vertConstr, j, boardState.the_game_board[i][j], false);
+
+                    //print out all sets of plays
+                    System.out.println("All possible plays");
+                    for(int q = 0; q < possiblePlays.size(); q++){
+                        for (int a = 0; a  < possiblePlays.get(q).size(); a++){
+                            System.out.print("("+possiblePlays.get(q).get(a).letter+", "+possiblePlays.get(q).get(a).xPos+", "+possiblePlays.get(q).get(a).yPos+"),");
+                        }
+                        System.out.println();
+
+                    }
+
+                    //verify they dont fuck with tiles around where theyd be played
+                    for(int p = 0; p < possiblePlaysVert.size(); p++){
+                        if( boardState.verifyWordPlacement(possiblePlaysVert.get(p))){
+                            //update that shit
+                            System.out.println("adding to under consideration`");
+                            for(int numP = 0; numP < possiblePlaysVert.get(p).size(); numP++){
+                                System.out.println(possiblePlaysVert.get(p).get(numP).letter + ": at ("+possiblePlaysVert.get(p).get(numP).xPos+", "+possiblePlaysVert.get(p).get(numP).yPos+")");
+                            }
+                            myCashe.Push(possiblePlaysVert.get(p));
+                            GameManager.getInstance().placementsUnderConsideration = possiblePlaysVert.get(p);
+//NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        }
+                    }
+                }
+            }
+        }
+        if(!hasFoundASinglePlayableTile){
+            System.out.println("ITS THE FIRST MOVE OF THE BOARD OH BOY");
+            TileData centerTile =  new TileData(new Vector2(5,5), '\0',0);
+            ArrayList<ArrayList<Placement>> possiblePlaysCent = WordVerification.getInstance().TESTgetWordsFromHand(new String(hand), new char[11], 5, centerTile, true);
+            if(!possiblePlaysCent.isEmpty()) {
+                myCashe.Push(possiblePlaysCent.get(0));
+                GameManager.getInstance().placementsUnderConsideration = possiblePlaysCent.get(0);
+//NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
+            } else{
+//SKIP MY TURN AND REDRAW//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                System.err.println("should skip anf get new hand");
+            }
+        }
+
+    }
 
     /**
      * This will generate all valid moves the AI could play, and add them to the cashe.
@@ -72,13 +176,14 @@ public class AI extends Player {
 
 
 
+
     private class PriorityQueue{
         public int count;
         public int size;
-        private ArrayList<PlayIdea> queue;
+        private ArrayList<ArrayList<Placement>> queue;
 
         public PriorityQueue(int cap) {
-            queue = new ArrayList<PlayIdea>();
+            queue = new ArrayList<ArrayList<Placement>>();
             count = 0;
             size = cap;
         }
@@ -90,13 +195,13 @@ public class AI extends Player {
          * Adds e to the queue in it's appropriate location
          * @param e
          */
-        public void Push(PlayIdea e){
+        public void Push(ArrayList<Placement> e){
             if(count == size){
                 queue.remove(size-1);
                 count--;
             }
             int index = 0;
-            while(index < count && e.proirity < queue.get(index).proirity){
+            while(index < count && e.size() < queue.get(index).size()){
                 index++;
             };
             queue.add(index, e);
@@ -107,7 +212,7 @@ public class AI extends Player {
          * Returns the item with the highest priority
          * @return
          */
-        public PlayIdea Pull(){
+        public ArrayList<Placement> Pull(){
             if(count <= 0)
                 return null;
             count--;
@@ -115,7 +220,7 @@ public class AI extends Player {
 
         }
 
-        public void ReConsider(PlayIdea e){
+        public void ReConsider(ArrayList<Placement> e){
             queue.remove(e);
             queue.add(e);
         }
@@ -129,11 +234,10 @@ public class AI extends Player {
          * Overwrites the current queue and makes the list e into the used queue
          * @param e
          */
-        public void Load(ArrayList<PlayIdea> e){
+        public void Load(ArrayList<ArrayList<Placement>> e){
             queue = e;
         }
     }
-
     /**
      * Play idea is literally just to transmute the way we work with word placement to
      *  the way the backend works with placement

@@ -38,8 +38,14 @@ public class Board {
      * @return true iff the move is valid
      */
     public boolean verifyWordPlacement(ArrayList<Placement> placements){
+        if(placements.isEmpty()){System.out.println("cant verify an empty placements");return false;}
         System.out.println("verifying word placement.");
-        if(placements.isEmpty()) return false;
+        for(int i = 0; i < placements.size(); i++){
+            System.out.println("testing "+placements.get(i).letter + ": at ("+placements.get(i).xPos+", "+placements.get(i).yPos+")");
+
+        }
+        System.out.println();
+
         //assume it is both
         boolean isHorrizontal = true;
         boolean isVertical = true;
@@ -54,8 +60,14 @@ public class Board {
         int maxY = myCopyOfPlacements.get(0).yPos;
 
         //Ensure the tiles are not overlapping any existing tiles
+
         for(Placement p : myCopyOfPlacements){
-            if(the_game_board[p.xPos][p.yPos] != null) return false;
+            if(the_game_board[p.xPos][p.yPos] != null) {
+                //if(the_game_board[p.xPos][p.yPos].letter != p.letter)
+                System.err.println("Tried to play \""+p.letter+"\" at not null tile ("
+                        +p.xPos+", "+p.yPos+") where \""+the_game_board[p.xPos][p.yPos].letter+"\" already is");
+                return false;
+            }
         }
         //create a test gameboard to see if everything works out
         for(int i = 0; i < the_game_board.length; i++){
@@ -138,7 +150,7 @@ public class Board {
             for(Placement p: placements){
                 if(p.xPos == test_game_board.length/2 && p.yPos == test_game_board[0].length/2) inCenter = true;
             }
-            if(!inCenter) return false;
+            if(!inCenter){ System.out.println("not in center nor connected to a word");return false;}
         }
 
         //Directional Logic assumes that more than one tile is being placed
@@ -158,7 +170,7 @@ public class Board {
                 if(p.yPos < minY) minY = p.yPos;
             }
             //Then if both flags are true or both flags are false the letters are diagonal
-            if(isHorrizontal == isVertical) return false;
+            if(isHorrizontal == isVertical){System.out.println("letters are diagonal"); return false;}
 
             //we now know the direction the user intends to play the tiles
             //we now know the min and max positions of the tiles being placed
@@ -170,7 +182,7 @@ public class Board {
                 System.out.println("Status: minX="+minX+" maxX="+maxX+" y="+minY);
                 //Ensure rhe word is not null from min to max
                 for(int i = minX; i <= maxX; i++){
-                    if(test_game_board[i][minY] == null) return false;
+                    if(test_game_board[i][minY] == null){System.out.println("there is a null space in the middle of word"); return false;}
                 }
 
                 if(isHorizontalValid(minX,maxX,minY,myCopyOfPlacements,test_game_board)){
@@ -191,7 +203,7 @@ public class Board {
                                     return false;
                                 }
                             }
-                        //min case
+                            //min case
                         }else if(p.yPos == 0){
                             System.out.println("only check above");
                             if(test_game_board[p.xPos][p.yPos +1] != null){
@@ -201,7 +213,7 @@ public class Board {
                                     return false;
                                 }
                             }
-                        //middle case
+                            //middle case
                         }else{
                             System.out.println("we should only check if above is not null or below is not null");
                             if(test_game_board[p.xPos][p.yPos -1] != null || test_game_board[p.xPos][p.yPos +1] != null){
@@ -214,7 +226,7 @@ public class Board {
                         }
                     }
                 } else {
-                    System.out.println("it is not a valid horizontal word");
+                    System.out.println("it is not a valid horizontally");
                     return false;
                 }
             }
@@ -224,7 +236,7 @@ public class Board {
                 System.out.println("Status: minX="+minX+" maxX="+maxX+" y="+minY);
                 //Ensure rhe word is not null from min to max
                 for(int i = minY; i <= maxY; i++){
-                    if(test_game_board[minX][i] == null) return false;
+                    if(test_game_board[minX][i] == null){System.out.println("there was a null tile in the middle of word"); return false;}
                 }
                 if(isVerticalValid(minY,maxY,minX,myCopyOfPlacements,test_game_board)){
                     //the horizontal is a word
@@ -244,7 +256,7 @@ public class Board {
                                     return false;
                                 }
                             }
-                        //leftmost case
+                            //leftmost case
                         }else if(p.xPos == 0){
                             //only check to the right
                             if(test_game_board[p.xPos +1][p.yPos] != null){
@@ -254,7 +266,7 @@ public class Board {
                                     return false;
                                 }
                             }
-                        //middle case
+                            //middle case
                         }else{
                             //we should only check if left is not null or right is not null
                             if(test_game_board[p.xPos -1][p.yPos] != null || test_game_board[p.xPos +1][p.yPos] != null){
@@ -266,7 +278,7 @@ public class Board {
                             }
                         }
                     }
-                } else return false;
+                } else{System.out.println("it was not valid vertically"); return false;}
             }
         } else {
             //Only one tile is being placed
