@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
  */
 public class TextureManager {
         private static TextureManager instance;
-        public final TextureAtlas textureAtlas;
+        //public final TextureAtlas textureAtlas;
 
         public static TextureManager getInstance(){
             if(instance == null)
@@ -18,11 +18,12 @@ public class TextureManager {
         }
 
         private TextureManager(){
-            textureAtlas = new TextureAtlas(Gdx.files.internal("spriteAtlas.atlas"));
+
+            //textureAtlas = new TextureAtlas(Gdx.files.internal("spriteAtlas.atlas"));
         }
         public void Dispose(){
             instance = null;
-            textureAtlas.dispose();
+           // textureAtlas.dispose();
         }
 }
 

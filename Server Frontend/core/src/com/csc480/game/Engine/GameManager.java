@@ -58,8 +58,8 @@ public class GameManager {
         Player current = thePlayers.get(currentPlayerIndex);
         if(current.isAI){
             ((AI)current).FindPlays(theBoard);
-            AI.PlayIdea p = ((AI)current).PlayBestWord();
-            //send to
+            //pull the best one and verify with backend
+            //while not valid play, keep pulling and checking until out of plays
 
         }
 

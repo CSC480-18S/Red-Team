@@ -3,6 +3,7 @@ package com.csc480.game.Engine;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
+import com.csc480.game.Engine.Model.AI;
 import com.csc480.game.Engine.Model.Placement;
 import com.csc480.game.GUI.GameScreen;
 import javafx.scene.Camera;
@@ -19,9 +20,15 @@ public class TestingInputProcessor implements InputProcessor {
     private boolean inClick = false;
     private OrthographicCamera gameScreen;
 
+    private AI testingAI;
+    private char[] testHandQueue;
+    private int aiHandCount;
 
     public TestingInputProcessor(OrthographicCamera myCam){
         gameScreen = myCam;
+        testHandQueue = new char[7];
+        testingAI = new AI();
+        aiHandCount = 0;
     }
     @Override
     public boolean keyDown(int keycode) {
@@ -68,10 +75,33 @@ public class TestingInputProcessor implements InputProcessor {
             for (String s : results)
                 System.out.println(s);
 
-        }
-        else{
+        }else if(character == ']'){
+            System.out.println("AI TEST YOUR THING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            for(int i = 0; i < testHandQueue.length; i++){
+                System.out.println("adding to ai:" + testHandQueue[i]);
+                testingAI.hand[i] = testHandQueue[i];
+            }
+            System.out.println("Finding all AI plays for hand");
+            Long startTime = System.nanoTime();
+            testingAI.TESTFindPlays(GameManager.getInstance().theBoard);
+            System.out.println("finding all possible AI plays took nanos: "+(System.nanoTime()-startTime));
+            ArrayList<Placement> bestPlay = testingAI.PlayBestWord();
+            while(bestPlay != null && !GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay)){
+                bestPlay = testingAI.PlayBestWord();
+                if(bestPlay == null) break;
+            }
+            if(bestPlay != null && GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay)){
+                System.out.println("The AI actually made a decent play");
+                GameManager.getInstance().theBoard.addWord(bestPlay);
+                GameManager.getInstance().placementsUnderConsideration.clear();
+            }
+        }else{
             System.out.println("changing to "+character);
+            System.out.println("Adding to AI hand "+character);
             lastInput = character;
+            testHandQueue[aiHandCount] = character;
+            aiHandCount++;
+            aiHandCount = (aiHandCount) % 7;
         }
 
         return true;
