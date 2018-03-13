@@ -19,10 +19,10 @@ router.get('/gameBoard', VerifyToken, function(req, res, next) {
 /**
  * This route will be changed, no documentation as of now
  */
-router.post('/playWord', VerifyToken, function(req, res, next) {
+router.post('/playWords', VerifyToken, function(req, res, next) {
   const r = req.body
 
-  g.consumeInput(r.x, r.y, r.h, r.word, res)
+  g.consumeInput(r, res)
 })
 
 /**

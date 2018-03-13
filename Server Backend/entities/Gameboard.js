@@ -98,18 +98,16 @@ class Gameboard {
    * @param {Boolean} h - is the word horizontal
    * @param {String} word - the word to be validated
    */
-  consumeInput(x, y, h, word, res) {
-    if (word.trim() === '') {
-      this.error = 1
-      return res.json(this.handleResponse(word))
-    }
-
-    this.wordIsValid(word).then(t => {
+  consumeInput(words, res) {
+    this.wordIsValid(words).then(response => {
       console.log('The board now has an answer')
-      if (t === true) {
-        this.placeWord({ x: x, y: y }, { x: h ? x + word.length - 1 : x, y: h ? y : y + word.length - 1 }, word, h)
+      // let placementResponse
+      if (response === true) {
+        this.placeWords(words)
+      } else {
+        return res.json(this.handleResponse(response))
       }
-      return res.json(this.handleResponse(word))
+      return res.json(this.handleResponse(words))
     }).catch(e => {
       return res.json(e)
     })
@@ -120,13 +118,13 @@ class Gameboard {
    * This method handles all types of responses that the gameboard can send back to a user.
    * @param {String} word - word to be piped into the error message
    */
-  handleResponse(word) {
+  handleResponse(words) {
     const result = {
       invalid: true
     }
     let reason = null
 
-    result['word'] = word.toUpperCase()
+    result['word'] = words.map(w => w.word.toUpperCase())
 
     switch (this.error) {
       case 1:
@@ -144,6 +142,9 @@ class Gameboard {
       case 5:
         reason = 'Word not connected to played tiles'
         break
+      case 6:
+        reason = 'Word is a bad word'
+        break
       default:
         result.invalid = false
         return result
@@ -158,26 +159,41 @@ class Gameboard {
    * Method that checks to see if the word is in the DB
    * @param {String} word - the word to be checked against the DB
    */
-  wordIsValid(word) {
-    return axios.get('http://localhost:8080/dictionary/validate?word=' + word)
-      .then((res) => {
-        if (res.data) {
-          return true
-        }
-        this.error = 1
+  wordIsValid(words) {
+    let search = words.map(s => s.word).join(',')
+
+    return axios.get('http://localhost:8090/dictionary/validate?words=' + search)
+      .then(res => {
+        return this.pruneResults(res.data)
       }).catch((e) => {
         console.log(e)
       })
   }
 
   /**
-   * Method that places a word on the baord
-   * @param {Object} startCoords - object structured as such: {x: x, y: y}
-   * @param {Object} endCoords - object structured as such: {x: x, y: y}
-   * @param {String} word - word that will be placed on the board
-   * @param {Boolean} h - is this word horizontal
+   * Prunes the data set back from the DB to check if anywords are either invalid or bad words
+   * @param {Array} response - word data sent back from DB
    */
-  placeWord(startCoords, endCoords, word, h) {
+  pruneResults(response) {
+    for (let word of response) {
+      if (word.bad) {
+        this.error = 6
+        return word.word
+      }
+      if (!word.valid) {
+        this.error = 1
+        return word.word
+      }
+    }
+
+    return true
+  }
+
+  /**
+   * Method that places words on the baord
+   * @param {Array} words - array of words to place
+   */
+  placeWords(words) {
     this.error = 0
     const tempBoard = _.cloneDeep(this.board)
 
@@ -185,53 +201,62 @@ class Gameboard {
      * For word placement validation
      */
     let validWordPlacement = false
+    for (let w of words) {
+      let word = {
+        word: w.word,
+        sX: w.x,
+        sY: w.y,
+        eX: w.h ? w.x + w.word.length - 1 : w.x,
+        eY: w.h ? w.y : w.y + w.word.length - 1
+      }
 
-    for (let i = startCoords.x; i <= endCoords.x; i++) {
-      for (let j = startCoords.y; j <= endCoords.y; j++) {
+      for (let i = word.sX; i <= word.eX; i++) {
+        for (let j = word.sY; j <= word.eY; j++) {
         /**
          * Check to see if the word was somehow placed out of bounds
          */
-        if (tempBoard[j][i] === undefined) {
-          this.error = 2
-          return
-        }
-        let l = tempBoard[j][i].letter
-        let wordLetter = h ? word[i - startCoords.x].toUpperCase() : word[j - startCoords.y].toUpperCase()
+          if (tempBoard[j][i] === undefined) {
+            this.error = 2
+            return
+          }
+          let l = tempBoard[j][i].letter
+          let wordLetter = w.h ? word.word[i - word.sX].toUpperCase() : word.word[j - word.sY].toUpperCase()
 
-        /**
+          /**
          * Validate the letter to be placed
          */
-        if (!this.validatePosition(l, wordLetter)) {
-          this.error = 3
-          return
-        }
+          if (!this.validatePosition(l, wordLetter)) {
+            this.error = 3
+            return
+          }
 
-        if (!validWordPlacement && tempBoard[j][i].letterPlaced) {
-          validWordPlacement = true
-        }
+          if (!validWordPlacement && tempBoard[j][i].letterPlaced) {
+            validWordPlacement = true
+          }
 
-        tempBoard[j][i].letter = wordLetter
+          tempBoard[j][i].letter = wordLetter
+        }
       }
-    }
 
-    /**
+      /**
      * Center tile validation
      */
-    if (this.firstPlay) {
-      const c = Math.floor(this.size / 2)
-      if (!tempBoard[c][c].letterPlaced) {
-        this.error = 4
-        return
-      } else {
-        this.firstPlay = false
-        this.board = tempBoard
+      let check = true
+      if (this.firstPlay) {
+        const c = Math.floor(this.size / 2)
+        if (!tempBoard[c][c].letterPlaced) {
+          this.error = 4
+          return
+        } else {
+          this.firstPlay = false
+          check = false
+        }
+      }
+
+      if (!validWordPlacement && check) {
+        this.error = 5
         return
       }
-    }
-
-    if (!validWordPlacement) {
-      this.error = 5
-      return
     }
 
     this.board = tempBoard
