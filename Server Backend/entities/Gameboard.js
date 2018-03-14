@@ -22,18 +22,30 @@ class Gameboard {
     this._error = 0
   }
 
+  /**
+   * Sets the board
+   */
   set board(board) {
     this._board = board
   }
 
+  /**
+   * Sets initialized
+   */
   set initialized(initialized) {
     this._initialized = initialized
   }
 
+  /**
+   * Sets first play
+   */
   set firstPlay(firstPlay) {
     this._firstPlay = firstPlay
   }
 
+  /**
+   * Sets error
+   */
   set error(error) {
     this._error = error
   }
@@ -195,7 +207,7 @@ class Gameboard {
       }
 
       /**
-       *
+       * Check to see if center tile was played over on the first play
        */
       if (this.firstPlay) {
         if (!this.validateCenterTile(tempBoard)) {
