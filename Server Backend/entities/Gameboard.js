@@ -213,6 +213,10 @@ class Gameboard {
     this.board = tempBoard
   }
 
+  /**
+   * Creates an object that holds word data
+   * @param {Object} w - word object
+   */
   createWordObject(w) {
     return {
       word: w.word,
