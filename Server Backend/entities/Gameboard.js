@@ -1,13 +1,14 @@
 'use strict'
 /**
- * Imports the lodash library
+ * Imports lodash and axios
  */
 const _ = require('lodash')
+const axios = require('axios')
 /**
- * Imports the Tile class
+ * Imports the Tile and GameboardResponse class
  */
 const Tile = require('./Tile')
-const axios = require('axios')
+const gr = require('../helpers/GameboardResponse')
 
 class Gameboard {
   /**
@@ -91,23 +92,22 @@ class Gameboard {
 
     this.initialized = true
   }
+
   /**
-   * Method consumes the user's input.  If the word is not valid, it does not attempt to place the word on the board and will send back to the user that the word is invalid
-   * @param {Number} x - start x
-   * @param {Number} y - start y
-   * @param {Boolean} h - is the word horizontal
-   * @param {String} word - the word to be validated
+   *
+   * @param {Array} words - words given by the frontend
+   * @param {Object} res - result object
    */
   consumeInput(words, res) {
-    this.wordIsValid(words).then(response => {
+    this.wordsAreValid(words).then(response => {
       console.log('The board now has an answer')
-      // let placementResponse
+      let placement
       if (response === true) {
-        this.placeWords(words)
+        placement = this.placeWords(words)
       } else {
-        return res.json(this.handleResponse(response))
+        return gr.hr(this.error, response, res)
       }
-      return res.json(this.handleResponse(words))
+      return gr.hr(this.error, placement, res)
     }).catch(e => {
       return res.json(e)
     })
@@ -115,51 +115,10 @@ class Gameboard {
   }
 
   /**
-   * This method handles all types of responses that the gameboard can send back to a user.
-   * @param {String} word - word to be piped into the error message
+   * Method that checks to see if word(s) are in the DB
+   * @param {Array} words - words to be checked against the DB
    */
-  handleResponse(words) {
-    const result = {
-      invalid: true
-    }
-    let reason = null
-
-    result['word'] = words.map(w => w.word.toUpperCase())
-
-    switch (this.error) {
-      case 1:
-        reason = 'Not a valid word'
-        break
-      case 2:
-        reason = 'Placed out of the bounds of the board'
-        break
-      case 3:
-        reason = 'Invalid placement'
-        break
-      case 4:
-        reason = 'Word was not played over the center tile'
-        break
-      case 5:
-        reason = 'Word not connected to played tiles'
-        break
-      case 6:
-        reason = 'Word is a bad word'
-        break
-      default:
-        result.invalid = false
-        return result
-    }
-
-    result['reason'] = reason.toUpperCase()
-
-    return result
-  }
-
-  /**
-   * Method that checks to see if the word is in the DB
-   * @param {String} word - the word to be checked against the DB
-   */
-  wordIsValid(words) {
+  wordsAreValid(words) {
     let search = words.map(s => s.word).join(',')
 
     return axios.get('http://localhost:8090/dictionary/validate?words=' + search)
@@ -202,13 +161,7 @@ class Gameboard {
      */
     let validWordPlacement = false
     for (let w of words) {
-      let word = {
-        word: w.word,
-        sX: w.x,
-        sY: w.y,
-        eX: w.h ? w.x + w.word.length - 1 : w.x,
-        eY: w.h ? w.y : w.y + w.word.length - 1
-      }
+      let word = this.createWordObject(w)
 
       for (let i = word.sX; i <= word.eX; i++) {
         for (let j = word.sY; j <= word.eY; j++) {
@@ -217,19 +170,22 @@ class Gameboard {
          */
           if (tempBoard[j][i] === undefined) {
             this.error = 2
-            return
+            return word.word
           }
           let l = tempBoard[j][i].letter
           let wordLetter = w.h ? word.word[i - word.sX].toUpperCase() : word.word[j - word.sY].toUpperCase()
 
           /**
-         * Validate the letter to be placed
+         * Validate if the letter placed can be placed there
          */
           if (!this.validatePosition(l, wordLetter)) {
             this.error = 3
-            return
+            return word.word
           }
 
+          /**
+           * Check whether or not the letter to be placed is being placed over a letter already there
+           */
           if (!validWordPlacement && tempBoard[j][i].letterPlaced) {
             validWordPlacement = true
           }
@@ -239,27 +195,47 @@ class Gameboard {
       }
 
       /**
-     * Center tile validation
-     */
-      let check = true
+       *
+       */
       if (this.firstPlay) {
-        const c = Math.floor(this.size / 2)
-        if (!tempBoard[c][c].letterPlaced) {
-          this.error = 4
-          return
-        } else {
-          this.firstPlay = false
-          check = false
+        if (!this.validateCenterTile(tempBoard)) {
+          return word.word
         }
+        continue
       }
 
-      if (!validWordPlacement && check) {
+      if (!validWordPlacement) {
         this.error = 5
-        return
+        return word.word
       }
     }
 
     this.board = tempBoard
+  }
+
+  createWordObject(w) {
+    return {
+      word: w.word,
+      sX: w.x,
+      sY: w.y,
+      eX: w.h ? w.x + w.word.length - 1 : w.x,
+      eY: w.h ? w.y : w.y + w.word.length - 1
+    }
+  }
+
+  /**
+   * Validates whetehr the first played word was played over the center tile
+   * @param {Array} tempBoard - temp board
+   */
+  validateCenterTile(tempBoard) {
+    const c = Math.floor(this.size / 2)
+    if (!tempBoard[c][c].letterPlaced) {
+      this.error = 4
+      return false
+    } else {
+      this.firstPlay = false
+      return true
+    }
   }
 
   /**
