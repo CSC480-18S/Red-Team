@@ -3,8 +3,8 @@
 class Player {
   constructor() {
     this._name = ''
-    this._position = null
-    this._tiles = ['a', 'b', 'c']
+    this._position = undefined
+    this._tiles = []
   }
 
   set name(name) {
@@ -13,10 +13,6 @@ class Player {
 
   set position(position) {
     this._position = position
-  }
-
-  set tiles(tiles) {
-    this._tiles.push(...tiles)
   }
 
   get name() {
@@ -31,14 +27,23 @@ class Player {
     return this._tiles
   }
 
+  addTiles(tiles) {
+    this._tiles.push(...tiles)
+  }
+
   removeTiles(tiles) {
-    this._tiles = this._tiles.filter(t => {
-      tiles.forEach(e => {
-        if (t !== e) {
-          return t
-        }
-      })
+    let newTiles = []
+
+    this._tiles.forEach(t => {
+      let i = tiles.indexOf(t)
+      if (i === -1) { // if t does not exist in the tiles array
+        newTiles.push(t) // push to new array (letters that aren't being removed)
+      } else { // if t is in the tiles array, remove it from the tiles array so multiple of the same letter is not removed
+        tiles.splice(i, 1)
+      }
     })
+
+    this._tiles = newTiles
   }
 }
 
