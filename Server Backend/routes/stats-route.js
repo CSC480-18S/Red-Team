@@ -4,7 +4,10 @@
 const express = require('express')
 const router = express.Router()
 const axios = require('axios')
-// const VerifyToken = require('../helpers/VerifyTokens')
+const VerifyToken = require('../helpers/VerifyTokens')
+const cookieParser = require('cookie-parser')
+
+router.use(cookieParser())
 
 const databasePort = 8091
 const databasePath = 'http://localhost:' + databasePort + '/'
@@ -12,7 +15,7 @@ const databasePath = 'http://localhost:' + databasePort + '/'
 /**
  * This endpoint gets all the stats for the given team.
  */
-router.get('/teams/:team', function(req, res, next) {
+router.get('/teams/:team', VerifyToken, function(req, res, next) {
   /* Requested teams's name */
   const team = req.params.team
 
@@ -25,7 +28,7 @@ router.get('/teams/:team', function(req, res, next) {
 /**
  * This endpoint gets all the stats for the given player.
  */
-router.get('/players/:player', function(req, res, next) {
+router.get('/players/:player', VerifyToken, function(req, res, next) {
   /* Requested player's name */
   const name = req.params.player
 
