@@ -7,30 +7,53 @@ class Player {
     this._tiles = []
   }
 
+  /**
+   * Name setter
+   */
   set name(name) {
     this._name = name
   }
 
+  /**
+   * Position setter
+   */
   set position(position) {
     this._position = position
   }
 
+  /**
+   * Name getter
+   */
   get name() {
     return this._name
   }
 
+  /**
+   * Position getter
+   */
   get position() {
     return this._position
   }
 
+  /**
+   * Tiles getter
+   */
   get tiles() {
     return this._tiles
   }
 
+  /**
+   * Adds tiles to the titles array
+   * @param {Array} tiles - array of tiles to add to the existing tiles
+   */
   addTiles(tiles) {
     this._tiles.push(...tiles)
   }
 
+  /**
+   * Removes tiles from array
+   * @param {Array} tiles - array of tiles to remove
+   */
   removeTiles(tiles) {
     let newTiles = []
 
@@ -47,4 +70,7 @@ class Player {
   }
 }
 
+/**
+ * Exports this file so it can be used by other files.  Keep this at the bottom.
+ */
 module.exports = Player
