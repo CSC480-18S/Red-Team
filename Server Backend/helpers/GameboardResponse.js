@@ -39,6 +39,4 @@ function handleResponse(error, word, res) {
   return res.json(result)
 }
 
-module.exports = {
-  hr: handleResponse
-}
+module.exports = handleResponse

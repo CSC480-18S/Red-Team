@@ -90,6 +90,10 @@ class Gameboard {
    * If this method has already been run, it returns before it can recreate the double array
    */
   init() {
+    /**
+     * TODO: We may not want to have this here so that we don't have to create a brand new board object
+     * everytime a new game is made, we can just use the one we already created. @Landon
+     */
     if (this._initialized) {
       return true
     }
@@ -106,24 +110,38 @@ class Gameboard {
   }
 
   /**
-   *
+   * Consumes the input given by the frontend
    * @param {Array} words - words given by the frontend
    * @param {Object} res - result object
    */
   consumeInput(words, res) {
-    this.wordsAreValid(words).then(response => {
+    let sanitized = this.trimWords(words)
+
+    this.wordsAreValid(sanitized).then(response => {
       console.log('The board now has an answer')
       let placement
       if (response === true) {
-        placement = this.placeWords(words)
+        placement = this.placeWords(sanitized)
       } else {
-        return gr.hr(this.error, response, res)
+        return gr(this.error, response, res)
       }
-      return gr.hr(this.error, placement, res)
+      return gr(this.error, placement, res)
     }).catch(e => {
       return res.json(e)
     })
     console.log('The board is thinking')
+  }
+
+  /**
+   * Removes whitespace from words
+   * @param {Array} words - words to trimmed
+   */
+  trimWords(words) {
+    return words.map(w => {
+      let word = w.word
+      w['word'] = word.trim()
+      return w
+    })
   }
 
   /**
@@ -142,7 +160,7 @@ class Gameboard {
   }
 
   /**
-   * Prunes the data set back from the DB to check if anywords are either invalid or bad words
+   * Prunes the data sent back from the DB to check if any words are either invalid or bad words
    * @param {Array} response - word data sent back from DB
    */
   pruneResults(response) {
@@ -216,6 +234,9 @@ class Gameboard {
         continue
       }
 
+      /**
+       * Check to see if the word was played over already played words
+       */
       if (!validWordPlacement) {
         this.error = 5
         return word.word
