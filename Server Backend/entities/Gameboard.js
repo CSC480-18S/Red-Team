@@ -136,8 +136,6 @@ class Gameboard {
     return axios.get('http://localhost:8090/dictionary/validate?words=' + search)
       .then(res => {
         return this.pruneResults(res.data)
-      }).catch((e) => {
-        console.log(e)
       })
   }
 
