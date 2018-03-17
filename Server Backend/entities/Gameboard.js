@@ -110,12 +110,12 @@ class Gameboard {
    * @param {Array} words - words given by the frontend
    * @param {Object} res - result object
    */
-  consumeInput(words, res) {
+  consumeInput(words, res, user) {
     this.wordsAreValid(words).then(response => {
       console.log('The board now has an answer')
       let placement
       if (response === true) {
-        placement = this.placeWords(words)
+        placement = this.placeWords(words, user)
       } else {
         return gr.hr(this.error, response, res)
       }
@@ -164,7 +164,7 @@ class Gameboard {
    * Method that places words on the baord
    * @param {Array} words - array of words to place
    */
-  placeWords(words) {
+  placeWords(words, user) {
     this.error = 0
     const tempBoard = _.cloneDeep(this.board)
 
@@ -202,7 +202,7 @@ class Gameboard {
             validWordPlacement = true
           }
 
-          tempBoard[j][i].letter = wordLetter
+          this.tileSetter(tempBoard[j][i], wordLetter, user)
         }
       }
 
@@ -223,6 +223,18 @@ class Gameboard {
     }
 
     this.board = tempBoard
+  }
+
+  /**
+   * Helper method that sets properties of a tile
+   * @param {Object} tile - tile to work with
+   * @param {String} letter - letter to be set in the tile
+   * @param {String} user - user that played the letter
+   */
+  tileSetter(tile, letter, user) {
+    tile.letter = letter
+    tile.playedBy = user
+    tile.timePlayedAt = new Date().getTime()
   }
 
   /**
