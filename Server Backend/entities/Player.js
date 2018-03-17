@@ -5,6 +5,7 @@ class Player {
     this._name = ''
     this._position = undefined
     this._tiles = []
+    this._turn = false
   }
 
   /**
@@ -19,6 +20,13 @@ class Player {
    */
   set position(position) {
     this._position = position
+  }
+
+  /**
+   * Turn setter
+   */
+  set turn(turn) {
+    this._tiles = turn
   }
 
   /**
@@ -40,6 +48,13 @@ class Player {
    */
   get tiles() {
     return this._tiles
+  }
+
+  /**
+   * Turn getter
+   */
+  get turn() {
+    return this._turn
   }
 
   /**

@@ -278,6 +278,16 @@ class Gameboard {
 
     return false
   }
+
+  /**
+   * Pulls information about a sepcific tile
+   * X and Y need to be reversed because of the way 2D arrays are created
+   * @param {Number} x - x coordinate
+   * @param {Number} y - y coordinate
+   */
+  tileInformation(x, y) {
+    return this._board[y][x]
+  }
 }
 
 /**
