@@ -21,8 +21,9 @@ router.get('/gameBoard', VerifyToken, function(req, res, next) {
  */
 router.post('/playWords', VerifyToken, function(req, res, next) {
   const r = req.body
+  const user = req.username
 
-  g.consumeInput(r, res)
+  g.consumeInput(r, res, user)
 })
 
 /**
