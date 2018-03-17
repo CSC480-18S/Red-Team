@@ -27,6 +27,16 @@ router.post('/playWords', VerifyToken, function(req, res, next) {
 })
 
 /**
+ * Returns information about a specific route
+ */
+router.get('/tileInformation', VerifyToken, function(req, res, next) {
+  const x = req.query.x
+  const y = req.query.y
+
+  res.json(g.tileInformation(x, y))
+})
+
+/**
  * Exports this file so it can be used by other files.  Keep this at the bottom.
  */
 module.exports = router
