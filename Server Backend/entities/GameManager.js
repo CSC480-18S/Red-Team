@@ -29,13 +29,99 @@ class GameManager {
   }
 
   /**
-   * Encapsulates gamboard consumeInput()
+   * Plays a user's move
    * @param {Array} words - words to play
    * @param {Object} res - response object
    * @param {String} user - user that played this move
    */
   play(words, res, user) {
-    this._board.consumeInput(words, res, user)
+    this.wordValidation(words)
+      .then(response => {
+        console.log('The board now has an answer')
+        let placement
+        if (response === true) {
+          placement = this._board.placeWords(words, user)
+        } else {
+          return this.handleResponse(this.error, response, res)
+        }
+        return this.handleResponse(this.error, placement, res)
+      })
+      .catch(e => {
+        return res.status(400).json({code: 'D1', title: 'Database Error', desc: e.code})
+      })
+    console.log('The board is thinking')
+  }
+
+  /**
+   * Checks to see if word(s) are in the DB
+   * @param {Array} words - words to be checked against the DB
+   */
+  wordValidation(words) {
+    let search = words.map(s => s.word).join(',')
+
+    return axios.get('http://localhost:8090/dictionary/validate?words=' + search)
+      .then(res => {
+        return this.pruneResults(res.data)
+      })
+  }
+
+  /**
+   * Prunes the data set back from the DB to check if anywords are either invalid or bad words
+   * @param {Array} response - word data sent back from DB
+   */
+  pruneResults(response) {
+    for (let word of response) {
+      if (word.bad) {
+        this.error = 6
+        return word.word
+      }
+      if (!word.valid) {
+        this.error = 1
+        return word.word
+      }
+    }
+
+    return true
+  }
+
+  /**
+   * Handles all types of responses that the gameboard can send back to a user.
+   * @param {String} word - word to be piped into the error message
+   */
+  handleResponse(error, word, res) {
+    const result = {
+      invalid: true
+    }
+    let reason = null
+
+    switch (error) {
+      case 1:
+        reason = 'Not a valid word'
+        break
+      case 2:
+        reason = 'Placed out of the bounds of the board'
+        break
+      case 3:
+        reason = 'Invalid placement'
+        break
+      case 4:
+        reason = 'Word was not played over the center tile'
+        break
+      case 5:
+        reason = 'Word not connected to played tiles'
+        break
+      case 6:
+        reason = 'Word is a bad word'
+        break
+      default:
+        result.invalid = false
+    }
+    if (result.invalid) {
+      result['reason'] = reason.toUpperCase()
+      result['word'] = word.toUpperCase()
+    }
+
+    return res.json(result)
   }
 
   /**

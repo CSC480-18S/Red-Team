@@ -39,13 +39,6 @@ class Player {
   }
 
   /**
-   * Name getter
-   */
-  get name() {
-    return this._name
-  }
-
-  /**
    * Position getter
    */
   get position() {

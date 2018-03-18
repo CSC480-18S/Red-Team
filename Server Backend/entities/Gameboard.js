@@ -4,11 +4,11 @@
  */
 const _ = require('lodash')
 const axios = require('axios')
+
 /**
  * Imports the Tile and GameboardResponse class
  */
 const Tile = require('./Tile')
-const gr = require('../helpers/GameboardResponse')
 
 class Gameboard {
   /**
@@ -103,59 +103,6 @@ class Gameboard {
     }
 
     this.initialized = true
-  }
-
-  /**
-   *
-   * @param {Array} words - words given by the frontend
-   * @param {Object} res - result object
-   */
-  consumeInput(words, res, user) {
-    this.wordsAreValid(words).then(response => {
-      console.log('The board now has an answer')
-      let placement
-      if (response === true) {
-        placement = this.placeWords(words, user)
-      } else {
-        return gr.hr(this.error, response, res)
-      }
-      return gr.hr(this.error, placement, res)
-    }).catch(e => {
-      return res.json(e)
-    })
-    console.log('The board is thinking')
-  }
-
-  /**
-   * Method that checks to see if word(s) are in the DB
-   * @param {Array} words - words to be checked against the DB
-   */
-  wordsAreValid(words) {
-    let search = words.map(s => s.word).join(',')
-
-    return axios.get('http://localhost:8090/dictionary/validate?words=' + search)
-      .then(res => {
-        return this.pruneResults(res.data)
-      })
-  }
-
-  /**
-   * Prunes the data set back from the DB to check if anywords are either invalid or bad words
-   * @param {Array} response - word data sent back from DB
-   */
-  pruneResults(response) {
-    for (let word of response) {
-      if (word.bad) {
-        this.error = 6
-        return word.word
-      }
-      if (!word.valid) {
-        this.error = 1
-        return word.word
-      }
-    }
-
-    return true
   }
 
   /**
