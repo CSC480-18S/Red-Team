@@ -1,0 +1,17 @@
+# Codeowners file to ensure QA is the only group that can push to the Master branch.
+
+# Globals
+* @rzsupra17 @xmorton @BrendanOswego
+
+# Engine Specific Files
+/Server\ Backend/ @rzsupra17
+
+# GUI Specific Files
+/Frontend/ @xmorton
+
+# Database Specific Files
+/Database\ Interface/ @BrendanOswego
+
+# Multi-Team Specific Files
+/Server\ Frontend/ @rzsupra17 @xmorton
+/Server\ Statistics\ Frontend/ @rzsupra17 @xmorton
