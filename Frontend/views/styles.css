@@ -60,12 +60,13 @@ rect {
     background-color: #C19A24;
 }
 
-/*
+
 .game-board-tile-size {
     width: 1.3em;
     height: 1.3em;
 }
 
+/*
 
 .slot-tile-size {
     width: 2.55em;
@@ -73,9 +74,15 @@ rect {
 }
 */
 
+/* restrict the size of each tile slot */
 #slot0, #slot1, #slot2, #slot3, #slot4, #slot5, #slot6 {
-    width: 2.7em;
-    height: 2.7em; 
+    width: 2.6em;
+    height: 2.6em; 
+}
+
+td {
+    width: 1.5em;
+    height: 1.5em;
 }
 
 /*
@@ -83,4 +90,53 @@ rect {
     background-color: rgb(19,147,80);
 }
 */
+.wrapper-board {
+    
+    margin: 1em auto;
+    width: 315px;
+    overflow: auto;
+    /*
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
+    */
+}
 
+.wrapper-slots {
+    
+    margin: 1em auto;
+    width: 315px;
+    overflow: auto;
+    /*
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
+    */
+}
+
+.row-style {
+    margin: 2px 2px 0 2px;
+    clear: both;    
+}
+
+.col-style {
+    float: left;
+    margin: 0 2px 2px 0;
+    width: 26px;
+    height: 26px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
+}
+
+.slot-style {
+    float: left;
+    margin: 0 2px 2px 0;
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
+}
+
+.letter-value{
+    font-size: 0.35em;
+}
