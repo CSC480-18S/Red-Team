@@ -35,12 +35,14 @@ class GameManager {
    * @param {String} user - user that played this move
    */
   play(words, res, user) {
-    this.wordValidation(words)
+    let trimmed = this.trimWords(words)
+
+    this.wordValidation(trimmed)
       .then(response => {
         console.log('The board now has an answer')
         let placement
         if (response === true) {
-          placement = this._board.placeWords(words, user)
+          placement = this._board.placeWords(trimmed, user)
         } else {
           return this.handleResponse(this.error, response, res)
         }
@@ -82,6 +84,18 @@ class GameManager {
     }
 
     return true
+  }
+
+  /**
+   * Removes whitespace from words
+   * @param {Array} words - words to trimmed
+   */
+  trimWords(words) {
+    return words.map(w => {
+      let word = w.word
+      w['word'] = word.trim()
+      return w
+    })
   }
 
   /**
