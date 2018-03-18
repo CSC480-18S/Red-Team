@@ -1,18 +1,20 @@
 'use strict'
 
 class Player {
-  constructor() {
-    this._name = ''
+  constructor(user) {
+    this._name = user
     this._position = undefined
     this._tiles = []
     this._turn = false
+    this._score = 0
+    this._team = null
   }
 
   /**
-   * Name setter
+   * Name getter
    */
-  set name(name) {
-    this._name = name
+  get name() {
+    return this._name
   }
 
   /**
@@ -27,6 +29,13 @@ class Player {
    */
   set turn(turn) {
     this._tiles = turn
+  }
+
+  /**
+   * Team setter
+   */
+  set team(team) {
+    this._team = team
   }
 
   /**
@@ -58,6 +67,13 @@ class Player {
   }
 
   /**
+   * Team getter
+   */
+  get team() {
+    return this._team
+  }
+
+  /**
    * Adds tiles to the titles array
    * @param {Array} tiles - array of tiles to add to the existing tiles
    */
@@ -82,6 +98,21 @@ class Player {
     })
 
     this._tiles = newTiles
+  }
+
+  /**
+   *
+   * @param {Number} score - score to be added
+   */
+  addScore(score) {
+    this._score += score
+  }
+
+  /**
+   * Resets the player's score
+   */
+  resetScore() {
+    this._score = 0
   }
 }
 
