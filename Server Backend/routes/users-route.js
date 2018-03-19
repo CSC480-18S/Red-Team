@@ -15,7 +15,7 @@ router.use(cookieParser())
 
 const axios = Axios.create({baseURL: 'http://localhost:8091/'})
 
-var error = 0
+let error = 0
 
 /**
  * Route that creates a user
@@ -65,7 +65,7 @@ function addUser(newUser) {
  * translate it to the proper
  * URL for database
  */
-  var teamURL
+  let teamURL
   if (newUser.team === 'Gold') {
     teamURL = 'http://localhost:8091/teams/1'
   } else if (newUser.team === 'Green') {
