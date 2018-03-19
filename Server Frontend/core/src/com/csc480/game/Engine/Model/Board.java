@@ -38,10 +38,13 @@ public class Board {
      * @return true iff the move is valid
      */
     public boolean verifyWordPlacement(ArrayList<Placement> placements){
-        if(placements.isEmpty()){System.out.println("cant verify an empty placements");return false;}
-        System.out.println("verifying word placement.");
+        if(placements.isEmpty()){
+            //System.out.println("cant verify an empty placements");
+            return false;
+        }
+        //System.out.println("verifying word placement.");
         for(int i = 0; i < placements.size(); i++){
-            System.out.println("testing "+placements.get(i).letter + ": at ("+placements.get(i).xPos+", "+placements.get(i).yPos+")");
+            //System.out.println("testing "+placements.get(i).letter + ": at ("+placements.get(i).xPos+", "+placements.get(i).yPos+")");
 
         }
         System.out.println();
@@ -63,10 +66,11 @@ public class Board {
 
         for(Placement p : myCopyOfPlacements){
             if(the_game_board[p.xPos][p.yPos] != null) {
-                //if(the_game_board[p.xPos][p.yPos].letter != p.letter)
-                System.err.println("Tried to play \""+p.letter+"\" at not null tile ("
-                        +p.xPos+", "+p.yPos+") where \""+the_game_board[p.xPos][p.yPos].letter+"\" already is");
-                return false;
+                //if(the_game_board[p.xPos][p.yPos].letter != p.letter) {
+                    System.err.println("Tried to play \"" + p.letter + "\" at not null tile ("
+                            + p.xPos + ", " + p.yPos + ") where \"" + the_game_board[p.xPos][p.yPos].letter + "\" already is");
+                    return false;
+                //}
             }
         }
         //create a test gameboard to see if everything works out
@@ -81,6 +85,83 @@ public class Board {
 
         //Ensure that every tile is touching an existing tile OR the sequence contains the center
         boolean inCenter = false;
+        //Run through the game board and ensure that at least one tile is touching an existing tile from the real game board
+        boolean somethingConnectFlag = false;
+        for(Placement p : placements){
+            //Something is not connected when left, right, top, and bottom are null
+            //There are 9 cases. The 4 sides and the 4 corners and a middle!
+            if(p.xPos == 0){//left cases
+                if(p.yPos == 0){//bottom left corner
+                    if(the_game_board[p.xPos +1][p.yPos] != null
+                            || the_game_board[p.xPos][p.yPos +1] != null){
+                        somethingConnectFlag = true;
+                    }
+                } else if(p.yPos == the_game_board[0].length-1){//top left corner
+                    if(the_game_board[p.xPos +1][p.yPos] != null
+                            || the_game_board[p.xPos][p.yPos -1] != null){
+                        somethingConnectFlag = true;
+                    }
+                }else {//left wall
+                    if(the_game_board[p.xPos +1][p.yPos] != null
+                            || the_game_board[p.xPos][p.yPos +1] != null
+                            || the_game_board[p.xPos][p.yPos -1] != null){
+                        somethingConnectFlag = true;
+                    }
+                }
+            } else if(p.xPos == the_game_board.length-1) {//right cases
+                if(p.yPos == 0){//bottom right corner
+                    if(the_game_board[p.xPos -1][p.yPos] != null
+                            || the_game_board[p.xPos][p.yPos +1] != null){
+                        somethingConnectFlag = true;
+                    }
+
+                } else if(p.yPos == the_game_board[0].length-1){//top right corner
+                    if(the_game_board[p.xPos -1][p.yPos] != null
+                            || the_game_board[p.xPos][p.yPos -1] != null){
+                        somethingConnectFlag = true;
+                    }
+                }else {//right wall
+                    if(the_game_board[p.xPos -1][p.yPos] != null
+                            || the_game_board[p.xPos][p.yPos +1] != null
+                            || the_game_board[p.xPos][p.yPos -1] != null){
+                        somethingConnectFlag = true;
+                    }
+                }
+            } else {//middle cases
+                if(p.yPos == 0){//bottom wall
+                    if(the_game_board[p.xPos +1][p.yPos] != null
+                            || the_game_board[p.xPos -1][p.yPos] != null
+                            || the_game_board[p.xPos][p.yPos +1] != null){
+                        somethingConnectFlag = true;
+                    }
+                } else if(p.yPos == the_game_board[0].length-1){//top wall
+                    if(the_game_board[p.xPos +1][p.yPos] != null
+                            || the_game_board[p.xPos -1][p.yPos] != null
+                            || the_game_board[p.xPos][p.yPos -1] != null){
+                        somethingConnectFlag = true;
+                    }
+
+                }else {//middle middle
+                    if(the_game_board[p.xPos +1][p.yPos] != null
+                            || the_game_board[p.xPos -1][p.yPos] != null
+                            || the_game_board[p.xPos][p.yPos +1] != null
+                            || the_game_board[p.xPos][p.yPos -1] != null){
+                        somethingConnectFlag = true;
+                    }
+                }
+            }
+        }
+       if(somethingConnectFlag == false){//none of the tiles would touch a word
+           //so it must be in the center to be valid
+           for(Placement p: placements){
+               if(p.xPos == test_game_board.length/2 && p.yPos == test_game_board[0].length/2) inCenter = true;
+           }
+           if(!inCenter){
+               System.out.println("not in center nor connected to a word");
+               return false;
+           }
+       }
+
         for(Placement p : placements){
             //Something is not connected when left, right, top, and bottom are null
             //There are 9 cases. The 4 sides and the 4 corners and a middle!
@@ -150,7 +231,10 @@ public class Board {
             for(Placement p: placements){
                 if(p.xPos == test_game_board.length/2 && p.yPos == test_game_board[0].length/2) inCenter = true;
             }
-            if(!inCenter){ System.out.println("not in center nor connected to a word");return false;}
+            if(!inCenter){
+                System.out.println("not in center nor connected to a word");
+                return false;
+            }
         }
 
         //Directional Logic assumes that more than one tile is being placed
@@ -170,7 +254,11 @@ public class Board {
                 if(p.yPos < minY) minY = p.yPos;
             }
             //Then if both flags are true or both flags are false the letters are diagonal
-            if(isHorrizontal == isVertical){System.out.println("letters are diagonal"); return false;}
+            if(isHorrizontal == isVertical){
+                System.out.println("letters are diagonal");
+                return false;
+            }
+
 
             //we now know the direction the user intends to play the tiles
             //we now know the min and max positions of the tiles being placed
@@ -178,11 +266,14 @@ public class Board {
             //now we must search through the line of tiles and ensure that all tiles in the APPLICABLE row/col sum to a valid word
             if(isHorrizontal){
                 //now we must check if the word is a real allowed word if it is, check the whole horizontal word
-                System.out.println("checking base horizontal word");
-                System.out.println("Status: minX="+minX+" maxX="+maxX+" y="+minY);
+                //System.out.println("checking base horizontal word");
+                //System.out.println("Status: minX="+minX+" maxX="+maxX+" y="+minY);
                 //Ensure rhe word is not null from min to max
                 for(int i = minX; i <= maxX; i++){
-                    if(test_game_board[i][minY] == null){System.out.println("there is a null space in the middle of word"); return false;}
+                    if(test_game_board[i][minY] == null){
+                        System.out.println("there is a null space in the middle of word");
+                        return false;
+                    }
                 }
 
                 if(isHorizontalValid(minX,maxX,minY,myCopyOfPlacements,test_game_board)){
@@ -195,9 +286,9 @@ public class Board {
                         //there are three cases that could arise, the word is played at the top, middle, or bottom
                         //max case
                         if(p.yPos == test_game_board[0].length-1){
-                            System.out.println("only check below");
+                            //System.out.println("only check below");
                             if(test_game_board[p.xPos][p.yPos -1] != null){
-                                System.out.println("verifying below word");
+                                //System.out.println("verifying below word");
                                 if(!isVerticalValid(p.yPos,p.yPos,p.xPos,temp,test_game_board)){
                                     System.out.println("It was not a valid vertical subset returning false");
                                     return false;
@@ -205,9 +296,9 @@ public class Board {
                             }
                             //min case
                         }else if(p.yPos == 0){
-                            System.out.println("only check above");
+                            //System.out.println("only check above");
                             if(test_game_board[p.xPos][p.yPos +1] != null){
-                                System.out.println("verifying above word");
+                                //System.out.println("verifying above word");
                                 if(!isVerticalValid(p.yPos,p.yPos,p.xPos,temp,test_game_board)){
                                     System.out.println("It was not a valid vertical subset returning false");
                                     return false;
@@ -215,9 +306,9 @@ public class Board {
                             }
                             //middle case
                         }else{
-                            System.out.println("we should only check if above is not null or below is not null");
+                            //System.out.println("we should only check if above is not null or below is not null");
                             if(test_game_board[p.xPos][p.yPos -1] != null || test_game_board[p.xPos][p.yPos +1] != null){
-                                System.out.println("verifying above and below word");
+                                //System.out.println("verifying above and below word");
                                 if(!isVerticalValid(p.yPos,p.yPos,p.xPos,temp,test_game_board)){
                                     System.out.println("It was not a valid vertical subset returning false");
                                     return false;
@@ -232,8 +323,8 @@ public class Board {
             }
             if(isVertical){
                 //now we must check if the word is a real allowed word if it is,...
-                System.out.println("checking base vertical word");
-                System.out.println("Status: minX="+minX+" maxX="+maxX+" y="+minY);
+                //System.out.println("checking base vertical word");
+                //System.out.println("Status: minX="+minX+" maxX="+maxX+" y="+minY);
                 //Ensure rhe word is not null from min to max
                 for(int i = minY; i <= maxY; i++){
                     if(test_game_board[minX][i] == null){System.out.println("there was a null tile in the middle of word"); return false;}
@@ -250,7 +341,7 @@ public class Board {
                         if(p.xPos == test_game_board.length-1){
                             //only check to the left
                             if(test_game_board[p.xPos -1][p.yPos] != null){
-                                System.out.println("verifying left of word");
+                                //System.out.println("verifying left of word");
                                 if(!isHorizontalValid(p.xPos,p.xPos,p.yPos,temp,test_game_board)){
                                     System.out.println("It was not a valid horizontal subset returning false");
                                     return false;
@@ -260,7 +351,7 @@ public class Board {
                         }else if(p.xPos == 0){
                             //only check to the right
                             if(test_game_board[p.xPos +1][p.yPos] != null){
-                                System.out.println("verifying right of word");
+                                //System.out.println("verifying right of word");
                                 if(!isHorizontalValid(p.xPos,p.xPos,p.yPos,temp,test_game_board)){
                                     System.out.println("It was not a valid horizontal subset returning false");
                                     return false;
@@ -270,7 +361,7 @@ public class Board {
                         }else{
                             //we should only check if left is not null or right is not null
                             if(test_game_board[p.xPos -1][p.yPos] != null || test_game_board[p.xPos +1][p.yPos] != null){
-                                System.out.println("verifying left and right of word");
+                                //System.out.println("verifying left and right of word");
                                 if(!isHorizontalValid(p.xPos,p.xPos,p.yPos,temp,test_game_board)){
                                     System.out.println("It was not a valid horizontal subset returning false");
                                     return false;
@@ -292,14 +383,14 @@ public class Board {
             if(p.xPos == test_game_board.length-1){
                 //only check to the left
                 if(test_game_board[p.xPos -1][p.yPos] != null){
-                    System.out.println("checking left of word");
+                    //System.out.println("checking left of word");
                     isHorrizontal = true;
                 }
                 //leftmost case
             }else if(p.xPos == 0){
                 //only check to the right
                 if(test_game_board[p.xPos +1][p.yPos] != null){
-                    System.out.println("checking right of word");
+                    //System.out.println("checking right of word");
                     isHorrizontal = true;
 
                 }
@@ -307,31 +398,31 @@ public class Board {
             }else{
                 //we should only check if left is not null or right is not null
                 if(test_game_board[p.xPos -1][p.yPos] != null || test_game_board[p.xPos +1][p.yPos] != null){
-                    System.out.println("checking left and right of word");
+                    //System.out.println("checking left and right of word");
                     isHorrizontal = true;
                 }
             }
             //if there is a neighbor above or below, the word must validate vertically
             //there are three equivalence classes: top, bottom and middle
             if(p.yPos == test_game_board[0].length-1){
-                System.out.println("only check below");
+                //System.out.println("only check below");
                 if(test_game_board[p.xPos][p.yPos -1] != null){
-                    System.out.println("checking below word");
+                    //System.out.println("checking below word");
                     isVertical = true;
                 }
                 //min case
             }else if(p.yPos == 0){
-                System.out.println("only check above");
+                //System.out.println("only check above");
                 if(test_game_board[p.xPos][p.yPos +1] != null){
-                    System.out.println("checking above word");
+                    //System.out.println("checking above word");
                     isVertical = true;
 
                 }
                 //middle case
             }else{
-                System.out.println("we should only check if above is not null or below is not null");
+                //System.out.println("we should only check if above is not null or below is not null");
                 if(test_game_board[p.xPos][p.yPos -1] != null || test_game_board[p.xPos][p.yPos +1] != null){
-                    System.out.println("checking above and below word");
+                    //System.out.println("checking above and below word");
                     isVertical = true;
                 }
             }
@@ -389,11 +480,11 @@ public class Board {
                 word += test_game_board[i][Y].letter;
             }
         }
-        System.out.print("Checking horizontal word: "+word+" = ");
+        //System.out.print("Checking horizontal word: "+word+" = ");
 
         //now we must check if the word is a real allowed word if it is,
         boolean isItAWord = WordVerification.getInstance().isWord(word);
-        System.out.println(isItAWord);
+        //System.out.println(isItAWord);
         return isItAWord;
 
     }
@@ -432,12 +523,27 @@ public class Board {
                 word += test_game_board[X][i].letter;
             }
         }
-        System.out.print("Checking vertical word: "+word+" = ");
+        //System.out.print("Checking vertical word: "+word+" = ");
 
         //now we must check if the word is a real allowed word if it is,
         boolean isItAWord = WordVerification.getInstance().isWord(word);
         System.out.println(isItAWord);
         return isItAWord;
+    }
+
+    public String PrintBoard(){
+        String ret = " 012345678910";
+        for(int i = 0; i < the_game_board.length; i++){
+            ret+= i;
+            for(int j = 0; j < the_game_board[0].length; j++){
+                if(the_game_board[i][j] == null)
+                    ret+="_";
+                else
+                    ret+=the_game_board[i][j].letter;
+            }
+            ret+="\n";
+        }
+        return ret;
     }
 }
 

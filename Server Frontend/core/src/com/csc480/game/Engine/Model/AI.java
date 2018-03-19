@@ -57,15 +57,15 @@ public class AI extends Player {
                             horConstr[h] = boardState.the_game_board[h][j].letter;
                     }
                     //get all possible plays with current hand and boardstate
-                    //System.out.println("getting all possible plays horrizontally");
+                    System.out.println("getting all possible plays horrizontally");
                     ArrayList<ArrayList<Placement>> possiblePlays = WordVerification.getInstance()
                             .TESTgetWordsFromHand(new String(hand), horConstr, i, boardState.the_game_board[i][j], true);
 
                     //print out all sets of plays
-                    //System.out.println("All possible plays");
+                    System.out.println("All possible plays: len "+possiblePlays.size());
                     for(int q = 0; q < possiblePlays.size(); q++){
                         for (int a = 0; a  < possiblePlays.get(q).size(); a++){
-                            //System.out.print("("+possiblePlays.get(q).get(a).letter+", "+possiblePlays.get(q).get(a).xPos+", "+possiblePlays.get(q).get(a).yPos+"),");
+                            System.out.print("("+possiblePlays.get(q).get(a).letter+", "+possiblePlays.get(q).get(a).xPos+", "+possiblePlays.get(q).get(a).yPos+"),");
                         }
                         System.out.println();
 
@@ -74,9 +74,9 @@ public class AI extends Player {
                     for(int p = 0; p < possiblePlays.size(); p++){
                         if( boardState.verifyWordPlacement(possiblePlays.get(p))){
                             //update that shit
-                            //System.out.println("adding to under consideration`");
+                            System.out.println("adding to under consideration`");
                             for(int numP = 0; numP < possiblePlays.get(p).size(); numP++){
-                                //System.out.println(possiblePlays.get(p).get(numP).letter + ": at ("+possiblePlays.get(p).get(numP).xPos+", "+possiblePlays.get(p).get(numP).yPos+")");
+                                System.out.println(possiblePlays.get(p).get(numP).letter + ": at ("+possiblePlays.get(p).get(numP).xPos+", "+possiblePlays.get(p).get(numP).yPos+")");
                             }
                             myCashe.Push(possiblePlays.get(p));
                             GameManager.getInstance().placementsUnderConsideration = possiblePlays.get(p);
@@ -86,7 +86,7 @@ public class AI extends Player {
                     //parse vert
                     char[] vertConstr = new char[11];
                     //for(int v = boardState.the_game_board.length-1; v >= 0; v--){
-                    for(int v = boardState.the_game_board.length-1; v >= 0; v--){
+                    for(int v = 0; v < boardState.the_game_board.length; v++){
                         if(boardState.the_game_board[i][v] != null)
                             vertConstr[10-v] = boardState.the_game_board[i][v].letter;
                     }
@@ -97,9 +97,9 @@ public class AI extends Player {
 
                     //print out all sets of plays
                     System.out.println("All possible plays");
-                    for(int q = 0; q < possiblePlays.size(); q++){
-                        for (int a = 0; a  < possiblePlays.get(q).size(); a++){
-                            System.out.print("("+possiblePlays.get(q).get(a).letter+", "+possiblePlays.get(q).get(a).xPos+", "+possiblePlays.get(q).get(a).yPos+"),");
+                    for(int q = 0; q < possiblePlaysVert.size(); q++){
+                        for (int a = 0; a  < possiblePlaysVert.get(q).size(); a++){
+                            System.out.print("("+possiblePlaysVert.get(q).get(a).letter+", "+possiblePlaysVert.get(q).get(a).xPos+", "+possiblePlaysVert.get(q).get(a).yPos+"),");
                         }
                         System.out.println();
 

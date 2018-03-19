@@ -33,7 +33,8 @@ public class WordVerification {
         try{
             Long startTime = System.nanoTime();
             System.out.println("Starting Creating HashSet");
-            file = new File(Gdx.files.internal("words.txt").path());
+            //file = new File(Gdx.files.internal("words.txt").path());
+            file = new File("C:\\Users\\chris\\Desktop\\Red-Team\\Server Frontend\\core\\assets\\words.txt");
             inFileScanner = new Scanner(file);
             int c = 0;
             while (inFileScanner.hasNext()){
@@ -69,14 +70,17 @@ public class WordVerification {
             if(e.length() <= constraints.length){
                 for(int i = 0; i < e.length(); i++){
                     if(temp.contains(e.charAt(i)+"")){
-                        temp = temp.replace(e.charAt(i),'_');
+                        temp = temp.replaceFirst(e.charAt(i)+"",'_'+"");
+
                     }else {
+                        //System.out.println("letter: "+ e.charAt(i) +" of "+e + " doesnt fit temp: "+temp+" of handntiles: "+handAndReleventBoardTiles);
                         isGoodFlag = false;
                         break;
                     }
                 }
                 if(isGoodFlag){
                     try{
+                        System.out.println("e: "+e+" matched? regex "+regex+"="+e.matches(regex));
                         if(e.matches(regex)) {
                             System.out.println(e + " matched regex: "+regex);
                             //Transform result to placement
@@ -88,14 +92,14 @@ public class WordVerification {
                                 for (int i = playRoot; i > 0; i--) {
                                     //create a new placement @
                                     if(index-i >= constraints.length)break;
-                                    // System.out.println("constraint@" + i + " = 0:" + (constraints[index - i] == 0));
+                                    System.out.println("constraint@" + i + " = 0:" + (constraints[index - i] == 0));
                                     if (constraints[index - i] == 0) {
                                         if (horrizontal) {
-                                            //System.out.println("adding a placement of "+e.charAt(i-1)+" cause its blank here");
+                                            System.out.println("adding a placement of "+e.charAt(i-1)+" @ ("+(index - i)+","+(int) root.my_position.y+") cause its blank here");
                                             play.add(new Placement(e.charAt(i - 1), index - i, (int) root.my_position.y));
                                         }else {
-                                            //System.out.println("adding a placement of "+e.charAt(i-1)+" cause its blank here");
-                                            play.add(new Placement(e.charAt(i - 1), (int) root.my_position.x, index - i));
+                                            System.out.println("adding a placement of "+e.charAt(i-1)+" @ ("+((int) root.my_position.x)+","+(index-i)+") cause its blank here");
+                                            play.add(new Placement(e.charAt(i - 1), (int) root.my_position.x, 10 - (index - i)));
                                         }
                                     }
                                 }
@@ -103,15 +107,16 @@ public class WordVerification {
                                 for (int i = playRoot; i < e.length()-1; i++) {
                                     //create a new placement @
                                     if(index+i >=constraints.length)break;
-                                    //System.out.println("constraint@" + i + " = 0:" + (constraints[index + i] == 0));
+                                    if(index+i < 0)break;
+                                    System.out.println("constraint@" + i + " = 0:" + (constraints[index + i] == 0));
                                     if (constraints[index + i] == 0) {
                                         if (horrizontal) {
-                                            //System.out.println("adding a placement of "+e.charAt(i+1)+" cause its blank here");
+                                            System.out.println("adding a placement of "+e.charAt(i+1)+" @ ("+(index + i)+","+(int) root.my_position.y+") cause its blank here");
                                             play.add(new Placement(e.charAt(i + 1), index + i, (int) root.my_position.y));
                                         }
                                         else {
-                                            //System.out.println("adding a placement of "+e.charAt(i+1)+" cause its blank here");
-                                            play.add(new Placement(e.charAt(i + 1), (int) root.my_position.x, index + i));
+                                            System.out.println("adding a placement of "+e.charAt(i+1)+" @ ("+((int) root.my_position.x)+","+(index+i)+") cause its blank here");
+                                            play.add(new Placement(e.charAt(i + 1), (int) root.my_position.x, 10- (index + i)));
                                         }
                                     }
                                 }
@@ -126,7 +131,7 @@ public class WordVerification {
                                     }
                                 } else {
                                     for (int w = 0; w < e.length(); w++) {
-                                        play.add(new Placement(e.charAt(w), (int) root.my_position.y, (index - e.length() / 2) + w));
+                                        play.add(new Placement(e.charAt(w), (int) root.my_position.y, 10- ((index - e.length() / 2) + w)));
                                     }
                                 }
                                 //play.add(new Placement(e.charAt(playRoot),(int)root.my_position.y,(int)root.my_position.y));
@@ -139,6 +144,8 @@ public class WordVerification {
                         exp.printStackTrace();
                     }
                 }
+            }else {
+                //System.out.println("word cant be longer than constraints");
             }
         }
         System.out.println("Found "+possiblePlays.size()+" possible words.");

@@ -95,6 +95,18 @@ public class TestingInputProcessor implements InputProcessor {
                 GameManager.getInstance().theBoard.addWord(bestPlay);
                 GameManager.getInstance().placementsUnderConsideration.clear();
             }
+        }else if(character == '`'){
+            System.out.println("Testing AI move");
+            System.out.println(GameManager.getInstance().theBoard.PrintBoard());
+            char[] constr = new char[11];
+            constr[6] = 'l';
+            ArrayList<ArrayList<Placement>> possiblePlays = WordVerification.getInstance()
+                    .TESTgetWordsFromHand("estqqqq", constr, 6, GameManager.getInstance().theBoard.the_game_board[3][4], false);
+            System.out.println("List of all valid wirds/////////////////////////////////////////////////////////////////////////////////////////////////////////////////\n\n\n");
+            for(int i = 0; i < possiblePlays.size(); i++){
+                WordVerification.PrintPlay(possiblePlays.get(i));
+                System.out.println("is a valid word:" +  GameManager.getInstance().theBoard.verifyWordPlacement(possiblePlays.get(i)));
+            }
         }else{
             System.out.println("changing to "+character);
             System.out.println("Adding to AI hand "+character);

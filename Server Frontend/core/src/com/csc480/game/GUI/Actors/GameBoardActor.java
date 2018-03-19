@@ -53,10 +53,16 @@ public class GameBoardActor extends Actor {
         boardCam.update();
 //FOR TESTING ONLY REMOVE ONCE DONE TESTING///////////////////////////////////////////////////
         ArrayList<Placement> testing = new ArrayList<Placement>();
-        testing.add(new Placement('t',5,6));
-        testing.add(new Placement('e',5,5));
+        testing.add(new Placement('t',3,4));
+        testing.add(new Placement('e',4,4));
         testing.add(new Placement('s',5,4));
-        testing.add(new Placement('t',5,3));
+        testing.add(new Placement('t',6,4));
+
+        //testing.add(new Placement('e',5,3));
+
+        //testing.add(new Placement('t',5,2));
+
+
 
         GameManager.getInstance().theBoard.addWord(testing);
         GameManager.getInstance().placementsUnderConsideration.add(new Placement('t',4,5));
