@@ -71,6 +71,8 @@ app.use('/', indexRoute)
 app.use('/api', [statsRoute, usersRoute])
 app.use('/api/game/', gameRoute)
 
+app.use('/static', express.static(path.join(__dirname, '/static')))
+
 /**
  * Called when the server is ready and it listens on the specified port
  */
