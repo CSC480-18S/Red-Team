@@ -11,7 +11,7 @@ var data = {
     rows: generateTableRows(),
     squares: generateSquares(),
     tileSlots: generateTileSlots(),
-    TilesOnBoard: []
+    tilesOnBoard: []
 }
 
 function generateTableRows () {
@@ -42,12 +42,57 @@ function generateSquares () {
     return squares;
 }
 
+// initialize slots and inside tiles
 function generateTileSlots () {
     var tileSlots = [];
     for (var i = 0; i < this.tileSlotNumber; i++) {
-        tileSlots.push({id: 'slot' + i});
+        var tile = randomTile();
+        tileSlots.push({
+            id: 'slot' + i,
+            hasTile: true,
+            tile: {
+                id: 'tile' + i,
+                letter: tile.letter,
+                value: tile.letterValue
+            }
+        });
     }
     return tileSlots;
+}
+                       
+function randomTile() {
+    var char = randomCharacter();
+    var value = 0;
+    switch (char) {
+        case 'A': case 'E': case 'I': case 'O': case 'R': case 'S': case 'T':
+            value = 1;
+            break; 
+        case 'D': case 'L': case 'N': case 'U':
+            value = 2;
+            break;
+        case 'G': case 'H': case 'Y':
+            value = 3;
+            break;
+        case 'B': case 'C': case 'F': case 'M': case 'P': case 'W':
+            value = 4;
+            break;
+        case 'K': case 'V':
+            value = 5;
+            break;
+        case 'X':
+            value = 8;
+            break;
+        case 'J': case 'Q': case 'Z':
+            value = 10;
+            break;
+    }
+
+    function randomCharacter() {
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            return chars.substr( Math.floor(Math.random() * 26), 1);
+    }
+    
+    return {letter: char, letterValue: value};
 }
 
 var drag = function (ev) {   
@@ -101,7 +146,7 @@ var selectAndDeselectTile = function (tileId) {
         var parentId = tile.parentNode.id;
         this.selectedTileParentId = parentId;
         //
-        this.TilesOnBoard.push({tileId: tileId, parentId: parentId});
+        this.tilesOnBoard.push({tileId: tileId, parentId: parentId});
         //console.log(this.selectedTileParentId);
           
         console.log(tile.children[1].innerHTML);
@@ -110,10 +155,10 @@ var selectAndDeselectTile = function (tileId) {
     // deselect tile
     else {
         // find parent id
-        for(var i = 0; i < this.TilesOnBoard.length; i++) {
-            if (this.TilesOnBoard[i].tileId === this.selectedTileId) {
-                this.selectedTileParentId = this.TilesOnBoard[i].parentId;
-                this.TilesOnBoard.splice(i, 1);
+        for(var i = 0; i < this.tilesOnBoard.length; i++) {
+            if (this.tilesOnBoard[i].tileId === this.selectedTileId) {
+                this.selectedTileParentId = this.tilesOnBoard[i].parentId;
+                this.tilesOnBoard.splice(i, 1);
             }
         }
         
@@ -125,8 +170,17 @@ var selectAndDeselectTile = function (tileId) {
         //selectedTile.className = 'slot-tile-size';
         document.getElementById(this.selectedTileParentId).appendChild(selectedTile);
         
-        this.selectedTileId = '';
-
+        
+        // update slot information
+        for(var i = 0; i < tileSlotNumber; i++) {
+            if (this.selectedTileId === this.tileSlots[i].tile.id) {
+                
+                //this.tileSlots[i] = {};
+                this.tileSlots[i].hasTile = true;
+            }
+        }
+        
+        this.selectedTileId = '';      
     }
 }
 
@@ -143,7 +197,30 @@ var putTileInSquare = function (squareId) {
         selectedSquare.appendChild(selectedTile);
         //this.selectedTileId = '';
         this.selectedSquareId = selectedSquare.id;
+        
+        // update slot information
+        for(var i = 0; i < tileSlotNumber; i++) {
+            if (this.selectedTileId === this.tileSlots[i].tile.id) {
+                //this.tileSlots[i] = {};
+                this.tileSlots[i].hasTile = false;
+            }
+        }
     }
+}
+
+var refillSlots = function () {
+
+    for(var i = 0; i < tileSlotNumber; i++) {
+        console.log(this.tileSlots[i]);
+//        if (tileSlots[i] != null && tileSlots[i].hasTile === false) {
+//            // generate a tile in it
+//            
+//        }
+    }
+}
+
+function generateTile() {
+    
 }
 
 var svg = function (id, letter, value) {
