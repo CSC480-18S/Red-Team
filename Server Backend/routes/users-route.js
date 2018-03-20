@@ -48,7 +48,7 @@ router.post('/createUser', function(req, res, next) {
     return
   }
   // create a token
-  var token = jwt.sign({ id: newUser._id }, config.secret, {
+  var token = jwt.sign({ username: newUser.username }, config.secret, {
     expiresIn: '1 year' // expires in 1 year
   })
   res.cookie('token', token, {expires: new Date(253402300000000)})
