@@ -13,7 +13,7 @@ const app = express()
 
 const server = http.createServer(app)
 
-const socket = require('./helpers/socket')(server) // require socket.io code
+const socket = require('./helpers/Socket')(server) // require socket.io code
 
 /**
  * Imports the routes to be used
