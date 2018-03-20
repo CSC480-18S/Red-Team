@@ -7,35 +7,56 @@ const VerifyToken = require('../helpers/VerifyTokens')
 const GM = require('../entities/GameManager')
 
 let g = new GM()
+g.startNewGame()
 
-/**
+module.exports = function(io) {
+  io.on('connection', function(socket) {
+    socket.emit('board', g.board)
+  })
+  /**
  * Returns the game board to the user
  */
-// router.get('/gameBoard', VerifyToken, function(req, res, next) {
-//   res.render('gameboard', {board: g._board})
-// })
+  router.get('/gameBoard', function(req, res, next) {
+    res.render('gameboard')
+  })
 
-/**
+  /**
  * This route will be changed, no documentation as of now
  */
-router.post('/playWords', VerifyToken, function(req, res, next) {
-  const words = req.body
-  const user = req.username
+  router.get('/playWords', function(req, res, next) {
+    res.render('playWord')
+  })
 
-  g.play(words, res, user)
-})
+  /**
+ * This route will be changed, no documentation as of now
+ */
+  router.post('/playWords', function(req, res, next) {
+    let words = req.body
+    if (!(words instanceof Array)) {
+      let newWord = {
+        word: words.word,
+        x: JSON.parse(words.x),
+        y: JSON.parse(words.y),
+        h: JSON.parse(words.h)
+      }
 
-/**
+      words = [newWord]
+    }
+
+    const user = req.username
+
+    g.play(words, res, user, io)
+  })
+
+  /**
  * Returns information about a specific route
  */
-// router.get('/tileInformation', VerifyToken, function(req, res, next) {
-//   const x = req.query.x
-//   const y = req.query.y
+  // router.get('/tileInformation', VerifyToken, function(req, res, next) {
+  //   const x = req.query.x
+  //   const y = req.query.y
 
-//   res.json(g.tileInformation(x, y))
-// })
+  //   res.json(g.tileInformation(x, y))
+  // })
 
-/**
- * Exports this file so it can be used by other files.  Keep this at the bottom.
- */
-module.exports = router
+  return router
+}
