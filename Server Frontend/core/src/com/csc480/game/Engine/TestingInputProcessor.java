@@ -78,8 +78,10 @@ public class TestingInputProcessor implements InputProcessor {
         }else if(character == ']'){
             System.out.println("AI TEST YOUR THING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             for(int i = 0; i < testHandQueue.length; i++){
-                System.out.println("adding to ai:" + testHandQueue[i]);
-                testingAI.hand[i] = testHandQueue[i];
+                if(testHandQueue[i] != 0) {
+                    System.out.println("adding to ai:" + testHandQueue[i]);
+                    testingAI.hand[i] = testHandQueue[i];
+                }
             }
             System.out.println("Finding all AI plays for hand");
             Long startTime = System.nanoTime();
@@ -90,8 +92,30 @@ public class TestingInputProcessor implements InputProcessor {
                 bestPlay = testingAI.PlayBestWord();
                 if(bestPlay == null) break;
             }
+
             if(bestPlay != null && GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay)){
                 System.out.println("The AI actually made a decent play");
+                //delete this to specify the AI hand
+                /*
+                for(int i = 0; i < bestPlay.size(); i++){
+                    for(int j = 0; j < testHandQueue.length; j++){
+                        if(bestPlay.get(i).letter == testHandQueue[j]) {
+                            testHandQueue[j] = (char) 0;
+                        }
+                    }
+                }
+                for(int i = 0; i < bestPlay.size(); i++){
+                    for(int j = 0; j < testingAI.hand.length; j++){
+                        if(bestPlay.get(i).letter == testingAI.hand[j]) {
+                            testingAI.hand[j] = (char) 0;
+                        }
+                    }
+                }
+                */
+                for(int i = 0; i < testHandQueue.length; i++){
+                    //if(testHandQueue[i] == 0) testHandQueue[i] = GameManager.getInstance().getNewTiles(1).get(0).charValue();
+                }
+                //delete this to specify the AI hand ^^^
                 GameManager.getInstance().theBoard.addWord(bestPlay);
                 GameManager.getInstance().placementsUnderConsideration.clear();
             }
