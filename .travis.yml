@@ -14,8 +14,8 @@ matrix:
         directories:
           - Server\ Backend/node_modules
       script:
-        - npm run test
-    
+        - npm run codecov
+
     - language: java
       jdk: oraclejdk8
       before_script:
@@ -25,6 +25,8 @@ matrix:
       cache:
         directories:
         - $HOME/.m2
+      after_success:
+        - bash <(curl -s https://codecov.io/bash)
 
     - language: java
       jdk: oraclejdk8
@@ -35,3 +37,17 @@ matrix:
       cache:
         directories:
         - $HOME/.m2
+      after_success:
+        - bash <(curl -s https://codecov.io/bash)
+
+    - language: java
+      jdk: oraclejdk8
+      before_script:
+        - cd Database/GameDB
+        - mvn -N io.takari:maven:wrapper
+        - ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+      cache:
+        directories:
+        - $HOME/.m2
+      after_success:
+        - bash <(curl -s https://codecov.io/bash)

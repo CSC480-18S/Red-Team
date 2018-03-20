@@ -29,6 +29,9 @@ class GameManager {
     this._yellowScore = 0
   }
 
+  /**
+   * Board getter
+   */
   get board() {
     return this._board.board
   }
