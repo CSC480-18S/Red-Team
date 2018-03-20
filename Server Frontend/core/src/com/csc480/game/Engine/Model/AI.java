@@ -123,8 +123,9 @@ public class AI extends Player {
         }
         if(!hasFoundASinglePlayableTile){
             System.out.println("ITS THE FIRST MOVE OF THE BOARD OH BOY");
-            TileData centerTile =  new TileData(new Vector2(5,5), '\0',0);
-            ArrayList<ArrayList<Placement>> possiblePlaysCent = WordVerification.getInstance().TESTgetWordsFromHand(new String(hand), new char[11], 5, centerTile, true);
+            TileData centerTile =  new TileData(new Vector2(5,5), (char)0,0);
+            char[] constraints = new char[11];
+            ArrayList<ArrayList<Placement>> possiblePlaysCent = WordVerification.getInstance().TESTgetWordsFromHand(new String(hand), constraints, 5, centerTile, true);
             if(!possiblePlaysCent.isEmpty()) {
                 myCashe.Push(possiblePlaysCent.get(0));
                 GameManager.getInstance().placementsUnderConsideration = possiblePlaysCent.get(0);
