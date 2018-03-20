@@ -21,11 +21,16 @@ const tiles = letters.map(t => {
 
 class GameManager {
   constructor() {
-    this._board = new Gameboard()
+    this._board = null
     this._tileScores = []
     this._players = []
     this._greenScore = 0
+    this._error = 0
     this._yellowScore = 0
+  }
+
+  get board() {
+    return this._board.board
   }
 
   /**
@@ -34,7 +39,7 @@ class GameManager {
    * @param {Object} res - response object
    * @param {String} user - user that played this move
    */
-  play(words, res, user) {
+  play(words, res, user, io) {
     let trimmed = this.trimWords(words)
 
     this.wordValidation(trimmed)
@@ -44,9 +49,10 @@ class GameManager {
         if (response === true) {
           placement = this._board.placeWords(trimmed, user)
         } else {
-          return this.handleResponse(this.error, response, res)
+          return this.handleResponse(this._error, response, res)
         }
-        return this.handleResponse(this.error, placement, res)
+        io.emit('board', this._board.board)
+        return this.handleResponse(this._board.error, placement, res)
       })
       .catch(e => {
         return res.status(400).json({code: 'D1', title: 'Database Error', desc: e.code})
@@ -74,11 +80,11 @@ class GameManager {
   pruneResults(response) {
     for (let word of response) {
       if (word.bad) {
-        this.error = 6
+        this._error = 6
         return word.word
       }
       if (!word.valid) {
-        this.error = 1
+        this._error = 1
         return word.word
       }
     }
@@ -135,6 +141,7 @@ class GameManager {
       result['word'] = word.toUpperCase()
     }
 
+    this._error = 0
     return res.json(result)
   }
 
@@ -179,6 +186,7 @@ class GameManager {
    * @param {Number} score - score
    */
   addScore(player, score) {
+    // Need to update DB as well
     player.addScore(score)
 
     switch (player.team) {
@@ -218,7 +226,6 @@ class GameManager {
     // Need to grab newest tile scores every game
     // PSUEDO: axios call out to DB, add scores to dictionary
     this.resetScores()
-    this.resetPlayerScores()
     this.resetGameboard()
   }
 
