@@ -12,15 +12,21 @@ import com.csc480.game.GUI.GameScreen;
  *          screens around or dispose of them when another screen is set.!!
  */
 public class OswebbleGame extends Game {
+    public static final int BOARD_SIZE = 11;
     public SpriteBatch batch;
+    public SpriteBatch fontBatch;
 
     GameScreen theGameScreen;
 
 
+    /**
+     * Instantiate the game
+     */
     @Override
     public void create () {
         Gdx.graphics.setTitle("Oswebble");
         batch = new SpriteBatch();
+        fontBatch = new SpriteBatch();
         theGameScreen = new GameScreen(this);
 
         //set the screen that the game will use as
@@ -28,13 +34,20 @@ public class OswebbleGame extends Game {
         setScreen(theGameScreen);
     }
 
+    /**
+     * Dont touch this
+     */
     @Override
     public void render () {
        super.render();
     }
 
+    /**
+     * Clear up resources
+     */
     @Override
     public void dispose () {
         batch.dispose();
+        fontBatch.dispose();
     }
 }
