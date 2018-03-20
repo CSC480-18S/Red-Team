@@ -4,12 +4,22 @@
 const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
+const http = require('http')
+
+/**
+ * Set to a variable, instead of typing this out everytime
+ */
+const app = express()
+
+const server = http.createServer(app)
+
+const socket = require('./helpers/socket')(server) // require socket.io code
 
 /**
  * Imports the routes to be used
  */
 const indexRoute = require('./routes/index-route')
-const gameRoute = require('./routes/game-route')
+const gameRoute = require('./routes/game-route')(socket)
 const statsRoute = require('./routes/stats-route')
 const usersRoute = require('./routes/users-route')
 
@@ -22,11 +32,6 @@ const override = require('./helpers/Override')
  * Port the server listens on
  */
 const port = 3000
-
-/**
- * Set to a variable, instead of typing this out everytime
- */
-const app = express()
 
 /**
  * Set the headers the server accepts
@@ -71,9 +76,11 @@ app.use('/', indexRoute)
 app.use('/api', [statsRoute, usersRoute])
 app.use('/api/game/', gameRoute)
 
+app.use('/static', express.static(path.join(__dirname, '/static')))
+
 /**
  * Called when the server is ready and it listens on the specified port
  */
-app.listen(port, function() {
+server.listen(port, function() {
   console.log('Server started on port ' + port)
 })

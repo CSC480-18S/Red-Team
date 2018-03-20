@@ -12,29 +12,41 @@
     </style>
 </head>
 <body>
-    <%if (board) { %>
-        <table class="table">
-            <th></th>
-        <% for(var i=0; i<board.length; i++) {%>
-            <th><%= i %></th>
-        <% } %>
-        <% for(var i=0; i<board.length; i++) {%>
-            <tr>
-            <th><%= i %></th>
-            <% for(var j=0; j<board[0].length; j++) {%>
-                <td><%= board[i][j].letter %></td>
-            <% } %>
-            </tr>
-        <% } %>
-        </table>
-    <% } %>
+    
+    <table id="board" class="table">
 
-    <script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
-    <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-        crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
-        crossorigin="anonymous">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
-        crossorigin="anonymous"></script>
+    </table>
+
+    <script type="text/javascript" src="/static/tether-1.2.4.min.js"></script>
+    <script type="text/javascript" src="/static/jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" href="/static/bootstrap-4.0.0.min.css"></script>
+    <script type="text/javascript" src="/static/bootstrap-4.0.0.min.js"></script>
+    <script type="text/javascript" src="/static/socketio-2.0.3.min.js"></script>
+
+    <script>
+        let socket = io()
+        let board
+
+        socket.on('board', b => {
+            board = b
+            
+            $('#board').empty()
+            $('#board').append('<th></th>')
+            for(let i = 0; i < board.length; i++){
+                $('#board').append(`<th>${i}</th>`)
+            }
+            for(let i = 0; i < board.length; i++){
+                $('#board').append('<tr>')
+                $('#board').append(`<th>${i}</th>`)
+                for(let j = 0; j < board[0].length; j++){
+                    $('#board').append(`<td>${board[i][j]._letter}</td>`)
+                }
+                $('#board').append('</tr>')
+            }
+
+        })
+
+    </script>
+    
 </body>
 </html>
