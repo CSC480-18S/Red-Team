@@ -1,5 +1,8 @@
 const GB = require('../entities/Gameboard')
 const Tile = require('../entities/Tile')
+const GameManager = require('../entities/GameManager')
+const Player = require('../entities/Player')
+
 /**
  * Imports the lodash library
  */
@@ -284,4 +287,10 @@ describe('Tile tests', () => {
 
     expect(tile.letterPlaced).toBe(false)
   })
+})
+
+describe('Game Manager tests', () => {
+})
+
+describe('Player tests', () => {
 })
