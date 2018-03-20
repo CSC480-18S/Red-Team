@@ -53,10 +53,10 @@ public class GameBoardActor extends Actor {
         boardCam.update();
 //FOR TESTING ONLY REMOVE ONCE DONE TESTING///////////////////////////////////////////////////
         ArrayList<Placement> testing = new ArrayList<Placement>();
-        testing.add(new Placement('t',3,4));
-        testing.add(new Placement('e',4,4));
-        testing.add(new Placement('s',5,4));
-        testing.add(new Placement('t',6,4));
+        //testing.add(new Placement('t',3,4));
+        //testing.add(new Placement('e',4,4));
+        //testing.add(new Placement('s',5,4));
+       // testing.add(new Placement('t',6,4));
 
         //testing.add(new Placement('e',5,3));
 
@@ -65,7 +65,7 @@ public class GameBoardActor extends Actor {
 
 
         GameManager.getInstance().theBoard.addWord(testing);
-        GameManager.getInstance().placementsUnderConsideration.add(new Placement('t',4,5));
+        //GameManager.getInstance().placementsUnderConsideration.add(new Placement('t',4,5));
 //////////////////////////////////////////////////////////////////////////////////////////////
 
     }
@@ -83,6 +83,8 @@ public class GameBoardActor extends Actor {
         renderer.setView(boardCam.combined, 0,0,GameScreen.BOARD_SIZE,GameScreen.BOARD_SIZE);
         TiledMapTileLayer playedLayer = TiledUtils.generatePlacementsTiledLayer(GameManager.getInstance().theBoard);
         renderer.getMap().getLayers().add(playedLayer);
+        TiledMapTileLayer thinkingLayer = TiledUtils.generateThinkingTiledLayer();
+        renderer.getMap().getLayers().add(thinkingLayer);
         renderer.render();
         renderer.getMap().getLayers().remove(playedLayer);
 

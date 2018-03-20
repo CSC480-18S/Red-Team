@@ -68,7 +68,7 @@ public class GameManager {
         ArrayList<Character> ret = new ArrayList<Character>();
 //THIS IS FOR TESTING ONLY SHOULD CONNECT TO THE DATABASE/////////////////////////////////////////////////////
         for(int i = 0; i < num; i++){
-            ret.add(new Character((char) MathUtils.random(26)));
+            ret.add(new Character((char) (MathUtils.random(25)+97)));
         }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
         return ret;
