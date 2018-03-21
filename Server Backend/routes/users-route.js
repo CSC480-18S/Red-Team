@@ -43,15 +43,13 @@ router.post('/createUser', function(req, res, next) {
       res.json({ username: newUser.username, team: newUser.team })
       return
     }
-  }
-  if (!newUser) {
-    res.status(500).json(
-      {code: 'U2', title: 'User error', desc: 'There was a problem registering the user.'})
-    return
-  }
-  // create a token
-  var token = jwt.sign({ username: newUser.username }, config.secret, {
-    expiresIn: '1 year' // expires in 1 year
+    error = 0
+    /**
+      * Returns to the user a JSON object containing the new user
+      */
+    res.json(response)
+  }).catch(e => {
+    console.log(e)
   })
 })
 

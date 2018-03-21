@@ -114,6 +114,11 @@ td {
     */
 }
 
+.wrapper-buttons {
+    width: 100%;
+    margin: 0 auto;
+}
+
 .row-style {
     margin: 2px 2px 0 2px;
     clear: both;    
@@ -139,4 +144,17 @@ td {
 
 .letter-value{
     font-size: 0.35em;
+}
+
+.container-buttons {
+    width: 100%;
+}
+
+button {
+    font-size: 1em;
+    font-family: 'Press Start 2P', sans-serif;
+    display: block;
+    margin: 0 auto;
+    padding: 1rem;
+    
 }
