@@ -2,11 +2,17 @@ package com.csc480.game.Engine;
 
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.csc480.game.Engine.Model.AI;
 import com.csc480.game.Engine.Model.Placement;
+import com.csc480.game.Engine.Model.PlayIdea;
 import com.csc480.game.GUI.GameScreen;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import javafx.scene.Camera;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,13 +93,13 @@ public class TestingInputProcessor implements InputProcessor {
             Long startTime = System.nanoTime();
             testingAI.TESTFindPlays(GameManager.getInstance().theBoard);
             System.out.println("finding all possible AI plays took nanos: "+(System.nanoTime()-startTime));
-            ArrayList<Placement> bestPlay = testingAI.PlayBestWord();
-            while(bestPlay != null && !GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay)){
+            PlayIdea bestPlay = testingAI.PlayBestWord();
+            while(bestPlay != null && !GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay.placements)){
                 bestPlay = testingAI.PlayBestWord();
                 if(bestPlay == null) break;
             }
 
-            if(bestPlay != null && GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay)){
+            if(bestPlay != null && GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay.placements)){
                 System.out.println("The AI actually made a decent play");
                 //delete this to specify the AI hand
                 /*
@@ -116,20 +122,31 @@ public class TestingInputProcessor implements InputProcessor {
                     //if(testHandQueue[i] == 0) testHandQueue[i] = GameManager.getInstance().getNewTiles(1).get(0).charValue();
                 }
                 //delete this to specify the AI hand ^^^
-                GameManager.getInstance().theBoard.addWord(bestPlay);
+
+                try{
+                    JSONObject temp = new JSONObject();
+                    temp.put("word",bestPlay.myWord);
+                    Vector2 pos = bestPlay.GetStartPos();
+                    temp.put("x", (int)pos.x);
+                    temp.put("y", (int)pos.y);
+                    temp.put("h", bestPlay.isHorizontalPlay());
+                    JSONArray words = new JSONArray();
+                    words.put(temp);
+                    System.out.println(words.toString());
+                    String s = words.toString();
+                    //System.out.println(SocketManager.GetJSON(SocketManager.GetBackendConnection("/api/game/playword", "POST", postIt)).toString());
+                    System.out.println(
+                            Unirest.post("http://localhost:3000/api/game/playWords")
+                                    .header("accept", "application/json")
+                                    .header("Content-Type", "application/json")
+                                    .body(words.toString())
+                                    .asString());
+                } catch (UnirestException e) {
+                    e.printStackTrace();
+                }
+
+                GameManager.getInstance().theBoard.addWord(bestPlay.placements);
                 GameManager.getInstance().placementsUnderConsideration.clear();
-            }
-        }else if(character == '`'){
-            System.out.println("Testing AI move");
-            System.out.println(GameManager.getInstance().theBoard.PrintBoard());
-            char[] constr = new char[11];
-            constr[6] = 'l';
-            ArrayList<ArrayList<Placement>> possiblePlays = WordVerification.getInstance()
-                    .TESTgetWordsFromHand("estqqqq", constr, 6, GameManager.getInstance().theBoard.the_game_board[3][4], false);
-            System.out.println("List of all valid wirds/////////////////////////////////////////////////////////////////////////////////////////////////////////////////\n\n\n");
-            for(int i = 0; i < possiblePlays.size(); i++){
-                WordVerification.PrintPlay(possiblePlays.get(i));
-                System.out.println("is a valid word:" +  GameManager.getInstance().theBoard.verifyWordPlacement(possiblePlays.get(i)));
             }
         }else{
             System.out.println("changing to "+character);
