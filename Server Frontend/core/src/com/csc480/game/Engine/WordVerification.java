@@ -1,7 +1,9 @@
 package com.csc480.game.Engine;
 
 import com.badlogic.gdx.Gdx;
+import com.csc480.game.Engine.Model.AI;
 import com.csc480.game.Engine.Model.Placement;
+import com.csc480.game.Engine.Model.PlayIdea;
 import com.csc480.game.Engine.Model.TileData;
 
 import java.io.File;
@@ -33,8 +35,8 @@ public class WordVerification {
         try{
             Long startTime = System.nanoTime();
             System.out.println("Starting Creating HashSet");
-            //file = new File(Gdx.files.internal("words.txt").path());
-            file = new File("C:\\Users\\chris\\Desktop\\Red-Team\\Server Frontend\\core\\assets\\words.txt");
+            file = new File(Gdx.files.internal("words.txt").path());
+            //file = new File("C:\\Users\\chris\\Desktop\\Red-Team\\Server Frontend\\core\\assets\\words.txt");
             inFileScanner = new Scanner(file);
             int c = 0;
             while (inFileScanner.hasNext()){
@@ -48,7 +50,7 @@ public class WordVerification {
 
     }
 
-    public ArrayList<ArrayList<Placement>> TESTgetWordsFromHand(String hand, char[] constraints, int index, TileData root, boolean horrizontal){
+    public ArrayList<PlayIdea> TESTgetWordsFromHand(String hand, char[] constraints, int index, TileData root, boolean horrizontal){
         ////////////
         String TESTPRINTconstraints = "";
         for(int i = 0; i < constraints.length; i++){
@@ -66,7 +68,7 @@ public class WordVerification {
         for(int i = 0; i < constraints.length; i++)
             if(constraints[i] != 0)
                 handAndReleventBoardTiles += constraints[i];
-        ArrayList<ArrayList<Placement>> possiblePlays = new ArrayList<ArrayList<Placement>>();
+        ArrayList<PlayIdea> possiblePlays = new ArrayList<PlayIdea>();
         if(root.letter == 0){
             System.out.println("First play, so we can skip a bunch");
             for(String e: validWords){
@@ -89,7 +91,8 @@ public class WordVerification {
                         for(int i = 0; i < e.length(); i++){
                             play.add(new Placement(e.charAt(i), ((int) root.my_position.x-playRoot+i), (int)root.my_position.y));
                         }
-                        possiblePlays.add(play);
+                        PlayIdea p = new PlayIdea(e, play, (byte)play.size());
+                        possiblePlays.add(p);
                     }
                 }
             }
@@ -154,7 +157,8 @@ public class WordVerification {
                                     }
                                 }
                                 System.out.println("Adding to possible plays from Word Verification:" + PrintPlay(play));
-                                possiblePlays.add(play);
+                                PlayIdea p = new PlayIdea(e,play,(byte) play.size());
+                                possiblePlays.add(p);
                             }else {
                                 System.out.println("handle the first play case");
                                 //if (root.letter == 0)
@@ -169,7 +173,8 @@ public class WordVerification {
                                 }
                                 //play.add(new Placement(e.charAt(playRoot),(int)root.my_position.y,(int)root.my_position.y));
                                 System.out.println("Adding to possible plays from Word Verification:" + PrintPlay(play));
-                                possiblePlays.add(play);
+                                PlayIdea p = new PlayIdea(e,play,(byte)play.size());
+                                possiblePlays.add(p);
                             }
                         }
                     }catch (PatternSyntaxException exp){
