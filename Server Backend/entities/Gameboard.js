@@ -102,7 +102,7 @@ class Gameboard {
       }
     }
 
-    this.initialized = true
+    this._initialized = true
   }
 
   /**
