@@ -163,18 +163,18 @@ class GameManager {
     intervals.push(letterDist[0])
 
     // add the rest of the intervals
-    for (i = 1; i < letterDist.length; ++i) {
-      intervals.push(intervals[i-1] + letterDist[i])
+    for (let i = 1; i < letterDist.length; ++i) {
+      intervals.push(intervals[i - 1] + letterDist[i])
     }
 
     let newLetters = []
 
     // generate the new letters
-    for (a = 0; a < lettersUsed; ++a) {
-      index = Math.floor(Math.random * 100)
-      letter = ''
+    for (let a = 0; a < lettersUsed; ++a) {
+      let index = Math.floor(Math.random * 100)
+      let letter = ''
 
-      for (i = 0; i < intervals.length; ++i) {
+      for (let i = 0; i < intervals.length; ++i) {
         if (index <= intervals[i]) {
           letter = letters[i]
           break
