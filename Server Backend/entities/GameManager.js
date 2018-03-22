@@ -149,6 +149,45 @@ class GameManager {
   }
 
   /**
+   * Determines what new letters a player will get after they
+   * play their turn.
+   * @param {int} lettersUsed number of letters to generate
+   */
+  getNewLetters(lettersUsed) {
+    // letter distribution, alphabetically
+    const letterDist = [9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1]
+
+    let intervals = []
+
+    // push first interval
+    intervals.push(letterDist[0])
+
+    // add the rest of the intervals
+    for (i = 1; i < letterDist.length; ++i) {
+      intervals.push(intervals[i-1] + letterDist[i])
+    }
+
+    let newLetters = []
+
+    // generate the new letters
+    for (a = 0; a < lettersUsed; ++a) {
+      index = Math.floor(Math.random * 100)
+      letter = ''
+
+      for (i = 0; i < intervals.length; ++i) {
+        if (index <= intervals[i]) {
+          letter = letters[i]
+          break
+        }
+      }
+
+      newLetters.push(letter)
+    }
+
+    return newLetters
+  }
+
+  /**
    * Calculates the score of a play
    * @param {Object} player - player to add score to
    * @param {Array} words - array of words to calculate score for
