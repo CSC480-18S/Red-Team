@@ -59,7 +59,7 @@ public class WordVerification {
             else
                 TESTPRINTconstraints += constraints[i];
         }
-        System.out.println("TESTgetWordsFromHand called with: hand ="+hand+", constraints="+TESTPRINTconstraints+", index="+index+"isHor="+horrizontal);
+        System.out.println("TESTgetWordsFromHand called with: tiles ="+hand+", constraints="+TESTPRINTconstraints+", index="+index+"isHor="+horrizontal);
         ////////////
 
         String handAndReleventBoardTiles = hand;

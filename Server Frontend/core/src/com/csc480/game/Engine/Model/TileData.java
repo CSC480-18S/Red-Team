@@ -21,7 +21,18 @@ public class TileData {
         my_position = pos;
         letter = the_letter;
         letter_value = value;
+    }
+    public TileData(int x, int y, char the_letter, int value){
+        my_position = new Vector2(x,y);
+        letter = the_letter;
+        letter_value = value;
+    }
 
+    public int getX(){
+        return (int)my_position.x;
+    }
+    public int getY(){
+        return (int)my_position.y;
     }
 
 
