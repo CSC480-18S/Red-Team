@@ -7,10 +7,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.csc480.game.Engine.Model.AI;
 import com.csc480.game.Engine.Model.Placement;
 import com.csc480.game.Engine.Model.PlayIdea;
-import com.csc480.game.GUI.GameScreen;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import javafx.scene.Camera;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -86,10 +84,10 @@ public class TestingInputProcessor implements InputProcessor {
             for(int i = 0; i < testHandQueue.length; i++){
                 if(testHandQueue[i] != 0) {
                     System.out.println("adding to ai:" + testHandQueue[i]);
-                    testingAI.hand[i] = testHandQueue[i];
+                    testingAI.tiles[i] = testHandQueue[i];
                 }
             }
-            System.out.println("Finding all AI plays for hand");
+            System.out.println("Finding all AI plays for tiles");
             Long startTime = System.nanoTime();
             testingAI.TESTFindPlays(GameManager.getInstance().theBoard);
             System.out.println("finding all possible AI plays took nanos: "+(System.nanoTime()-startTime));
@@ -99,9 +97,9 @@ public class TestingInputProcessor implements InputProcessor {
                 if(bestPlay == null) break;
             }
 
-            if(bestPlay != null && GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay.placements)){
-                System.out.println("The AI actually made a decent play");
-                //delete this to specify the AI hand
+            if(bestPlay != null && bestPlay.myWord != null && GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay.placements)){
+                System.out.println("The AI found made a decent play");
+                //delete this to specify the AI tiles
                 /*
                 for(int i = 0; i < bestPlay.size(); i++){
                     for(int j = 0; j < testHandQueue.length; j++){
@@ -111,9 +109,9 @@ public class TestingInputProcessor implements InputProcessor {
                     }
                 }
                 for(int i = 0; i < bestPlay.size(); i++){
-                    for(int j = 0; j < testingAI.hand.length; j++){
-                        if(bestPlay.get(i).letter == testingAI.hand[j]) {
-                            testingAI.hand[j] = (char) 0;
+                    for(int j = 0; j < testingAI.tiles.length; j++){
+                        if(bestPlay.get(i).letter == testingAI.tiles[j]) {
+                            testingAI.tiles[j] = (char) 0;
                         }
                     }
                 }
@@ -121,10 +119,11 @@ public class TestingInputProcessor implements InputProcessor {
                 for(int i = 0; i < testHandQueue.length; i++){
                     //if(testHandQueue[i] == 0) testHandQueue[i] = GameManager.getInstance().getNewTiles(1).get(0).charValue();
                 }
-                //delete this to specify the AI hand ^^^
+                //delete this to specify the AI tiles ^^^
 
                 try{
                     JSONObject temp = new JSONObject();
+                    System.out.println("best plat word="+bestPlay.myWord);
                     temp.put("word",bestPlay.myWord);
                     Vector2 pos = bestPlay.GetStartPos();
                     temp.put("x", (int)pos.x);
@@ -150,7 +149,7 @@ public class TestingInputProcessor implements InputProcessor {
             }
         }else{
             System.out.println("changing to "+character);
-            System.out.println("Adding to AI hand "+character);
+            System.out.println("Adding to AI tiles "+character);
             lastInput = character;
             testHandQueue[aiHandCount] = character;
             aiHandCount++;

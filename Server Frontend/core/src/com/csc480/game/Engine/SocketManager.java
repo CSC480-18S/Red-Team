@@ -1,10 +1,18 @@
 package com.csc480.game.Engine;
 
+import com.badlogic.gdx.math.Vector2;
+import com.csc480.game.Engine.Model.AI;
+import com.csc480.game.Engine.Model.PlayIdea;
+import com.csc480.game.Engine.Model.TileData;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -49,9 +57,11 @@ public class SocketManager {
             public void call(Object... args) {
                 System.out.println("connection");
                 //simple example of how to access the data sent from the server
-                JSONObject data = (JSONObject) args[0];
-                try{
+                try {
+                    JSONObject data = (JSONObject) args[0];
                     String something = data.getString("something");
+                }catch(ArrayIndexOutOfBoundsException e){
+                    e.printStackTrace();
                 }catch(JSONException e){
                     e.printStackTrace();
                 }
@@ -71,67 +81,47 @@ public class SocketManager {
     }
 
     /**
-     * Pulls the JSON from the connected url into a string.
-     * ASSUMES connection is active
-     * @param myConn the active connection to url
-     * @return the JSON from the website in string format
+     * just an example function of how we will hit the backend's endpoints (not events)
      */
-    public static JSONObject GetJSON(HttpURLConnection myConn){
-        String theJSON = "";
-        String inputLine;
-        StringBuilder inputBuilder;
-        BufferedReader in;
-
+    public void ExamplePOSTBackEnd(){
+        /*
         try{
-            in = new BufferedReader(new InputStreamReader(myConn.getInputStream()));
-            inputBuilder = new StringBuilder("");
-            while((inputLine = in.readLine()) != null){
-                inputBuilder.append(inputLine+"\n");
-            }
-            return new JSONObject(inputBuilder.toString());
-        }catch(MalformedURLException e){
-            System.err.println(e);
-        }catch(IOException e){
-            System.err.println(e);
-        } catch (JSONException e) {
+            JSONObject temp = new JSONObject();
+            System.out.println("best plat word="+bestPlay.myWord);
+            temp.put("word",bestPlay.myWord);
+            Vector2 pos = bestPlay.GetStartPos();
+            temp.put("x", (int)pos.x);
+            temp.put("y", (int)pos.y);
+            temp.put("h", bestPlay.isHorizontalPlay());
+            JSONArray words = new JSONArray();
+            words.put(temp);
+            System.out.println(words.toString());
+            String s = words.toString();
+            //System.out.println(SocketManager.GetJSON(SocketManager.GetBackendConnection("/api/game/playword", "POST", postIt)).toString());
+            System.out.println(
+                    Unirest.post("http://localhost:3000/api/game/playWords")
+                            .header("accept", "application/json")
+                            .header("Content-Type", "application/json")
+                            .body(words.toString())
+                            .asString());
+        } catch (UnirestException e) {
             e.printStackTrace();
         }
-        return null;
+        */
     }
 
-    /**
-     * Connects to the backend API
-     * @return the connection
-     */
-    public static HttpURLConnection GetBackendConnection(String endpoint, String method, JSONObject data){
-        URL myURL;
-        HttpURLConnection myConn;
-        try{
-            myURL = new URL("http://localhost:3000/"+endpoint);
-            myConn = (HttpURLConnection)myURL.openConnection();
-            myConn.setRequestMethod(method);
-            byte[] outputInBytes = data.toString().getBytes("UTF-8");
-            try{
-                OutputStream os = myConn.getOutputStream();
-                os.write( outputInBytes );
-            } catch (IOException e){
-                e.printStackTrace();
-            }
-            myConn.connect();
-            return myConn;
-        }catch(MalformedURLException e){
-            e.printStackTrace();
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-        return null;
+    public TileData[][] getBoardState(){
+        //REMEMBER THAT THE Y positions need to be inverted so (10-ypos)
+        throw new NotImplementedException();
     }
 
-    private void UpdateGameState(JSONObject json){
-
+    public void BroadcastNewAI(AI tempRobot){
+        throw new NotImplementedException();
+        //socket.emit("userConnected", )
     }
 
-    public void BroadcastAIPlay(String word, int startX, int starty, boolean isHorizontal){
-
+    public void BroadcastAIPlay(PlayIdea AIplay){
+        //REMEMBER THAT THE Y positions need to be inverted so (10-ypos)
+        throw new NotImplementedException();
     }
 }
