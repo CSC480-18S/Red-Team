@@ -7,11 +7,12 @@ import com.csc480.game.Engine.WordVerification;
 import java.util.ArrayList;
 
 public class AI extends Player {
-
+    private static int counter = 0;
     public PriorityQueue myCashe;
     public AI(){
         super();
         this.isAI = true;
+        this.name = "AI"+(counter++);
         myCashe = new PriorityQueue(200);
     }
 
@@ -56,10 +57,10 @@ public class AI extends Player {
                         if(boardState.the_game_board[h][j] != null)
                             horConstr[h] = boardState.the_game_board[h][j].letter;
                     }
-                    //get all possible plays with current hand and boardstate
+                    //get all possible plays with current tiles and boardstate
                     System.out.println("getting all possible plays horrizontally");
                     ArrayList<PlayIdea> possiblePlays = WordVerification.getInstance()
-                            .TESTgetWordsFromHand(new String(hand), horConstr, i, boardState.the_game_board[i][j], true);
+                            .TESTgetWordsFromHand(new String(tiles), horConstr, i, boardState.the_game_board[i][j], true);
 
 
                     //verify they dont fuck with tiles around where theyd be played
@@ -78,10 +79,10 @@ public class AI extends Player {
                         if(boardState.the_game_board[i][v] != null)
                             vertConstr[10-v] = boardState.the_game_board[i][v].letter;
                     }
-                    //get all possible plays with current hand and boardstate
+                    //get all possible plays with current tiles and boardstate
                     System.out.println("getting all possible plays vertically!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     ArrayList<PlayIdea> possiblePlaysVert = WordVerification.getInstance()
-                            .TESTgetWordsFromHand(new String(hand), vertConstr, j, boardState.the_game_board[i][j], false);
+                            .TESTgetWordsFromHand(new String(tiles), vertConstr, j, boardState.the_game_board[i][j], false);
 
                     //verify they dont fuck with tiles around where theyd be played
                     for(int p = 0; p < possiblePlaysVert.size(); p++){
@@ -99,14 +100,14 @@ public class AI extends Player {
             System.out.println("ITS THE FIRST MOVE OF THE BOARD OH BOY");
             TileData centerTile =  new TileData(new Vector2(5,5), (char)0,0);
             char[] constraints = new char[11];
-            ArrayList<PlayIdea> possiblePlaysCent = WordVerification.getInstance().TESTgetWordsFromHand(new String(hand), constraints, 5, centerTile, true);
+            ArrayList<PlayIdea> possiblePlaysCent = WordVerification.getInstance().TESTgetWordsFromHand(new String(tiles), constraints, 5, centerTile, true);
             if(!possiblePlaysCent.isEmpty()) {
                 myCashe.Push(possiblePlaysCent.get(0));
                 GameManager.getInstance().placementsUnderConsideration = possiblePlaysCent.get(0).placements;
 //NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
             } else{
 //SKIP MY TURN AND REDRAW//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                System.err.println("should skip anf get new hand");
+                System.err.println("should skip anf get new tiles");
             }
         }
 

@@ -31,6 +31,7 @@ public class GameScreen implements Screen {
     public static float aspectRatio;
     public BitmapFont font;
     OswebbleGame oswebbleGame;
+    public final HandActor top,bottom,left,right;
 
     float unitScale = 1/TILE_PIXEL_SIZE;
 
@@ -78,24 +79,24 @@ public class GameScreen implements Screen {
         //bottom
         Group tileRacks = new Group();
         tileRacks.setPosition(GUI_UNIT_SIZE * 1, GUI_UNIT_SIZE * 1);
-        HandActor ha = new HandActor();
-        tileRacks.addActor(ha);
-        ha.setPosition(GUI_UNIT_SIZE * 2, GUI_UNIT_SIZE * 0);
+        bottom = new HandActor();
+        tileRacks.addActor(bottom);
+        bottom.setPosition(GUI_UNIT_SIZE * 2, GUI_UNIT_SIZE * 0);
         //left
-        HandActor ha2 = new HandActor();
-        tileRacks.addActor(ha2);
-        ha2.setPosition(GUI_UNIT_SIZE * 12, GUI_UNIT_SIZE * 2);
-        ha2.rotateBy(90);
+        left = new HandActor();
+        tileRacks.addActor(left);
+        left.setPosition(GUI_UNIT_SIZE * 12, GUI_UNIT_SIZE * 2);
+        left.rotateBy(90);
         //top
-        HandActor ha3 = new HandActor();
-        tileRacks.addActor(ha3);
-        ha3.setPosition(GUI_UNIT_SIZE * 10, GUI_UNIT_SIZE * 12);
-        ha3.rotateBy(180);
+        top = new HandActor();
+        tileRacks.addActor(top);
+        top.setPosition(GUI_UNIT_SIZE * 10, GUI_UNIT_SIZE * 12);
+        top.rotateBy(180);
         //right
-        HandActor ha4 = new HandActor();
-        tileRacks.addActor(ha4);
-        ha4.setPosition(GUI_UNIT_SIZE * 0, GUI_UNIT_SIZE * 10);
-        ha4.rotateBy(-90);
+        right = new HandActor();
+        tileRacks.addActor(right);
+        right.setPosition(GUI_UNIT_SIZE * 0, GUI_UNIT_SIZE * 10);
+        right.rotateBy(-90);
 
         playArea.addActor(tileRacks);
         playArea.scaleBy(GUI_UNIT_SIZE * .03f);//had to do this because i originally tested all the sizes at a lower dpi

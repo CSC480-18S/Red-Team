@@ -17,6 +17,7 @@ public class GameAdapter extends ApplicationAdapter {
 	public void create () {
 		oswebbleGame = new OswebbleGame();
 		oswebbleGame.create();
+		GameManager.getInstance().theGame = oswebbleGame;
 	}
 
 	@Override

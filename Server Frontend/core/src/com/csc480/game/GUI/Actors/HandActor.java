@@ -9,11 +9,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.csc480.game.Engine.Model.Placement;
 import com.csc480.game.Engine.Model.Player;
 import com.csc480.game.GUI.GameScreen;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 
 /**
- * This class manages the tiles in a player's hand
+ * This class manages the tiles in a player's tiles
  */
 public class HandActor extends Group {
     ArrayList<TileActor> myHand;
@@ -27,21 +28,11 @@ public class HandActor extends Group {
         Image rack = new Image(new Texture(Gdx.files.internal("rack.jpg")));
         rack.setScale(.2f);
         this.addActor(rack);
-//THIS IS JUST FOR TESTING ONLY REMOVE///////////////////////////////////////////////////
-        TileActor t1,t2,t3,t4,t5,t6,t7;
-        this.addTile(t1 = new TileActor('a'));
-        this.addTile(t2 = new TileActor('b'));
-        this.addTile(t3 = new TileActor('c'));
-        this.addTile(t4 = new TileActor('d'));
-        this.addTile(t5 = new TileActor('e'));
-        this.addTile(t6 = new TileActor('f'));
-        this.addTile(t7 = new TileActor('g'));
-        this.removeTile(t2);
-        this.removeTile(t4);
-        this.removeTile(t5);
-/////////////////////////////////////////////////////////////////////////////////////////
     }
 
+    public Player getPlayer(){
+        return associatedPlayer;
+    }
     /**
      * This should be used instead of addActor. This will place the new tile in the proper position.
      * @param a
@@ -53,7 +44,7 @@ public class HandActor extends Group {
     }
 
     /**
-     * This should be used instead of removeActor. This will reorganize the tileActors in the hand.
+     * This should be used instead of removeActor. This will reorganize the tileActors in the tiles.
      * @param a
      * @return
      */
@@ -61,7 +52,7 @@ public class HandActor extends Group {
         boolean rem = super.removeActor(a);
         if(rem) {
             myHand.remove(a);
-            //remove the tiles in the hand
+            //remove the tiles in the tiles
             int count = 0;
             for(Actor child : this.getChildren()){
                 if(child instanceof TileActor){
@@ -77,7 +68,7 @@ public class HandActor extends Group {
     }
 
     /**
-     * Set up the hand state for a new player
+     * Set up the tiles state for a new player
      * @param newPlayer
      */
     public void setPlayer(Player newPlayer){
@@ -87,21 +78,24 @@ public class HandActor extends Group {
                 this.removeTile((TileActor) child);
             }
         }
-        for(int i = 0; i < associatedPlayer.hand.length; i++){
-            if(associatedPlayer.hand[i] != 0){
-                TileActor temp = new TileActor(associatedPlayer.hand[i]);
+        for(int i = 0; i < associatedPlayer.tiles.length; i++){
+            if(associatedPlayer.tiles[i] != 0){
+                TileActor temp = new TileActor(associatedPlayer.tiles[i]);
                 this.addTile(temp);
             }
         }
     }
 
     /**
-     * Will sync the hand display with the GameState
+     * Will sync the tiles display with the GameState
      */
     public void updateState(){
         ArrayList<Character> whatsInHand = new ArrayList<Character>();
-        for(int i = 0; i < associatedPlayer.hand.length; i++)
-            whatsInHand.add(new Character(associatedPlayer.hand[i]));
+        for(int i = 0; i < associatedPlayer.tiles.length; i++) {
+            if(associatedPlayer.tiles[i] != 0)
+                whatsInHand.add(new Character(associatedPlayer.tiles[i]));
+        }
+        //remove tiles that arent here
         for(Actor child : this.getChildren()){
             if(child instanceof TileActor){
                 Character thisChar = new Character(((TileActor) child).myLetter);
@@ -111,12 +105,16 @@ public class HandActor extends Group {
                     this.removeTile((TileActor) child);
             }
         }
+        //add the rest
+        for(Character c: whatsInHand){
+            this.addTile(new TileActor(c.charValue()));
+        }
     }
 
 
     /**
      * DONT USE THIS YET IT IS NOT IMPLEMENTED NOR TESTED FULLY
-     * This will remove the Actors from the hand and move them to the board where
+     * This will remove the Actors from the tiles and move them to the board where
      * they will then be destroyed as the TiledMap updates
      * @param placements
      */
@@ -128,7 +126,7 @@ public class HandActor extends Group {
                 }
             }
         }
-        throw new UnsupportedOperationException();
+        throw new NotImplementedException();
     }
 
 }

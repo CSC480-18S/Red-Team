@@ -3,6 +3,7 @@ package com.csc480.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.csc480.game.Engine.GameManager;
 import com.csc480.game.GUI.GameScreen;
 
 /**
@@ -16,7 +17,7 @@ public class OswebbleGame extends Game {
     public SpriteBatch batch;
     public SpriteBatch fontBatch;
 
-    GameScreen theGameScreen;
+    public GameScreen theGameScreen;
 
 
     /**
@@ -28,7 +29,7 @@ public class OswebbleGame extends Game {
         batch = new SpriteBatch();
         fontBatch = new SpriteBatch();
         theGameScreen = new GameScreen(this);
-
+        GameManager.getInstance().theGame = this;
         //set the screen that the game will use as
         //  the top level view
         setScreen(theGameScreen);
