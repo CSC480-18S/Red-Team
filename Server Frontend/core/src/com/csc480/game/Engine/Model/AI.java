@@ -4,33 +4,36 @@ import com.badlogic.gdx.math.Vector2;
 import com.csc480.game.Engine.GameManager;
 import com.csc480.game.Engine.WordVerification;
 
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class AI extends Player {
     private static int counter = 0;
-    public PriorityQueue myCashe;
+    public PriorityQueue myCache;
+    public Socket mySocket;
     public AI(){
         super();
         this.isAI = true;
+        mySocket = new Socket();
         this.name = "AI"+(counter++);
-        myCashe = new PriorityQueue(200);
+        myCache = new PriorityQueue(200);
     }
 
 
     /**
      * This Should be used to actually play a word. If this returns null, call FindPlay() and run this method again.
-     * CAUTION: IF A WORD ACTUALLY GETS PLAYED YOU MUST INVALIDATE THE CASHE!
+     * CAUTION: IF A WORD ACTUALLY GETS PLAYED YOU MUST INVALIDATE THE CACHE!
      * @return the best play the AI can think of
      */
     public PlayIdea PlayBestWord(){
-        if(myCashe.size ==0)
+        if(myCache.size ==0)
             return null;
-        PlayIdea best = myCashe.Pull();
-        //myCashe.Clear();
+        PlayIdea best = myCache.Pull();
+        //myCache.Clear();
         return best;
     }
     public void MyWordWasPlayed(){
-        myCashe.Clear();
+        myCache.Clear();
     }
 
 
@@ -41,8 +44,8 @@ public class AI extends Player {
 
 
     public void TESTFindPlays(Board boardState){
-        //Invalidate the cashe
-        myCashe.Clear();
+        //Invalidate the cache
+        myCache.Clear();
 
         //AI ALGORITHM HERE
         boolean hasFoundASinglePlayableTile = false;
@@ -67,7 +70,7 @@ public class AI extends Player {
                     for(int p = 0; p < possiblePlays.size(); p++){
                         if( boardState.verifyWordPlacement(possiblePlays.get(p).placements)){
                             //update that shit
-                            myCashe.Push(possiblePlays.get(p));
+                            myCache.Push(possiblePlays.get(p));
                             GameManager.getInstance().placementsUnderConsideration = possiblePlays.get(p).placements;
 //NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
                         }
@@ -88,7 +91,7 @@ public class AI extends Player {
                     for(int p = 0; p < possiblePlaysVert.size(); p++){
                         if( boardState.verifyWordPlacement(possiblePlaysVert.get(p).placements)){
                             //update that shit
-                            myCashe.Push(possiblePlaysVert.get(p));
+                            myCache.Push(possiblePlaysVert.get(p));
                             GameManager.getInstance().placementsUnderConsideration = possiblePlaysVert.get(p).placements;
 //NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
                         }
@@ -102,7 +105,7 @@ public class AI extends Player {
             char[] constraints = new char[11];
             ArrayList<PlayIdea> possiblePlaysCent = WordVerification.getInstance().TESTgetWordsFromHand(new String(tiles), constraints, 5, centerTile, true);
             if(!possiblePlaysCent.isEmpty()) {
-                myCashe.Push(possiblePlaysCent.get(0));
+                myCache.Push(possiblePlaysCent.get(0));
                 GameManager.getInstance().placementsUnderConsideration = possiblePlaysCent.get(0).placements;
 //NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
             } else{
@@ -119,8 +122,8 @@ public class AI extends Player {
      * @return
      */
     public void FindPlays(Board boardState){
-        //Invalidate the cashe
-        myCashe.Clear();
+        //Invalidate the cache
+        myCache.Clear();
 
         //AI ALGORITHM HERE
 
