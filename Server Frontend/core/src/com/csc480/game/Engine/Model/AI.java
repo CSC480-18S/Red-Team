@@ -101,7 +101,7 @@ public class AI extends Player {
         }
         if(!hasFoundASinglePlayableTile){
             System.out.println("ITS THE FIRST MOVE OF THE BOARD OH BOY");
-            TileData centerTile =  new TileData(new Vector2(5,5), (char)0,0);
+            TileData centerTile =  new TileData(new Vector2(5,5), (char)0,0,0, this.name, System.currentTimeMillis());
             char[] constraints = new char[11];
             ArrayList<PlayIdea> possiblePlaysCent = WordVerification.getInstance().TESTgetWordsFromHand(new String(tiles), constraints, 5, centerTile, true);
             if(!possiblePlaysCent.isEmpty()) {
