@@ -2,9 +2,13 @@ package com.csc480.game.Engine.Model;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csc480.game.Engine.GameManager;
+import com.csc480.game.Engine.SocketManager;
 import com.csc480.game.Engine.WordVerification;
 
-import java.net.Socket;
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
+
 import java.util.ArrayList;
 
 public class AI extends Player {
@@ -14,9 +18,22 @@ public class AI extends Player {
     public AI(){
         super();
         this.isAI = true;
-        mySocket = new Socket();
         this.name = "AI"+(counter++);
         myCache = new PriorityQueue(200);
+        connectSocket();
+    }
+
+    public boolean connectSocket(){
+        try{
+            mySocket = IO.socket("http://localhost:3000");
+            mySocket.connect();
+            //fetch new tiles?
+            return true;
+        }
+        catch (Exception e){
+            System.err.print(e);
+        }
+        return false;
     }
 
 
