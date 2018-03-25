@@ -26,7 +26,7 @@ public class Board {
         TileData temp;
         for(Placement p : placements){
             if(the_game_board[p.xPos][p.yPos] == null) {
-                temp = new TileData(new Vector2(p.xPos, p.yPos), p.letter, 0);
+                temp = new TileData(new Vector2(p.xPos, p.yPos), p.letter, 0, 0, "temp", System.currentTimeMillis());
                 the_game_board[p.xPos][p.yPos] = temp;
             }
         }
@@ -79,7 +79,7 @@ public class Board {
                 test_game_board[i][j] = the_game_board[i][j];
         }
         for(Placement p : myCopyOfPlacements){
-            test_game_board[p.xPos][p.yPos] = new TileData(new Vector2(p.xPos,p.yPos),p.letter,0);
+            test_game_board[p.xPos][p.yPos] = new TileData(new Vector2(p.xPos,p.yPos),p.letter,0, 0, "temp", System.currentTimeMillis());
         }
 
 
