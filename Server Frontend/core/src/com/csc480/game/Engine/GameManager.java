@@ -3,9 +3,15 @@ package com.csc480.game.Engine;
 import com.badlogic.gdx.math.MathUtils;
 import com.csc480.game.Engine.Model.*;
 import com.csc480.game.OswebbleGame;
+import io.socket.client.IO;
+import io.socket.emitter.Emitter;
+import io.socket.client.Socket;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 /**
@@ -22,6 +28,9 @@ public class GameManager {
     public int greenScore;
     public int goldScore;
     public boolean gameOver;
+    //socket stuff
+    private Socket socket;
+    private double reconnectTimer = 2000.0;
 
 
     public static GameManager getInstance() {
@@ -40,6 +49,167 @@ public class GameManager {
 
     public void Dispose(){
         TextureManager.getInstance().Dispose();
+    }
+
+    ///////Socket Stuff
+    /**
+     * Connect to the Server
+     */
+    public void ConnectSocket(){
+        try {
+            socket = IO.socket("http://localhost:3000");
+            socket.connect();
+            JSONObject data = new JSONObject();
+            data.put("isServerFrontend",true);
+            socket.emit(Socket.EVENT_CONNECT,data);
+        } catch (URISyntaxException e){
+            System.err.println(e);
+        }
+    }
+
+    /**
+     * Define the actions to be taken when events occur
+     */
+    public void setUpEvents(){
+        socket.on(io.socket.client.Socket.EVENT_CONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                System.out.println("connection");
+                //simple example of how to access the data sent from the server
+                try {
+                    JSONObject data = (JSONObject) args[0];
+                }catch(ArrayIndexOutOfBoundsException e){
+                    e.printStackTrace();
+                }catch(JSONException e){
+                    e.printStackTrace();
+                }
+
+            }
+        }).on(io.socket.client.Socket.EVENT_DISCONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                System.out.println("disconnection");
+                while (!socket.connected()){
+                    socket.emit(Socket.EVENT_RECONNECT,new Emitter.Listener(){
+                        @Override
+                        public void call(Object... args) {
+
+                        }
+                    });
+                }
+
+            }
+        }).on(Socket.EVENT_RECONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                System.out.println("reconnect");
+
+            }
+        }).on("connectAI", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                System.out.println("connectAI");
+                try {
+                    JSONObject data = (JSONObject) args[0];
+                    int position = data.getInt("position");
+                    //reconnect an AI
+                    //todo @Engine -> @James or @Chris
+                }catch(ArrayIndexOutOfBoundsException e){
+                    e.printStackTrace();
+                }catch(JSONException e){
+                    e.printStackTrace();
+                }
+            }
+        }).on("wordPlayed", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                System.out.println("wordPlayed");
+                try {
+                    JSONObject data = (JSONObject) args[0];
+                    JSONArray board = data.getJSONArray("board");
+                    JSONArray col;
+                    TileData[][] parsed = parseServerBoard(board);
+                    //find the board/user state differences
+                    wordHasBeenPlayed(parsed);
+                    //hard update the game and user states
+                    hardUpdateBoardState(parsed);
+                }catch(ArrayIndexOutOfBoundsException e){
+                    e.printStackTrace();
+                }catch(JSONException e){
+                    e.printStackTrace();
+                }
+            }
+        }).on("gameEvent", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                System.out.println("gameEvent");
+                try {
+                    JSONObject data = (JSONObject) args[0];
+                    String action = data.getString("action");
+                    System.out.println(action);
+                   //todo call GUI stuff
+                }catch(ArrayIndexOutOfBoundsException e){
+                    e.printStackTrace();
+                }catch(JSONException e){
+                    e.printStackTrace();
+                }
+            }
+        }).on("gameOver", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                System.out.println("gameOver");
+                //"score": scores of game "timeout": double
+                //"gameData": array of all data of the scores and such
+                try {
+                    JSONObject data = (JSONObject) args[0];
+                    JSONObject score = data.getJSONObject("score");
+                    JSONArray gameData = data.getJSONArray("gameData");
+                    Double timeout = data.getDouble("timeOut");
+                    //todo figure out exact format server is sending it
+                    //set all player's turns to false
+                    for(Player p: thePlayers){
+                        p.turn = false;
+                    }
+                    //todo call @GUI stuff
+                    //todo reset game after time
+                }catch(ArrayIndexOutOfBoundsException e){
+                    e.printStackTrace();
+                }catch(JSONException e){
+                    e.printStackTrace();
+                }
+            }
+        }).on("newGame", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                System.out.println("newGame");
+                //todo hard reset board
+                //todo Hit /game/usersInGame and hard reset players
+            }
+        });
+    }
+
+    private TileData[][] parseServerBoard(JSONArray board){
+        TileData[][] parsed = new TileData[board.length()][board.length()];
+        JSONArray col;
+        for(int i = 0; i < board.length(); i++){
+            col = board.getJSONArray(i);
+            for(int j = 0; j < col.length(); j++){
+                JSONObject serverTile = col.getJSONObject(j);
+                //int x, int y, char the_letter, int value, int bonus, String player, long timePlayed
+                if(serverTile.getBoolean("_letterPlaced ")){
+                    TileData t = new TileData(
+                        serverTile.getInt("_x"),
+                        10-serverTile.getInt("_y"),
+                        serverTile.getString("_letter").charAt(0),
+                        0,
+                        serverTile.getInt("_multiplier"),
+                        serverTile.getString("_playedBy"),
+                        serverTile.getLong("_timePlayedAt")
+                    );
+                parsed[i][j] = t;}
+            }
+        }
+        return parsed;
     }
 
     public void updatePlayers(ArrayList<Player> backEndPlayers, int currentPlayer){
@@ -141,30 +311,28 @@ public class GameManager {
     /**
      * This will force the Board state to sync with the backend data, should only be used to recover from failures
      */
-    public void hardUpdateBoardState(){
-        theBoard.the_game_board = SocketManager.getInstance().getBoardState();
+    public void hardUpdateBoardState(TileData[][] serverBoard){
+        theBoard.the_game_board = serverBoard;
     }
 
-    public void wordHasBeenPlayed(TileData[][] backendBoardState, Player thatMadePlay, String word, int points){
-        if(thatMadePlay.team.compareTo("green") == 0){
-            greenScore += points;
-        }else if(thatMadePlay.team.compareTo("gold") == 0){
-            goldScore += points;
-        } else {
-            //the player doesnt have a team
-        }
+    public void wordHasBeenPlayed(TileData[][] backendBoardState){
         ArrayList<TileData> newPlays = getPlacementsFromBackendThatArentOnFrontEnd(backendBoardState);
         ArrayList<Placement> conversion = new ArrayList<Placement>();
         for(TileData t : newPlays){
             conversion.add(new Placement(t.letter,t.getX(),t.getY()));
         }
-//CALL SOMETHING FROM @GUI///////////////////////////////////////////////////////////////////////////////
+        // todo call @GUI to
+        // todo apply tiles from user.
+        // todo hit /game/usersInGame to apply new tile additions.
+        // todo @Engine hard update player states with ^^^ data
         //but for now we just add the plays
         if(conversion.size() > 0)
             theBoard.addWord(conversion);
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+    }
+    public void displayMessage(String message, double time){
+        //todo call @GUI function
     }
 
     /**
@@ -172,17 +340,20 @@ public class GameManager {
      * @param p
      */
     public void playerHasJoined(Player p){
-//CALL SOMETHING FROM @GUI//////////////////////////////////////////////////////////////////////////////
-
+        //todo call @GUI function
     }
     /**
      * This will propagate the player left event to all necessary locations
      * @param p
      */
     public void playerHasLeft(Player p) {
-//CALL SOMETHING FROM @GUI/////////////////////////////////////////////////////////////////////////////
+        //todo call @GUI function
     }
 
+    /**
+     * The GM wont do this, the individual AI will go through this process
+     */
+    @Deprecated
     public void currentAIMakePlay(){
         Player current = thePlayers.get(currentPlayerIndex);
         if(current.isAI){
@@ -202,21 +373,6 @@ public class GameManager {
                 placementsUnderConsideration.clear();
             }
         }
-    }
-
-    /**
-     * Not sure if i need to do this or the backend will update the AI with new tiles
-     * @param num
-     * @return
-     */
-    public ArrayList<Character> getNewTiles(int num){
-        ArrayList<Character> ret = new ArrayList<Character>();
-//THIS IS FOR TESTING ONLY SHOULD CONNECT TO THE BACKEND THROUGH THE SOCKET MANAGER/////////////////////////////////////////////////////
-        for(int i = 0; i < num; i++){
-            ret.add(new Character((char) (MathUtils.random(25)+97)));
-        }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        return ret;
     }
 
 
