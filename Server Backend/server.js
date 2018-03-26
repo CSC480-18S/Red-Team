@@ -13,13 +13,13 @@ const app = express()
 
 const server = http.createServer(app)
 
-const socket = require('./helpers/Socket')(server) // require socket.io code
+const socket = require('./helpers/Socket')(server)
 
 /**
  * Imports the routes to be used
  */
 const indexRoute = require('./routes/index-route')
-const gameRoute = require('./routes/game-route')(socket)
+const gameRoute = require('./routes/game-route')
 const statsRoute = require('./routes/stats-route')
 const usersRoute = require('./routes/users-route')
 

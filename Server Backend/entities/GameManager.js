@@ -2,7 +2,6 @@
 /**
  * Imports lodash and axios
  */
-const _ = require('lodash')
 const axios = require('axios')
 /**
  * Imports the Gameboard class
@@ -42,7 +41,7 @@ class GameManager {
    * @param {Object} res - response object
    * @param {String} user - user that played this move
    */
-  play(words, res, user, io) {
+  play(words, res, user) {
     let trimmed = this.trimWords(words)
 
     this.wordValidation(trimmed)
@@ -54,7 +53,6 @@ class GameManager {
         } else {
           return this.handleResponse(this._error, response, res)
         }
-        io.emit('board', this._board.board)
         return this.handleResponse(this._board.error, placement, res)
       })
       .catch(e => {

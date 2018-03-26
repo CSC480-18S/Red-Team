@@ -3,7 +3,6 @@
  * Imports lodash and axios
  */
 const _ = require('lodash')
-const axios = require('axios')
 
 /**
  * Imports the Tile and GameboardResponse class
