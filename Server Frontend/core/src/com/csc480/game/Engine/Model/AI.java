@@ -5,6 +5,7 @@ import com.csc480.game.Engine.GameManager;
 import com.csc480.game.Engine.SocketManager;
 import com.csc480.game.Engine.WordVerification;
 
+import com.mashape.unirest.http.Unirest;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -27,6 +28,7 @@ public class AI extends Player {
         try{
             mySocket = IO.socket("http://localhost:3000");
             mySocket.connect();
+            //emit to server that AI has connected.
             //fetch new tiles?
             return true;
         }
@@ -36,6 +38,10 @@ public class AI extends Player {
         return false;
     }
 
+
+    public void socketEvents(){
+        //SWITCH CASE FOR ALL EMITS FROM SOCKETS
+    }
 
     /**
      * This Should be used to actually play a word. If this returns null, call FindPlay() and run this method again.
@@ -49,10 +55,10 @@ public class AI extends Player {
         //myCache.Clear();
         return best;
     }
+
     public void MyWordWasPlayed(){
         myCache.Clear();
     }
-
 
 
 
