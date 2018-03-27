@@ -12,6 +12,7 @@ module.exports = function(io) {
       this._gameManager = null
       this._frontendManager = null
       this._players = []
+      this._currentlyConnectedClients = 0
       this.init()
       this.listenForClients()
     }
@@ -29,18 +30,24 @@ module.exports = function(io) {
      */
     listenForClients() {
       io.on('connection', socket => {
-        socket.emit('whoAreYou')
+        if (this._currentlyConnectedClients !== 4) {
+          socket.emit('whoAreYou')
 
-        socket.on('whoAreYou', response => {
-          this.determineClientType(socket, response)
-        })
+          socket.on('whoAreYou', response => {
+            this.determineClientType(socket, response)
+          })
 
-        socket.on('disconnect', () => {
-          if (this._frontendManager !== null) {
-            let playerPosition = this.findWhichPlayerLeft(socket)
-            this._frontendManager.askForAI(playerPosition)
-          }
-        })
+          socket.on('disconnect', () => {
+            if (this._frontendManager !== null) {
+              let playerPosition = this.findWhichPlayerLeft(socket)
+              this._frontendManager.askForAI(playerPosition)
+            }
+          })
+        } else {
+          socket.emit('errorMessage', {
+            error: 'There are already 4 players connected to the game.'
+          })
+        }
       })
     }
 
@@ -51,6 +58,8 @@ module.exports = function(io) {
     findWhichPlayerLeft(socket) {
       for (let p of this._players) {
         if (p.socket === socket) {
+          p.resetPlayerDetails()
+          this._currentlyConnectedClients--
           return p.position
         }
       }
@@ -71,6 +80,7 @@ module.exports = function(io) {
      */
     createFrontendManager(socket) {
       if (this._frontendManager === null) {
+        console.log('Server Frontend Connected')
         this._frontendManager = new FrontendManager(socket)
       }
     }
@@ -91,13 +101,10 @@ module.exports = function(io) {
      */
     determineClientType(socket, response) {
       if (response.isAI) {
-        console.log('AI Connected')
         this.updatePlayerManager('ai_test', true, socket, 'team_test')
       } else if (response.isSF) {
-        console.log('Server Frontend Connected')
         this.createFrontendManager(socket)
       } else if (response.isClient) {
-        console.log('Client Connected')
         this.updatePlayerManager('client_test', false, socket, 'team_test')
       }
     }
@@ -112,7 +119,9 @@ module.exports = function(io) {
     updatePlayerManager(name, ai, socket, team) {
       for (let p of this._players) {
         if (!p.filled) {
+          console.log('Client Connected')
           p.addPlayerDetails(name, ai, socket, team)
+          this._currentlyConnectedClients++
           break
         }
       }
