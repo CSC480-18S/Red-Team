@@ -1,7 +1,9 @@
 const GB = require('../entities/Gameboard')
 const Tile = require('../entities/Tile')
 const GameManager = require('../entities/GameManager')
-const Player = require('../entities/Player')
+const PlayerManager = require('../entities/PlayerManager')
+const FrontendManager = require('../entities/FrontendManager')
+const ServerManager = require('../entities/ServerManager')
 
 /**
  * Imports the lodash library

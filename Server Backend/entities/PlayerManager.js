@@ -1,16 +1,16 @@
 'use strict'
 
 class PlayerManager {
-  constructor(position) {
-    this._name = null
+  constructor(position, name, team, ai, socket) {
+    this._name = name
+    this._team = team
+    this._isAI = ai
+    this._socket = socket
     this._position = position
     this._tiles = []
     this._isTurn = false
     this._score = 0
-    this._team = null
-    this._isAI = false
-    this._socket = null
-    this._filled = false
+    this.listenForPlayerEvents()
   }
 
   /**
@@ -18,13 +18,6 @@ class PlayerManager {
    */
   set isTurn(turn) {
     this._isTurn = turn
-  }
-
-  /**
-   * Filled setter
-   */
-  set filled(filled) {
-    this._filled = filled
   }
 
   /**
@@ -77,27 +70,45 @@ class PlayerManager {
   }
 
   /**
-   * Filled getter
+   * Score getter
    */
-  get filled() {
-    return this._filled
+  get score() {
+    return this._score
   }
 
   /**
-   *
-   * @param {String} name - the name of the player
-   * @param {Boolean} ai - is this player an AI
-   * @param {Object} socket - socket object
-   * @param {String} team - the team the player is on
+   * Listens for events that come from the client
    */
-  addPlayerDetails(name, ai, socket, team) {
-    this._name = name
-    this._isAI = ai
-    this._socket = socket
-    this._team = team
-    this._filled = true
+  listenForPlayerEvents() {
+    this._socket.on('playWord', data => {
+      /** TODO: Take board given, then cross check it with current board
+       * to pluck out played letters and cross check with tiles in hand
+       * to make sure what they sent us is real data and not fake data
+       */
+    })
+  }
 
-    socket.emit('join', 'You have joined!')
+  /**
+   * Emits to the player if it is their turn
+   * @param {String} playerName - player name
+   */
+  emitWhosTurn(playerName) {
+    this._socket.emit('newTurn', {
+      isTurn: this._isTurn,
+      whosTurn: playerName
+    })
+  }
+
+  /**
+   * Adds details when this position was already occupied by another player controller
+   * @param {Array} tiles - array of tiles
+   * @param {Boolean} isTurn - turn
+   * @param {Number} score - score
+   */
+  addPositionDetails(tiles, isTurn, score) {
+    this._tiles = tiles
+    this._isTurn = isTurn
+    this._score = score
   }
 
   /**
