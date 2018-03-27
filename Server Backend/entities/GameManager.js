@@ -19,7 +19,13 @@ const tiles = letters.map(t => {
   }
 })
 
+// letter distribution, alphabetically
+const letterDist = [9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1]
+let totalLetters = 0
+let intervals = []
+
 class GameManager {
+
   constructor() {
     this._board = null
     this._tileScores = []
@@ -27,6 +33,16 @@ class GameManager {
     this._greenScore = 0
     this._error = 0
     this._yellowScore = 0
+
+    // set up intervals
+    // push first interval
+    intervals.push(letterDist[0])
+    totalLetters += letterDist[0]
+    // add the rest of the intervals
+    for (let i = 1; i < letterDist.length; ++i) {
+      intervals.push(intervals[i - 1] + letterDist[i])
+      totalLetters += letterDist[i]
+    }
   }
 
   /**
@@ -154,34 +170,18 @@ class GameManager {
    * @param {int} lettersUsed number of letters to generate
    */
   getNewLetters(lettersUsed) {
-    // letter distribution, alphabetically
-    const letterDist = [9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1]
-
-    let intervals = []
-
-    // push first interval
-    intervals.push(letterDist[0])
-
-    // add the rest of the intervals
-    for (let i = 1; i < letterDist.length; ++i) {
-      intervals.push(intervals[i - 1] + letterDist[i])
-    }
-
     let newLetters = []
 
     // generate the new letters
     for (let a = 0; a < lettersUsed; ++a) {
-      let index = Math.floor(Math.random * 100)
-      let letter = ''
+      let index = Math.floor(Math.random() * totalLetters)
 
       for (let i = 0; i < intervals.length; ++i) {
         if (index <= intervals[i]) {
-          letter = letters[i]
+          newLetters.push(letters[i])
           break
         }
       }
-
-      newLetters.push(letter)
     }
 
     return newLetters
