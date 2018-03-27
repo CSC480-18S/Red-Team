@@ -9,6 +9,9 @@ import com.mashape.unirest.http.Unirest;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -30,7 +33,16 @@ public class AI extends Player {
             mySocket.connect();
             //emit to server that AI has connected.
             //fetch new tiles?
-            return true;
+            mySocket.on("whoAreYou", new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    System.out.println("whoAreYou");
+                    JSONObject data = new JSONObject();
+                    data.put("isAI",true);
+                    mySocket.emit("whoAreYou",data);
+
+                }
+            });
         }
         catch (Exception e){
             System.err.print(e);
@@ -38,9 +50,91 @@ public class AI extends Player {
         return false;
     }
 
+    public boolean isConnected(){
+        return mySocket.connected();
+    }
+
+    public void disconnectAI(){
+        mySocket.disconnect();
+    }
+
 
     public void socketEvents(){
-        //SWITCH CASE FOR ALL EMITS FROM SOCKETS
+        while(mySocket.connected()) {
+            mySocket.on("whoAreYou", new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    System.out.println("whoAreYou");
+                    JSONObject data = new JSONObject();
+                    data.put("isAI", true);
+                    mySocket.emit("whoAreYou", data);
+
+                }
+            }).on("newGame", new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    try {
+                        JSONObject data = (JSONObject) args[0];
+                        System.out.println(data.toString());
+                        Player response = (Player) data.get("state");
+                        if (response.isAI) {
+                            //clear cache
+                            myCache.Clear();
+                        }
+                        else{
+                            disconnectAI();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).on("newTurn", new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    System.out.println("newTurn");
+                    try {
+                        JSONObject data = (JSONObject) args[0];
+                        System.out.println(data.toString());
+                        boolean myTurn = data.getBoolean("isTurn");
+                        //reconnect an AI
+                        if (myTurn) {
+                            PlayIdea play;
+                            if (myCache.size == 0) {
+                                TESTFindPlays(GameManager.getInstance().theBoard);
+                                play = PlayBestWord();
+                            } else {
+                                play = PlayBestWord();
+                            }
+                            try {
+                                JSONObject temp = new JSONObject();
+                                System.out.println("best plat word=" + play.myWord);
+                                temp.put("word", play.myWord);
+                                Vector2 pos = play.GetStartPos();
+                                temp.put("x", (int) pos.x);
+                                temp.put("y", (int) pos.y);
+                                temp.put("h", play.isHorizontalPlay());
+
+                                JSONArray words = new JSONArray();
+                                words.put(temp);
+                                System.out.println(words.toString());
+                                Unirest.post("http://localhost:3000/api/game/playWords")
+                                        .header("accept", "application/json")
+                                        .header("Content-Type", "application/json")
+                                        .body(words.toString())
+                                        .asString();
+                            } catch (Exception e) {
+                                System.out.println("Word send to server failed?");
+                                e.printStackTrace();
+                            }
+                        }
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
     }
 
     /**
