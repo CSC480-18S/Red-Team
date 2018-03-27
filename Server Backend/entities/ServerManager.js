@@ -11,7 +11,8 @@ module.exports = function(io) {
     constructor() {
       this._gameManager = null
       this._frontendManager = null
-      this._players = []
+      this._players = new Array(4).fill(null)
+      this._oldPlayerData = new Array(4).fill(null)
       this._currentlyConnectedClients = 0
       this.init()
       this.listenForClients()
@@ -21,7 +22,6 @@ module.exports = function(io) {
      * Initializes player and game managers
      */
     init() {
-      this.createPlayerManagers()
       this.createGameManager()
     }
 
@@ -58,11 +58,22 @@ module.exports = function(io) {
     findWhichPlayerLeft(socket) {
       for (let p of this._players) {
         if (p.socket === socket) {
-          p.resetPlayerDetails()
+          console.log('Client has disconnected.')
+          let pos = p.position
+          this.addOldData(pos, p)
+          this._players.splice(pos, 1, null)
           this._currentlyConnectedClients--
           return p.position
         }
       }
+    }
+
+    addOldData(pos, p) {
+      this._oldPlayerData.splice(pos, 1, {
+        tiles: p.tiles,
+        isTurn: p.isTurn,
+        score: p.score
+      })
     }
 
     /**
@@ -100,31 +111,45 @@ module.exports = function(io) {
      * @param {*} response - the type of the player
      */
     determineClientType(socket, response) {
-      if (response.isAI) {
-        this.updatePlayerManager('ai_test', true, socket, 'team_test')
+      if (response.tisAI) {
+        this.createPlayerManager('ai_test', 'team_test', true, socket)
       } else if (response.isSF) {
         this.createFrontendManager(socket)
       } else if (response.isClient) {
-        this.updatePlayerManager('client_test', false, socket, 'team_test')
+        this.createPlayerManager('client_test', 'team_test', false, socket)
       }
     }
 
     /**
-     * Once a player has connected, we update the player manager with their info
-     * @param {String} name - name of the user
-     * @param {Boolean} ai - is this an AI player
+     * Creates a player manager for a connected player
+     * @param {String} name - name of the player
+     * @param {String} team - player team
+     * @param {Boolean} ai - is ai
      * @param {Object} socket - socket object
-     * @param {String} team - team the player is on
      */
-    updatePlayerManager(name, ai, socket, team) {
-      for (let p of this._players) {
-        if (!p.filled) {
-          console.log('Client Connected')
-          p.addPlayerDetails(name, ai, socket, team)
-          this._currentlyConnectedClients++
+    createPlayerManager(name, team, ai, socket) {
+      for (let i = 0; i < this._players.length; i++) {
+        let p = this._players[i]
+        if (p === null) {
+          let player = new PlayerManager(i, name, team, ai, socket)
+          if (this._oldPlayerData[i] !== null) {
+            this.injectOldData(i, player)
+          }
+          this._players.splice(i, 1, player)
           break
         }
       }
+    }
+
+    /**
+     * Injects old data from a past connected player into a new player manager
+     * @param {Number} pos - position of the player
+     * @param {PlayerManager} p - manager
+     */
+    injectOldData(pos, p) {
+      let old = this._oldPlayerData[pos]
+      p.addPositionDetails(old.tiles, old.isTurn, old.score)
+      this._oldPlayerData.splice(pos, 1, null)
     }
   }
 
