@@ -19,31 +19,31 @@ describe('New letters tests', () => {
   const array2 = gm.getNewLetters(lettersUsed2)
   const array3 = gm.getNewLetters(lettersUsed3)
 
-  it('Generates ' + lettersUsed1 + ' elements', () => {
+  it('Array1 has ' + lettersUsed1 + ' elements', () => {
     expect(array1.length).toEqual(lettersUsed1)
   })
 
-  it('Generates ' + lettersUsed2 + ' elements', () => {
+  it('Array2 has ' + lettersUsed2 + ' elements', () => {
     expect(array2.length).toEqual(lettersUsed2)
   })
 
-  it('Generates ' + lettersUsed3 + ' elements', () => {
+  it('Array3 has ' + lettersUsed3 + ' elements', () => {
     expect(array3.length).toEqual(lettersUsed3)
   })
 
-  it('Contains only letters', () => {
+  it('Array1 contains only letters', () => {
     for (let i = 0; i < array1.length; ++i) {
       expect(array1[i].match(/[a-z]/i))
     }
   })
 
-  it('Contains only letters', () => {
+  it('Array2 contains only letters', () => {
     for (let i = 0; i < array2.length; ++i) {
       expect(array2[i].match(/[a-z]/i))
     }
   })
 
-  it('Contains only letters', () => {
+  it('Array3 contains only letters', () => {
     for (let i = 0; i < array3.length; ++i) {
       expect(array3[i].match(/[a-z]/i))
     }
