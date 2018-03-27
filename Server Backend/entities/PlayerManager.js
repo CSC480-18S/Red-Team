@@ -1,13 +1,30 @@
 'use strict'
 
-class Player {
-  constructor(user) {
-    this._name = user
-    this._position = undefined
+class PlayerManager {
+  constructor(position) {
+    this._name = null
+    this._position = position
     this._tiles = []
-    this._turn = false
+    this._isTurn = false
     this._score = 0
     this._team = null
+    this._isAI = false
+    this._socket = null
+    this._filled = false
+  }
+
+  /**
+   * Turn setter
+   */
+  set isTurn(turn) {
+    this._isTurn = turn
+  }
+
+  /**
+   * Filled setter
+   */
+  set filled(filled) {
+    this._filled = filled
   }
 
   /**
@@ -15,27 +32,6 @@ class Player {
    */
   get name() {
     return this._name
-  }
-
-  /**
-   * Position setter
-   */
-  set position(position) {
-    this._position = position
-  }
-
-  /**
-   * Turn setter
-   */
-  set turn(turn) {
-    this._tiles = turn
-  }
-
-  /**
-   * Team setter
-   */
-  set team(team) {
-    this._team = team
   }
 
   /**
@@ -55,8 +51,8 @@ class Player {
   /**
    * Turn getter
    */
-  get turn() {
-    return this._turn
+  get isTurn() {
+    return this._isTurn
   }
 
   /**
@@ -64,6 +60,44 @@ class Player {
    */
   get team() {
     return this._team
+  }
+
+  /**
+   * AI getter
+   */
+  get isAI() {
+    return this._isAI
+  }
+
+  /**
+   * Socket getter
+   */
+  get socket() {
+    return this._socket
+  }
+
+  /**
+   * Filled getter
+   */
+  get filled() {
+    return this._filled
+  }
+
+  /**
+   *
+   * @param {String} name - the name of the player
+   * @param {Boolean} ai - is this player an AI
+   * @param {Object} socket - socket object
+   * @param {String} team - the team the player is on
+   */
+  addPlayerDetails(name, ai, socket, team) {
+    this._name = name
+    this._isAI = ai
+    this._socket = socket
+    this._team = team
+    this._filled = true
+
+    socket.emit('join', 'You have joined!')
   }
 
   /**
@@ -112,4 +146,4 @@ class Player {
 /**
  * Exports this file so it can be used by other files.  Keep this at the bottom.
  */
-module.exports = Player
+module.exports = PlayerManager

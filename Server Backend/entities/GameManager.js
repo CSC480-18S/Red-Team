@@ -7,7 +7,6 @@ const axios = require('axios')
  * Imports the Gameboard class
  */
 const Gameboard = require('./Gameboard')
-const Player = require('./Player')
 
 // remove this once there is a connection to the DB
 const letters = 'abcdefghijklmnopqrstuvwxyz'.split('')
@@ -204,21 +203,21 @@ class GameManager {
    * Adds a player to the game
    * @param {String} username - player's username
    */
-  addPlayer(username) {
-    this._players.push(new Player(username))
-  }
+  // addPlayer(username) {
+  //   this._players.push(new Player(username))
+  // }
 
   /**
    * Removes a player from the game
    * @param {String} username - user to be removed
    */
-  removePlayer(username) {
-    let users = this._players.filter(p => {
-      return p.name !== username
-    })
+  // removePlayer(username) {
+  //   let users = this._players.filter(p => {
+  //     return p.name !== username
+  //   })
 
-    this._players = users
-  }
+  //   this._players = users
+  // }
 
   /**
    * Starts a new game by resetting everything
