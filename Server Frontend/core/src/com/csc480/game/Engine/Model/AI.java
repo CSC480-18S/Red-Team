@@ -2,7 +2,7 @@ package com.csc480.game.Engine.Model;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csc480.game.Engine.GameManager;
-import com.csc480.game.Engine.SocketManager;
+//import com.csc480.game.Engine.SocketManager;
 import com.csc480.game.Engine.WordVerification;
 
 import com.mashape.unirest.http.Unirest;

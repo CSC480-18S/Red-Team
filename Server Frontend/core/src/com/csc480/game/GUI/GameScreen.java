@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.csc480.game.Engine.TestingInputProcessor;
 import com.csc480.game.GUI.Actors.GameBoardActor;
 import com.csc480.game.GUI.Actors.HandActor;
+import com.csc480.game.GUI.Actors.InfoPanelActor;
 import com.csc480.game.GUI.Actors.TileActor;
 import com.csc480.game.OswebbleGame;
 
@@ -45,7 +46,7 @@ public class GameScreen implements Screen {
     public GameScreen(OswebbleGame mainGame){
         //must calculate the aspect ratio to resize properly
         aspectRatio = (float)Gdx.graphics.getHeight() / (float)Gdx.graphics.getWidth();
-
+        System.out.println("aspectRatio: "+aspectRatio);
 
         //we probably dont want to use bitmapfonts, as they can get blurry
         //see https://github.com/libgdx/libgdx/wiki/Gdx-freetype for a better solution
@@ -99,9 +100,17 @@ public class GameScreen implements Screen {
         right.rotateBy(-90);
 
         playArea.addActor(tileRacks);
+
+        InfoPanelActor info = new InfoPanelActor();
+
+        playArea.addActor(info);
+
         playArea.scaleBy(GUI_UNIT_SIZE * .03f);//had to do this because i originally tested all the sizes at a lower dpi
 
         stage.addActor(playArea);
+
+
+
     }
 
     @Override
@@ -120,6 +129,8 @@ public class GameScreen implements Screen {
      */
     @Override
     public void render(float delta) {
+        aspectRatio = (float)Gdx.graphics.getHeight() / (float)Gdx.graphics.getWidth();
+        stage.getViewport().update(Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),true);
         //Clear the screen from the last frame
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         //Set the entire screen to this color
