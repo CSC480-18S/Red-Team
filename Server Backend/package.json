@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
-    "test": "node tests/setup.js;",
+    "test": "node tests/setup.js",
     "cover": "nyc npm run test",
     "report": "nyc --reporter=lcov npm run test",
     "lint": "eslint **/*.js --ignore-pattern node_modules/; exit 0",
