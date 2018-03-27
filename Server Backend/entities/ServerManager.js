@@ -131,7 +131,7 @@ module.exports = function(io) {
       for (let i = 0; i < this._players.length; i++) {
         let p = this._players[i]
         if (p === null) {
-          let player = new PlayerManager(i, name, team, ai, socket)
+          let player = new PlayerManager(i, 'Player #' + i, team, ai, socket)
           if (this._oldPlayerData[i] !== null) {
             this.injectOldData(i, player)
           }

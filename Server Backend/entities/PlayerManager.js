@@ -10,7 +10,7 @@ class PlayerManager {
     this._tiles = []
     this._isTurn = false
     this._score = 0
-    // this.listenForPlayerEvents()
+    this.listenForPlayerEvents()
   }
 
   /**
@@ -74,6 +74,29 @@ class PlayerManager {
    */
   get score() {
     return this._score
+  }
+
+  /**
+   * Listens for events that come from the client
+   */
+  listenForPlayerEvents() {
+    this._socket.on('playWord', data => {
+      /** TODO: Take board given, then cross check it with current board
+       * to pluck out played letters and cross check with tiles in hand
+       * to make sure what they sent us is real data and not fake data
+       */
+    })
+  }
+
+  /**
+   * Emits to the player if it is their turn
+   * @param {String} playerName - player name
+   */
+  emitWhosTurn(playerName) {
+    this._socket.emit('newTurn', {
+      isTurn: this._isTurn,
+      whosTurn: playerName
+    })
   }
 
   /**
