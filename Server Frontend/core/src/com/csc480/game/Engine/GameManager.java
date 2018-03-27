@@ -22,6 +22,7 @@ public class GameManager {
     public OswebbleGame theGame;
     public ArrayList<Placement> placementsUnderConsideration;//ones being considered
     public ArrayList<Player> thePlayers;
+    public ArrayList<AI> theAIs;
     public int numPlayers;
     public int currentPlayerIndex;
     public Board theBoard;
@@ -41,10 +42,16 @@ public class GameManager {
 
     private GameManager(){
         thePlayers = new ArrayList<Player>();
+        theAIs = new ArrayList<AI>();
         placementsUnderConsideration = new ArrayList<Placement>();
         theBoard = new Board(OswebbleGame.BOARD_SIZE);
-        SocketManager.getInstance().ConnectSocket();
-        SocketManager.getInstance().setUpEvents();
+        //SocketManager.getInstance().ConnectSocket();
+        //SocketManager.getInstance().setUpEvents();
+        ConnectSocket();
+        setUpEvents();
+        for(int i = 0; i < 4; i++){
+            theAIs.add(new AI());
+        }
     }
 
     public void Dispose(){
@@ -63,6 +70,19 @@ public class GameManager {
             System.err.println(e);
         }
     }
+    public void ReConnectSocket(){
+        try {
+            socket = null;
+            socket = IO.socket("http://localhost:3000");
+            socket.io().reconnection(true);
+            socket.io().reconnectionDelay(1000);
+            socket.io().reconnectionDelayMax(5000);
+            socket.io().reconnectionAttempts(5000);
+            socket.connect();
+        } catch (URISyntaxException e){
+            System.err.println(e);
+        }
+    }
 
     /**
      * Define the actions to be taken when events occur
@@ -74,7 +94,7 @@ public class GameManager {
                 System.out.println("connection");
                 //simple example of how to access the data sent from the server
                 try {
-                    JSONObject data = (JSONObject) args[0];
+                    //JSONObject data = (JSONObject) args[0];
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
                 }catch(JSONException e){
@@ -85,36 +105,56 @@ public class GameManager {
             @Override
             public void call(Object... args) {
                 System.out.println("whoAreYou");
-                while (!socket.connected()){
-                    socket.emit(Socket.EVENT_RECONNECT,new Emitter.Listener(){
-                        @Override
-                        public void call(Object... args) {
-                            JSONObject data = new JSONObject();
-                            data.put("isServerFrontend",true);
-                            socket.emit("whoAreYou",data);
-                        }
-                    });
-                }
+                JSONObject data = new JSONObject();
+                data.put("isSF",true);
+                socket.emit("whoAreYou",data);
             }
         }).on(io.socket.client.Socket.EVENT_DISCONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
                 System.out.println("disconnection");
-                while (!socket.connected()){
-                    socket.emit(Socket.EVENT_RECONNECT,new Emitter.Listener(){
-                        @Override
-                        public void call(Object... args) {
+                System.out.println("attempting reconnection:");
+                ReConnectSocket();
+                /*
+                long timer = 0;
+                long timout = 100000;
+                long startTime = System.currentTimeMillis();
+                int c  = 0;
+                timer = System.currentTimeMillis() - startTime;
+                while (!socket.connected() && timer < timout){
+                    System.out.println("attempt"+c++);
+                    timer = System.currentTimeMillis() - startTime;
 
-                        }
-                    });
                 }
+                System.out.println(socket.connected());
+                System.out.println(timer);
 
+*/
+            }
+        }).on(Socket.EVENT_RECONNECTING, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                System.out.println("reconnecting");
+            }
+        }).on(Socket.EVENT_RECONNECT_ATTEMPT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                System.out.println("reconnect attempt");
+            }
+        }).on(Socket.EVENT_RECONNECT_FAILED, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                System.out.println("reconnect failed");
+            }
+        }).on(Socket.EVENT_CONNECT_TIMEOUT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                System.out.println("connect timeout");
             }
         }).on(Socket.EVENT_RECONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
                 System.out.println("reconnect");
-
             }
         }).on("connectAI", new Emitter.Listener() {
             @Override
@@ -122,6 +162,7 @@ public class GameManager {
                 System.out.println("connectAI");
                 try {
                     JSONObject data = (JSONObject) args[0];
+                    System.out.println(data.toString());
                     int position = data.getInt("position");
                     //reconnect an AI
                     //todo @Engine -> @James or @Chris
