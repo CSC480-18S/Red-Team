@@ -115,6 +115,7 @@ public class SocketManager {
         throw new NotImplementedException();
     }
 
+    /*
     public void BroadcastNewAI(AI tempRobot){
         throw new NotImplementedException();
         //socket.emit("userConnected", )
@@ -124,4 +125,5 @@ public class SocketManager {
         //REMEMBER THAT THE Y positions need to be inverted so (10-ypos)
         throw new NotImplementedException();
     }
+    */
 }

@@ -59,9 +59,6 @@ public class GameManager {
         try {
             socket = IO.socket("http://localhost:3000");
             socket.connect();
-            JSONObject data = new JSONObject();
-            data.put("isServerFrontend",true);
-            socket.emit(Socket.EVENT_CONNECT,data);
         } catch (URISyntaxException e){
             System.err.println(e);
         }
@@ -83,7 +80,21 @@ public class GameManager {
                 }catch(JSONException e){
                     e.printStackTrace();
                 }
-
+            }
+        }).on("whoAreYou", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                System.out.println("whoAreYou");
+                while (!socket.connected()){
+                    socket.emit(Socket.EVENT_RECONNECT,new Emitter.Listener(){
+                        @Override
+                        public void call(Object... args) {
+                            JSONObject data = new JSONObject();
+                            data.put("isServerFrontend",true);
+                            socket.emit("whoAreYou",data);
+                        }
+                    });
+                }
             }
         }).on(io.socket.client.Socket.EVENT_DISCONNECT, new Emitter.Listener() {
             @Override
@@ -114,6 +125,13 @@ public class GameManager {
                     int position = data.getInt("position");
                     //reconnect an AI
                     //todo @Engine -> @James or @Chris
+                    for(Player p : thePlayers){
+                        if(p instanceof AI){
+                            if(((AI) p).mySocket.connected()){
+
+                            }
+                        }
+                    }
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
                 }catch(JSONException e){
@@ -304,7 +322,7 @@ public class GameManager {
                 tempAI.team = "green";
             if(numGoldPlayers <= numGreenPlayers)
                 tempAI.team = "gold";
-            SocketManager.getInstance().BroadcastNewAI(tempAI);
+            //SocketManager.getInstance().BroadcastNewAI(tempAI);
         }
     }
 
@@ -369,7 +387,7 @@ public class GameManager {
 
             if(bestPlay != null && bestPlay.myWord != null && theBoard.verifyWordPlacement(bestPlay.placements)){
                 System.out.println("The AI found made a decent play");
-                SocketManager.getInstance().BroadcastAIPlay(bestPlay);
+                //SocketManager.getInstance().BroadcastAIPlay(bestPlay);
                 placementsUnderConsideration.clear();
             }
         }
