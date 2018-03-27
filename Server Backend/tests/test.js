@@ -33,19 +33,19 @@ describe('New letters tests', () => {
 
   it('Array1 contains only letters', () => {
     for (let i = 0; i < array1.length; ++i) {
-      expect(array1[i].match(/[a-z]/i))
+      expect(array1[i].match(/[a-z]/i).length).toEqual(1)
     }
   })
 
   it('Array2 contains only letters', () => {
     for (let i = 0; i < array2.length; ++i) {
-      expect(array2[i].match(/[a-z]/i))
+      expect(array2[i].match(/[a-z]/i).length).toEqual(1)
     }
   })
 
   it('Array3 contains only letters', () => {
     for (let i = 0; i < array3.length; ++i) {
-      expect(array3[i].match(/[a-z]/i))
+      expect(array3[i].match(/[a-z]/i).length).toEqual(1)
     }
   })
 })
