@@ -91,7 +91,7 @@ public class GameManager {
         socket.on(io.socket.client.Socket.EVENT_CONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                System.out.println("connection");
+                LogEvent("connection to the backend has been secured");
                 //simple example of how to access the data sent from the server
                 try {
                     //JSONObject data = (JSONObject) args[0];
@@ -104,7 +104,7 @@ public class GameManager {
         }).on("whoAreYou", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                System.out.println("whoAreYou");
+                LogEvent("whoAreYou");
                 JSONObject data = new JSONObject();
                 data.put("isSF",true);
                 socket.emit("whoAreYou",data);
@@ -112,7 +112,7 @@ public class GameManager {
         }).on(io.socket.client.Socket.EVENT_DISCONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                System.out.println("disconnection");
+                LogEvent("disconnection");
                 System.out.println("attempting reconnection:");
                 ReConnectSocket();
                 /*
@@ -159,19 +159,38 @@ public class GameManager {
         }).on("connectAI", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
+                LogEvent("Reconnecting an AI");
                 System.out.println("connectAI");
                 try {
                     JSONObject data = (JSONObject) args[0];
                     System.out.println(data.toString());
                     int position = data.getInt("position");
                     //reconnect an AI
-                    //todo @Engine -> @James or @Chris
-                    for(Player p : thePlayers){
-                        if(p instanceof AI){
-                            if(((AI) p).mySocket.connected()){
-
-                            }
-                        }
+                    switch (position){
+                        case 0:
+                            theAIs.get(position).connectSocket();
+                            theGame.theGameScreen.bottom.setPlayer(theAIs.get(position));
+                            theGame.theGameScreen.bottom.updateState();
+                            thePlayers.set(position,theAIs.get(position));
+                            break;
+                        case 1:
+                            theAIs.get(position).connectSocket();
+                            theGame.theGameScreen.right.setPlayer(theAIs.get(position));
+                            theGame.theGameScreen.right.updateState();
+                            thePlayers.set(position,theAIs.get(position));
+                            break;
+                        case 2:
+                            theAIs.get(position).connectSocket();
+                            theGame.theGameScreen.top.setPlayer(theAIs.get(position));
+                            theGame.theGameScreen.top.updateState();
+                            thePlayers.set(position,theAIs.get(position));
+                            break;
+                        case 3:
+                            theAIs.get(position).connectSocket();
+                            theGame.theGameScreen.left.setPlayer(theAIs.get(position));
+                            theGame.theGameScreen.left.updateState();
+                            thePlayers.set(position,theAIs.get(position));
+                            break;
                     }
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
@@ -182,6 +201,7 @@ public class GameManager {
         }).on("wordPlayed", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
+                LogEvent("wordPlayed");
                 System.out.println("wordPlayed");
                 try {
                     JSONObject data = (JSONObject) args[0];
@@ -206,7 +226,7 @@ public class GameManager {
                     JSONObject data = (JSONObject) args[0];
                     String action = data.getString("action");
                     System.out.println(action);
-                   //todo call GUI stuff
+                    LogEvent(action);
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
                 }catch(JSONException e){
@@ -217,6 +237,7 @@ public class GameManager {
             @Override
             public void call(Object... args) {
                 System.out.println("gameOver");
+                LogEvent("gameOver");
                 //"score": scores of game "timeout": double
                 //"gameData": array of all data of the scores and such
                 try {
@@ -469,5 +490,9 @@ public class GameManager {
             }
         }
         return diff;
+    }
+
+    public void LogEvent(String eventName) {
+        theGame.theGameScreen.infoPanel.LogEvent(eventName);
     }
 }

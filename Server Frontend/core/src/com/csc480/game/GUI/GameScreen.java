@@ -12,10 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.RotateByAction;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.csc480.game.Engine.TestingInputProcessor;
-import com.csc480.game.GUI.Actors.GameBoardActor;
-import com.csc480.game.GUI.Actors.HandActor;
-import com.csc480.game.GUI.Actors.InfoPanelActor;
-import com.csc480.game.GUI.Actors.TileActor;
+import com.csc480.game.GUI.Actors.*;
 import com.csc480.game.OswebbleGame;
 
 /**
@@ -33,6 +30,7 @@ public class GameScreen implements Screen {
     public BitmapFont font;
     OswebbleGame oswebbleGame;
     public final HandActor top,bottom,left,right;
+    public final InfoPanelActor infoPanel;
 
     float unitScale = 1/TILE_PIXEL_SIZE;
 
@@ -68,6 +66,8 @@ public class GameScreen implements Screen {
         Group playArea = new Group();
 
         gameBoardActor = new GameBoardActor();
+        GameBoardTable board = new GameBoardTable();
+        board.setPosition(GUI_UNIT_SIZE*2.75f,GUI_UNIT_SIZE*2.25f);
         //gameBoardActor.setBounds(0,0,100,100);
 
         gameBoardActor.setName("gameBoard");
@@ -98,14 +98,16 @@ public class GameScreen implements Screen {
         tileRacks.addActor(right);
         right.setPosition(GUI_UNIT_SIZE * 0, GUI_UNIT_SIZE * 10);
         right.rotateBy(-90);
-
+        tileRacks.moveBy(-GUI_UNIT_SIZE/2,-GUI_UNIT_SIZE);
+        tileRacks.scaleBy(.1f);
         playArea.addActor(tileRacks);
 
-        InfoPanelActor info = new InfoPanelActor();
-
-        playArea.addActor(info);
-
-        playArea.scaleBy(GUI_UNIT_SIZE * .03f);//had to do this because i originally tested all the sizes at a lower dpi
+        infoPanel = new InfoPanelActor();
+        infoPanel.moveBy(GameScreen.GUI_UNIT_SIZE*14,0);
+        playArea.addActor(infoPanel);
+        System.out.println(board.getChildren().size);
+        playArea.addActor(board);
+        playArea.scaleBy(GUI_UNIT_SIZE * .04f);//had to do this because i originally tested all the sizes at a lower dpi
 
         stage.addActor(playArea);
 
@@ -134,7 +136,7 @@ public class GameScreen implements Screen {
         //Clear the screen from the last frame
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         //Set the entire screen to this color
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(.17f, .17f, .17f, 1);
         //perform the actions of the actors
         stage.act(delta);
         //render the actors
@@ -170,7 +172,5 @@ public class GameScreen implements Screen {
     public void dispose() {
         stage.dispose();
         font.dispose();
-
-
     }
 }
