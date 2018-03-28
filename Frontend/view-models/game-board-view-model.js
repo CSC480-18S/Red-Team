@@ -1,9 +1,12 @@
-new Vue({
-    
+// create a viewmodel instance by passing an options object in 
+var vm = new Vue({
+    // associate with view
     el: '#root',
     
-    data: oswebbleData,
+    // associate with data in model: the data object is added to a Vue instance
+    data: data,
     
+    // associate with functions in model
     methods: {
         
         // Mouse Click
@@ -13,6 +16,10 @@ new Vue({
         
         // Screen Tap
         onClickTile: selectAndDeselectTile,
-        onClickSquare: putTileInSquare
-    }    
+        onClickSquare: putTileInSquare,
+        
+        // place tile
+        onClickPlace: refillSlots
+    }
+    
 })

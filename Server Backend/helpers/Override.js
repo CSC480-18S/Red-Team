@@ -30,10 +30,10 @@ function json(res) {
         break
       case 400:
       case 500:
-        error['message'] = 'Bad Request'
+        error['message'] = 'BAD REQUEST'
         error['code'] = data.code
-        error['title'] = data.title
-        error['description'] = data.desc
+        error['title'] = data.title.toUpperCase()
+        error['description'] = data.desc.toUpperCase()
 
         overallResponse['error'] = error
         break

@@ -1,9 +1,54 @@
 const GB = require('../entities/Gameboard')
 const Tile = require('../entities/Tile')
+const GameManager = require('../entities/GameManager')
+const Player = require('../entities/Player')
+
 /**
  * Imports the lodash library
  */
 const _ = require('lodash')
+
+describe('New letters tests', () => {
+  const gm = new GameManager()
+
+  const lettersUsed1 = 1
+  const lettersUsed2 = 4
+  const lettersUsed3 = 7
+
+  const array1 = gm.getNewLetters(lettersUsed1)
+  const array2 = gm.getNewLetters(lettersUsed2)
+  const array3 = gm.getNewLetters(lettersUsed3)
+
+  it('Array1 has ' + lettersUsed1 + ' elements', () => {
+    expect(array1.length).toEqual(lettersUsed1)
+  })
+
+  it('Array2 has ' + lettersUsed2 + ' elements', () => {
+    expect(array2.length).toEqual(lettersUsed2)
+  })
+
+  it('Array3 has ' + lettersUsed3 + ' elements', () => {
+    expect(array3.length).toEqual(lettersUsed3)
+  })
+
+  it('Array1 contains only letters', () => {
+    for (let i = 0; i < array1.length; ++i) {
+      expect(array1[i].match(/[a-z]/i).length).toEqual(1)
+    }
+  })
+
+  it('Array2 contains only letters', () => {
+    for (let i = 0; i < array2.length; ++i) {
+      expect(array2[i].match(/[a-z]/i).length).toEqual(1)
+    }
+  })
+
+  it('Array3 contains only letters', () => {
+    for (let i = 0; i < array3.length; ++i) {
+      expect(array3[i].match(/[a-z]/i).length).toEqual(1)
+    }
+  })
+})
 
 describe('Gameboard tests', () => {
   it('Gameboard should be created', () => {
@@ -37,10 +82,14 @@ describe('Gameboard tests', () => {
 
     g.init()
 
-    const word = 'OSWEGO'
-    const h = true
+    const word = {
+      word: 'oswego',
+      x: 5,
+      y: 5,
+      h: true
+    }
 
-    g.placeWord({x: 5, y: 5}, {x: 10, y: 5}, word, h)
+    g.placeWords([word])
 
     expect(g.error).toBe(0)
   })
@@ -50,10 +99,14 @@ describe('Gameboard tests', () => {
 
     g.init()
 
-    const word = 'OSWEGO'
-    const h = false
+    const word = {
+      word: 'oswego',
+      x: 5,
+      y: 5,
+      h: false
+    }
 
-    g.placeWord({x: 5, y: 5}, {x: 5, y: 10}, word, h)
+    g.placeWords([word])
 
     expect(g.error).toBe(0)
   })
@@ -63,15 +116,21 @@ describe('Gameboard tests', () => {
 
     g.init()
 
-    const word = 'OSWEGO'
-    const h = false
+    const word = {
+      word: 'oswego',
+      x: 5,
+      y: 5,
+      h: false
+    }
 
-    g.placeWord({x: 5, y: 5}, {x: 5, y: 10}, word, h)
+    const word2 = {
+      word: 'bed',
+      x: 4,
+      y: 8,
+      h: true
+    }
 
-    const word2 = 'BED'
-    const h2 = true
-
-    g.placeWord({x: 4, y: 8}, {x: 6, y: 8}, word2, h2)
+    g.placeWords([word, word2])
 
     expect(g.error).toBe(0)
   })
@@ -81,15 +140,21 @@ describe('Gameboard tests', () => {
 
     g.init()
 
-    const word = 'OSWEGO'
-    const h = false
+    const word = {
+      word: 'oswego',
+      x: 5,
+      y: 5,
+      h: false
+    }
 
-    g.placeWord({x: 5, y: 5}, {x: 5, y: 10}, word, h)
+    const word2 = {
+      word: 'bad',
+      x: 4,
+      y: 8,
+      h: true
+    }
 
-    const word2 = 'BAD'
-    const h2 = true
-
-    g.placeWord({x: 4, y: 8}, {x: 6, y: 8}, word2, h2)
+    g.placeWords([word, word2])
 
     expect(g.error).toBe(3)
   })
@@ -99,15 +164,21 @@ describe('Gameboard tests', () => {
 
     g.init()
 
-    const word = 'BED'
-    const h = true
+    const word = {
+      word: 'bed',
+      x: 5,
+      y: 5,
+      h: true
+    }
 
-    g.placeWord({x: 4, y: 5}, {x: 6, y: 5}, word, h)
+    const word2 = {
+      word: 'oswego',
+      x: 6,
+      y: 2,
+      h: false
+    }
 
-    const word2 = 'OSWEGO'
-    const h2 = false
-
-    g.placeWord({x: 5, y: 2}, {x: 5, y: 7}, word2, h2)
+    g.placeWords([word, word2])
 
     expect(g.error).toBe(0)
   })
@@ -117,15 +188,21 @@ describe('Gameboard tests', () => {
 
     g.init()
 
-    const word = 'BED'
-    const h = true
+    const word = {
+      word: 'bad',
+      x: 5,
+      y: 5,
+      h: true
+    }
 
-    g.placeWord({x: 4, y: 5}, {x: 6, y: 5}, word, h)
+    const word2 = {
+      word: 'oswego',
+      x: 6,
+      y: 2,
+      h: false
+    }
 
-    const word2 = 'OSWAGO'
-    const h2 = false
-
-    g.placeWord({x: 5, y: 2}, {x: 5, y: 7}, word2, h2)
+    g.placeWords([word, word2])
 
     expect(g.error).toBe(3)
   })
@@ -135,10 +212,14 @@ describe('Gameboard tests', () => {
 
     g.init()
 
-    const word = 'BED'
-    const h = true
+    const word = {
+      word: 'fantastic',
+      x: 5,
+      y: 5,
+      h: true
+    }
 
-    g.placeWord({x: 9, y: 9}, {x: 11, y: 9}, word, h)
+    g.placeWords([word])
 
     expect(g.error).toBe(2)
   })
@@ -148,10 +229,14 @@ describe('Gameboard tests', () => {
 
     g.init()
 
-    const word = 'BED'
-    const h = false
+    const word = {
+      word: 'oswego',
+      x: 5,
+      y: 5,
+      h: true
+    }
 
-    g.placeWord({x: 5, y: 5}, {x: 5, y: 7}, word, h)
+    g.placeWords([word])
 
     expect(g.error).toBe(0)
   })
@@ -161,30 +246,16 @@ describe('Gameboard tests', () => {
 
     g.init()
 
-    const word = 'BED'
-    const h = false
+    const word = {
+      word: 'oswego',
+      x: 3,
+      y: 5,
+      h: false
+    }
 
-    g.placeWord({x: 4, y: 5}, {x: 4, y: 7}, word, h)
+    g.placeWords([word])
 
     expect(g.error).toBe(4)
-  })
-
-  it('Gamboard should place a word that is attached to previously played words', () => {
-    const g = new GB()
-
-    g.init()
-
-    const word = 'BED'
-    const h = true
-
-    g.placeWord({x: 4, y: 5}, {x: 6, y: 5}, word, h)
-
-    const word2 = 'OSWEGO'
-    const h2 = false
-
-    g.placeWord({x: 5, y: 2}, {x: 5, y: 7}, word2, h2)
-
-    expect(g.error).toBe(0)
   })
 
   it('Gamboard should not place a word that is not attached to previously played words', () => {
@@ -192,73 +263,21 @@ describe('Gameboard tests', () => {
 
     g.init()
 
-    const word = 'BED'
-    const h = true
+    const word = {
+      word: 'bad',
+      x: 5,
+      y: 5,
+      h: true
+    }
 
-    g.placeWord({x: 4, y: 5}, {x: 6, y: 5}, word, h)
+    const word2 = {
+      word: 'oswego',
+      x: 2,
+      y: 1,
+      h: false
+    }
 
-    const word2 = 'OSWEGO'
-    const h2 = false
-
-    g.placeWord({x: 1, y: 2}, {x: 1, y: 7}, word2, h2)
-
-    expect(g.error).toBe(5)
-  })
-
-  it('Gamboard should have an error of 0', () => {
-    const g = new GB()
-
-    g.handleResponse('Oswego')
-
-    expect(g.error).toBe(0)
-  })
-
-  it('Gamboard should have an error of 1', () => {
-    const g = new GB()
-
-    g.error = 1
-
-    g.handleResponse('Oswego')
-
-    expect(g.error).toBe(1)
-  })
-
-  it('Gamboard should have an error of 2', () => {
-    const g = new GB()
-
-    g.error = 2
-
-    g.handleResponse('Oswego')
-
-    expect(g.error).toBe(2)
-  })
-
-  it('Gamboard should have an error of 3', () => {
-    const g = new GB()
-
-    g.error = 3
-
-    g.handleResponse('Oswego')
-
-    expect(g.error).toBe(3)
-  })
-
-  it('Gamboard should have an error of 4', () => {
-    const g = new GB()
-
-    g.error = 4
-
-    g.handleResponse('Oswego')
-
-    expect(g.error).toBe(4)
-  })
-
-  it('Gamboard should have an error of 5', () => {
-    const g = new GB()
-
-    g.error = 5
-
-    g.handleResponse('Oswego')
+    g.placeWords([word, word2])
 
     expect(g.error).toBe(5)
   })
@@ -310,4 +329,10 @@ describe('Tile tests', () => {
 
     expect(tile.letterPlaced).toBe(false)
   })
+})
+
+describe('Game Manager tests', () => {
+})
+
+describe('Player tests', () => {
 })
