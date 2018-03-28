@@ -60,20 +60,6 @@ rect {
     background-color: #C19A24;
 }
 
-
-.game-board-tile-size {
-    width: 1.3em;
-    height: 1.3em;
-}
-
-/*
-
-.slot-tile-size {
-    width: 2.55em;
-    height: 2.55em;
-}
-*/
-
 /* restrict the size of each tile slot */
 #slot0, #slot1, #slot2, #slot3, #slot4, #slot5, #slot6 {
     width: 2.6em;
