@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.csc480.game.Engine.Model.Placement;
 import com.csc480.game.Engine.Model.Player;
+import com.csc480.game.Engine.TextureManager;
 import com.csc480.game.GUI.GameScreen;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -25,7 +26,7 @@ public class HandActor extends Group {
         myHand = new ArrayList<TileActor>();
         //This could easily be put into an if statement to change the loaded image based on user color
         //SHOULD MAKE A FUNCTION THAT MANAGES THIS TEXTURE IN THE TEXTURE MANAGER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        Image rack = new Image(new Texture(Gdx.files.internal("rack.jpg")));
+        Image rack = new Image(TextureManager.getInstance().rack);
         rack.setScale(.2f);
         this.addActor(rack);
     }
