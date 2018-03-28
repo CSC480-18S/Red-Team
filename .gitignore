@@ -50,3 +50,5 @@ Thumbs.db
 .idea/
 
 /.vscode/
+
+.project

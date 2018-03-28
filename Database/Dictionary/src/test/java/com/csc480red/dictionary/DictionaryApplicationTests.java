@@ -2,8 +2,6 @@ package com.csc480red.dictionary;
 
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-import java.util.stream.Stream;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -12,15 +10,12 @@ import org.springframework.beans.factory.annotation.Value;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.hibernate.validator.internal.util.privilegedactions.GetClassLoader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -29,15 +24,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.BufferedReader;;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -112,9 +100,8 @@ public class DictionaryApplicationTests {
     builder.contentType(MediaType.APPLICATION_JSON_UTF8);
     ResultActions res = mvc.perform(builder);
     res.andExpect(jsonPath("$", hasSize(42)));
-    for (int i = 0; i < times; i++) {
+    for (int i = 0; i < times; i++)
       res.andExpect(jsonPath(String.format("$[%d].valid", i), is(true)));
-    }
   }
 
   /**
@@ -135,9 +122,8 @@ public class DictionaryApplicationTests {
     builder.contentType(MediaType.APPLICATION_JSON_UTF8);
     ResultActions res = mvc.perform(builder);
     res.andExpect(jsonPath("$", hasSize(42)));
-    for (int i = 0; i < times; i++) {
+    for (int i = 0; i < times; i++)
       res.andExpect(jsonPath(String.format("$[%d].special", i), is(true)));
-    }
   }
 
   /**
@@ -158,9 +144,8 @@ public class DictionaryApplicationTests {
     builder.contentType(MediaType.APPLICATION_JSON_UTF8);
     ResultActions res = mvc.perform(builder);
     res.andExpect(jsonPath("$", hasSize(42)));
-    for (int i = 0; i < times; i++) {
+    for (int i = 0; i < times; i++)
       res.andExpect(jsonPath(String.format("$[%d].special", i), is(true)));
-    }
   }
 
   /**
@@ -181,9 +166,20 @@ public class DictionaryApplicationTests {
     builder.contentType(MediaType.APPLICATION_JSON_UTF8);
     ResultActions res = mvc.perform(builder);
     res.andExpect(jsonPath("$", hasSize(42)));
-    for (int i = 0; i < times; i++) {
+    for (int i = 0; i < times; i++)
       res.andExpect(jsonPath(String.format("$[%d].valid", i), is(false)));
-    }
+  }
+
+  /**
+   * performs a validate request on an Integer type and expects
+   * the to return an invalid word
+   */
+  @Test
+  public void validateIntegerAsQuery() throws Exception {
+    MockHttpServletRequestBuilder builder = get("/dictionary/validate?words=" + 42);
+    builder.contentType(MediaType.APPLICATION_JSON_UTF8);
+    ResultActions res = mvc.perform(builder);
+    res.andExpect(jsonPath("$", hasSize(1))).andExpect(jsonPath("$[0].valid", is(false)));
   }
 
 }
