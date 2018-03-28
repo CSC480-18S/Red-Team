@@ -1,26 +1,26 @@
 
 exempleSkin.png
-size: 512,512
+size: 1024,1024
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 checkbox
   rotate: false
-  xy: 408, 383
+  xy: 1, 1
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
 checkbox-on
   rotate: false
-  xy: 452, 427
+  xy: 49, 49
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
 cursor
   rotate: false
-  xy: 248, 223
+  xy: 594, 731
   size: 4, 7
   split: 1, 1, 2, 2
   pad: 0, 0, 0, 0
@@ -29,21 +29,21 @@ cursor
   index: -1
 font-export
   rotate: false
-  xy: 264, 368
-  size: 142, 143
-  orig: 142, 143
+  xy: 1, 429
+  size: 512, 512
+  orig: 512, 512
   offset: 0, 0
   index: -1
 font-title-export
   rotate: false
-  xy: 1, 246
+  xy: 1, 162
   size: 261, 265
   orig: 261, 265
   offset: 0, 0
   index: -1
 horizontal-split-pane
   rotate: false
-  xy: 257, 233
+  xy: 568, 701
   size: 5, 11
   split: 2, 2, 2, 2
   orig: 5, 11
@@ -51,7 +51,7 @@ horizontal-split-pane
   index: -1
 list
   rotate: false
-  xy: 204, 232
+  xy: 718, 929
   size: 51, 12
   split: 2, 2, 2, 2
   pad: 5, 5, 5, 5
@@ -60,21 +60,21 @@ list
   index: -1
 minus
   rotate: false
-  xy: 474, 472
+  xy: 264, 304
   size: 12, 13
   orig: 12, 13
   offset: 0, 0
   index: -1
 plus
   rotate: false
-  xy: 54, 2
+  xy: 308, 348
   size: 12, 13
   orig: 12, 13
   offset: 0, 0
   index: -1
 progress-bar
   rotate: false
-  xy: 337, 320
+  xy: 1, 21
   size: 46, 46
   split: 10, 10, 10, 10
   pad: 6, 6, 6, 6
@@ -83,35 +83,35 @@ progress-bar
   index: -1
 progress-bar-fill
   rotate: false
-  xy: 381, 284
+  xy: 718, 867
   size: 1, 34
   orig: 1, 34
   offset: 0, 0
   index: -1
 progress-bar-fill-vert
   rotate: false
-  xy: 264, 272
+  xy: 515, 695
   size: 34, 1
   orig: 34, 1
   offset: 0, 0
   index: -1
 radio
   rotate: false
-  xy: 204, 170
+  xy: 74, 100
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 radio-on
   rotate: false
-  xy: 264, 254
+  xy: 118, 144
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 round-gray
   rotate: false
-  xy: 408, 403
+  xy: 74, 118
   size: 42, 42
   split: 13, 13, 13, 13
   pad: 9, 9, 5, 5
@@ -120,7 +120,7 @@ round-gray
   index: -1
 round-white
   rotate: false
-  xy: 204, 188
+  xy: 264, 319
   size: 42, 42
   split: 13, 13, 13, 13
   pad: 9, 9, 5, 5
@@ -129,7 +129,7 @@ round-white
   index: -1
 round-white-small
   rotate: false
-  xy: 54, 17
+  xy: 718, 903
   size: 24, 24
   split: 10, 10, 10, 10
   pad: 10, 10, 2, 2
@@ -138,7 +138,7 @@ round-white-small
   index: -1
 selectbox
   rotate: false
-  xy: 1, 1
+  xy: 515, 698
   size: 51, 40
   split: 2, 31, 2, 27
   pad: 2, 35, 2, 2
@@ -147,7 +147,7 @@ selectbox
   index: -1
 selection
   rotate: false
-  xy: 385, 345
+  xy: 515, 684
   size: 9, 9
   split: 2, 1, 2, 1
   pad: 4, 3, 4, 3
@@ -156,7 +156,7 @@ selection
   index: -1
 slider-horizontal
   rotate: false
-  xy: 385, 356
+  xy: 771, 931
   size: 20, 10
   split: 4, 4, 4, 4
   pad: 1, 2, 2, 2
@@ -165,14 +165,14 @@ slider-horizontal
   index: -1
 slider-knob
   rotate: false
-  xy: 474, 487
+  xy: 568, 714
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 slider-vertical
   rotate: false
-  xy: 80, 21
+  xy: 374, 407
   size: 9, 20
   split: 4, 3, 3, 3
   pad: 3, 3, 2, 2
@@ -181,7 +181,7 @@ slider-vertical
   index: -1
 textfield
   rotate: false
-  xy: 337, 276
+  xy: 330, 385
   size: 42, 42
   split: 8, 8, 8, 8
   orig: 42, 42
@@ -189,21 +189,21 @@ textfield
   index: -1
 touchpad
   rotate: false
-  xy: 1, 43
+  xy: 515, 740
   size: 201, 201
   orig: 201, 201
   offset: 0, 0
   index: -1
 touchpad-knob
   rotate: false
-  xy: 408, 447
+  xy: 264, 363
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 vertical-split-pane
   rotate: false
-  xy: 500, 506
+  xy: 330, 378
   size: 11, 5
   split: 2, 2, 1, 1
   pad: 1, 1, 1, 1
@@ -212,14 +212,14 @@ vertical-split-pane
   index: -1
 white
   rotate: false
-  xy: 300, 272
+  xy: 551, 695
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 window
   rotate: false
-  xy: 264, 275
+  xy: 1, 69
   size: 71, 91
   split: 15, 15, 35, 15
   pad: 9, 10, 37, 5

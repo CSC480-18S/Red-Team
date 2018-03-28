@@ -27,6 +27,7 @@ public class TestingInputProcessor implements InputProcessor {
     private AI testingAI;
     private char[] testHandQueue;
     private int aiHandCount;
+    private int c;
 
     public TestingInputProcessor(OrthographicCamera myCam){
         gameScreen = myCam;
@@ -55,6 +56,10 @@ public class TestingInputProcessor implements InputProcessor {
         if(character == '='){
             System.out.println("clearing");
             GameManager.getInstance().placementsUnderConsideration.clear();
+        }
+        else if(character == '1'){
+            System.out.println("logging");
+            GameManager.getInstance().theGame.theGameScreen.infoPanel.LogEvent("wow"+c++);
         }
         else if(character == '\'') {
             System.out.println("entering");
