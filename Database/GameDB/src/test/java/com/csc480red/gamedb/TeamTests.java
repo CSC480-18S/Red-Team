@@ -45,11 +45,21 @@ public class TeamTests {
   private WebApplicationContext webApplicationContext;
 
   /**
-   * Initializes the store with a player
+   * Initializes the store with a the gold and green teams
    */
   @Before
   public void setup() throws Exception {
     mvc = webAppContextSetup(webApplicationContext).build();
+    ThreadLocalRandom rand = ThreadLocalRandom.current();
+    String gold_team = "Gold";
+    String green_team = "Green";
+    ObjectMapper mapper = new ObjectMapper();
+    MockHttpServletRequestBuilder gold_builder = post("/teams").contentType(MediaType.APPLICATION_JSON_UTF8)
+        .content(mapper.writeValueAsString(new Team(gold_team, "fun", 42, "human", 420, "acquire", 42, 4200, 5, 5)));
+    MockHttpServletRequestBuilder green_builder = post("/teams").contentType(MediaType.APPLICATION_JSON_UTF8)
+        .content(mapper.writeValueAsString(new Team(green_team, "fun", 42, "human", 420, "acquire", 42, 4200, 5, 5)));
+    mvc.perform(gold_builder).andReturn();
+    mvc.perform(green_builder).andReturn();
   }
 
   /**
