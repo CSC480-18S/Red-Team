@@ -80,21 +80,21 @@ public class GameScreen implements Screen {
         //bottom
         Group tileRacks = new Group();
         tileRacks.setPosition(GUI_UNIT_SIZE * 1, GUI_UNIT_SIZE * 1);
-        bottom = new HandActor();
+        bottom = new HandActor(false);
         tileRacks.addActor(bottom);
         bottom.setPosition(GUI_UNIT_SIZE * 2, GUI_UNIT_SIZE * 0);
         //left
-        left = new HandActor();
+        left = new HandActor(false);
         tileRacks.addActor(left);
         left.setPosition(GUI_UNIT_SIZE * 12, GUI_UNIT_SIZE * 2);
         left.rotateBy(90);
         //top
-        top = new HandActor();
+        top = new HandActor(true);
         tileRacks.addActor(top);
         top.setPosition(GUI_UNIT_SIZE * 10, GUI_UNIT_SIZE * 12);
         top.rotateBy(180);
         //right
-        right = new HandActor();
+        right = new HandActor(false);
         tileRacks.addActor(right);
         right.setPosition(GUI_UNIT_SIZE * 0, GUI_UNIT_SIZE * 10);
         right.rotateBy(-90);

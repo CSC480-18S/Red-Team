@@ -61,6 +61,10 @@ public class TestingInputProcessor implements InputProcessor {
             System.out.println("logging");
             GameManager.getInstance().theGame.theGameScreen.infoPanel.LogEvent("wow"+c++);
         }
+        else if(character == '2'){
+            //System.out.println("logging");
+            GameManager.getInstance().PrintBoardState();
+        }
         else if(character == '\'') {
             System.out.println("entering");
             Long startTime = System.nanoTime();
@@ -125,7 +129,7 @@ public class TestingInputProcessor implements InputProcessor {
                     //if(testHandQueue[i] == 0) testHandQueue[i] = GameManager.getInstance().getNewTiles(1).get(0).charValue();
                 }
                 //delete this to specify the AI tiles ^^^
-
+/*
                 try{
                     JSONObject temp = new JSONObject();
                     System.out.println("best plat word="+bestPlay.myWord);
@@ -147,7 +151,7 @@ public class TestingInputProcessor implements InputProcessor {
                                     .asString());
                 } catch (UnirestException e) {
                     e.printStackTrace();
-                }
+                }*/
 
                 GameManager.getInstance().theBoard.addWord(bestPlay.placements);
                 GameManager.getInstance().placementsUnderConsideration.clear();

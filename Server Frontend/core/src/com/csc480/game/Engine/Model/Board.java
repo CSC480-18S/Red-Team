@@ -545,5 +545,17 @@ public class Board {
         }
         return ret;
     }
+
+    public Board getCopy() {
+        Board temp = new Board(11);
+        TileData[][] ret = new TileData[11][11];
+        for(int i = 0; i < 11; i++){
+            for(int j = 0; j < 11; j++){
+                ret[i][j] = new TileData(the_game_board[i][j]);//.
+            }
+        }
+        temp.the_game_board = ret;
+        return temp;
+    }
 }
 

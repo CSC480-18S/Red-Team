@@ -53,6 +53,11 @@ public class GameManager {
             theAIs.add(new AI());
         }
     }
+    public void Update(){
+        for(AI a: theAIs){
+            a.update();
+        }
+    }
 
     public void Dispose(){
         TextureManager.getInstance().Dispose();
@@ -306,6 +311,7 @@ public class GameManager {
                 inHand.score = p.score;
                 inHand.isAI = p.isAI;
                 theGame.theGameScreen.top.updateState();
+                theGame.theGameScreen.infoPanel.UpdatePlayerStatus(2, inHand.name, inHand.score);
                 exists = true;
             } else
             if(theGame.theGameScreen.bottom.getPlayer().name.compareTo(p.name) == 0){
@@ -316,6 +322,7 @@ public class GameManager {
                 inHand.score = p.score;
                 inHand.isAI = p.isAI;
                 theGame.theGameScreen.bottom.updateState();
+                theGame.theGameScreen.infoPanel.UpdatePlayerStatus(0, inHand.name, inHand.score);
                 exists = true;
             } else
             if(theGame.theGameScreen.left.getPlayer().name.compareTo(p.name) == 0){
@@ -326,6 +333,7 @@ public class GameManager {
                 inHand.score = p.score;
                 inHand.isAI = p.isAI;
                 theGame.theGameScreen.top.updateState();
+                theGame.theGameScreen.infoPanel.UpdatePlayerStatus(3, inHand.name, inHand.score);
                 exists = true;
             } else
             if(theGame.theGameScreen.right.getPlayer().name.compareTo(p.name) == 0){
@@ -336,6 +344,7 @@ public class GameManager {
                 inHand.score = p.score;
                 inHand.isAI = p.isAI;
                 theGame.theGameScreen.top.updateState();
+                theGame.theGameScreen.infoPanel.UpdatePlayerStatus(1, inHand.name, inHand.score);
                 exists = true;
             }
 
@@ -348,21 +357,25 @@ public class GameManager {
                     thePlayers.add(p);
                     theGame.theGameScreen.right.setPlayer(p);
                     theGame.theGameScreen.right.updateState();
+                    theGame.theGameScreen.infoPanel.UpdatePlayerStatus(1, p.name, p.score);
                 }else if(theGame.theGameScreen.left.getPlayer().isAI){
                     thePlayers.remove(theGame.theGameScreen.left.getPlayer());
                     thePlayers.add(p);
                     theGame.theGameScreen.left.setPlayer(p);
                     theGame.theGameScreen.left.updateState();
+                    theGame.theGameScreen.infoPanel.UpdatePlayerStatus(3, p.name, p.score);
                 }else if(theGame.theGameScreen.top.getPlayer().isAI){
                     thePlayers.remove(theGame.theGameScreen.top.getPlayer());
                     thePlayers.add(p);
                     theGame.theGameScreen.top.setPlayer(p);
                     theGame.theGameScreen.top.updateState();
+                    theGame.theGameScreen.infoPanel.UpdatePlayerStatus(2, p.name, p.score);
                 }else if(theGame.theGameScreen.bottom.getPlayer().isAI){
                     thePlayers.remove(theGame.theGameScreen.bottom.getPlayer());
                     thePlayers.add(p);
                     theGame.theGameScreen.bottom.setPlayer(p);
                     theGame.theGameScreen.bottom.updateState();
+                    theGame.theGameScreen.infoPanel.UpdatePlayerStatus(0, p.name, p.score);
                 }else {
                     throw new UnsupportedOperationException("There are no places for a new Player to join");
                 }
@@ -494,5 +507,23 @@ public class GameManager {
 
     public void LogEvent(String eventName) {
         theGame.theGameScreen.infoPanel.LogEvent(eventName);
+    }
+
+    public String PrintBoardState(){
+        JSONArray parentJsonArray = new JSONArray();
+        // loop through your elements
+        for (int i=0; i<11; i++){
+            JSONArray childJsonArray = new JSONArray();
+            for (int j =0; j<11; j++){
+                if(theBoard.the_game_board[j][10-i] != null)
+                    childJsonArray.put("\""+theBoard.the_game_board[j][10-i].letter+"\"");
+                else
+                    childJsonArray.put("null");
+
+            }
+            parentJsonArray.put(childJsonArray);
+        }
+        System.out.println(parentJsonArray.toString());
+        return parentJsonArray.toString();
     }
 }

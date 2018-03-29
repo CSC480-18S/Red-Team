@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 /**
@@ -19,6 +20,13 @@ public class TextureManager {
         public final Texture rack;
         public final Texture background;
         public final Texture tile;
+        public final TextureAtlas tilesAtlas;
+
+        public static final String DARK_TILE = "~Dark";
+        public static final String GREEN_TILE = "~Green";
+        public static final String GOLD_TILE = "~Gold";
+        public static final String BLANK_TILE = "_Blank";
+        public static final String EMPTY_TILE = "~Empty";
 
         public static TextureManager getInstance(){
             if(instance == null)
@@ -33,15 +41,24 @@ public class TextureManager {
             ui.getFont("font").setUseIntegerPositions(false);
             ui.getFont("font").getData().setScale(.3f,.3f);
             rack = new Texture(Gdx.files.internal("rack.jpg"));
+
             tile = new Texture(Gdx.files.internal("temp.png"));
+            tilesAtlas = new TextureAtlas(Gdx.files.internal("tilesAtlas.atlas"));
             background = new Texture(Gdx.files.internal("Background.jpg"));
             //ui.addRegions(uiAtlas);
             //textureAtlas = new TextureAtlas(Gdx.files.internal("spriteAtlas.atlas"));
+        }
+
+        public TextureAtlas.AtlasRegion getTileTexture(String tile){
+            if(tile.length() == 1) tile = tile.toUpperCase();
+            return tilesAtlas.findRegion(tile);
+
         }
         public void Dispose(){
             ui.dispose();
             rack.dispose();
             instance = null;
+            tilesAtlas.dispose();
            // textureAtlas.dispose();
         }
 }
