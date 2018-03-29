@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.InputStreamReader;
+import java.beans.Transient;
 import java.io.BufferedReader;;
 
 @RunWith(SpringRunner.class)
@@ -49,13 +50,24 @@ public class DictionaryApplicationTests {
   @Value("classpath:invalidwords.txt")
   private Resource invalidWordsFile;
 
+  private static final int times = 2;
+
   @Before
   public void setup() throws Exception {
     mvc = webAppContextSetup(webApplicationContext).build();
   }
 
   /**
-   * performs a validation request for a valid,
+  * performs a validation request with no words
+  */
+  @Test
+  public void validateNoWords() throws Exception {
+    mvc.perform(get("/dictionary/validate?words=").contentType(MediaType.APPLICATION_JSON_UTF8))
+        .andExpect(jsonPath("$", hasSize(0)));
+  }
+
+  /**
+   * performs a validation request for one valid,
    * bad, special, and invalid word
    */
   @Test
@@ -73,113 +85,150 @@ public class DictionaryApplicationTests {
         .andExpect(jsonPath("$[3].special", is(false)));
   }
 
-  /**
-   * performs a validation request with no words
-   */
   @Test
-  public void validateNoWords() throws Exception {
-    mvc.perform(get("/dictionary/validate?words=").contentType(MediaType.APPLICATION_JSON_UTF8))
-        .andExpect(jsonPath("$", hasSize(0)));
-  }
-
-  /**
-   * performs a validation request on 42 words and expects
-   * all 42 to be valid words
-   */
-  @Test
-  public void validateValidFourtyTwoWords() throws Exception {
-    BufferedReader buffer = new BufferedReader(new InputStreamReader(validWordsFile.getInputStream()));
-    int times = 42;
-    String words = "";
-    for (int i = 0; i < times; i++)
-      if (i < times - 1)
-        words += buffer.readLine() + ",";
-      else
-        words += buffer.readLine();
+  public void validateTwoWordsEach() throws Exception {
+    String words = "hello,acquire,fuck,shit,lake,snow,snarfblar,xadf";
     MockHttpServletRequestBuilder builder = get("/dictionary/validate?words=" + words);
     builder.contentType(MediaType.APPLICATION_JSON_UTF8);
     ResultActions res = mvc.perform(builder);
-    res.andExpect(jsonPath("$", hasSize(42)));
-    for (int i = 0; i < times; i++)
-      res.andExpect(jsonPath(String.format("$[%d].valid", i), is(true)));
+    res.andExpect(jsonPath("$", hasSize(8)));
+    res.andExpect(jsonPath(String.format("$[0].valid"), is(true)));
+    res.andExpect(jsonPath(String.format("$[1].valid"), is(true)));
+    res.andExpect(jsonPath(String.format("$[2].bad"), is(true)));
+    res.andExpect(jsonPath(String.format("$[3].bad"), is(true)));
+    res.andExpect(jsonPath(String.format("$[4].special"), is(true)));
+    res.andExpect(jsonPath(String.format("$[5].special"), is(true)));
+    res.andExpect(jsonPath(String.format("$[6].valid"), is(false)));
+    res.andExpect(jsonPath(String.format("$[7].valid"), is(false)));
   }
 
   /**
-  * performs a validation request on 42 words and expects
-  * all 42 to be special words
+   * performs a validation request for one valid word
+   */
+  @Test
+  public void validateOneValidWord() throws Exception {
+    String word = "hello";
+    MockHttpServletRequestBuilder builder = get("/dictionary/validate?words=" + word);
+    builder.contentType(MediaType.APPLICATION_JSON_UTF8);
+    ResultActions res = mvc.perform(builder);
+    res.andExpect(jsonPath("$", hasSize(1)));
+    res.andExpect(jsonPath(String.format("$[0].valid"), is(true)));
+  }
+
+  /**
+   * performs a validation request with one invalid word
+   */
+  @Test
+  public void validateOneInvalidWord() throws Exception {
+    String word = "snarfblar";
+    MockHttpServletRequestBuilder builder = get("/dictionary/validate?words=" + word);
+    builder.contentType(MediaType.APPLICATION_JSON_UTF8);
+    ResultActions res = mvc.perform(builder);
+    res.andExpect(jsonPath("$", hasSize(1)));
+    res.andExpect(jsonPath(String.format("$[0].valid"), is(false)));
+  }
+
+  /**
+   * performs a validation request with one bad word
+   */
+  @Test
+  public void validateOneBadWord() throws Exception {
+    String word = "fuck";
+    MockHttpServletRequestBuilder builder = get("/dictionary/validate?words=" + word);
+    builder.contentType(MediaType.APPLICATION_JSON_UTF8);
+    ResultActions res = mvc.perform(builder);
+    res.andExpect(jsonPath("$", hasSize(1)));
+    res.andExpect(jsonPath(String.format("$[0].bad"), is(true)));
+  }
+
+  /**
+   * performs a validation request on one special word
+   */
+  @Test
+  public void validateOneSpecialWord() throws Exception {
+    String word = "lake";
+    MockHttpServletRequestBuilder builder = get("/dictionary/validate?words=" + word);
+    builder.contentType(MediaType.APPLICATION_JSON_UTF8);
+    ResultActions res = mvc.perform(builder);
+    res.andExpect(jsonPath("$", hasSize(1)));
+    res.andExpect(jsonPath(String.format("$[0].special"), is(true)));
+  }
+
+  /**
+   * performs a validation request on 2 valid words
+   */
+  @Test
+  public void validateTwoValidWords() throws Exception {
+    String words = "hello,acquire";
+    MockHttpServletRequestBuilder builder = get("/dictionary/validate?words=" + words);
+    builder.contentType(MediaType.APPLICATION_JSON_UTF8);
+    ResultActions res = mvc.perform(builder);
+    res.andExpect(jsonPath("$", hasSize(times)));
+    res.andExpect(jsonPath(String.format("$[0].valid"), is(true)));
+    res.andExpect(jsonPath(String.format("$[1].valid"), is(true)));
+  }
+
+  /**
+  * performs a validation request on 2 special words
   */
   @Test
-  public void validateSpecialFourtyTwoWords() throws Exception {
-    BufferedReader buffer = new BufferedReader(new InputStreamReader(specialWordsFile.getInputStream()));
-    int times = 42;
-    String words = "";
-    for (int i = 0; i < times; i++)
-      if (i < times - 1)
-        words += buffer.readLine() + ",";
-      else
-        words += buffer.readLine();
+  public void validateTwoSpecialWords() throws Exception {
+    String words = "snow,lake";
     MockHttpServletRequestBuilder builder = get("/dictionary/validate?words=" + words);
     builder.contentType(MediaType.APPLICATION_JSON_UTF8);
     ResultActions res = mvc.perform(builder);
-    res.andExpect(jsonPath("$", hasSize(42)));
-    for (int i = 0; i < times; i++)
-      res.andExpect(jsonPath(String.format("$[%d].special", i), is(true)));
+    res.andExpect(jsonPath("$", hasSize(times)));
+    res.andExpect(jsonPath("$[0].special", is(true)));
+    res.andExpect(jsonPath("$[1].special", is(true)));
   }
 
   /**
-  * performs a validation request on 42 words and expects
-  * all 42 to be bad words
+  * performs a validation request on 2 bad words
   */
   @Test
-  public void validateBadFourtyTwoWords() throws Exception {
-    BufferedReader buffer = new BufferedReader(new InputStreamReader(badWordsFile.getInputStream()));
-    int times = 42;
-    String words = "";
-    for (int i = 0; i < times; i++)
-      if (i < times - 1)
-        words += buffer.readLine() + ",";
-      else
-        words += buffer.readLine();
+  public void validateTwoBadWords() throws Exception {
+    String words = "fuck,shit";
     MockHttpServletRequestBuilder builder = get("/dictionary/validate?words=" + words);
     builder.contentType(MediaType.APPLICATION_JSON_UTF8);
     ResultActions res = mvc.perform(builder);
-    res.andExpect(jsonPath("$", hasSize(42)));
-    for (int i = 0; i < times; i++)
-      res.andExpect(jsonPath(String.format("$[%d].special", i), is(true)));
+    res.andExpect(jsonPath("$", hasSize(times)));
+    res.andExpect(jsonPath("$[0].bad", is(true)));
+    res.andExpect(jsonPath("$[1].bad", is(true)));
   }
 
   /**
-   * performs a validation request on 42 words and expects
-   * all 42 to be invalid words
+   * performs a validation request on 2 invalid words
    */
   @Test
-  public void validateInvalidWords() throws Exception {
-    BufferedReader buffer = new BufferedReader(new InputStreamReader(invalidWordsFile.getInputStream()));
-    int times = 42;
-    String words = "";
-    for (int i = 0; i < times; i++)
-      if (i < times - 1)
-        words += buffer.readLine() + ",";
-      else
-        words += buffer.readLine();
+  public void validateTwoInvalidWords() throws Exception {
+    String words = "snarfblar,xadf";
     MockHttpServletRequestBuilder builder = get("/dictionary/validate?words=" + words);
     builder.contentType(MediaType.APPLICATION_JSON_UTF8);
     ResultActions res = mvc.perform(builder);
-    res.andExpect(jsonPath("$", hasSize(42)));
-    for (int i = 0; i < times; i++)
-      res.andExpect(jsonPath(String.format("$[%d].valid", i), is(false)));
+    res.andExpect(jsonPath("$", hasSize(times)));
+    res.andExpect(jsonPath("$[0].valid", is(false)));
+    res.andExpect(jsonPath("$[1].valid", is(false)));
   }
 
   /**
-   * performs a validate request on an Integer type and expects
-   * the to return an invalid word
+   * performs a validate request on an Integer
    */
   @Test
-  public void validateIntegerAsQuery() throws Exception {
+  public void validateInteger() throws Exception {
     MockHttpServletRequestBuilder builder = get("/dictionary/validate?words=" + 42);
     builder.contentType(MediaType.APPLICATION_JSON_UTF8);
     ResultActions res = mvc.perform(builder);
     res.andExpect(jsonPath("$", hasSize(1))).andExpect(jsonPath("$[0].valid", is(false)));
+  }
+
+  @Test
+  public void validateWithWhiteSpace() throws Exception {
+    String word = "this has whitespace";
+    MockHttpServletRequestBuilder builder = get("/dictionary/validate?words=" + word);
+    builder.contentType(MediaType.APPLICATION_JSON_UTF8);
+    ResultActions res = mvc.perform(builder);
+    res.andExpect(jsonPath("$", hasSize(1)));
+    res.andExpect(jsonPath("$[0].valid", is(false)));
   }
 
 }
