@@ -14,6 +14,11 @@ import java.util.ArrayList;
 public class InfoPanelActor extends Group{
     private List<String> eventLog;
     private Array<String> logOfEvents;
+
+    private Label p0Name, p0Score;
+    private Label p1Name, p1Score;
+    private Label p2Name, p2Score;
+    private Label p3Name, p3Score;
     public InfoPanelActor(){
         super();
         setWidth(GameScreen.GUI_UNIT_SIZE * 10);
@@ -38,7 +43,7 @@ public class InfoPanelActor extends Group{
         title.setColor(Color.BLACK);
         title.setName("title");
         //title.setPosition(GameScreen.GUI_UNIT_SIZE*4,GameScreen.GUI_UNIT_SIZE*12);
-        myLayout.add(title).expandX();
+        myLayout.add(title).expandX().padTop(10f);
         myLayout.row();
         //addActor(title);
         ProgressBar green = new ProgressBar(0,100.0f,1.0f,false,TextureManager.getInstance().ui, "default-horizontal");
@@ -55,19 +60,65 @@ public class InfoPanelActor extends Group{
         myLayout.add(gold).fillX().padLeft(10f).padRight(10f);
         myLayout.row();
 
+
+        Table sublayout = new Table();
+        sublayout.setDebug(true);
+        p0Name = new Label("player0", TextureManager.getInstance().ui, "default");
+        p0Score = new Label("0", TextureManager.getInstance().ui, "default");
+        sublayout.add(p0Name).padLeft(10f).left().expandX().minWidth(150f);
+        sublayout.add(p0Score).padRight(10f).left();
+        sublayout.row();
+
+        p1Name = new Label("player1", TextureManager.getInstance().ui, "default");
+        p1Score = new Label("10", TextureManager.getInstance().ui, "default");
+        sublayout.add(p1Name).padLeft(10f).left().expandX().minWidth(150f);
+        sublayout.add(p1Score).padRight(10f).left();
+        sublayout.row();
+
+        p2Name = new Label("player2", TextureManager.getInstance().ui, "default");
+        p2Score = new Label("100", TextureManager.getInstance().ui, "default");
+        sublayout.add(p2Name).padLeft(10f).left().expandX().minWidth(150f);
+        sublayout.add(p2Score).padRight(10f).left();
+        sublayout.row();
+
+        p3Name = new Label("player3333", TextureManager.getInstance().ui, "default");
+        p3Score = new Label("1000", TextureManager.getInstance().ui, "default");
+        sublayout.add(p3Name).padLeft(10f).left().expandX().minWidth(150f);
+        sublayout.add(p3Score).padRight(10f).left();
+        myLayout.add(sublayout);
+        myLayout.row();
+
+
+
         logOfEvents = new Array<String>();
         eventLog = new List<String>(TextureManager.getInstance().ui, "default");
         eventLog.setPosition(GameScreen.GUI_UNIT_SIZE, GameScreen.GUI_UNIT_SIZE*5);
         eventLog.setWidth(GameScreen.GUI_UNIT_SIZE*10);
         myLayout.add(eventLog).fillX().padLeft(10f).padRight(10f).padBottom(10f);
-        //addActor(eventLog);
-
 
         addActor(myLayout);
-
-
     }
 
+    public void UpdatePlayerStatus(int position, String name, int score){
+        switch (position){
+            case 0:
+                p0Name.setText(name);
+                p0Score.setText(score+"");
+                break;
+            case 1:
+                p1Name.setText(name);
+                p1Score.setText(score+"");
+                break;
+            case 2:
+                p2Name.setText(name);
+                p2Score.setText(score+"");
+                break;
+            case 3:
+                p3Name.setText(name);
+                p3Score.setText(score+"");
+                break;
+        }
+    }
 
 
 
