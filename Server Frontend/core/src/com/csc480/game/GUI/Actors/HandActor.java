@@ -2,10 +2,13 @@ package com.csc480.game.GUI.Actors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.csc480.game.Engine.Model.Placement;
 import com.csc480.game.Engine.Model.Player;
 import com.csc480.game.Engine.TextureManager;
@@ -18,17 +21,28 @@ import java.util.ArrayList;
  * This class manages the tiles in a player's tiles
  */
 public class HandActor extends Group {
+    private boolean flip = false;
     ArrayList<TileActor> myHand;
+    Image rack;
+    Label name;
     Player associatedPlayer;
 
-    public HandActor(){
+    public HandActor(boolean flipTiles){
         super();
         myHand = new ArrayList<TileActor>();
+        flip = flipTiles;
         //This could easily be put into an if statement to change the loaded image based on user color
         //SHOULD MAKE A FUNCTION THAT MANAGES THIS TEXTURE IN THE TEXTURE MANAGER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        Image rack = new Image(TextureManager.getInstance().rack);
+        rack = new Image(TextureManager.getInstance().rack);
+        name = new Label("default",TextureManager.getInstance().ui,"default");
+        name.setName("name");
+        name.setPosition(GameScreen.GUI_UNIT_SIZE/2,0);
         rack.setScale(.2f);
         this.addActor(rack);
+        this.addActor(name);
+        addTile(new TileActor('A'));
+        addTile(new TileActor('B'));
+        addTile(new TileActor('C'));
     }
 
     public Player getPlayer(){
@@ -39,6 +53,10 @@ public class HandActor extends Group {
      * @param a
      */
     public void addTile(TileActor a){
+        if(flip) {
+            //todo flip the texture of the tile
+        }
+
         super.addActor(a);
         a.setPosition((GameScreen.GUI_UNIT_SIZE/2)+myHand.size()*GameScreen.GUI_UNIT_SIZE, GameScreen.GUI_UNIT_SIZE/2);
         myHand.add(a);
@@ -74,6 +92,15 @@ public class HandActor extends Group {
      */
     public void setPlayer(Player newPlayer){
         associatedPlayer = newPlayer;
+        name.setText(associatedPlayer.name);
+        if(associatedPlayer.team.toLowerCase().compareTo("gold") == 0){
+            //todo get these assets
+            //rack.setDrawable(new SpriteDrawable(new Sprite(TextureManager.getInstance().tilesAtlas.findRegion("goldRack"))));
+
+        } else {
+            //rack.setDrawable(new SpriteDrawable(new Sprite(TextureManager.getInstance().tilesAtlas.findRegion("greenRack"))));
+        }
+
         for(Actor child : this.getChildren()){
             if(child instanceof TileActor){
                 this.removeTile((TileActor) child);
