@@ -24,10 +24,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.io.InputStreamReader;
-import java.beans.Transient;
-import java.io.BufferedReader;;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
@@ -72,15 +68,15 @@ public class DictionaryApplicationTests {
    */
   @Test
   public void validateOneWordEach() throws Exception {
-    mvc.perform(get("/dictionary/validate?words=hello,fuck,geese,xadf").contentType(MediaType.APPLICATION_JSON_UTF8))
+    mvc.perform(get("/dictionary/validate?words=hello,fuck,lake,snarfblar").contentType(MediaType.APPLICATION_JSON_UTF8))
         .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
         .andExpect(jsonPath("$", hasSize(4))).andExpect(jsonPath("$[0].word", is("hello")))
         .andExpect(jsonPath("$[0].valid", is(true))).andExpect(jsonPath("$[0].bad", is(false)))
         .andExpect(jsonPath("$[0].special", is(false))).andExpect(jsonPath("$[1].word", is("fuck")))
         .andExpect(jsonPath("$[1].valid", is(true))).andExpect(jsonPath("$[1].bad", is(true)))
-        .andExpect(jsonPath("$[1].special", is(false))).andExpect(jsonPath("$[2].word", is("geese")))
+        .andExpect(jsonPath("$[1].special", is(false))).andExpect(jsonPath("$[2].word", is("lake")))
         .andExpect(jsonPath("$[2].valid", is(true))).andExpect(jsonPath("$[2].bad", is(false)))
-        .andExpect(jsonPath("$[2].special", is(true))).andExpect(jsonPath("$[3].word", is("xadf")))
+        .andExpect(jsonPath("$[2].special", is(true))).andExpect(jsonPath("$[3].word", is("snarfblar")))
         .andExpect(jsonPath("$[3].valid", is(false))).andExpect(jsonPath("$[3].bad", is(false)))
         .andExpect(jsonPath("$[3].special", is(false)));
   }
@@ -103,114 +99,6 @@ public class DictionaryApplicationTests {
   }
 
   /**
-   * performs a validation request for one valid word
-   */
-  @Test
-  public void validateOneValidWord() throws Exception {
-    String word = "hello";
-    MockHttpServletRequestBuilder builder = get("/dictionary/validate?words=" + word);
-    builder.contentType(MediaType.APPLICATION_JSON_UTF8);
-    ResultActions res = mvc.perform(builder);
-    res.andExpect(jsonPath("$", hasSize(1)));
-    res.andExpect(jsonPath(String.format("$[0].valid"), is(true)));
-  }
-
-  /**
-   * performs a validation request with one invalid word
-   */
-  @Test
-  public void validateOneInvalidWord() throws Exception {
-    String word = "snarfblar";
-    MockHttpServletRequestBuilder builder = get("/dictionary/validate?words=" + word);
-    builder.contentType(MediaType.APPLICATION_JSON_UTF8);
-    ResultActions res = mvc.perform(builder);
-    res.andExpect(jsonPath("$", hasSize(1)));
-    res.andExpect(jsonPath(String.format("$[0].valid"), is(false)));
-  }
-
-  /**
-   * performs a validation request with one bad word
-   */
-  @Test
-  public void validateOneBadWord() throws Exception {
-    String word = "fuck";
-    MockHttpServletRequestBuilder builder = get("/dictionary/validate?words=" + word);
-    builder.contentType(MediaType.APPLICATION_JSON_UTF8);
-    ResultActions res = mvc.perform(builder);
-    res.andExpect(jsonPath("$", hasSize(1)));
-    res.andExpect(jsonPath(String.format("$[0].bad"), is(true)));
-  }
-
-  /**
-   * performs a validation request on one special word
-   */
-  @Test
-  public void validateOneSpecialWord() throws Exception {
-    String word = "lake";
-    MockHttpServletRequestBuilder builder = get("/dictionary/validate?words=" + word);
-    builder.contentType(MediaType.APPLICATION_JSON_UTF8);
-    ResultActions res = mvc.perform(builder);
-    res.andExpect(jsonPath("$", hasSize(1)));
-    res.andExpect(jsonPath(String.format("$[0].special"), is(true)));
-  }
-
-  /**
-   * performs a validation request on 2 valid words
-   */
-  @Test
-  public void validateTwoValidWords() throws Exception {
-    String words = "hello,acquire";
-    MockHttpServletRequestBuilder builder = get("/dictionary/validate?words=" + words);
-    builder.contentType(MediaType.APPLICATION_JSON_UTF8);
-    ResultActions res = mvc.perform(builder);
-    res.andExpect(jsonPath("$", hasSize(times)));
-    res.andExpect(jsonPath(String.format("$[0].valid"), is(true)));
-    res.andExpect(jsonPath(String.format("$[1].valid"), is(true)));
-  }
-
-  /**
-  * performs a validation request on 2 special words
-  */
-  @Test
-  public void validateTwoSpecialWords() throws Exception {
-    String words = "snow,lake";
-    MockHttpServletRequestBuilder builder = get("/dictionary/validate?words=" + words);
-    builder.contentType(MediaType.APPLICATION_JSON_UTF8);
-    ResultActions res = mvc.perform(builder);
-    res.andExpect(jsonPath("$", hasSize(times)));
-    res.andExpect(jsonPath("$[0].special", is(true)));
-    res.andExpect(jsonPath("$[1].special", is(true)));
-  }
-
-  /**
-  * performs a validation request on 2 bad words
-  */
-  @Test
-  public void validateTwoBadWords() throws Exception {
-    String words = "fuck,shit";
-    MockHttpServletRequestBuilder builder = get("/dictionary/validate?words=" + words);
-    builder.contentType(MediaType.APPLICATION_JSON_UTF8);
-    ResultActions res = mvc.perform(builder);
-    res.andExpect(jsonPath("$", hasSize(times)));
-    res.andExpect(jsonPath("$[0].bad", is(true)));
-    res.andExpect(jsonPath("$[1].bad", is(true)));
-  }
-
-  /**
-   * performs a validation request on 2 invalid words
-   */
-  @Test
-  public void validateTwoInvalidWords() throws Exception {
-    String words = "snarfblar,xadf";
-    MockHttpServletRequestBuilder builder = get("/dictionary/validate?words=" + words);
-    builder.contentType(MediaType.APPLICATION_JSON_UTF8);
-    ResultActions res = mvc.perform(builder);
-    res.andExpect(jsonPath("$", hasSize(times)));
-    res.andExpect(jsonPath("$[0].valid", is(false)));
-    res.andExpect(jsonPath("$[1].valid", is(false)));
-  }
-
-  /**
    * performs a validate request on an Integer
    */
   @Test
@@ -221,6 +109,10 @@ public class DictionaryApplicationTests {
     res.andExpect(jsonPath("$", hasSize(1))).andExpect(jsonPath("$[0].valid", is(false)));
   }
 
+  /**
+   * performs a validation request with an entry
+   * containing whitespace
+   */
   @Test
   public void validateWithWhiteSpace() throws Exception {
     String word = "this has whitespace";
