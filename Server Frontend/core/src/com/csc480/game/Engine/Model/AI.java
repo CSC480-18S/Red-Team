@@ -1,5 +1,6 @@
 package com.csc480.game.Engine.Model;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.math.Vector2;
 import com.csc480.game.Engine.GameManager;
 //import com.csc480.game.Engine.SocketManager;
@@ -19,6 +20,7 @@ public class AI extends Player {
     private static int counter = 0;
     public PriorityQueue myCache;
     public Socket mySocket;
+    private int state = 0;//0=waiting, 1=playing, 2=waitforVerification
     public AI(){
         super();
         this.isAI = true;
@@ -26,13 +28,36 @@ public class AI extends Player {
         myCache = new PriorityQueue(200);
         connectSocket();
     }
+    public void update(){
+        switch (state){
+            case 0://waiting
+                break;
+            case 1://play
+                PlayIdea play;
+                if (myCache.size == 0) {
+                    TESTFindPlays(GameManager.getInstance().theBoard);
+                    play = PlayBestWord();
+                } else {
+                    play = PlayBestWord();
+                }
+                mySocket.emit("play", JSONifyPlayIdea(play));
+                state = 2;
+                break;
+            case 2://waitforVerification
+                break;
+        }
+        return;
+    }
+
 
     public boolean connectSocket(){
         try{
             mySocket = IO.socket("http://localhost:3000");
             mySocket.connect();
+            socketEvents();
             //emit to server that AI has connected.
             //fetch new tiles?
+            /*
             mySocket.on("whoAreYou", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
@@ -42,7 +67,7 @@ public class AI extends Player {
                     mySocket.emit("whoAreYou",data);
 
                 }
-            });
+            });*/
         }
         catch (Exception e){
             System.err.print(e);
@@ -60,7 +85,7 @@ public class AI extends Player {
 
 
     public void socketEvents(){
-        while(mySocket.connected()) {
+        //while(mySocket.connected()) {
             mySocket.on("whoAreYou", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
@@ -88,6 +113,25 @@ public class AI extends Player {
                         e.printStackTrace();
                     }
                 }
+            }).on("wordPlayed", new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    try {
+                        JSONObject data = (JSONObject) args[0];
+                        System.out.println(data.toString());
+                        boolean invalid = data.getBoolean("invalid");
+                        if(invalid) {
+                            if (state == 2)
+                                state = 1;
+                        }else {
+                            if (state == 2)
+                                state = 0;
+                        }
+                        update();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }).on("newTurn", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
@@ -98,35 +142,9 @@ public class AI extends Player {
                         boolean myTurn = data.getBoolean("isTurn");
                         //reconnect an AI
                         if (myTurn) {
-                            PlayIdea play;
-                            if (myCache.size == 0) {
-                                TESTFindPlays(GameManager.getInstance().theBoard);
-                                play = PlayBestWord();
-                            } else {
-                                play = PlayBestWord();
-                            }
-                            try {
-                                JSONObject temp = new JSONObject();
-                                System.out.println("best plat word=" + play.myWord);
-                                temp.put("word", play.myWord);
-                                Vector2 pos = play.GetStartPos();
-                                temp.put("x", (int) pos.x);
-                                temp.put("y", (int) pos.y);
-                                temp.put("h", play.isHorizontalPlay());
-
-                                JSONArray words = new JSONArray();
-                                words.put(temp);
-                                System.out.println(words.toString());
-                                Unirest.post("http://localhost:3000/api/game/playWords")
-                                        .header("accept", "application/json")
-                                        .header("Content-Type", "application/json")
-                                        .body(words.toString())
-                                        .asString();
-                            } catch (Exception e) {
-                                System.out.println("Word send to server failed?");
-                                e.printStackTrace();
-                            }
+                            state = 1;
                         }
+                        update();
                     } catch (ArrayIndexOutOfBoundsException e) {
                         e.printStackTrace();
                     } catch (JSONException e) {
@@ -134,7 +152,7 @@ public class AI extends Player {
                     }
                 }
             });
-        }
+        //}
     }
 
     /**
@@ -270,6 +288,25 @@ public class AI extends Player {
     }
 
 
+    public String JSONifyPlayIdea(PlayIdea p){
+        Board temp = GameManager.getInstance().theBoard.getCopy();
+        temp.addWord(p.placements);
+        JSONArray parentJsonArray = new JSONArray();
+        // loop through your elements
+        for (int i=0; i<11; i++){
+            JSONArray childJsonArray = new JSONArray();
+            for (int j =0; j<11; j++){
+                if(temp.the_game_board[j][10-i] != null)
+                    childJsonArray.put("\""+temp.the_game_board[j][10-i].letter+"\"");
+                else
+                    childJsonArray.put("null");
+
+            }
+            parentJsonArray.put(childJsonArray);
+        }
+        System.out.println(parentJsonArray.toString());
+        return parentJsonArray.toString();
+    }
 
 
 

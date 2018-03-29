@@ -53,6 +53,11 @@ public class GameManager {
             theAIs.add(new AI());
         }
     }
+    public void Update(){
+        for(AI a: theAIs){
+            a.update();
+        }
+    }
 
     public void Dispose(){
         TextureManager.getInstance().Dispose();
@@ -502,5 +507,23 @@ public class GameManager {
 
     public void LogEvent(String eventName) {
         theGame.theGameScreen.infoPanel.LogEvent(eventName);
+    }
+
+    public String PrintBoardState(){
+        JSONArray parentJsonArray = new JSONArray();
+        // loop through your elements
+        for (int i=0; i<11; i++){
+            JSONArray childJsonArray = new JSONArray();
+            for (int j =0; j<11; j++){
+                if(theBoard.the_game_board[j][10-i] != null)
+                    childJsonArray.put("\""+theBoard.the_game_board[j][10-i].letter+"\"");
+                else
+                    childJsonArray.put("null");
+
+            }
+            parentJsonArray.put(childJsonArray);
+        }
+        System.out.println(parentJsonArray.toString());
+        return parentJsonArray.toString();
     }
 }

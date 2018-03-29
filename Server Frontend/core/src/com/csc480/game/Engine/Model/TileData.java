@@ -31,6 +31,14 @@ public class TileData {
         timePlayedAt = timePlayed;
         multiplier = bonus;
     }
+    public TileData(TileData copy){
+        my_position = new Vector2(copy.getX(),copy.getY());
+        letter = copy.letter;
+        letter_value = copy.letter_value;
+        playedBy = copy.playedBy;
+        timePlayedAt = copy.timePlayedAt;
+        multiplier = copy.multiplier;
+    }
 
     public int getX(){
         return (int)my_position.x;

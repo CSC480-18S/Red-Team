@@ -61,6 +61,10 @@ public class TestingInputProcessor implements InputProcessor {
             System.out.println("logging");
             GameManager.getInstance().theGame.theGameScreen.infoPanel.LogEvent("wow"+c++);
         }
+        else if(character == '2'){
+            //System.out.println("logging");
+            GameManager.getInstance().PrintBoardState();
+        }
         else if(character == '\'') {
             System.out.println("entering");
             Long startTime = System.nanoTime();
