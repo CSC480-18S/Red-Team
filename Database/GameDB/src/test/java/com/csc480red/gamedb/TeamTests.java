@@ -50,7 +50,6 @@ public class TeamTests {
   @Before
   public void setup() throws Exception {
     mvc = webAppContextSetup(webApplicationContext).build();
-    ThreadLocalRandom rand = ThreadLocalRandom.current();
     String gold_team = "Gold";
     String green_team = "Green";
     ObjectMapper mapper = new ObjectMapper();

@@ -50,6 +50,7 @@ public class PlayerTests {
   @Before
   public void setup() throws Exception {
     mvc = webAppContextSetup(webApplicationContext).build();
+    _initTeams();
     ThreadLocalRandom rand = ThreadLocalRandom.current();
     String team_name = rand.nextInt(2) == 0 ? "Gold" : "Green";
     String name = "TestPlayer420";
@@ -189,6 +190,21 @@ public class PlayerTests {
     ObjectNode obj = (ObjectNode) team;
     obj.remove("_links");
     return mapper.treeToValue(obj, Team.class);
+  }
+
+  /**
+   * initializes the green and gold teams
+   */
+  private void _initTeams() throws Exception {
+    String gold_team = "Gold";
+    String green_team = "Green";
+    ObjectMapper mapper = new ObjectMapper();
+    MockHttpServletRequestBuilder gold_builder = post("/teams").contentType(MediaType.APPLICATION_JSON_UTF8)
+        .content(mapper.writeValueAsString(new Team(gold_team, "fun", 42, "human", 420, "acquire", 42, 4200, 5, 5)));
+    MockHttpServletRequestBuilder green_builder = post("/teams").contentType(MediaType.APPLICATION_JSON_UTF8)
+        .content(mapper.writeValueAsString(new Team(green_team, "fun", 42, "human", 420, "acquire", 42, 4200, 5, 5)));
+    mvc.perform(gold_builder).andReturn();
+    mvc.perform(green_builder).andReturn();
   }
 
 }
