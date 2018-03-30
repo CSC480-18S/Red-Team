@@ -65,16 +65,17 @@ public class GameScreen implements Screen {
         //Define all the Actors
         Group playArea = new Group();
 
-        gameBoardActor = new GameBoardActor();
+        //gameBoardActor = new GameBoardActor();
         GameBoardTable board = new GameBoardTable();
+        board.setName("gameBoard");
         board.setPosition(GUI_UNIT_SIZE*2.75f,GUI_UNIT_SIZE*2.25f);
         //gameBoardActor.setBounds(0,0,100,100);
 
-        gameBoardActor.setName("gameBoard");
+        //gameBoardActor.setName("gameBoard");
 //THIS IS FOR TESTING ONLY //////////////////////////////////////////////////////////////
-        stage.setKeyboardFocus(gameBoardActor);
+        //stage.setKeyboardFocus(gameBoardActor);
 ////////////////////////////////////////////////////////////////////////////////////////
-        playArea.addActor(gameBoardActor);
+        //playArea.addActor(gameBoardActor);
 
         //The position of actors is considered from their bottom left corner
         //bottom

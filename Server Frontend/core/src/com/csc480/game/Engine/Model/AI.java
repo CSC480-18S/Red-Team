@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 public class AI extends Player {
@@ -40,7 +41,7 @@ public class AI extends Player {
                 } else {
                     play = PlayBestWord();
                 }
-                mySocket.emit("play", JSONifyPlayIdea(play));
+                mySocket.emit("play", GameManager.getInstance().JSONifyPlayIdea(play));
                 state = 2;
                 break;
             case 2://waitforVerification
@@ -81,6 +82,17 @@ public class AI extends Player {
 
     public void disconnectAI(){
         mySocket.disconnect();
+    }
+    public void ReConnectSocket(){
+        try {
+            IO.Options opts = new IO.Options();
+            opts.forceNew = true;
+            opts.reconnection = true;
+            mySocket = IO.socket("http://localhost:3000", opts);
+            mySocket.connect();
+        } catch (URISyntaxException e){
+            System.err.println(e);
+        }
     }
 
 
@@ -265,8 +277,8 @@ public class AI extends Player {
         char ham = GameManager.getInstance().theBoard.the_game_board[0][0].letter;
 
         int x,y = 0;
-
-        if (GameManager.getInstance().thePlayers.get(0).isAI){
+/*
+        if (GameManager.getInstance().thePlayers[(0)].isAI){
 
 
 
@@ -283,30 +295,12 @@ public class AI extends Player {
             System.out.println("this is from ai algorithm class's else, there is no AI in thePlayers"
                     + GameManager.getInstance().thePlayers);
         }
-
+*/
 
     }
 
 
-    public String JSONifyPlayIdea(PlayIdea p){
-        Board temp = GameManager.getInstance().theBoard.getCopy();
-        temp.addWord(p.placements);
-        JSONArray parentJsonArray = new JSONArray();
-        // loop through your elements
-        for (int i=0; i<11; i++){
-            JSONArray childJsonArray = new JSONArray();
-            for (int j =0; j<11; j++){
-                if(temp.the_game_board[j][10-i] != null)
-                    childJsonArray.put("\""+temp.the_game_board[j][10-i].letter+"\"");
-                else
-                    childJsonArray.put("null");
 
-            }
-            parentJsonArray.put(childJsonArray);
-        }
-        System.out.println(parentJsonArray.toString());
-        return parentJsonArray.toString();
-    }
 
 
 

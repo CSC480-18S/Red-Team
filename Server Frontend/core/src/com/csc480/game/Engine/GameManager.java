@@ -21,10 +21,10 @@ public class GameManager {
     private static GameManager instance;
     public OswebbleGame theGame;
     public ArrayList<Placement> placementsUnderConsideration;//ones being considered
-    public ArrayList<Player> thePlayers;
-    public ArrayList<AI> theAIs;
+    public Player[] thePlayers;
+    public AI[] theAIs;
     public int numPlayers;
-    public int currentPlayerIndex;
+    //public int currentPlayerIndex;
     public Board theBoard;
     public int greenScore;
     public int goldScore;
@@ -32,6 +32,7 @@ public class GameManager {
     //socket stuff
     private Socket socket;
     private double reconnectTimer = 2000.0;
+    private ArrayList<String> eventBacklog;
 
 
     public static GameManager getInstance() {
@@ -41,25 +42,29 @@ public class GameManager {
     }
 
     private GameManager(){
-        thePlayers = new ArrayList<Player>();
-        theAIs = new ArrayList<AI>();
+        thePlayers = new Player[4];
+        theAIs = new AI[4];
         placementsUnderConsideration = new ArrayList<Placement>();
         theBoard = new Board(OswebbleGame.BOARD_SIZE);
+        eventBacklog = new ArrayList<String>();
         //SocketManager.getInstance().ConnectSocket();
         //SocketManager.getInstance().setUpEvents();
         ConnectSocket();
         setUpEvents();
         for(int i = 0; i < 4; i++){
-            theAIs.add(new AI());
+            theAIs[i] = new AI();
         }
     }
     public void Update(){
         for(AI a: theAIs){
             a.update();
         }
+        ApplyEventBackLog();
     }
 
     public void Dispose(){
+        if(socket != null)
+            socket.disconnect();
         TextureManager.getInstance().Dispose();
     }
 
@@ -69,6 +74,9 @@ public class GameManager {
      */
     public void ConnectSocket(){
         try {
+            if(socket != null)
+                socket.disconnect();
+            socket = null;
             socket = IO.socket("http://localhost:3000");
             socket.connect();
         } catch (URISyntaxException e){
@@ -77,12 +85,10 @@ public class GameManager {
     }
     public void ReConnectSocket(){
         try {
-            socket = null;
-            socket = IO.socket("http://localhost:3000");
-            socket.io().reconnection(true);
-            socket.io().reconnectionDelay(1000);
-            socket.io().reconnectionDelayMax(5000);
-            socket.io().reconnectionAttempts(5000);
+            IO.Options opts = new IO.Options();
+            opts.forceNew = true;
+            opts.reconnection = true;
+            socket = IO.socket("http://localhost:3000", opts);
             socket.connect();
         } catch (URISyntaxException e){
             System.err.println(e);
@@ -96,7 +102,7 @@ public class GameManager {
         socket.on(io.socket.client.Socket.EVENT_CONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                LogEvent("connection to the backend has been secured");
+                LogEvent("connected to the backend");
                 //simple example of how to access the data sent from the server
                 try {
                     //JSONObject data = (JSONObject) args[0];
@@ -120,21 +126,7 @@ public class GameManager {
                 LogEvent("disconnection");
                 System.out.println("attempting reconnection:");
                 ReConnectSocket();
-                /*
-                long timer = 0;
-                long timout = 100000;
-                long startTime = System.currentTimeMillis();
-                int c  = 0;
-                timer = System.currentTimeMillis() - startTime;
-                while (!socket.connected() && timer < timout){
-                    System.out.println("attempt"+c++);
-                    timer = System.currentTimeMillis() - startTime;
 
-                }
-                System.out.println(socket.connected());
-                System.out.println(timer);
-
-*/
             }
         }).on(Socket.EVENT_RECONNECTING, new Emitter.Listener() {
             @Override
@@ -171,32 +163,26 @@ public class GameManager {
                     System.out.println(data.toString());
                     int position = data.getInt("position");
                     //reconnect an AI
+                    theAIs[(position)].ReConnectSocket();
                     switch (position){
                         case 0:
-                            theAIs.get(position).connectSocket();
-                            theGame.theGameScreen.bottom.setPlayer(theAIs.get(position));
+                            theGame.theGameScreen.bottom.setPlayer(theAIs[(position)]);
                             theGame.theGameScreen.bottom.updateState();
-                            thePlayers.set(position,theAIs.get(position));
                             break;
                         case 1:
-                            theAIs.get(position).connectSocket();
-                            theGame.theGameScreen.right.setPlayer(theAIs.get(position));
+                            theGame.theGameScreen.right.setPlayer(theAIs[(position)]);
                             theGame.theGameScreen.right.updateState();
-                            thePlayers.set(position,theAIs.get(position));
                             break;
                         case 2:
-                            theAIs.get(position).connectSocket();
-                            theGame.theGameScreen.top.setPlayer(theAIs.get(position));
+                            theGame.theGameScreen.top.setPlayer(theAIs[(position)]);
                             theGame.theGameScreen.top.updateState();
-                            thePlayers.set(position,theAIs.get(position));
                             break;
                         case 3:
-                            theAIs.get(position).connectSocket();
-                            theGame.theGameScreen.left.setPlayer(theAIs.get(position));
+                            theGame.theGameScreen.left.setPlayer(theAIs[(position)]);
                             theGame.theGameScreen.left.updateState();
-                            thePlayers.set(position,theAIs.get(position));
                             break;
                     }
+                    thePlayers[position] = theAIs[(position)];
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
                 }catch(JSONException e){
@@ -297,90 +283,127 @@ public class GameManager {
         return parsed;
     }
 
-    public void updatePlayers(ArrayList<Player> backEndPlayers, int currentPlayer){
-        currentPlayerIndex = currentPlayer;
+    public void updatePlayers(Player[] backEndPlayers){
+        //currentPlayerIndex = currentPlayer;
         //Update the Players
-        for(Player p : backEndPlayers){
+        for(int i = 0; i < 4; i++){
+            Player p = backEndPlayers[i];
             //cover existing players
             boolean exists = false;
-            if(theGame.theGameScreen.top.getPlayer().name.compareTo(p.name) == 0){
-                Player inHand = theGame.theGameScreen.top.getPlayer();
-                inHand.tiles = p.tiles;
-                inHand.turn = p.turn;
-                inHand.team = p.team;
-                inHand.score = p.score;
-                inHand.isAI = p.isAI;
-                theGame.theGameScreen.top.updateState();
-                theGame.theGameScreen.infoPanel.UpdatePlayerStatus(2, inHand.name, inHand.score);
-                exists = true;
-            } else
-            if(theGame.theGameScreen.bottom.getPlayer().name.compareTo(p.name) == 0){
-                Player inHand = theGame.theGameScreen.bottom.getPlayer();
-                inHand.tiles = p.tiles;
-                inHand.turn = p.turn;
-                inHand.team = p.team;
-                inHand.score = p.score;
-                inHand.isAI = p.isAI;
-                theGame.theGameScreen.bottom.updateState();
-                theGame.theGameScreen.infoPanel.UpdatePlayerStatus(0, inHand.name, inHand.score);
-                exists = true;
-            } else
-            if(theGame.theGameScreen.left.getPlayer().name.compareTo(p.name) == 0){
-                Player inHand = theGame.theGameScreen.left.getPlayer();
-                inHand.tiles = p.tiles;
-                inHand.turn = p.turn;
-                inHand.team = p.team;
-                inHand.score = p.score;
-                inHand.isAI = p.isAI;
-                theGame.theGameScreen.top.updateState();
-                theGame.theGameScreen.infoPanel.UpdatePlayerStatus(3, inHand.name, inHand.score);
-                exists = true;
-            } else
-            if(theGame.theGameScreen.right.getPlayer().name.compareTo(p.name) == 0){
-                Player inHand = theGame.theGameScreen.right.getPlayer();
-                inHand.tiles = p.tiles;
-                inHand.turn = p.turn;
-                inHand.team = p.team;
-                inHand.score = p.score;
-                inHand.isAI = p.isAI;
-                theGame.theGameScreen.top.updateState();
-                theGame.theGameScreen.infoPanel.UpdatePlayerStatus(1, inHand.name, inHand.score);
-                exists = true;
+            Player inHand = null;
+            switch (i){
+                case 0:
+                    inHand = theGame.theGameScreen.bottom.getPlayer();
+                    break;
+                case 1:
+                    inHand = theGame.theGameScreen.right.getPlayer();
+                    break;
+                case 2:
+                    inHand = theGame.theGameScreen.top.getPlayer();
+                    break;
+                case 3:
+                    inHand = theGame.theGameScreen.left.getPlayer();
+                    break;
+            }
+            inHand.tiles = p.tiles;
+            inHand.turn = p.turn;
+            inHand.team = p.team;
+            inHand.score = p.score;
+            inHand.isAI = p.isAI;
+
+            switch (i){
+                case 0:
+                    theGame.theGameScreen.bottom.setPlayer(inHand);
+                    break;
+                case 1:
+                    theGame.theGameScreen.right.setPlayer(inHand);
+                    break;
+                case 2:
+                    theGame.theGameScreen.top.setPlayer(inHand);
+                    break;
+                case 3:
+                    theGame.theGameScreen.left.setPlayer(inHand);
+                    break;
             }
 
-            //cover new players
-            if(!exists){
-                //replace an AI in thePlayers arraylist with new player
-                //replace an AI in the GUI with this new player
-                if(theGame.theGameScreen.right.getPlayer().isAI){
-                    thePlayers.remove(theGame.theGameScreen.right.getPlayer());
-                    thePlayers.add(p);
-                    theGame.theGameScreen.right.setPlayer(p);
-                    theGame.theGameScreen.right.updateState();
-                    theGame.theGameScreen.infoPanel.UpdatePlayerStatus(1, p.name, p.score);
-                }else if(theGame.theGameScreen.left.getPlayer().isAI){
-                    thePlayers.remove(theGame.theGameScreen.left.getPlayer());
-                    thePlayers.add(p);
-                    theGame.theGameScreen.left.setPlayer(p);
-                    theGame.theGameScreen.left.updateState();
-                    theGame.theGameScreen.infoPanel.UpdatePlayerStatus(3, p.name, p.score);
-                }else if(theGame.theGameScreen.top.getPlayer().isAI){
-                    thePlayers.remove(theGame.theGameScreen.top.getPlayer());
-                    thePlayers.add(p);
-                    theGame.theGameScreen.top.setPlayer(p);
-                    theGame.theGameScreen.top.updateState();
-                    theGame.theGameScreen.infoPanel.UpdatePlayerStatus(2, p.name, p.score);
-                }else if(theGame.theGameScreen.bottom.getPlayer().isAI){
-                    thePlayers.remove(theGame.theGameScreen.bottom.getPlayer());
-                    thePlayers.add(p);
-                    theGame.theGameScreen.bottom.setPlayer(p);
-                    theGame.theGameScreen.bottom.updateState();
-                    theGame.theGameScreen.infoPanel.UpdatePlayerStatus(0, p.name, p.score);
-                }else {
-                    throw new UnsupportedOperationException("There are no places for a new Player to join");
-                }
-            }
+            theGame.theGameScreen.infoPanel.UpdatePlayerStatus(i, inHand.name, inHand.score);
+
+
+
+
+//
+//
+//
+//
+//
+//            if(theGame.theGameScreen.top.getPlayer().name.compareTo(p.name) == 0){
+//                inHand.tiles = p.tiles;
+//                inHand.turn = p.turn;
+//                inHand.team = p.team;
+//                inHand.score = p.score;
+//                inHand.isAI = p.isAI;
+//
+//                exists = true;
+//            } else
+//            if(theGame.theGameScreen.bottom.getPlayer().name.compareTo(p.name) == 0){
+//                inHand.tiles = p.tiles;
+//                inHand.turn = p.turn;
+//                inHand.team = p.team;
+//                inHand.score = p.score;
+//                inHand.isAI = p.isAI;
+//                theGame.theGameScreen.bottom.updateState();
+//                theGame.theGameScreen.infoPanel.UpdatePlayerStatus(0, inHand.name, inHand.score);
+//                exists = true;
+//            } else
+//            if(theGame.theGameScreen.left.getPlayer().name.compareTo(p.name) == 0){
+//                inHand.tiles = p.tiles;
+//                inHand.turn = p.turn;
+//                inHand.team = p.team;
+//                inHand.score = p.score;
+//                inHand.isAI = p.isAI;
+//                theGame.theGameScreen.top.updateState();
+//                theGame.theGameScreen.infoPanel.UpdatePlayerStatus(3, inHand.name, inHand.score);
+//                exists = true;
+//            } else
+//            if(theGame.theGameScreen.right.getPlayer().name.compareTo(p.name) == 0){
+//                Player inHand = theGame.theGameScreen.right.getPlayer();
+//                inHand.tiles = p.tiles;
+//                inHand.turn = p.turn;
+//                inHand.team = p.team;
+//                inHand.score = p.score;
+//                inHand.isAI = p.isAI;
+//                theGame.theGameScreen.top.updateState();
+//                theGame.theGameScreen.infoPanel.UpdatePlayerStatus(1, inHand.name, inHand.score);
+//                exists = true;
+//            }
+//
+//            //cover new players
+//            if(!exists){
+//                //replace an AI in thePlayers arraylist with new player
+//                //replace an AI in the GUI with this new player
+//                thePlayers[i]= p;
+//                if(theGame.theGameScreen.right.getPlayer().isAI){
+//                    theGame.theGameScreen.right.setPlayer(p);
+//                    theGame.theGameScreen.right.updateState();
+//                    theGame.theGameScreen.infoPanel.UpdatePlayerStatus(1, p.name, p.score);
+//                }else if(theGame.theGameScreen.left.getPlayer().isAI){
+//                    theGame.theGameScreen.left.setPlayer(p);
+//                    theGame.theGameScreen.left.updateState();
+//                    theGame.theGameScreen.infoPanel.UpdatePlayerStatus(3, p.name, p.score);
+//                }else if(theGame.theGameScreen.top.getPlayer().isAI){
+//                    theGame.theGameScreen.top.setPlayer(p);
+//                    theGame.theGameScreen.top.updateState();
+//                    theGame.theGameScreen.infoPanel.UpdatePlayerStatus(2, p.name, p.score);
+//                }else if(theGame.theGameScreen.bottom.getPlayer().isAI){
+//                    theGame.theGameScreen.bottom.setPlayer(p);
+//                    theGame.theGameScreen.bottom.updateState();
+//                    theGame.theGameScreen.infoPanel.UpdatePlayerStatus(0, p.name, p.score);
+//                }else {
+//                    throw new UnsupportedOperationException("There are no places for a new Player to join");
+//                }
+//            }
         }
+        /*
         numPlayers = backEndPlayers.size();
         if(numPlayers < 4){
             //make a new AI
@@ -397,8 +420,9 @@ public class GameManager {
                 tempAI.team = "green";
             if(numGoldPlayers <= numGreenPlayers)
                 tempAI.team = "gold";
+
             //SocketManager.getInstance().BroadcastNewAI(tempAI);
-        }
+        }*/
     }
 
     /**
@@ -446,6 +470,7 @@ public class GameManager {
     /**
      * The GM wont do this, the individual AI will go through this process
      */
+    /*
     @Deprecated
     public void currentAIMakePlay(){
         Player current = thePlayers.get(currentPlayerIndex);
@@ -466,7 +491,7 @@ public class GameManager {
                 placementsUnderConsideration.clear();
             }
         }
-    }
+    }*/
 
 
     /**
@@ -505,8 +530,45 @@ public class GameManager {
         return diff;
     }
 
+
     public void LogEvent(String eventName) {
-        theGame.theGameScreen.infoPanel.LogEvent(eventName);
+        ApplyEventBackLog();
+        if(theGame != null && theGame.theGameScreen != null && theGame.theGameScreen.infoPanel !=null) {
+            theGame.theGameScreen.infoPanel.LogEvent(eventName);
+
+        }else {
+            System.out.println("adding "+eventName+"to backlog");
+            eventBacklog.add(eventName);
+        }
+
+    }
+    private void ApplyEventBackLog(){
+        if(theGame != null && theGame.theGameScreen != null && theGame.theGameScreen.infoPanel !=null) {
+            for(String s: eventBacklog)
+                theGame.theGameScreen.infoPanel.LogEvent(s);
+            eventBacklog.clear();
+        }
+
+    }
+
+    public String JSONifyPlayIdea(PlayIdea p){
+        Board temp = GameManager.getInstance().theBoard.getCopy();
+        temp.addWord(p.placements);
+        JSONArray parentJsonArray = new JSONArray();
+        // loop through your elements
+        for (int i=0; i<11; i++){
+            JSONArray childJsonArray = new JSONArray();
+            for (int j =0; j<11; j++){
+                if(temp.the_game_board[j][10-i] != null)
+                    childJsonArray.put("\""+temp.the_game_board[j][10-i].letter+"\"");
+                else
+                    childJsonArray.put("null");
+
+            }
+            parentJsonArray.put(childJsonArray);
+        }
+        System.out.println(parentJsonArray.toString());
+        return parentJsonArray.toString();
     }
 
     public String PrintBoardState(){

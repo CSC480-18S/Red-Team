@@ -32,7 +32,6 @@ public class TestingInputProcessor implements InputProcessor {
     public TestingInputProcessor(OrthographicCamera myCam){
         gameScreen = myCam;
         testHandQueue = new char[7];
-        testingAI = new AI();
         aiHandCount = 0;
     }
     @Override
@@ -59,11 +58,15 @@ public class TestingInputProcessor implements InputProcessor {
         }
         else if(character == '1'){
             System.out.println("logging");
-            GameManager.getInstance().theGame.theGameScreen.infoPanel.LogEvent("wow"+c++);
+            GameManager.getInstance().LogEvent("event"+c++);
         }
         else if(character == '2'){
             //System.out.println("logging");
             GameManager.getInstance().PrintBoardState();
+        }
+        else if(character == '3'){
+            //System.out.println("logging");
+            GameManager.getInstance().updatePlayers(GameManager.getInstance().theAIs);
         }
         else if(character == '\'') {
             System.out.println("entering");
@@ -93,16 +96,17 @@ public class TestingInputProcessor implements InputProcessor {
             for(int i = 0; i < testHandQueue.length; i++){
                 if(testHandQueue[i] != 0) {
                     System.out.println("adding to ai:" + testHandQueue[i]);
-                    testingAI.tiles[i] = testHandQueue[i];
+                    GameManager.getInstance().theAIs[0].tiles[i] = testHandQueue[i];
                 }
             }
+            GameManager.getInstance().updatePlayers(GameManager.getInstance().theAIs);
             System.out.println("Finding all AI plays for tiles");
             Long startTime = System.nanoTime();
-            testingAI.TESTFindPlays(GameManager.getInstance().theBoard);
+            GameManager.getInstance().theAIs[0].TESTFindPlays(GameManager.getInstance().theBoard);
             System.out.println("finding all possible AI plays took nanos: "+(System.nanoTime()-startTime));
-            PlayIdea bestPlay = testingAI.PlayBestWord();
+            PlayIdea bestPlay = GameManager.getInstance().theAIs[0].PlayBestWord();
             while(bestPlay != null && !GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay.placements)){
-                bestPlay = testingAI.PlayBestWord();
+                bestPlay = GameManager.getInstance().theAIs[0].PlayBestWord();
                 if(bestPlay == null) break;
             }
 
@@ -128,30 +132,6 @@ public class TestingInputProcessor implements InputProcessor {
                 for(int i = 0; i < testHandQueue.length; i++){
                     //if(testHandQueue[i] == 0) testHandQueue[i] = GameManager.getInstance().getNewTiles(1).get(0).charValue();
                 }
-                //delete this to specify the AI tiles ^^^
-/*
-                try{
-                    JSONObject temp = new JSONObject();
-                    System.out.println("best plat word="+bestPlay.myWord);
-                    temp.put("word",bestPlay.myWord);
-                    Vector2 pos = bestPlay.GetStartPos();
-                    temp.put("x", (int)pos.x);
-                    temp.put("y", (int)pos.y);
-                    temp.put("h", bestPlay.isHorizontalPlay());
-                    JSONArray words = new JSONArray();
-                    words.put(temp);
-                    System.out.println(words.toString());
-                    String s = words.toString();
-                    //System.out.println(SocketManager.GetJSON(SocketManager.GetBackendConnection("/api/game/playword", "POST", postIt)).toString());
-                    System.out.println(
-                            Unirest.post("http://localhost:3000/api/game/playWords")
-                                    .header("accept", "application/json")
-                                    .header("Content-Type", "application/json")
-                                    .body(words.toString())
-                                    .asString());
-                } catch (UnirestException e) {
-                    e.printStackTrace();
-                }*/
 
                 GameManager.getInstance().theBoard.addWord(bestPlay.placements);
                 GameManager.getInstance().placementsUnderConsideration.clear();
