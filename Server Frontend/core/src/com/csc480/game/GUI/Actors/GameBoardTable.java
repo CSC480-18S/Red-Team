@@ -36,9 +36,32 @@ public class GameBoardTable extends Group {
         setTile(6,5,TextureManager.DARK_TILE);
         setTile(5,4,TextureManager.DARK_TILE);
         setTile(5,6,TextureManager.DARK_TILE);
+
         setTile(0,0, TextureManager.GREEN_TILE);
+        setTile(7,0, TextureManager.GREEN_TILE);
+        setTile(4,2, TextureManager.GREEN_TILE);
+        setTile(7,3, TextureManager.GREEN_TILE);
+        setTile(10,3, TextureManager.GREEN_TILE);
+        setTile(2,4, TextureManager.GREEN_TILE);
+        setTile(0,7, TextureManager.GREEN_TILE);
+        setTile(3,7, TextureManager.GREEN_TILE);
+        setTile(6,8, TextureManager.GREEN_TILE);
+        setTile(8,6, TextureManager.GREEN_TILE);
+        setTile(3,10, TextureManager.GREEN_TILE);
         setTile(10,10, TextureManager.GREEN_TILE);
+
         setTile(0,10, TextureManager.GOLD_TILE);
+        setTile(0,3, TextureManager.GOLD_TILE);
+        setTile(3,0, TextureManager.GOLD_TILE);
+        setTile(3,3, TextureManager.GOLD_TILE);
+        setTile(6,2, TextureManager.GOLD_TILE);
+        setTile(2,6, TextureManager.GOLD_TILE);
+        setTile(8,4, TextureManager.GOLD_TILE);
+        setTile(4,8, TextureManager.GOLD_TILE);
+        setTile(7,7, TextureManager.GOLD_TILE);
+        setTile(10,7, TextureManager.GOLD_TILE);
+        setTile(7,10, TextureManager.GOLD_TILE);
+
         setTile(10,0, TextureManager.GOLD_TILE);
         System.out.println(board.getChildren().size);
         addActor(board);

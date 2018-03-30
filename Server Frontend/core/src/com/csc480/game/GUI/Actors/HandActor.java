@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.csc480.game.Engine.Model.AI;
 import com.csc480.game.Engine.Model.Placement;
 import com.csc480.game.Engine.Model.Player;
 import com.csc480.game.Engine.TextureManager;
@@ -38,6 +39,8 @@ public class HandActor extends Group {
         name.setName("name");
         name.setPosition(GameScreen.GUI_UNIT_SIZE/2,0);
         rack.setScale(.2f);
+        AI temp = new AI();
+        associatedPlayer = temp;
         this.addActor(rack);
         this.addActor(name);
         addTile(new TileActor('A'));
@@ -100,18 +103,8 @@ public class HandActor extends Group {
         } else {
             //rack.setDrawable(new SpriteDrawable(new Sprite(TextureManager.getInstance().tilesAtlas.findRegion("greenRack"))));
         }
-
-        for(Actor child : this.getChildren()){
-            if(child instanceof TileActor){
-                this.removeTile((TileActor) child);
-            }
-        }
-        for(int i = 0; i < associatedPlayer.tiles.length; i++){
-            if(associatedPlayer.tiles[i] != 0){
-                TileActor temp = new TileActor(associatedPlayer.tiles[i]);
-                this.addTile(temp);
-            }
-        }
+        updateState();
+        updateState();
     }
 
     /**
@@ -119,18 +112,23 @@ public class HandActor extends Group {
      */
     public void updateState(){
         ArrayList<Character> whatsInHand = new ArrayList<Character>();
+        System.out.println("associa player hand size of "+associatedPlayer.tiles.length);
         for(int i = 0; i < associatedPlayer.tiles.length; i++) {
             if(associatedPlayer.tiles[i] != 0)
                 whatsInHand.add(new Character(associatedPlayer.tiles[i]));
         }
         //remove tiles that arent here
-        for(Actor child : this.getChildren()){
+        for(int i = 0; i < this.getChildren().size;i++){
+            Actor child = this.getChildren().get(i);
             if(child instanceof TileActor){
                 Character thisChar = new Character(((TileActor) child).myLetter);
-                if(whatsInHand.contains(thisChar))
+                if(whatsInHand.contains(thisChar)) {
                     whatsInHand.remove(thisChar);
-                else
+                }
+                else {
+                    i--;
                     this.removeTile((TileActor) child);
+                }
             }
         }
         //add the rest

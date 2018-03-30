@@ -27,7 +27,7 @@ public class InfoPanelActor extends Group{
         Table myLayout = new Table();
         myLayout.setHeight(getHeight());
         myLayout.setWidth(getWidth());
-        myLayout.setDebug(true);
+        //myLayout.setDebug(true);
         myLayout.top();
         //myLayout.setPosition(getWidth()/2, getHeight()/2);
 
@@ -62,10 +62,10 @@ public class InfoPanelActor extends Group{
 
 
         Table sublayout = new Table();
-        sublayout.setDebug(true);
+        //sublayout.setDebug(true);
         p0Name = new Label("player0", TextureManager.getInstance().ui, "default");
         p0Score = new Label("0", TextureManager.getInstance().ui, "default");
-        sublayout.add(p0Name).padLeft(10f).left().expandX().minWidth(150f);
+        sublayout.add(p0Name).padLeft(10f).padTop(5f).left().expandX().minWidth(150f);
         sublayout.add(p0Score).padRight(10f).left();
         sublayout.row();
 
@@ -84,7 +84,7 @@ public class InfoPanelActor extends Group{
         p3Name = new Label("player3333", TextureManager.getInstance().ui, "default");
         p3Score = new Label("1000", TextureManager.getInstance().ui, "default");
         sublayout.add(p3Name).padLeft(10f).left().expandX().minWidth(150f);
-        sublayout.add(p3Score).padRight(10f).left();
+        sublayout.add(p3Score).padRight(10f).padBottom(5f).left();
         myLayout.add(sublayout);
         myLayout.row();
 
@@ -118,6 +118,7 @@ public class InfoPanelActor extends Group{
                 p3Score.setText(score+"");
                 break;
         }
+        
     }
 
 
