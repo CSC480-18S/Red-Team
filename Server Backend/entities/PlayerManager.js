@@ -1,7 +1,7 @@
 'use strict'
 
 class PlayerManager {
-  constructor(position, name, team, ai, socket) {
+  constructor(position, name, team, ai, socket, gameManager, serverManager) {
     this._name = name
     this._team = team
     this._isAI = ai
@@ -10,6 +10,8 @@ class PlayerManager {
     this._tiles = []
     this._isTurn = false
     this._score = 0
+    this._gameManager = gameManager
+    this._serverManger = serverManager
     this.listenForPlayerEvents()
   }
 
@@ -80,12 +82,26 @@ class PlayerManager {
    * Listens for events that come from the client
    */
   listenForPlayerEvents() {
-    this._socket.on('playWord', data => {
+    this._socket.on('playWord', board => {
+      this._gameManager.play(board, this)
+      this._serverManger.changeTurn(this.position)
       /** TODO: Take board given, then cross check it with current board
        * to pluck out played letters and cross check with tiles in hand
        * to make sure what they sent us is real data and not fake data
        */
     })
+
+    this._socket.on('disconnect', () => {
+      this._serverManger.removePlayer(this)
+    })
+  }
+
+  /**
+   * Sent to the user in the event of an invalid play
+   * @param {Object} invalid - hold error information about play
+   */
+  emitInvalidPlay(invalid) {
+    this._socket.emit('play', invalid)
   }
 
   /**

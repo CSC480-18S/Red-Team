@@ -14,6 +14,7 @@ module.exports = function(io) {
       this._players = new Array(4).fill(null)
       this._oldPlayerData = new Array(4).fill(null)
       this._currentlyConnectedClients = 0
+      this._firstTurnSet = false
       this.init()
       this.listenForClients()
     }
@@ -36,13 +37,6 @@ module.exports = function(io) {
           socket.on('whoAreYou', response => {
             this.determineClientType(socket, response)
           })
-
-          socket.on('disconnect', () => {
-            if (this._frontendManager !== null) {
-              let playerPosition = this.findWhichPlayerLeft(socket)
-              this._frontendManager.askForAI(playerPosition)
-            }
-          })
         } else {
           socket.emit('errorMessage', {
             error: 'There are already 4 players connected to the game.'
@@ -51,19 +45,18 @@ module.exports = function(io) {
       })
     }
 
-    /**
-     * Finds which player has disconnected from the game based on their socket
-     * @param {Object} socket - socket object
-     */
-    findWhichPlayerLeft(socket) {
+    removePlayer(player) {
       for (let p of this._players) {
-        if (p.socket === socket) {
+        if (p === player) {
+          this.io.emit('gameEvent', {
+            action: `${player.name} has left the game.`
+          })
           console.log('Client has disconnected.')
           let pos = p.position
           this.addOldData(pos, p)
           this._players.splice(pos, 1, null)
           this._currentlyConnectedClients--
-          return p.position
+          this._frontendManager.askForAI(pos)
         }
       }
     }
@@ -77,23 +70,13 @@ module.exports = function(io) {
     }
 
     /**
-     * Creates 4 player managers
-     */
-    createPlayerManagers() {
-      for (let i = 0; i < 4; i++) {
-        this._players.push(new PlayerManager(i))
-      }
-    }
-
-    /**
      * Creates only one frontend manager instance
      * @param {Object} socket - socket object
      */
     createFrontendManager(socket) {
-      if (this._frontendManager === null) {
-        console.log('Server Frontend Connected')
-        this._frontendManager = new FrontendManager(socket)
-      }
+      // TODO: check to see if we need to make sure only one frontend is connected? @Landon
+      console.log('Server Frontend Connected')
+      this._frontendManager = new FrontendManager(socket)
     }
 
     /**
@@ -101,7 +84,7 @@ module.exports = function(io) {
      */
     createGameManager() {
       if (this._gameManager === null) {
-        this._gameManager = new GameManager()
+        this._gameManager = new GameManager(io)
       }
     }
 
@@ -131,12 +114,39 @@ module.exports = function(io) {
       for (let i = 0; i < this._players.length; i++) {
         let p = this._players[i]
         if (p === null) {
-          let player = new PlayerManager(i, 'Player #' + i, team, ai, socket)
+          console.log('Client connected')
+          let player = new PlayerManager(i, 'Player #' + i, team, ai, socket, this._gameManager, this)
+          if (!this._firstTurnSet) {
+            player.isTurn = true
+            this._firstTurnSet = true
+          }
           if (this._oldPlayerData[i] !== null) {
             this.injectOldData(i, player)
           }
           this._players.splice(i, 1, player)
           break
+        }
+      }
+    }
+
+    /**
+     * Position of the player whos turn it just was
+     * @param {Number} pos - position
+     */
+    changeTurn(pos) {
+      if (pos > 3) {
+        pos = 0
+      }
+      this._players[pos].isTurn = true
+
+      for (let p in this._players) {
+        p.socket.emit('newTurn', {
+          isTurn: p.isTurn
+        })
+        if (p.isTurn) {
+          io.emit('gameEvent', {
+            action: `It is now ${p.name}'s turn.`
+          })
         }
       }
     }
