@@ -119,6 +119,7 @@ module.exports = function(io) {
         let p = this._players[i]
         if (p === null) {
           console.log('Client connected')
+          console.log('SOCKET: ' + socket.id)
           let player = new PlayerManager(i, 'Player #' + i, team, ai, socket, this._gameManager, this)
           if (!this._firstTurnSet) {
             player.isTurn = true
