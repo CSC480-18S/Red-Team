@@ -68,6 +68,7 @@ public class GameBoardTable extends Group {
 
     }
     public void setTile(int x, int y, String letter){
+        System.out.println("setting tile:"+letter);
         Cell center = board.getCells().get( x+(11*(10-y)) );
         Image i = new Image(TextureManager.getInstance().getTileTexture(letter));
         i.setName(letter.toLowerCase());
@@ -76,21 +77,23 @@ public class GameBoardTable extends Group {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        TileData[][] toDraw = GameManager.getInstance().theBoard.the_game_board;
-        if(toDraw != null){
-            for(int i = 0; i < toDraw.length; i++){
-                for(int j = 0; j < toDraw.length; j++){
-                    if(toDraw[i][j] != null){
+        synchronized (GameManager.getInstance().theBoard.the_game_board){
+            TileData[][] toDraw = GameManager.getInstance().theBoard.the_game_board;
+            if(toDraw != null){
+                for(int i = 0; i < toDraw.length; i++){
+                    for(int j = 0; j < toDraw.length; j++){
+                        if(toDraw[i][j] != null){
 
-                        if(toDraw[i][j].letter != board.getCells().get( i+(11*(10-j))).getActor().getName().charAt(0)){
-                            setTile(i,j, toDraw[i][j].letter+"");
+                            if(toDraw[i][j].letter != board.getCells().get( i+(11*(10-j))).getActor().getName().charAt(0)){
+                                setTile(i,j, toDraw[i][j].letter+"");
+                            }
                         }
                     }
                 }
             }
+            //batch.end();
+            super.draw(batch,parentAlpha);
         }
-        //batch.end();
-        super.draw(batch,parentAlpha);
         //batch.begin();
     }
 }

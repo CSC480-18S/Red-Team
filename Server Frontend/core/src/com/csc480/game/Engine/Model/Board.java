@@ -47,7 +47,7 @@ public class Board {
             //System.out.println("testing "+placements.get(i).letter + ": at ("+placements.get(i).xPos+", "+placements.get(i).yPos+")");
 
         }
-        System.out.println();
+        //System.out.println();
 
         //assume it is both
         boolean isHorrizontal = true;
@@ -157,7 +157,7 @@ public class Board {
                if(p.xPos == test_game_board.length/2 && p.yPos == test_game_board[0].length/2) inCenter = true;
            }
            if(!inCenter){
-               System.out.println("not in center nor connected to a word");
+               //System.out.println("not in center nor connected to a word");
                return false;
            }
        }
@@ -232,7 +232,7 @@ public class Board {
                 if(p.xPos == test_game_board.length/2 && p.yPos == test_game_board[0].length/2) inCenter = true;
             }
             if(!inCenter){
-                System.out.println("not in center nor connected to a word");
+                //System.out.println("not in center nor connected to a word");
                 return false;
             }
         }
@@ -255,7 +255,7 @@ public class Board {
             }
             //Then if both flags are true or both flags are false the letters are diagonal
             if(isHorrizontal == isVertical){
-                System.out.println("letters are diagonal");
+                //System.out.println("letters are diagonal");
                 return false;
             }
 
@@ -271,7 +271,7 @@ public class Board {
                 //Ensure rhe word is not null from min to max
                 for(int i = minX; i <= maxX; i++){
                     if(test_game_board[i][minY] == null){
-                        System.out.println("there is a null space in the middle of word");
+                        //System.out.println("there is a null space in the middle of word");
                         return false;
                     }
                 }
@@ -290,7 +290,7 @@ public class Board {
                             if(test_game_board[p.xPos][p.yPos -1] != null){
                                 //System.out.println("verifying below word");
                                 if(!isVerticalValid(p.yPos,p.yPos,p.xPos,temp,test_game_board)){
-                                    System.out.println("It was not a valid vertical subset returning false");
+                                    //System.out.println("It was not a valid vertical subset returning false");
                                     return false;
                                 }
                             }
@@ -300,7 +300,7 @@ public class Board {
                             if(test_game_board[p.xPos][p.yPos +1] != null){
                                 //System.out.println("verifying above word");
                                 if(!isVerticalValid(p.yPos,p.yPos,p.xPos,temp,test_game_board)){
-                                    System.out.println("It was not a valid vertical subset returning false");
+                                    //System.out.println("It was not a valid vertical subset returning false");
                                     return false;
                                 }
                             }
@@ -310,14 +310,14 @@ public class Board {
                             if(test_game_board[p.xPos][p.yPos -1] != null || test_game_board[p.xPos][p.yPos +1] != null){
                                 //System.out.println("verifying above and below word");
                                 if(!isVerticalValid(p.yPos,p.yPos,p.xPos,temp,test_game_board)){
-                                    System.out.println("It was not a valid vertical subset returning false");
+                                    //System.out.println("It was not a valid vertical subset returning false");
                                     return false;
                                 }
                             }
                         }
                     }
                 } else {
-                    System.out.println("it is not a valid horizontally");
+                   // System.out.println("it is not a valid horizontally");
                     return false;
                 }
             }
@@ -327,7 +327,10 @@ public class Board {
                 //System.out.println("Status: minX="+minX+" maxX="+maxX+" y="+minY);
                 //Ensure rhe word is not null from min to max
                 for(int i = minY; i <= maxY; i++){
-                    if(test_game_board[minX][i] == null){System.out.println("there was a null tile in the middle of word"); return false;}
+                    if(test_game_board[minX][i] == null){
+                        //System.out.println("there was a null tile in the middle of word");
+                        return false;
+                    }
                 }
                 if(isVerticalValid(minY,maxY,minX,myCopyOfPlacements,test_game_board)){
                     //the horizontal is a word
@@ -343,7 +346,7 @@ public class Board {
                             if(test_game_board[p.xPos -1][p.yPos] != null){
                                 //System.out.println("verifying left of word");
                                 if(!isHorizontalValid(p.xPos,p.xPos,p.yPos,temp,test_game_board)){
-                                    System.out.println("It was not a valid horizontal subset returning false");
+                                    //System.out.println("It was not a valid horizontal subset returning false");
                                     return false;
                                 }
                             }
@@ -353,7 +356,7 @@ public class Board {
                             if(test_game_board[p.xPos +1][p.yPos] != null){
                                 //System.out.println("verifying right of word");
                                 if(!isHorizontalValid(p.xPos,p.xPos,p.yPos,temp,test_game_board)){
-                                    System.out.println("It was not a valid horizontal subset returning false");
+                                    //System.out.println("It was not a valid horizontal subset returning false");
                                     return false;
                                 }
                             }
@@ -363,13 +366,16 @@ public class Board {
                             if(test_game_board[p.xPos -1][p.yPos] != null || test_game_board[p.xPos +1][p.yPos] != null){
                                 //System.out.println("verifying left and right of word");
                                 if(!isHorizontalValid(p.xPos,p.xPos,p.yPos,temp,test_game_board)){
-                                    System.out.println("It was not a valid horizontal subset returning false");
+                                    //System.out.println("It was not a valid horizontal subset returning false");
                                     return false;
                                 }
                             }
                         }
                     }
-                } else{System.out.println("it was not valid vertically"); return false;}
+                } else{
+                    //System.out.println("it was not valid vertically");
+                    return false;
+                }
             }
         } else {
             //Only one tile is being placed
@@ -429,19 +435,19 @@ public class Board {
             //we now know if there are horizontally or vertically connected words
             if(isHorrizontal){//there exists a horizontally connected tile
                 if(!isHorizontalValid(p.xPos,p.xPos,p.yPos,myCopyOfPlacements,test_game_board)){
-                    System.out.println("horizontal was not a valid word");
+                    //System.out.println("horizontal was not a valid word");
                     return false;
                 }
             }
             if(isVertical){//there exists a vertically connected tile
                 if(!isVerticalValid(p.yPos,p.yPos,p.xPos,myCopyOfPlacements,test_game_board)){
-                    System.out.println("vertical was not a valid word");
+                    //System.out.println("vertical was not a valid word");
                     return false;
                 }
             }
         }
 
-        System.out.println("IT WAS A VALID PLAY");
+        //System.out.println("IT WAS A VALID PLAY");
         return true;
     }
 

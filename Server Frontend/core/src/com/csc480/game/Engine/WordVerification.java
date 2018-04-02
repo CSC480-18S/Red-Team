@@ -34,7 +34,7 @@ public class WordVerification {
         Scanner inFileScanner;
         try{
             Long startTime = System.nanoTime();
-            System.out.println("Starting Creating HashSet");
+            //System.out.println("Starting Creating HashSet");
             file = new File(Gdx.files.internal("words.txt").path());
             //file = new File("C:\\Users\\chris\\Desktop\\Red-Team\\Server Frontend\\core\\assets\\words.txt");
             inFileScanner = new Scanner(file);
@@ -43,7 +43,7 @@ public class WordVerification {
                 c++;
                 validWords.add(inFileScanner.nextLine());
             }
-            System.out.println("Finished Creating HashSet total num = "+c+", nanos: "+(System.nanoTime()-startTime));
+            //System.out.println("Finished Creating HashSet total num = "+c+", nanos: "+(System.nanoTime()-startTime));
         }catch (FileNotFoundException e){
             System.err.println(e);
         }
@@ -59,7 +59,7 @@ public class WordVerification {
             else
                 TESTPRINTconstraints += constraints[i];
         }
-        System.out.println("TESTgetWordsFromHand called with: tiles ="+hand+", constraints="+TESTPRINTconstraints+", index="+index+"isHor="+horrizontal);
+        //System.out.println("TESTgetWordsFromHand called with: tiles ="+hand+", constraints="+TESTPRINTconstraints+", index="+index+"isHor="+horrizontal);
         ////////////
 
         String handAndReleventBoardTiles = hand;
@@ -70,7 +70,7 @@ public class WordVerification {
                 handAndReleventBoardTiles += constraints[i];
         ArrayList<PlayIdea> possiblePlays = new ArrayList<PlayIdea>();
         if(root.letter == 0){
-            System.out.println("First play, so we can skip a bunch");
+            //System.out.println("First play, so we can skip a bunch");
             for(String e: validWords){
                 String temp = handAndReleventBoardTiles;
                 boolean isGoodFlag = true;
@@ -85,7 +85,7 @@ public class WordVerification {
                         }
                     }
                     if (isGoodFlag) {
-                        System.out.println(e+" was good");
+                        //System.out.println(e+" was good");
                         ArrayList<Placement> play = new ArrayList<Placement>();
                         int playRoot = e.length()/2;
                         for(int i = 0; i < e.length(); i++){
@@ -116,7 +116,7 @@ public class WordVerification {
                     try{
                         //System.out.println("e: "+e+" matched? regex "+regex+"="+e.matches(regex));
                         if(e.matches(regex)) {
-                            System.out.println(e + " matched regex: "+regex);
+                            //System.out.println(e + " matched regex: "+regex);
                             //Transform result to placement
                             ArrayList<Placement> play = new ArrayList<Placement>();
                             if(root.letter != 0) {
@@ -127,40 +127,46 @@ public class WordVerification {
                                 for (int i = playRoot; i > 0; i--) {
                                     //create a new placement @
                                     if(index-i >= constraints.length)break;
-                                    System.out.println("constraint@" + (index+i-playRoot-1) + " = 0:" + (constraints[index+i-playRoot-1] == 0));
+                                    //System.out.println("constraint@" + (index+i-playRoot-1) + " = 0:" + (constraints[index+i-playRoot-1] == 0));
                                     if (constraints[index+i-playRoot-1] == 0) {
                                         if (horrizontal) {
-                                            System.out.println("adding a placement of "+e.charAt(i-1)+"("+(i-1)+") @ ("+(index+i-playRoot-1)+","+(int) root.my_position.y+") cause its blank here");
+                                            //System.out.println("adding a placement of "+e.charAt(i-1)+"("+(i-1)+") @ ("+(index+i-playRoot-1)+","+(int) root.my_position.y+") cause its blank here");
                                             play.add(new Placement(e.charAt(i - 1), index+i-playRoot-1, (int) root.my_position.y));
                                         }else {
-                                            System.out.println("adding a placement of "+e.charAt(i-1)+"("+(i-1)+") @ ("+((int) root.my_position.x)+","+(index+i-playRoot-1)+") cause its blank here");
+                                            //System.out.println("adding a placement of "+e.charAt(i-1)+"("+(i-1)+") @ ("+((int) root.my_position.x)+","+(index+i-playRoot-1)+") cause its blank here");
                                             play.add(new Placement(e.charAt(i - 1), (int) root.my_position.x, 10 - (index+i-playRoot-1)));
                                         }
                                     }
                                 }
-                                System.out.println("parsing right now");
+                                //System.out.println("parsing right now");
                                 //parse right
                                 for (int i = playRoot+1; i < e.length(); i++) {
                                     //create a new placement @
-                                    if(index+i-playRoot >= constraints.length){System.out.println("breaking greater");break;}
-                                    if(index+i-playRoot < 0){System.out.println("breaking lower");break;}
-                                    System.out.println("constraint@" + (index+i-playRoot) + " = 0:" + (constraints[index + i - playRoot] == 0));
+                                    if(index+i-playRoot >= constraints.length){
+                                        //System.out.println("breaking greater");
+                                        break;
+                                    }
+                                    if(index+i-playRoot < 0){
+                                        //System.out.println("breaking lower");
+                                        break;
+                                    }
+                                    //System.out.println("constraint@" + (index+i-playRoot) + " = 0:" + (constraints[index + i - playRoot] == 0));
                                     if (constraints[index + i - playRoot] == 0) {
                                         if (horrizontal) {
-                                            System.out.println("adding a placement of "+e.charAt(i)+"("+(i)+") @ ("+(index + i - playRoot)+","+(int) root.my_position.y+") cause its blank here");
+                                            //System.out.println("adding a placement of "+e.charAt(i)+"("+(i)+") @ ("+(index + i - playRoot)+","+(int) root.my_position.y+") cause its blank here");
                                             play.add(new Placement(e.charAt(i), index + i - playRoot, (int) root.my_position.y));
                                         }
                                         else {
-                                            System.out.println("adding a placement of "+e.charAt(i)+"("+(i)+") @ ("+((int) root.my_position.x)+","+(index+i-playRoot)+") cause its blank here");
+                                            //System.out.println("adding a placement of "+e.charAt(i)+"("+(i)+") @ ("+((int) root.my_position.x)+","+(index+i-playRoot)+") cause its blank here");
                                             play.add(new Placement(e.charAt(i), (int) root.my_position.x, 10- (index + i - playRoot)));
                                         }
                                     }
                                 }
-                                System.out.println("Adding to possible plays from Word Verification:" + PrintPlay(play));
+                                //System.out.println("Adding to possible plays from Word Verification:" + PrintPlay(play));
                                 PlayIdea p = new PlayIdea(e,play,(byte) play.size());
                                 possiblePlays.add(p);
                             }else {
-                                System.out.println("handle the first play case");
+                                //System.out.println("handle the first play case");
                                 //if (root.letter == 0)
                                 if (horrizontal) {
                                     for (int w = 0; w < e.length(); w++) {
@@ -172,7 +178,7 @@ public class WordVerification {
                                     }
                                 }
                                 //play.add(new Placement(e.charAt(playRoot),(int)root.my_position.y,(int)root.my_position.y));
-                                System.out.println("Adding to possible plays from Word Verification:" + PrintPlay(play));
+                                //System.out.println("Adding to possible plays from Word Verification:" + PrintPlay(play));
                                 PlayIdea p = new PlayIdea(e,play,(byte)play.size());
                                 possiblePlays.add(p);
                             }
@@ -186,7 +192,7 @@ public class WordVerification {
                 //System.out.println("word cant be longer than constraints");
             }
         }
-        System.out.println("Found "+possiblePlays.size()+" possible words.");
+        //System.out.println("Found "+possiblePlays.size()+" possible words.");
         return possiblePlays;
 
     }
@@ -218,7 +224,7 @@ public class WordVerification {
                 }
             }
         }
-        System.out.println("Found "+possibleWords.size()+" possible words.");
+        //System.out.println("Found "+possibleWords.size()+" possible words.");
         return possibleWords;
 
     }
@@ -229,9 +235,9 @@ public class WordVerification {
      */
     public boolean isWord(String word){
         Long startTime = System.nanoTime();
-        System.out.println("Starting Searching: "+startTime);
+        //System.out.println("Starting Searching: "+startTime);
         boolean has = validWords.contains(word);
-        System.out.println("Finished Searching nanos: "+(System.nanoTime()-startTime));
+        //System.out.println("Finished Searching nanos: "+(System.nanoTime()-startTime));
         return has;
     }
 
@@ -246,7 +252,7 @@ public class WordVerification {
             } else {
                 //if the constraint index is the start index, the char there is a mandatory char for the played word
                 if (i == startIndex) {
-                    System.out.println("if " + i);
+                    //System.out.println("if " + i);
                     if (paranthesis > 0) {
                         //any character 0 to emptySpace times, followed by the startIndex character
                         if (emptySpace == 0) {
@@ -267,8 +273,8 @@ public class WordVerification {
                         }
                     }
                 } else if (i < startIndex) {
-                    System.out.println("else if " + i);
-                    System.out.println(constraints[i + 1]);
+                    //System.out.println("else if " + i);
+                    //System.out.println(constraints[i + 1]);
                     if (constraints[i + 1] == '\0') {
                         regex += "(.{0," + emptySpace + "}" + constraints[i] + "|";
                         paranthesis++;
@@ -276,7 +282,7 @@ public class WordVerification {
                         regex += constraints[i];
                     }
                 } else {
-                    System.out.println("else " + i);
+                    //System.out.println("else " + i);
                     //if there is one empty space after a static character, optional statements come into play
                     if (emptySpace == 1) {
                         //word either ends after the static character, or has a single any char followed by the static char following it
@@ -308,6 +314,17 @@ public class WordVerification {
         for (int i = 0; i < constraints.length; i++) {
             //if the char value is \0 there is a blank space there
             if (constraints[i] == '\0') {
+                if(i == startIndex && paranthesis > 0){
+                    for (int j = 0; j < paranthesis; j++) {
+                        if(emptySpace == 0) {
+                            regex += "|.{0})";
+
+                        }
+                        else{
+                            regex += "|.{0," + (emptySpace - 1) + "})";
+                        }
+                    }
+                }
                 emptySpace++;
             } else {
                 //if the constraint index is the start index, the char there is a mandatory char for the played word
@@ -376,7 +393,7 @@ public class WordVerification {
         }
         //constraint for the last tile to the edge of the board
         regex += ".{0," + emptySpace + "}";
-        System.out.println(regex);
+        //System.out.println(regex);
         return regex;
     }
     public static String PrintPlay(ArrayList<Placement> toPrint){
