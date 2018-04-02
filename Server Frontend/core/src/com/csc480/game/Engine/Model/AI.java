@@ -36,14 +36,24 @@ public class AI extends Player {
                 break;
             case 1://play
                 PlayIdea play;
-                if (myCache.size == 0) {
-                    TESTFindPlays(GameManager.getInstance().theBoard);
-                    play = PlayBestWord();
-                } else {
-                    play = PlayBestWord();
+                System.out.println("my casheSize ="+myCache.size);
+                int breakCounter = 0;
+                do {
+                    if (myCache.count == 0) {
+                        TESTFindPlays(GameManager.getInstance().theBoard);
+                        play = PlayBestWord();
+                    } else {
+                        play = PlayBestWord();
+                    }
+                    breakCounter++;
+                }while(play == null && breakCounter < 10);
+                if(play != null){
+                    System.out.println("emmiting playWord");
+                    mySocket.emit("playWord", GameManager.getInstance().JSONifyPlayIdea(play));
+                    state = 2;
+                }else {
+                    tiles = GameManager.getInstance().getNewHand();
                 }
-                mySocket.emit("play", GameManager.getInstance().JSONifyPlayIdea(play));
-                state = 2;
                 break;
             case 2://waitforVerification
                 break;
@@ -128,10 +138,10 @@ public class AI extends Player {
                         e.printStackTrace();
                     }
                 }
-            }).on("wordPlayed", new Emitter.Listener() {
+            }).on("play", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    System.out.println(" got wordplayed");
+                    System.out.println(" got play");
                     try {
                         JSONObject data = (JSONObject) args[0];
                         System.out.println(data.toString());
@@ -159,6 +169,7 @@ public class AI extends Player {
                         //reconnect an AI
                         if (myTurn) {
                             state = 1;
+                            tiles = GameManager.getInstance().getNewHand();
                         }
                         update();
                     } catch (ArrayIndexOutOfBoundsException e) {
@@ -166,6 +177,11 @@ public class AI extends Player {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                }
+            }).on("playWord", new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    System.out.println(" got playWord");
                 }
             });
         //}
