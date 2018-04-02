@@ -89,7 +89,6 @@ td {
 }
 
 .wrapper-slots {
-    
     margin: 1em auto;
     width: 315px;
     overflow: auto;
@@ -101,8 +100,33 @@ td {
 }
 
 .wrapper-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr), 0.1rem;
+    grid-gap: 0.1rem;
     width: 100%;
     margin: 0 auto;
+}
+
+#btnSwap {
+    grid-column: 1 / 2;
+    grid-row: 1 / 2; 
+}
+#btnPlace {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;  
+}
+#btnShuffle {
+    grid-column: 3 / 4;
+    grid-row: 1 / 2; 
+}
+button {
+    font-size: 0.8rem;
+    font-family: 'Press Start 2P', sans-serif;
+    display: block;
+    margin: 0 auto;
+    padding: 0.8rem 0.5rem;
+    border-radius: 2px;
+    width: 90%;
 }
 
 .row-style {
@@ -136,11 +160,3 @@ td {
     width: 100%;
 }
 
-button {
-    font-size: 1em;
-    font-family: 'Press Start 2P', sans-serif;
-    display: block;
-    margin: 0 auto;
-    padding: 1rem;
-    
-}
