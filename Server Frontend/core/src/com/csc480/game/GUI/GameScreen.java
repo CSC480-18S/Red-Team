@@ -1,5 +1,6 @@
 package com.csc480.game.GUI;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RotateByAction;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.csc480.game.Engine.GameManager;
 import com.csc480.game.Engine.TestingInputProcessor;
 import com.csc480.game.GUI.Actors.*;
 import com.csc480.game.OswebbleGame;
@@ -112,8 +114,29 @@ public class GameScreen implements Screen {
 
         stage.addActor(playArea);
 
+        //update the hands with the GM state
+        bottom.setPlayer(GameManager.getInstance().thePlayers[0]);
+        bottom.updateState();
 
+        right.setPlayer(GameManager.getInstance().thePlayers[1]);
+        right.updateState();
 
+        top.setPlayer(GameManager.getInstance().thePlayers[2]);
+        top.updateState();
+
+        left.setPlayer(GameManager.getInstance().thePlayers[3]);
+        left.updateState();
+
+        UpdateInfoPanel();
+
+    }
+    public void UpdateInfoPanel(){
+        infoPanel.UpdatePlayerStatus(0, bottom.getPlayer().name, bottom.getPlayer().score);
+        infoPanel.UpdatePlayerStatus(1, right.getPlayer().name, right.getPlayer().score);
+        infoPanel.UpdatePlayerStatus(2, top.getPlayer().name, top.getPlayer().score);
+        infoPanel.UpdatePlayerStatus(3, left.getPlayer().name, left.getPlayer().score);
+
+        //infoPanel.UpdateProgressBars();
     }
 
     @Override

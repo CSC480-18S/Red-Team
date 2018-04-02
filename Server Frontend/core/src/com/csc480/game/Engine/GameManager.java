@@ -53,6 +53,7 @@ public class GameManager {
         setUpEvents();
         for(int i = 0; i < 4; i++){
             theAIs[i] = new AI();
+            thePlayers[i] = theAIs[i];
         }
     }
     public void Update(){

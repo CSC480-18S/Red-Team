@@ -48,7 +48,7 @@ module.exports = function(io) {
     removePlayer(player) {
       for (let p of this._players) {
         if (p === player) {
-          this.io.emit('gameEvent', {
+          io.emit('gameEvent', {
             action: `${player.name} has left the game.`
           })
           console.log('Client has disconnected.')
@@ -94,7 +94,7 @@ module.exports = function(io) {
      * @param {*} response - the type of the player
      */
     determineClientType(socket, response) {
-      if (response.tisAI) {
+      if (response.isAI) {
         this.createPlayerManager('ai_test', 'team_test', true, socket)
       } else if (response.isSF) {
         this.createFrontendManager(socket)
