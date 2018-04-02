@@ -38,6 +38,7 @@ module.exports = function(io) {
             this.determineClientType(socket, response)
           })
         } else {
+          console.log('error message sent...too many clients connected')
           socket.emit('errorMessage', {
             error: 'There are already 4 players connected to the game.'
           })
@@ -56,12 +57,15 @@ module.exports = function(io) {
           this.addOldData(pos, p)
           this._players.splice(pos, 1, null)
           this._currentlyConnectedClients--
-          this._frontendManager.askForAI(pos)
+          if (this._frontendManager !== null) {
+            this._frontendManager.askForAI(pos)
+          }
         }
       }
     }
 
     addOldData(pos, p) {
+      console.log('old data saved')
       this._oldPlayerData.splice(pos, 1, {
         tiles: p.tiles,
         isTurn: p.isTurn,
@@ -124,6 +128,7 @@ module.exports = function(io) {
             this.injectOldData(i, player)
           }
           this._players.splice(i, 1, player)
+          this._currentlyConnectedClients++
           player.socket.emit('newTurn', {
             isTurn: player.isTurn
           })
@@ -137,6 +142,7 @@ module.exports = function(io) {
      * @param {Number} pos - position
      */
     changeTurn(pos) {
+      pos += 1
       if (pos > 3) {
         pos = 0
       }
@@ -149,6 +155,7 @@ module.exports = function(io) {
             isTurn: p.isTurn
           })
           if (p.isTurn) {
+            console.log(`It is now ${p.name}'s turn.`)
             io.emit('gameEvent', {
               action: `It is now ${p.name}'s turn.`
             })
@@ -163,6 +170,7 @@ module.exports = function(io) {
      * @param {PlayerManager} p - manager
      */
     injectOldData(pos, p) {
+      console.log('old data injected')
       let old = this._oldPlayerData[pos]
       p.addPositionDetails(old.tiles, old.isTurn, old.score)
       this._oldPlayerData.splice(pos, 1, null)
