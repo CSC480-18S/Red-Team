@@ -147,7 +147,9 @@ module.exports = function(io) {
       if (pos > 3) {
         pos = 0
       }
-      this._players[pos].isTurn = true
+      if (this._players[pos] !== null) {
+        this._players[pos].isTurn = true
+      }
       // console.log(this._players)
       for (let i = 0; i < this._players.length; i++) {
         let p = this._players[i]
