@@ -51,6 +51,11 @@ public class GameManager {
         //SocketManager.getInstance().setUpEvents();
         ConnectSocket();
         setUpEvents();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         for(int i = 0; i < 4; i++){
             theAIs[i] = new AI();
             thePlayers[i] = theAIs[i];
