@@ -26,6 +26,7 @@ public class AI extends Player {
         super();
         this.isAI = true;
         this.name = "AI"+(counter++);
+        this.team = "green";
         myCache = new PriorityQueue(200);
         connectSocket();
     }
@@ -101,15 +102,17 @@ public class AI extends Player {
             mySocket.on("whoAreYou", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    System.out.println("whoAreYou");
+                    System.out.println(" got whoAreYou");
                     JSONObject data = new JSONObject();
                     data.put("isAI", true);
+                    System.out.println(data.toString());
                     mySocket.emit("whoAreYou", data);
 
                 }
             }).on("newGame", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
+                    System.out.println(" got newGame");
                     try {
                         JSONObject data = (JSONObject) args[0];
                         System.out.println(data.toString());
@@ -128,6 +131,7 @@ public class AI extends Player {
             }).on("wordPlayed", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
+                    System.out.println(" got wordplayed");
                     try {
                         JSONObject data = (JSONObject) args[0];
                         System.out.println(data.toString());
@@ -147,7 +151,7 @@ public class AI extends Player {
             }).on("newTurn", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    System.out.println("newTurn");
+                    System.out.println("got newTurn");
                     try {
                         JSONObject data = (JSONObject) args[0];
                         System.out.println(data.toString());

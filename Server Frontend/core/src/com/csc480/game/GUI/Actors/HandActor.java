@@ -39,8 +39,7 @@ public class HandActor extends Group {
         name.setName("name");
         name.setPosition(GameScreen.GUI_UNIT_SIZE/2,0);
         rack.setScale(.2f);
-        AI temp = new AI();
-        associatedPlayer = temp;
+        associatedPlayer = new Player();
         this.addActor(rack);
         this.addActor(name);
         addTile(new TileActor('A'));

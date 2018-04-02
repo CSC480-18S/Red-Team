@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Array;
+import com.csc480.game.Engine.GameManager;
 import com.csc480.game.Engine.TextureManager;
 import com.csc480.game.GUI.GameScreen;
 
@@ -14,6 +15,9 @@ import java.util.ArrayList;
 public class InfoPanelActor extends Group{
     private List<String> eventLog;
     private Array<String> logOfEvents;
+    ProgressBar green;
+    ProgressBar gold;
+
 
     private Label p0Name, p0Score;
     private Label p1Name, p1Score;
@@ -46,7 +50,7 @@ public class InfoPanelActor extends Group{
         myLayout.add(title).expandX().padTop(10f);
         myLayout.row();
         //addActor(title);
-        ProgressBar green = new ProgressBar(0,100.0f,1.0f,false,TextureManager.getInstance().ui, "default-horizontal");
+        green = new ProgressBar(0,100.0f,1.0f,false,TextureManager.getInstance().ui, "default-horizontal");
         //green.setWidth(getWidth());
         myLayout.add(green).fillX().padLeft(10f).padRight(10f);;
 
@@ -54,7 +58,7 @@ public class InfoPanelActor extends Group{
         myLayout.row();
         green.setValue(50.0f);//todo remove this//////////////////////////////////////////
 
-        ProgressBar gold = new ProgressBar(0,250,1,false,TextureManager.getInstance().ui, "default-horizontal");
+        gold = new ProgressBar(0,250,1,false,TextureManager.getInstance().ui, "default-horizontal");
         green.setValue(10);//todo remove this////////////////////////////////////////////
         gold.setWidth(getWidth());
         myLayout.add(gold).fillX().padLeft(10f).padRight(10f);
@@ -118,7 +122,25 @@ public class InfoPanelActor extends Group{
                 p3Score.setText(score+"");
                 break;
         }
-        
+
+    }
+
+    public void UpdateProgressBars(){
+        int gr = 0, gl =0;
+        if(GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer.team.compareTo("green") == 0){
+            gr += GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer.score;
+        }else{gl += GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer.score;}
+        if(GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer.team.compareTo("green") == 0){
+            gr += GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer.score;
+        }else{gl += GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer.score;}
+        if(GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer.team.compareTo("green") == 0){
+            gr += GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer.score;
+        }else{ gl += GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer.score;}
+        if(GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer.team.compareTo("green") == 0){
+            gr += GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer.score;
+        }else{gl += GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer.score;}
+        green.setValue(gr);
+        gold.setValue(gl);
     }
 
 
