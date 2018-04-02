@@ -250,7 +250,7 @@ var putTileInSquare = function (squareId) {
             } else {
                 var childTile = selectedSquare.children[0];
                 // only current round tiles can be put back 
-                //console.log(childTile.children[0].attributes[7].nodeValue);
+                //console.log(childTile.children[0].getAttribute("fill"));
                 if (childTile.children[0].getAttribute("fill") !== "#D3D3D3") {
                     //selectedSquare.removeChild(selectedTileCopy);
                     selectedSquare.removeChild(childTile);
@@ -288,6 +288,18 @@ var putTileInSquare = function (squareId) {
     //}
 }
 
+var swap = function () {
+    for (var i = 0; i < tileSlotNumber; i++) {
+        var tile = randomTile();
+        var shouldChange = Math.floor(2 * Math.random()); 
+        console.log(shouldChange);
+        if (shouldChange) {
+            this.tileSlots[i].tile.letter = tile.letter;
+            this.tileSlots[i].tile.value = tile.letterValue;
+        }
+    }
+}
+
 var refillSlots = function () {
     
     for(var i = 0; i < tileSlotNumber; i++) {
@@ -316,6 +328,45 @@ var refillSlots = function () {
     this.currentRoundtileIdsOnBoard = [];
     this.selectedTileId = "";
     
+    // For Zack
+        // create 2d array testing data
+//    var arr = new Array(row);
+//    for (i = 0; i < row; i++) {
+//        arr[i] = new Array(column);
+//        for (j = 0; j < column; j++) {
+//            arr[i][j] = 'A';
+//        }
+//    }
+    // store array data into squares
+//    for (i = 0; i < row; i++) {
+//        for (j = 0; j < column; j++) {
+//            var square = document.getElementById('square-' + i + '-' + j);
+//            if (square.hasChildNodes()) {
+//                square.childNodes[0].children[1].innerHTML = arr[i][j];    
+//            }   
+//        }
+//    }
+
+
+    // 20180331 Heng-Hao Pu: prepare for the connection with engine
+    // Make a request for a user with a given ID
+//    axios.get('refill.json')
+//        .then(function (response) {
+//            /*console.log(response);*/
+//            /*console.log(this); // this indicates window */
+//            for(var i = 0; i < data.tileSlots.length; i++) {
+//                for (key in response.data.tiles[i]) {
+//                    data.tileSlots[i].tile.letter = response.data.tiles[i][key];
+//                }
+//            }    
+//        })
+//        .catch(function (error) {
+//            console.log(error);
+//        });
+}
+
+var shuffle = function () {
+    this.tileSlots.sort(function() { return 0.5 - Math.random() });
 }
 
 /*
