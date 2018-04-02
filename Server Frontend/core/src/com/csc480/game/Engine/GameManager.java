@@ -195,19 +195,20 @@ public class GameManager {
             @Override
             public void call(Object... args) {
                 LogEvent("wordPlayed");
-                System.out.println("wordPlayed");
+                //System.out.println("wordPlayed");
                 try {
                     JSONObject data = (JSONObject) args[0];
-                    System.out.println("word played. data: "+data.toString());
+                    //System.out.println("word played. data: "+data.toString());
                     String boardString = data.getString("board");
                     JSONArray board = new JSONArray(boardString);//data.getJSONArray("board");
-                    System.out.println("board string to array: "+board.toString());
+                    //System.out.println("board string to array: "+board.toString());
                     JSONArray col;
-                    TileData[][] parsed = parseServerBoard(board);
+                    //todo un mess this up, the state isnt being constant and the AI are generating with bad data
+                    //TileData[][] parsed = parseServerBoard(board);
                     //find the board/user state differences
-                    wordHasBeenPlayed(parsed);
+                    //wordHasBeenPlayed(parsed);
                     //hard update the game and user states
-                    hardUpdateBoardState(parsed);
+                    //hardUpdateBoardState(parsed);
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
                 }catch(JSONException e){
@@ -221,7 +222,7 @@ public class GameManager {
                 try {
                     JSONObject data = (JSONObject) args[0];
                     String action = data.getString("action");
-                    System.out.println(action);
+                    //System.out.println(action);
                     LogEvent(action);
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
@@ -270,6 +271,7 @@ public class GameManager {
         for(int i = 0; i < board.length(); i++){
             col = board.getJSONArray(i);
             for(int j = 0; j < col.length(); j++){
+                /*//the old, proper way to do it
                 JSONObject serverTile = col.getJSONObject(j);
                 //int x, int y, char the_letter, int value, int bonus, String player, long timePlayed
                 if(serverTile.getBoolean("_letterPlaced ")){
@@ -283,6 +285,24 @@ public class GameManager {
                         serverTile.getLong("_timePlayedAt")
                     );
                 parsed[i][j] = t;}
+                */
+                //the hacky way because the server is sending Strings
+                String serverTile = col.getString(j);
+                if(serverTile.compareTo("null") == 0) {
+                    parsed[i][j] = null;
+                }else {
+                    //System.out.println("serverTile ======="+serverTile);
+                    TileData t = new TileData(
+                            j,//serverTile.getInt("_x"),
+                            10-i,//serverTile.getInt("_y"),
+                            serverTile.charAt(1),
+                            0,
+                            0,
+                           "",
+                            0
+                    );
+                    parsed[i][j] = t;
+                }
             }
         }
         return parsed;
@@ -438,19 +458,20 @@ public class GameManager {
     }
 
     public void wordHasBeenPlayed(TileData[][] backendBoardState){
-        ArrayList<TileData> newPlays = getPlacementsFromBackendThatArentOnFrontEnd(backendBoardState);
-        ArrayList<Placement> conversion = new ArrayList<Placement>();
-        for(TileData t : newPlays){
-            conversion.add(new Placement(t.letter,t.getX(),t.getY()));
+        synchronized (GameManager.getInstance().theBoard.the_game_board) {
+            ArrayList<TileData> newPlays = getPlacementsFromBackendThatArentOnFrontEnd(backendBoardState);
+            ArrayList<Placement> conversion = new ArrayList<Placement>();
+            for (TileData t : newPlays) {
+                conversion.add(new Placement(t.letter, t.getX(), t.getY()));
+            }
+            // todo call @GUI to
+            // todo apply tiles from user.
+            // todo hit /game/usersInGame to apply new tile additions.
+            // todo @Engine hard update player states with ^^^ data
+            //but for now we just add the plays
+            if (conversion.size() > 0)
+                theBoard.addWord(conversion);
         }
-        // todo call @GUI to
-        // todo apply tiles from user.
-        // todo hit /game/usersInGame to apply new tile additions.
-        // todo @Engine hard update player states with ^^^ data
-        //but for now we just add the plays
-        if(conversion.size() > 0)
-            theBoard.addWord(conversion);
-
 
     }
     public void displayMessage(String message, double time){
@@ -508,8 +529,9 @@ public class GameManager {
         ArrayList<TileData> diff = new ArrayList<TileData>();
         for(int i = 0; i < backend.length; i++){
             for(int j = 0; j < backend[0].length; j++){
-                if((backend[i][j] != null && theBoard.the_game_board[i][j] == null) ||
-                        (backend[i][j].letter != theBoard.the_game_board[i][j].letter)){
+                if((backend[i][j] != null && theBoard.the_game_board[i][j] == null)){
+                    diff.add(backend[i][j]);
+                }else if(backend[i][j] != null && (backend[i][j].letter != theBoard.the_game_board[i][j].letter)){
                     diff.add(backend[i][j]);
                 }
             }
@@ -542,7 +564,7 @@ public class GameManager {
             theGame.theGameScreen.infoPanel.LogEvent(eventName);
 
         }else {
-            System.out.println("adding "+eventName+"to backlog");
+            //System.out.println("adding "+eventName+"to backlog");
             eventBacklog.add(eventName);
         }
 
@@ -572,7 +594,7 @@ public class GameManager {
             }
             parentJsonArray.put(childJsonArray);
         }
-        System.out.println(parentJsonArray.toString());
+        //System.out.println(parentJsonArray.toString());
         return parentJsonArray.toString();
     }
 
@@ -598,7 +620,7 @@ public class GameManager {
             }
             parentJsonArray.put(childJsonArray);
         }
-        System.out.println(parentJsonArray.toString());
+        //System.out.println(parentJsonArray.toString());
         return parentJsonArray.toString();
     }
 }
