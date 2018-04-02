@@ -105,7 +105,9 @@ public class AI extends Player {
 
     public boolean connectSocket(){
         try{
-            mySocket = IO.socket("http://localhost:3000");
+            IO.Options opts = new IO.Options();
+            opts.forceNew = true;
+            mySocket = IO.socket("http://localhost:3000",opts);
             mySocket.connect();
             socketEvents();
             //emit to server that AI has connected.
@@ -209,12 +211,14 @@ public class AI extends Player {
                         System.out.println(data.toString());
                         boolean myTurn = data.getBoolean("isTurn");
                         //reconnect an AI
+                        System.out.println(myTurn);
                         if (myTurn) {
+                            /*
                             try {
                                 Thread.sleep(1000);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
-                            }
+                            }*/
                             myCache.Clear();
                             TESTFindPlays(GameManager.getInstance().theBoard);
                             state = 1;
@@ -327,7 +331,7 @@ public class AI extends Player {
 //NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
             } else{
 //SKIP MY TURN AND REDRAW//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                //System.err.println("should skip anf get new tiles");
+                System.err.println("should skip and get new tiles");
             }
         }
 
