@@ -83,6 +83,7 @@ class PlayerManager {
    */
   listenForPlayerEvents() {
     this._socket.on('playWord', board => {
+	  console.log('Client sent playWord')
       this._gameManager.play(board, this)
       this._serverManger.changeTurn(this.position)
       /** TODO: Take board given, then cross check it with current board

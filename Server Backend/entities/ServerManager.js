@@ -124,6 +124,9 @@ module.exports = function(io) {
             this.injectOldData(i, player)
           }
           this._players.splice(i, 1, player)
+		  player.socket.emit('newTurn', {
+          isTurn: player.isTurn
+          })
           break
         }
       }
@@ -138,8 +141,9 @@ module.exports = function(io) {
         pos = 0
       }
       this._players[pos].isTurn = true
-
-      for (let p in this._players) {
+	  //console.log(this._players)
+      for (let i = 0; i < this._players.length; i++) {
+        let p = this._players[i]
         p.socket.emit('newTurn', {
           isTurn: p.isTurn
         })

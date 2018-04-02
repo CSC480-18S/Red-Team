@@ -55,6 +55,7 @@ public class GameManager {
             theAIs[i] = new AI();
             thePlayers[i] = theAIs[i];
         }
+
     }
     public void Update(){
         for(AI a: theAIs){
@@ -197,7 +198,10 @@ public class GameManager {
                 System.out.println("wordPlayed");
                 try {
                     JSONObject data = (JSONObject) args[0];
-                    JSONArray board = data.getJSONArray("board");
+                    System.out.println("word played. data: "+data.toString());
+                    String boardString = data.getString("board");
+                    JSONArray board = new JSONArray(boardString);//data.getJSONArray("board");
+                    System.out.println("board string to array: "+board.toString());
                     JSONArray col;
                     TileData[][] parsed = parseServerBoard(board);
                     //find the board/user state differences
@@ -570,6 +574,14 @@ public class GameManager {
         }
         System.out.println(parentJsonArray.toString());
         return parentJsonArray.toString();
+    }
+
+    public char[] getNewHand(){
+        char[] ret = new char[7];
+        for(int i =0; i < ret.length; i++){
+            ret[i] = (char)MathUtils.random(97,122);
+        }
+        return ret;
     }
 
     public String PrintBoardState(){

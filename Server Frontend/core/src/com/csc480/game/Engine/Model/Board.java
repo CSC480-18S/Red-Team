@@ -551,7 +551,8 @@ public class Board {
         TileData[][] ret = new TileData[11][11];
         for(int i = 0; i < 11; i++){
             for(int j = 0; j < 11; j++){
-                ret[i][j] = new TileData(the_game_board[i][j]);//.
+                if(the_game_board[i][j] != null)
+                    ret[i][j] = new TileData(the_game_board[i][j]);//.
             }
         }
         temp.the_game_board = ret;
