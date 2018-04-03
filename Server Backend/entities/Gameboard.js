@@ -3,7 +3,6 @@
  * Imports lodash and axios
  */
 const _ = require('lodash')
-const axios = require('axios')
 
 /**
  * Imports the Tile and GameboardResponse class
@@ -11,15 +10,13 @@ const axios = require('axios')
 const Tile = require('./Tile')
 
 class Gameboard {
-  /**
-   * @param {Number} size - the size of the board for both height and width
-   */
   constructor() {
     this._size = 11
     this._board = new Array(this._size)
     this._initialized = false
     this._firstPlay = true
     this._error = 0
+    this.init()
   }
 
   /**
@@ -94,15 +91,23 @@ class Gameboard {
       return true
     }
 
-    for (let i = 0; i < this._board.length; i++) {
-      this._board[i] = new Array(this._size)
+    for (let i = 0; i < this.board.length; i++) {
+      this.board[i] = new Array(this._size)
 
-      for (let j = 0; j < this._board[0].length; j++) {
-        this._board[i][j] = new Tile(j, i, '1')
+      for (let j = 0; j < this.board[0].length; j++) {
+        this.board[i][j] = new Tile(j, i, '1')
       }
     }
 
     this._initialized = true
+  }
+
+  /**
+   * This method is only for a demo to replace the board
+   * @param {Array} board - board
+   */
+  replaceBoard(board) {
+    this.board = board
   }
 
   /**
@@ -217,7 +222,7 @@ class Gameboard {
    * @param {String} toBePlacedLetter - the letter that is to be placed on the board
    */
   validatePosition(currentLetter, toBePlacedLetter) {
-    if (currentLetter === '.') {
+    if (currentLetter === null) {
       return true
     } else if (currentLetter === toBePlacedLetter) {
       return true
@@ -233,7 +238,7 @@ class Gameboard {
    * @param {Number} y - y coordinate
    */
   tileInformation(x, y) {
-    return this._board[y][x]
+    return this.board[y][x]
   }
 }
 

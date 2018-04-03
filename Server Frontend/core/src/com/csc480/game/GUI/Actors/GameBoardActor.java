@@ -10,6 +10,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csc480.game.Engine.GameManager;
 import com.csc480.game.Engine.Model.Placement;
 import com.csc480.game.GUI.GameScreen;
@@ -53,10 +54,10 @@ public class GameBoardActor extends Actor {
         boardCam.update();
 //FOR TESTING ONLY REMOVE ONCE DONE TESTING///////////////////////////////////////////////////
         ArrayList<Placement> testing = new ArrayList<Placement>();
-        testing.add(new Placement('t',3,4));
-        testing.add(new Placement('e',4,4));
-        testing.add(new Placement('s',5,4));
-        testing.add(new Placement('t',6,4));
+        //testing.add(new Placement('t',3,4));
+        //testing.add(new Placement('e',4,4));
+        //testing.add(new Placement('s',5,4));
+       // testing.add(new Placement('t',6,4));
 
         //testing.add(new Placement('e',5,3));
 
@@ -65,7 +66,7 @@ public class GameBoardActor extends Actor {
 
 
         GameManager.getInstance().theBoard.addWord(testing);
-        GameManager.getInstance().placementsUnderConsideration.add(new Placement('t',4,5));
+        //GameManager.getInstance().placementsUnderConsideration.add(new Placement('t',4,5));
 //////////////////////////////////////////////////////////////////////////////////////////////
 
     }
@@ -83,6 +84,8 @@ public class GameBoardActor extends Actor {
         renderer.setView(boardCam.combined, 0,0,GameScreen.BOARD_SIZE,GameScreen.BOARD_SIZE);
         TiledMapTileLayer playedLayer = TiledUtils.generatePlacementsTiledLayer(GameManager.getInstance().theBoard);
         renderer.getMap().getLayers().add(playedLayer);
+        TiledMapTileLayer thinkingLayer = TiledUtils.generateThinkingTiledLayer();
+        renderer.getMap().getLayers().add(thinkingLayer);
         renderer.render();
         renderer.getMap().getLayers().remove(playedLayer);
 
