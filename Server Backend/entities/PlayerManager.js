@@ -83,9 +83,9 @@ class PlayerManager {
    */
   listenForPlayerEvents() {
     this._socket.on('playWord', board => {
-      console.log(`Client ${this.position} sent playWord`)
+      console.log(`Client ${this.position} played word`)
       this._gameManager.play(board, this)
-      this._serverManger.changeTurn(this.position)
+      // this._serverManger.changeTurn(this.position)
       /** TODO: Take board given, then cross check it with current board
        * to pluck out played letters and cross check with tiles in hand
        * to make sure what they sent us is real data and not fake data
