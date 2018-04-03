@@ -3,6 +3,7 @@
  * Imports lodash and axios
  */
 const axios = require('axios')
+const _ = require('lodash')
 /**
  * Imports the Gameboard class
  */
@@ -49,40 +50,89 @@ class GameManager {
     return this._board.board
   }
 
-  /**
-   * This is just for a demo
-   * @param {Array} board - board
-   * @param {Object} player - player object
-   */
-  play(board, player) {
-    this._board.replaceBoard(board)
-    this._io.emit('wordPlayed', {
-      playValue: 10,
-      board: board
-    })
-    this._io.emit('gameEvent', {
-      action: `${player.name} just played a word for ${10} points.`
-    })
-    player.isTurn = false
+  play(newBoard, player) {
+    let letters = this.extractLetters(newBoard)
+    let words = this.extractWords(letters, newBoard)
+
+    this.board.placeWords(words)
   }
 
-  // play(board, player) {
-  //   this.wordValidation(trimmed)
-  //     .then(response => {
-  //       console.log('The board now has an answer')
-  //       let placement
-  //       if (response === true) {
-  //         placement = this._board.placeWords(trimmed, user)
-  //       } else {
-  //         return this.handleResponse(this._error, response, res)
-  //       }
-  //       return this.handleResponse(this._board.error, placement, res)
-  //     })
-  //     .catch(e => {
-  //       return res.status(400).json({code: 'D1', title: 'Database Error', desc: e.code})
-  //     })
-  //   console.log('The board is thinking')
-  // }
+  extractLetters(newBoard) {
+    let letters = []
+    for (let i = 0; i < newBoard.length; i++) {
+      for (let j = 0; j < newBoard[0].length; j++) {
+        let currentBoardLetter = this.board.board[j][i].letter
+        //   console.log(currentBoardLetter)
+        let newBoardLetter = newBoard.board[j][i].letter
+
+        if (newBoardLetter !== null) {
+          if (currentBoardLetter !== newBoardLetter) {
+            let tile = {
+              letter: newBoardLetter,
+              x: j,
+              y: i
+            }
+            letters.push(tile)
+          }
+        }
+      }
+    }
+    return letters
+  }
+
+  extractWords(letters, newBoard) {
+    let words = []
+    letters.map(t => {
+      for (let k = 0; k < 2; k++) {
+        let temp = []
+        for (let i = 0; i < newBoard.board.length; i++) {
+          let tile = {
+            letter: newBoard.board[k ? i : t.x][k ? t.y : i].letter,
+            x: k ? i : t.x,
+            y: k ? t.y : i
+          }
+          temp.push(tile)
+        }
+
+        let nullFound = false
+        let word = []
+        for (let te of temp) {
+          if (te.letter !== null) {
+            te['h'] = !!k
+            word.push(te)
+          } else {
+            nullFound = true
+          }
+
+          if (nullFound || te.x === newBoard.board.length - 1 || te.y === newBoard.board.length - 1) {
+            if (word.length > 1) {
+              words.push(word)
+            }
+            word = []
+            nullFound = false
+          }
+        }
+      }
+    })
+
+    let word = ''
+    let wordObjects = []
+    for (let i = 0; i < words.length; i++) {
+      for (let j = 0; j < words[0].length; j++) {
+        word += words[i][j].letter
+      }
+      wordObjects.push({
+        word: word,
+        x: words[i][0].x,
+        y: words[i][0].y,
+        h: words[i][0].h
+      })
+      word = ''
+    }
+
+    let unique = _.uniqWith(wordObjects, _.isEqual)
+    return unique
+  }
 
   /**
    * Checks to see if word(s) are in the DB
