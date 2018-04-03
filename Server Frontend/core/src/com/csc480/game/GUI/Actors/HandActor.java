@@ -2,58 +2,70 @@ package com.csc480.game.GUI.Actors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.csc480.game.Engine.Model.AI;
 import com.csc480.game.Engine.Model.Placement;
 import com.csc480.game.Engine.Model.Player;
+import com.csc480.game.Engine.TextureManager;
 import com.csc480.game.GUI.GameScreen;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 
 /**
- * This class manages the tiles in a player's hand
+ * This class manages the tiles in a player's tiles
  */
 public class HandActor extends Group {
+    private boolean flip = false;
     ArrayList<TileActor> myHand;
+    Image rack;
+    Label name;
     Player associatedPlayer;
 
-    public HandActor(){
+    public HandActor(boolean flipTiles){
         super();
         myHand = new ArrayList<TileActor>();
+        flip = flipTiles;
         //This could easily be put into an if statement to change the loaded image based on user color
         //SHOULD MAKE A FUNCTION THAT MANAGES THIS TEXTURE IN THE TEXTURE MANAGER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        Image rack = new Image(new Texture(Gdx.files.internal("rack.jpg")));
+        rack = new Image(TextureManager.getInstance().rack);
+        name = new Label("default",TextureManager.getInstance().ui,"default");
+        name.setName("name");
+        name.setPosition(GameScreen.GUI_UNIT_SIZE/2,0);
         rack.setScale(.2f);
+        associatedPlayer = new Player();
         this.addActor(rack);
-//THIS IS JUST FOR TESTING ONLY REMOVE///////////////////////////////////////////////////
-        TileActor t1,t2,t3,t4,t5,t6,t7;
-        this.addTile(t1 = new TileActor('a'));
-        this.addTile(t2 = new TileActor('b'));
-        this.addTile(t3 = new TileActor('c'));
-        this.addTile(t4 = new TileActor('d'));
-        this.addTile(t5 = new TileActor('e'));
-        this.addTile(t6 = new TileActor('f'));
-        this.addTile(t7 = new TileActor('g'));
-        this.removeTile(t2);
-        this.removeTile(t4);
-        this.removeTile(t5);
-/////////////////////////////////////////////////////////////////////////////////////////
+        this.addActor(name);
+        addTile(new TileActor('A'));
+        addTile(new TileActor('B'));
+        addTile(new TileActor('C'));
     }
 
+    public Player getPlayer(){
+        return associatedPlayer;
+    }
     /**
      * This should be used instead of addActor. This will place the new tile in the proper position.
      * @param a
      */
     public void addTile(TileActor a){
+        if(flip) {
+            //todo flip the texture of the tile
+        }
+
         super.addActor(a);
         a.setPosition((GameScreen.GUI_UNIT_SIZE/2)+myHand.size()*GameScreen.GUI_UNIT_SIZE, GameScreen.GUI_UNIT_SIZE/2);
         myHand.add(a);
     }
 
     /**
-     * This should be used instead of removeActor. This will reorganize the tileActors in the hand.
+     * This should be used instead of removeActor. This will reorganize the tileActors in the tiles.
      * @param a
      * @return
      */
@@ -61,7 +73,7 @@ public class HandActor extends Group {
         boolean rem = super.removeActor(a);
         if(rem) {
             myHand.remove(a);
-            //remove the tiles in the hand
+            //remove the tiles in the tiles
             int count = 0;
             for(Actor child : this.getChildren()){
                 if(child instanceof TileActor){
@@ -77,46 +89,57 @@ public class HandActor extends Group {
     }
 
     /**
-     * Set up the hand state for a new player
+     * Set up the tiles state for a new player
      * @param newPlayer
      */
     public void setPlayer(Player newPlayer){
         associatedPlayer = newPlayer;
-        for(Actor child : this.getChildren()){
-            if(child instanceof TileActor){
-                this.removeTile((TileActor) child);
-            }
+        name.setText(associatedPlayer.name);
+        if(associatedPlayer.team.toLowerCase().compareTo("gold") == 0){
+            //todo get these assets
+            //rack.setDrawable(new SpriteDrawable(new Sprite(TextureManager.getInstance().tilesAtlas.findRegion("goldRack"))));
+
+        } else {
+            //rack.setDrawable(new SpriteDrawable(new Sprite(TextureManager.getInstance().tilesAtlas.findRegion("greenRack"))));
         }
-        for(int i = 0; i < associatedPlayer.hand.length; i++){
-            if(associatedPlayer.hand[i] != 0){
-                TileActor temp = new TileActor(associatedPlayer.hand[i]);
-                this.addTile(temp);
-            }
-        }
+        updateState();
+        updateState();
     }
 
     /**
-     * Will sync the hand display with the GameState
+     * Will sync the tiles display with the GameState
      */
     public void updateState(){
         ArrayList<Character> whatsInHand = new ArrayList<Character>();
-        for(int i = 0; i < associatedPlayer.hand.length; i++)
-            whatsInHand.add(new Character(associatedPlayer.hand[i]));
-        for(Actor child : this.getChildren()){
+        System.out.println("associa player hand size of "+associatedPlayer.tiles.length);
+        for(int i = 0; i < associatedPlayer.tiles.length; i++) {
+            if(associatedPlayer.tiles[i] != 0)
+                whatsInHand.add(new Character(associatedPlayer.tiles[i]));
+        }
+        //remove tiles that arent here
+        for(int i = 0; i < this.getChildren().size;i++){
+            Actor child = this.getChildren().get(i);
             if(child instanceof TileActor){
                 Character thisChar = new Character(((TileActor) child).myLetter);
-                if(whatsInHand.contains(thisChar))
+                if(whatsInHand.contains(thisChar)) {
                     whatsInHand.remove(thisChar);
-                else
+                }
+                else {
+                    i--;
                     this.removeTile((TileActor) child);
+                }
             }
+        }
+        //add the rest
+        for(Character c: whatsInHand){
+            this.addTile(new TileActor(c.charValue()));
         }
     }
 
 
     /**
      * DONT USE THIS YET IT IS NOT IMPLEMENTED NOR TESTED FULLY
-     * This will remove the Actors from the hand and move them to the board where
+     * This will remove the Actors from the tiles and move them to the board where
      * they will then be destroyed as the TiledMap updates
      * @param placements
      */
@@ -128,7 +151,7 @@ public class HandActor extends Group {
                 }
             }
         }
-        throw new UnsupportedOperationException();
+        throw new NotImplementedException();
     }
 
 }

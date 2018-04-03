@@ -2,13 +2,11 @@
 /**
  * Imports lodash and axios
  */
-const _ = require('lodash')
 const axios = require('axios')
 /**
  * Imports the Gameboard class
  */
 const Gameboard = require('./Gameboard')
-const Player = require('./Player')
 
 // remove this once there is a connection to the DB
 const letters = 'abcdefghijklmnopqrstuvwxyz'.split('')
@@ -25,11 +23,9 @@ let totalLetters = 0
 let intervals = []
 
 class GameManager {
-
-  constructor() {
-    this._board = null
+  constructor(io) {
+    this._board = new Gameboard()
     this._tileScores = []
-    this._players = []
     this._greenScore = 0
     this._error = 0
     this._yellowScore = 0
@@ -43,6 +39,7 @@ class GameManager {
       intervals.push(intervals[i - 1] + letterDist[i])
       totalLetters += letterDist[i]
     }
+    this._io = io
   }
 
   /**
@@ -53,37 +50,46 @@ class GameManager {
   }
 
   /**
-   * Plays a user's move
-   * @param {Array} words - words to play
-   * @param {Object} res - response object
-   * @param {String} user - user that played this move
+   * This is just for a demo
+   * @param {Array} board - board
+   * @param {Object} player - player object
    */
-  play(words, res, user, io) {
-    let trimmed = this.trimWords(words)
-
-    this.wordValidation(trimmed)
-      .then(response => {
-        console.log('The board now has an answer')
-        let placement
-        if (response === true) {
-          placement = this._board.placeWords(trimmed, user)
-        } else {
-          return this.handleResponse(this._error, response, res)
-        }
-        io.emit('board', this._board.board)
-        return this.handleResponse(this._board.error, placement, res)
-      })
-      .catch(e => {
-        return res.status(400).json({code: 'D1', title: 'Database Error', desc: e.code})
-      })
-    console.log('The board is thinking')
+  play(board, player) {
+    this._board.replaceBoard(board)
+    this._io.emit('wordPlayed', {
+      playValue: 10,
+      board: board
+    })
+    this._io.emit('gameEvent', {
+      action: `${player.name} just played a word for ${10} points.`
+    })
+    player.isTurn = false
   }
+
+  // play(board, player) {
+  //   this.wordValidation(trimmed)
+  //     .then(response => {
+  //       console.log('The board now has an answer')
+  //       let placement
+  //       if (response === true) {
+  //         placement = this._board.placeWords(trimmed, user)
+  //       } else {
+  //         return this.handleResponse(this._error, response, res)
+  //       }
+  //       return this.handleResponse(this._board.error, placement, res)
+  //     })
+  //     .catch(e => {
+  //       return res.status(400).json({code: 'D1', title: 'Database Error', desc: e.code})
+  //     })
+  //   console.log('The board is thinking')
+  // }
 
   /**
    * Checks to see if word(s) are in the DB
    * @param {Array} words - words to be checked against the DB
    */
-  wordValidation(words) {
+  wordValidation(board) {
+    let words = this.extractWords(board)
     let search = words.map(s => s.word).join(',')
 
     return axios.get('http://localhost:8090/dictionary/validate?words=' + search)
@@ -112,22 +118,10 @@ class GameManager {
   }
 
   /**
-   * Removes whitespace from words
-   * @param {Array} words - words to trimmed
-   */
-  trimWords(words) {
-    return words.map(w => {
-      let word = w.word
-      w['word'] = word.trim()
-      return w
-    })
-  }
-
-  /**
    * Handles all types of responses that the gameboard can send back to a user.
    * @param {String} word - word to be piped into the error message
    */
-  handleResponse(error, word, res) {
+  handleResponse(error, word) {
     const result = {
       invalid: true
     }
@@ -242,31 +236,9 @@ class GameManager {
   }
 
   /**
-   * Adds a player to the game
-   * @param {String} username - player's username
-   */
-  addPlayer(username) {
-    this._players.push(new Player(username))
-  }
-
-  /**
-   * Removes a player from the game
-   * @param {String} username - user to be removed
-   */
-  removePlayer(username) {
-    let users = this._players.filter(p => {
-      return p.name !== username
-    })
-
-    this._players = users
-  }
-
-  /**
    * Starts a new game by resetting everything
    */
   startNewGame() {
-    // Need to grab newest tile scores every game
-    // PSUEDO: axios call out to DB, add scores to dictionary
     this.resetScores()
     this.resetGameboard()
   }
@@ -276,7 +248,6 @@ class GameManager {
    */
   resetGameboard() {
     this._board = new Gameboard()
-    this._board.init()
   }
 
   /**

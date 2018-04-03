@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.csc480.game.Engine.TextureManager;
 import com.csc480.game.Engine.TiledUtils;
 import com.csc480.game.GUI.GameScreen;
 
@@ -36,7 +37,7 @@ public class TileActor extends Image {
      * @param letter the name, and tile of the actor
      */
     public TileActor(char letter){
-        super(TiledUtils.getAllTiles().getCell(TiledUtils.LetterToID(letter),0).getTile().getTextureRegion());
+        super(TextureManager.getInstance().getTileTexture(letter+""));
         this.setName(letter+"");
         this.setScale(GameScreen.GUI_UNIT_SIZE/GameScreen.TILE_PIXEL_SIZE);
 

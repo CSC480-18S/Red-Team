@@ -43,9 +43,22 @@ public class TiledUtils {
                 }
             }
         }
+
+        return plays;
+    }
+    public static TiledMapTileLayer generateThinkingTiledLayer(){
+        //The easiest way to do if we want to set certain tiles of one map to another tile
+        //Set up a base tileset so that we can enumerate from letters to tiles with letters on them
+        if(allTiles == null)
+            allTiles = (TiledMapTileLayer) (new TmxMapLoader().load("identifiersHelper.tmx")).getLayers().get(0);
+
+        TiledMapTileLayer plays = new TiledMapTileLayer(
+                OswebbleGame.BOARD_SIZE,OswebbleGame.BOARD_SIZE,
+                (int) GameScreen.TILE_PIXEL_SIZE, (int)GameScreen.TILE_PIXEL_SIZE);
         for(Placement p: GameManager.getInstance().placementsUnderConsideration){
             plays.setCell(p.xPos,p.yPos, allTiles.getCell(p.letter-97,0));
         }
+
         return plays;
     }
 
