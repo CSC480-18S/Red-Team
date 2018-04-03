@@ -46,13 +46,17 @@ module.exports = function(io) {
       })
     }
 
+    /**
+     * Finds the player that disconnected and removes them from the player connections array
+     * @param {Object} player - player object
+     */
     removePlayer(player) {
       for (let p of this._players) {
         if (p === player) {
           io.emit('gameEvent', {
             action: `${player.name} has left the game.`
           })
-          console.log('Client has disconnected.')
+          console.log(`${player.name} has disconnected.`)
           let pos = p.position
           this.addOldData(pos, p)
           this._players.splice(pos, 1, null)
@@ -64,6 +68,11 @@ module.exports = function(io) {
       }
     }
 
+    /**
+     * Gets the data of a disconnected player, and then stores it
+     * @param {Number} pos - position of the player
+     * @param {Object} p - player object
+     */
     addOldData(pos, p) {
       console.log('old data saved')
       this._oldPlayerData.splice(pos, 1, {
@@ -95,7 +104,7 @@ module.exports = function(io) {
     /**
      * Determines what kind of client has connected to the server
      * @param {Object} socket - socket object
-     * @param {*} response - the type of the player
+     * @param {Object} response - the type of the player
      */
     determineClientType(socket, response) {
       if (response.isAI) {
@@ -120,7 +129,7 @@ module.exports = function(io) {
         if (p === null) {
           console.log('Client connected')
           console.log('SOCKET: ' + socket.id)
-          let player = new PlayerManager(i, 'Player #' + i, team, ai, socket, this._gameManager, this)
+          let player = new PlayerManager(i, `Player #${i + 1}`, team, ai, socket, this._gameManager, this)
           if (!this._firstTurnSet) {
             player.isTurn = true
             this._firstTurnSet = true
@@ -130,8 +139,12 @@ module.exports = function(io) {
           }
           this._players.splice(i, 1, player)
           this._currentlyConnectedClients++
-          player.socket.emit('newTurn', {
-            isTurn: player.isTurn
+          player.socket.emit('dataUpdate', {
+            tiles: p.tiles,
+            position: p.position,
+            isTurn: p.isTurn,
+            score: p.score,
+            team: p.team
           })
           break
         }
