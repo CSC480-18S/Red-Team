@@ -85,34 +85,11 @@ class PlayerManager {
     this._socket.on('playWord', board => {
       console.log(`Client ${this.position} played word`)
       this._gameManager.play(board, this)
-      // this._serverManger.changeTurn(this.position)
-      /** TODO: Take board given, then cross check it with current board
-       * to pluck out played letters and cross check with tiles in hand
-       * to make sure what they sent us is real data and not fake data
-       */
+      this._serverManger.changeTurn(this.position)
     })
 
     this._socket.on('disconnect', () => {
       this._serverManger.removePlayer(this)
-    })
-  }
-
-  /**
-   * Sent to the user in the event of an invalid play
-   * @param {Object} invalid - hold error information about play
-   */
-  emitInvalidPlay(invalid) {
-    this._socket.emit('play', invalid)
-  }
-
-  /**
-   * Emits to the player if it is their turn
-   * @param {String} playerName - player name
-   */
-  emitWhosTurn(playerName) {
-    this._socket.emit('newTurn', {
-      isTurn: this._isTurn,
-      whosTurn: playerName
     })
   }
 
