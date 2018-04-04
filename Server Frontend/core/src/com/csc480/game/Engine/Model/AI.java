@@ -162,10 +162,10 @@ public class AI extends Player {
                     mySocket.emit("whoAreYou", data);
 
                 }
-            }).on("newGame", new Emitter.Listener() {
+            }).on("dataUpdate", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    System.out.println(" got newGame");
+                    System.out.println(" got dataUpdate");
                     try {
                         JSONObject data = (JSONObject) args[0];
                         System.out.println(data.toString());
@@ -202,10 +202,10 @@ public class AI extends Player {
                             e.printStackTrace();
                         }
                 }
-            }).on("newTurn", new Emitter.Listener() {
+            }).on("dataUpdate", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    System.out.println("got newTurn");
+                    System.out.println("got dataUpdate");
                     try {
                         JSONObject data = (JSONObject) args[0];
                         System.out.println(data.toString());
@@ -219,6 +219,7 @@ public class AI extends Player {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }*/
+                            tiles = GameManager.getInstance().getNewHand();
                             myCache.Clear();
                             TESTFindPlays(GameManager.getInstance().theBoard);
                             state = 1;
@@ -289,6 +290,7 @@ public class AI extends Player {
 
                     //verify they dont fuck with tiles around where theyd be played
                     for(int p = 0; p < possiblePlays.size(); p++){
+                        if(possiblePlays.get(p).placements.size() > 0)
                         if( boardState.verifyWordPlacement(possiblePlays.get(p).placements)){
                             //update that shit
                             myCache.Push(possiblePlays.get(p));
@@ -310,6 +312,7 @@ public class AI extends Player {
 
                     //verify they dont fuck with tiles around where theyd be played
                     for(int p = 0; p < possiblePlaysVert.size(); p++){
+                        if(possiblePlaysVert.get(p).placements.size() > 0)
                         if( boardState.verifyWordPlacement(possiblePlaysVert.get(p).placements)){
                             //update that shit
                             myCache.Push(possiblePlaysVert.get(p));
