@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Server Test Sockets</title>
+</head>
+<body>
+    
+    <script type="text/javascript" src="/static/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/static/socketio-2.0.3.min.js"></script>
+
+    <script>
+        let socket = io()
+        socket.on('connect', () => {
+            console.log(socket.id)
+        })
+
+        socket.on('whoAreYou', () => {
+            socket.emit('whoAreYou', {
+                isSF: true
+            })
+        })
+
+        socket.on('connectAI', response => {
+            console.log("Connecting AI #" + response.position + "...")
+        })
+    </script>
+</body>
+</html>

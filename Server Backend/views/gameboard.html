@@ -25,6 +25,9 @@
 
     <script>
         let socket = io()
+        socket.on('connect', () => {
+            console.log(socket.id)
+        })
         let board
 
         socket.on('board', b => {

@@ -1,5 +1,6 @@
 package com.csc480.game.GUI;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -11,10 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RotateByAction;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.csc480.game.Engine.GameManager;
 import com.csc480.game.Engine.TestingInputProcessor;
-import com.csc480.game.GUI.Actors.GameBoardActor;
-import com.csc480.game.GUI.Actors.HandActor;
-import com.csc480.game.GUI.Actors.TileActor;
+import com.csc480.game.GUI.Actors.*;
 import com.csc480.game.OswebbleGame;
 
 /**
@@ -31,6 +31,8 @@ public class GameScreen implements Screen {
     public static float aspectRatio;
     public BitmapFont font;
     OswebbleGame oswebbleGame;
+    public final HandActor top,bottom,left,right;
+    public final InfoPanelActor infoPanel;
 
     float unitScale = 1/TILE_PIXEL_SIZE;
 
@@ -44,7 +46,7 @@ public class GameScreen implements Screen {
     public GameScreen(OswebbleGame mainGame){
         //must calculate the aspect ratio to resize properly
         aspectRatio = (float)Gdx.graphics.getHeight() / (float)Gdx.graphics.getWidth();
-
+        System.out.println("aspectRatio: "+aspectRatio);
 
         //we probably dont want to use bitmapfonts, as they can get blurry
         //see https://github.com/libgdx/libgdx/wiki/Gdx-freetype for a better solution
@@ -65,42 +67,76 @@ public class GameScreen implements Screen {
         //Define all the Actors
         Group playArea = new Group();
 
-        gameBoardActor = new GameBoardActor();
+        //gameBoardActor = new GameBoardActor();
+        GameBoardTable board = new GameBoardTable();
+        board.setName("gameBoard");
+        board.setPosition(GUI_UNIT_SIZE*2.75f,GUI_UNIT_SIZE*2.25f);
         //gameBoardActor.setBounds(0,0,100,100);
 
-        gameBoardActor.setName("gameBoard");
+        //gameBoardActor.setName("gameBoard");
 //THIS IS FOR TESTING ONLY //////////////////////////////////////////////////////////////
-        stage.setKeyboardFocus(gameBoardActor);
+        //stage.setKeyboardFocus(gameBoardActor);
 ////////////////////////////////////////////////////////////////////////////////////////
-        playArea.addActor(gameBoardActor);
+        //playArea.addActor(gameBoardActor);
 
         //The position of actors is considered from their bottom left corner
         //bottom
         Group tileRacks = new Group();
         tileRacks.setPosition(GUI_UNIT_SIZE * 1, GUI_UNIT_SIZE * 1);
-        HandActor ha = new HandActor();
-        tileRacks.addActor(ha);
-        ha.setPosition(GUI_UNIT_SIZE * 2, GUI_UNIT_SIZE * 0);
+        bottom = new HandActor(false);
+        tileRacks.addActor(bottom);
+        bottom.setPosition(GUI_UNIT_SIZE * 2, GUI_UNIT_SIZE * 0);
         //left
-        HandActor ha2 = new HandActor();
-        tileRacks.addActor(ha2);
-        ha2.setPosition(GUI_UNIT_SIZE * 12, GUI_UNIT_SIZE * 2);
-        ha2.rotateBy(90);
+        left = new HandActor(false);
+        tileRacks.addActor(left);
+        left.setPosition(GUI_UNIT_SIZE * 12, GUI_UNIT_SIZE * 2);
+        left.rotateBy(90);
         //top
-        HandActor ha3 = new HandActor();
-        tileRacks.addActor(ha3);
-        ha3.setPosition(GUI_UNIT_SIZE * 10, GUI_UNIT_SIZE * 12);
-        ha3.rotateBy(180);
+        top = new HandActor(true);
+        tileRacks.addActor(top);
+        top.setPosition(GUI_UNIT_SIZE * 10, GUI_UNIT_SIZE * 12);
+        top.rotateBy(180);
         //right
-        HandActor ha4 = new HandActor();
-        tileRacks.addActor(ha4);
-        ha4.setPosition(GUI_UNIT_SIZE * 0, GUI_UNIT_SIZE * 10);
-        ha4.rotateBy(-90);
-
+        right = new HandActor(false);
+        tileRacks.addActor(right);
+        right.setPosition(GUI_UNIT_SIZE * 0, GUI_UNIT_SIZE * 10);
+        right.rotateBy(-90);
+        tileRacks.moveBy(-GUI_UNIT_SIZE/2,-GUI_UNIT_SIZE);
+        tileRacks.scaleBy(.1f);
         playArea.addActor(tileRacks);
-        playArea.scaleBy(GUI_UNIT_SIZE * .03f);//had to do this because i originally tested all the sizes at a lower dpi
+
+        infoPanel = new InfoPanelActor();
+        infoPanel.moveBy(GameScreen.GUI_UNIT_SIZE*14,0);
+        playArea.addActor(infoPanel);
+        System.out.println(board.getChildren().size);
+        playArea.addActor(board);
+        playArea.scaleBy(GUI_UNIT_SIZE * .04f);//had to do this because i originally tested all the sizes at a lower dpi
 
         stage.addActor(playArea);
+
+        //update the hands with the GM state
+        bottom.setPlayer(GameManager.getInstance().thePlayers[0]);
+        bottom.updateState();
+
+        right.setPlayer(GameManager.getInstance().thePlayers[1]);
+        right.updateState();
+
+        top.setPlayer(GameManager.getInstance().thePlayers[2]);
+        top.updateState();
+
+        left.setPlayer(GameManager.getInstance().thePlayers[3]);
+        left.updateState();
+
+        UpdateInfoPanel();
+
+    }
+    public void UpdateInfoPanel(){
+        infoPanel.UpdatePlayerStatus(0, bottom.getPlayer().name, bottom.getPlayer().score);
+        infoPanel.UpdatePlayerStatus(1, right.getPlayer().name, right.getPlayer().score);
+        infoPanel.UpdatePlayerStatus(2, top.getPlayer().name, top.getPlayer().score);
+        infoPanel.UpdatePlayerStatus(3, left.getPlayer().name, left.getPlayer().score);
+
+        //infoPanel.UpdateProgressBars();
     }
 
     @Override
@@ -119,10 +155,12 @@ public class GameScreen implements Screen {
      */
     @Override
     public void render(float delta) {
+        aspectRatio = (float)Gdx.graphics.getHeight() / (float)Gdx.graphics.getWidth();
+        stage.getViewport().update(Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),true);
         //Clear the screen from the last frame
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         //Set the entire screen to this color
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(.17f, .17f, .17f, 1);
         //perform the actions of the actors
         stage.act(delta);
         //render the actors
@@ -158,7 +196,5 @@ public class GameScreen implements Screen {
     public void dispose() {
         stage.dispose();
         font.dispose();
-
-
     }
 }
