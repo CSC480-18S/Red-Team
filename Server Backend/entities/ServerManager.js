@@ -143,8 +143,7 @@ module.exports = function(io) {
             tiles: p.tiles,
             position: p.position,
             isTurn: p.isTurn,
-            score: p.score,
-            team: p.team
+            score: p.score
           })
           break
         }
@@ -160,15 +159,18 @@ module.exports = function(io) {
       if (pos > 3) {
         pos = 0
       }
-      if (this._players[pos] !== null) {
-        this._players[pos].isTurn = true
+      while (this._players[pos] === null) {
+        pos += 1
       }
+      this._players[pos].isTurn = true
       // console.log(this._players)
       for (let i = 0; i < this._players.length; i++) {
         let p = this._players[i]
         if (p !== null) {
-          p.socket.emit('newTurn', {
-            isTurn: p.isTurn
+          p.socket.emit('dataUpdate', {
+            tiles: p.tiles,
+            isTurn: p.isTurn,
+            score: p.score
           })
           if (p.isTurn) {
             console.log(`It is now ${p.name}'s turn.`)

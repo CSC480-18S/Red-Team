@@ -54,9 +54,30 @@ class GameManager {
     let letters = this.extractLetters(newBoard)
     let words = this.extractWords(letters, newBoard)
 
-    this.board.placeWords(words)
+    this.wordValidation(words)
+      .then(response => {
+        console.log('The board now has an answer')
+        let placement
+        if (response === true) {
+          // if invalid type of play, gets the word that was invalid, else is undefined
+          placement = this._board.placeWords(words, player)
+        } else {
+          // if the a word is invalid
+          return this.handleResponse(this._error, response, player)
+        }
+        this.handleResponse(this._board.error, placement, player)
+        this._io.emit('wordPlayed', this._board)
+      })
+      .catch(e => {
+        console.log({code: 'D1', title: 'Database Error', desc: e.code})
+      })
+    console.log('The board is thinking')
   }
 
+  /**
+   * Extracts letters from the new board that were played by the user
+   * @param {Array} newBoard - board given by the user
+   */
   extractLetters(newBoard) {
     let letters = []
     for (let i = 0; i < newBoard.length; i++) {
@@ -80,6 +101,11 @@ class GameManager {
     return letters
   }
 
+  /**
+   * Extracts words from the new board
+   * @param {Array} letters - letters
+   * @param {Array} newBoard - board given by the user
+   */
   extractWords(letters, newBoard) {
     let words = []
     letters.map(t => {
@@ -98,6 +124,7 @@ class GameManager {
         let word = []
         for (let te of temp) {
           if (te.letter !== null) {
+            // Converts k into a bool, then negates it
             te['h'] = !!k
             word.push(te)
           } else {
@@ -117,17 +144,24 @@ class GameManager {
 
     let word = ''
     let wordObjects = []
+    let wordCheck = false
     for (let i = 0; i < words.length; i++) {
       for (let j = 0; j < words[0].length; j++) {
+        if (letters.includes(words[i][j])) {
+          wordCheck = true
+        }
         word += words[i][j].letter
       }
-      wordObjects.push({
-        word: word,
-        x: words[i][0].x,
-        y: words[i][0].y,
-        h: words[i][0].h
-      })
+      if (wordCheck) {
+        wordObjects.push({
+          word: word,
+          x: words[i][0].x,
+          y: words[i][0].y,
+          h: words[i][0].h
+        })
+      }
       word = ''
+      wordCheck = false
     }
 
     let unique = _.uniqWith(wordObjects, _.isEqual)
@@ -138,8 +172,7 @@ class GameManager {
    * Checks to see if word(s) are in the DB
    * @param {Array} words - words to be checked against the DB
    */
-  wordValidation(board) {
-    let words = this.extractWords(board)
+  wordValidation(words) {
     let search = words.map(s => s.word).join(',')
 
     return axios.get('http://localhost:8090/dictionary/validate?words=' + search)
@@ -171,7 +204,7 @@ class GameManager {
    * Handles all types of responses that the gameboard can send back to a user.
    * @param {String} word - word to be piped into the error message
    */
-  handleResponse(error, word) {
+  handleResponse(error, word, player) {
     const result = {
       invalid: true
     }
@@ -205,7 +238,7 @@ class GameManager {
     }
 
     this._error = 0
-    return res.json(result)
+    player.socket.emit('play', result)
   }
 
   /**
