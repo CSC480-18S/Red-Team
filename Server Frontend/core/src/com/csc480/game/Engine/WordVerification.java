@@ -96,6 +96,7 @@ public class WordVerification {
                     }
                 }
             }
+            //if there is nothing on the board then what is in the hand is valid
             return possiblePlays;
         }
         for(String e: validWords){
