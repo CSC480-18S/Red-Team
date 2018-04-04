@@ -55,6 +55,12 @@ public class Board {
         boolean connectedToWordFlag = true;
         ArrayList<Placement> myCopyOfPlacements = (ArrayList<Placement>) placements.clone();
         TileData[][] test_game_board = new TileData[the_game_board.length][the_game_board.length];
+        if(myCopyOfPlacements == null){
+            return false;
+        }
+        if(myCopyOfPlacements.get(0) == null){
+            return false;
+        }
         int xFlag = myCopyOfPlacements.get(0).xPos;
         int yFlag = myCopyOfPlacements.get(0).yPos;
         int minX = myCopyOfPlacements.get(0).xPos;
