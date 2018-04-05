@@ -87,6 +87,7 @@ public class AI extends Player {
         }*/
         return;
     }
+
     private void removeTilesFromHand(PlayIdea p){
         ArrayList<Placement> copy = (ArrayList<Placement>) p.placements.clone();
         String play = "";

@@ -583,7 +583,7 @@ public class GameManager {
 
     }
 
-    public String JSONifyPlayIdea(PlayIdea p){
+    public JSONArray JSONifyPlayIdea(PlayIdea p){
         Board temp = GameManager.getInstance().theBoard.getCopy();
         temp.addWord(p.placements);
         JSONArray parentJsonArray = new JSONArray();
@@ -600,7 +600,7 @@ public class GameManager {
             parentJsonArray.put(childJsonArray);
         }
         //System.out.println(parentJsonArray.toString());
-        return parentJsonArray.toString();
+        return parentJsonArray;
     }
 
     public char[] getNewHand(){
