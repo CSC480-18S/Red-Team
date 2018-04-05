@@ -20,6 +20,16 @@ class PlayerManager {
     this._gameManager = gameManager
     this._serverManger = serverManager
     this.init()
+
+    // set up intervals
+    // push first interval
+    intervals.push(letterDist[0])
+    totalLetters += letterDist[0]
+    // add the rest of the intervals
+    for (let i = 1; i < letterDist.length; ++i) {
+      intervals.push(intervals[i - 1] + letterDist[i])
+      totalLetters += letterDist[i]
+    }
   }
 
   /**
