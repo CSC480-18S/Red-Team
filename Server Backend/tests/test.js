@@ -11,15 +11,16 @@ const ServerManager = require('../entities/ServerManager')
 const _ = require('lodash')
 
 describe('New letters tests', () => {
-  const gm = new GameManager()
+  const pm = new PlayerManager()
+  pm.init()
 
   const lettersUsed1 = 1
   const lettersUsed2 = 4
   const lettersUsed3 = 7
 
-  const array1 = gm.getNewLetters(lettersUsed1)
-  const array2 = gm.getNewLetters(lettersUsed2)
-  const array3 = gm.getNewLetters(lettersUsed3)
+  const array1 = pm.getNewLetters(lettersUsed1)
+  const array2 = pm.getNewLetters(lettersUsed2)
+  const array3 = pm.getNewLetters(lettersUsed3)
 
   it('Array1 has ' + lettersUsed1 + ' elements', () => {
     expect(array1.length).toEqual(lettersUsed1)

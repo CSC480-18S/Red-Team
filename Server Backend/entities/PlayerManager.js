@@ -1,6 +1,12 @@
 'use strict'
 const console = require('better-console')
 
+// letter distribution, alphabetically
+const letterDist = [9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1]
+const letters = 'abcdefghijklmnopqrstuvwxyz'.split('')
+let totalLetters = 0
+let intervals = []
+
 class PlayerManager {
   constructor(position, name, team, ai, socket, gameManager, serverManager) {
     this._name = name
@@ -86,6 +92,29 @@ class PlayerManager {
 
   addToHand() {
 
+  }
+
+  /**
+   * Determines what new letters a player will get after they
+   * play their turn.
+   * @param {int} lettersUsed - number of letters to generate
+   */
+  getNewLetters(lettersUsed) {
+    let newLetters = []
+
+    // generate the new letters
+    for (let a = 0; a < lettersUsed; ++a) {
+      let index = Math.floor(Math.random() * totalLetters)
+
+      for (let i = 0; i < intervals.length; ++i) {
+        if (index <= intervals[i]) {
+          newLetters.push(letters[i])
+          break
+        }
+      }
+    }
+
+    return newLetters
   }
 
   /**
