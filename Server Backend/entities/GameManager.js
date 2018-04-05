@@ -63,7 +63,7 @@ class GameManager {
           // if invalid type of play, gets the word that was invalid, else is undefined
           placement = this._board.placeWords(words, player)
         } else {
-          // if the a word is invalid
+          // if the word is invalid
           return this.handleResponse(this._error, response, player)
         }
         this.handleResponse(this._board.error, placement, player)
@@ -185,7 +185,7 @@ class GameManager {
   }
 
   /**
-   * Prunes the data set back from the DB to check if anywords are either invalid or bad words
+   * Prunes the data sent back from the DB to check if anywords are either invalid or bad words
    * @param {Array} response - word data sent back from DB
    */
   pruneResults(response) {
@@ -247,7 +247,7 @@ class GameManager {
   /**
    * Determines what new letters a player will get after they
    * play their turn.
-   * @param {int} lettersUsed number of letters to generate
+   * @param {int} lettersUsed - number of letters to generate
    */
   getNewLetters(lettersUsed) {
     let newLetters = []

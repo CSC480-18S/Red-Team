@@ -5,6 +5,7 @@
 const GameManager = require('./GameManager')
 const PlayerManager = require('./PlayerManager')
 const FrontendManager = require('./FrontendManager')
+const console = require('better-console')
 
 module.exports = function(io) {
   class ServerManager {
@@ -20,7 +21,7 @@ module.exports = function(io) {
     }
 
     /**
-     * Initializes player and game managers
+     * Initializes game manager
      */
     init() {
       this.createGameManager()
@@ -38,7 +39,7 @@ module.exports = function(io) {
             this.determineClientType(socket, response)
           })
         } else {
-          console.log('error message sent...too many clients connected')
+          console.table([['Error', 'too many clients connected']])
           socket.emit('errorMessage', {
             error: 'There are already 4 players connected to the game.'
           })
@@ -56,9 +57,8 @@ module.exports = function(io) {
           io.emit('gameEvent', {
             action: `${player.name} has left the game.`
           })
-          console.log(`${player.name} has disconnected.`)
           let pos = p.position
-          this.addOldData(pos, p)
+          this.saveOldData(pos, p)
           this._players.splice(pos, 1, null)
           this._currentlyConnectedClients--
           if (this._frontendManager !== null) {
@@ -73,8 +73,8 @@ module.exports = function(io) {
      * @param {Number} pos - position of the player
      * @param {Object} p - player object
      */
-    addOldData(pos, p) {
-      console.log('old data saved')
+    saveOldData(pos, p) {
+      console.table([[p.name, 'data saved.']])
       this._oldPlayerData.splice(pos, 1, {
         tiles: p.tiles,
         isTurn: p.isTurn,
@@ -127,8 +127,7 @@ module.exports = function(io) {
       for (let i = 0; i < this._players.length; i++) {
         let p = this._players[i]
         if (p === null) {
-          console.log('Client connected')
-          console.log('SOCKET: ' + socket.id)
+          console.table([[`Player ${i + 1}`, socket.id, 'has connected.']])
           let player = new PlayerManager(i, `Player #${i + 1}`, team, ai, socket, this._gameManager, this)
           if (!this._firstTurnSet) {
             player.isTurn = true
@@ -188,7 +187,7 @@ module.exports = function(io) {
      * @param {PlayerManager} p - manager
      */
     injectOldData(pos, p) {
-      console.log('old data injected')
+      console.table([[p.name, 'data injected.']])
       let old = this._oldPlayerData[pos]
       p.addPositionDetails(old.tiles, old.isTurn, old.score)
       this._oldPlayerData.splice(pos, 1, null)
