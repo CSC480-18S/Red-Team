@@ -83,7 +83,7 @@ class PlayerManager {
    */
   listenForPlayerEvents() {
     this._socket.on('playWord', board => {
-      console.log(`Client ${this.position} played word`)
+      console.log(this.socket.id)
       this._gameManager.play(board, this)
       this._serverManger.changeTurn(this.position)
     })

@@ -140,10 +140,10 @@ module.exports = function(io) {
           this._players.splice(i, 1, player)
           this._currentlyConnectedClients++
           player.socket.emit('dataUpdate', {
-            tiles: p.tiles,
-            position: p.position,
-            isTurn: p.isTurn,
-            score: p.score
+            tiles: player.tiles,
+            position: player.position,
+            isTurn: player.isTurn,
+            score: player.score
           })
           break
         }
