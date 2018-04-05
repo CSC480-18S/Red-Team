@@ -1,10 +1,7 @@
-package stats;
+package com.csc480.stats;
 
 import com.badlogic.gdx.Game;
-import stats.GUI.StatsScreen;
-
-import java.io.UnsupportedEncodingException;
-import java.util.Scanner;
+import com.csc480.stats.GUI.StatsScreen;
 
 public class StatsViewer extends Game {
     public StatsScreen screen;

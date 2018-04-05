@@ -1,4 +1,4 @@
-package stats;
+package com.csc480.stats;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

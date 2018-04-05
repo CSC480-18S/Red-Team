@@ -1,4 +1,4 @@
-package stats.GUI;
+package com.csc480.stats.GUI;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import stats.StatsViewer;
+import com.csc480.stats.StatsViewer;
 
 public class StatsScreen implements Screen {
     private StatsViewer container;
