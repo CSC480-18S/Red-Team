@@ -1,4 +1,5 @@
 'use strict'
+const console = require('better-console')
 
 class PlayerManager {
   constructor(position, name, team, ai, socket, gameManager, serverManager) {
@@ -12,7 +13,7 @@ class PlayerManager {
     this._score = 0
     this._gameManager = gameManager
     this._serverManger = serverManager
-    this.listenForPlayerEvents()
+    this.init()
   }
 
   /**
@@ -78,18 +79,28 @@ class PlayerManager {
     return this._score
   }
 
+  init() {
+    this.addToHand()
+    this.listenForPlayerEvents()
+  }
+
+  addToHand() {
+
+  }
+
   /**
    * Listens for events that come from the client
    */
   listenForPlayerEvents() {
     this._socket.on('playWord', board => {
-      console.log(this.socket.id)
+      console.table([[this.name, this.socket.id, 'made a play.']])
       this._gameManager.play(board, this)
       this._serverManger.changeTurn(this.position)
     })
 
     this._socket.on('disconnect', () => {
       this._serverManger.removePlayer(this)
+      console.table([[this.name, this.socket.id, 'has disconnected.']])
     })
   }
 
