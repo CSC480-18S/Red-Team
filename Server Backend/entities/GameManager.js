@@ -51,8 +51,9 @@ class GameManager {
   }
 
   play(newBoard, player) {
-    let letters = this.extractLetters(newBoard)
-    let words = this.extractWords(letters, newBoard)
+    let sanitizedBoard = JSON.parse(newBoard)
+    let letters = this.extractLetters(sanitizedBoard)
+    let words = this.extractWords(letters, sanitizedBoard)
 
     this.wordValidation(words)
       .then(response => {
@@ -82,9 +83,9 @@ class GameManager {
     let letters = []
     for (let i = 0; i < newBoard.length; i++) {
       for (let j = 0; j < newBoard[0].length; j++) {
-        let currentBoardLetter = this.board.board[j][i].letter
+        let currentBoardLetter = this.board[j][i].letter
         //   console.log(currentBoardLetter)
-        let newBoardLetter = newBoard.board[j][i].letter
+        let newBoardLetter = JSON.parse(newBoard[j][i])
 
         if (newBoardLetter !== null) {
           if (currentBoardLetter !== newBoardLetter) {
@@ -94,6 +95,8 @@ class GameManager {
               y: i
             }
             letters.push(tile)
+          } else {
+            console.log('letters are the same')
           }
         }
       }
@@ -111,9 +114,9 @@ class GameManager {
     letters.map(t => {
       for (let k = 0; k < 2; k++) {
         let temp = []
-        for (let i = 0; i < newBoard.board.length; i++) {
+        for (let i = 0; i < newBoard.length; i++) {
           let tile = {
-            letter: newBoard.board[k ? i : t.x][k ? t.y : i].letter,
+            letter: JSON.parse(newBoard[k ? i : t.x][k ? t.y : i]),
             x: k ? i : t.x,
             y: k ? t.y : i
           }
@@ -131,7 +134,7 @@ class GameManager {
             nullFound = true
           }
 
-          if (nullFound || te.x === newBoard.board.length - 1 || te.y === newBoard.board.length - 1) {
+          if (nullFound || te.x === newBoard.length - 1 || te.y === newBoard.length - 1) {
             if (word.length > 1) {
               words.push(word)
             }
@@ -144,24 +147,24 @@ class GameManager {
 
     let word = ''
     let wordObjects = []
-    let wordCheck = false
+    // let wordCheck = false
     for (let i = 0; i < words.length; i++) {
       for (let j = 0; j < words[0].length; j++) {
-        if (letters.includes(words[i][j])) {
-          wordCheck = true
-        }
+        // if (letters.includes(words[i][j])) {
+        //   wordCheck = true
+        // }
         word += words[i][j].letter
       }
-      if (wordCheck) {
-        wordObjects.push({
-          word: word,
-          x: words[i][0].x,
-          y: words[i][0].y,
-          h: words[i][0].h
-        })
-      }
+      // if (wordCheck) {
+      wordObjects.push({
+        word: word,
+        x: words[i][0].x,
+        y: words[i][0].y,
+        h: words[i][0].h
+      })
+      // }
       word = ''
-      wordCheck = false
+      // wordCheck = false
     }
 
     let unique = _.uniqWith(wordObjects, _.isEqual)

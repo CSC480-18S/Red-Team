@@ -169,14 +169,14 @@ public class AI extends Player {
                     try {
                         JSONObject data = (JSONObject) args[0];
                         System.out.println(data.toString());
-                        Player response = (Player) data.get("state");
-                        if (response.isAI) {
+//                        Player response = (Player) data.get("state");
+//                        if (response.isAI) {
                             //clear cache
                             myCache.Clear();
-                        }
-                        else{
-                            disconnectAI();
-                        }
+//                        }
+//                        else{
+//                            disconnectAI();
+//                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
