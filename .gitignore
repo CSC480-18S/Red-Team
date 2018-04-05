@@ -49,4 +49,6 @@ Thumbs.db
 *.iml
 .idea/
 
+/.vscode/
+.project
 **/package-lock.json
