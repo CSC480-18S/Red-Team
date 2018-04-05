@@ -17,8 +17,20 @@ socket.on('whoAreYou', () => {
 })
 
 socket.on('wordPlayed', response => {
-  console.log(response.playValue)
-  console.log(response.board)
+  // console.log(response.playValue)
+  // console.log(response.board)
+  for (i = 0; i < 11; i++) {
+    for (j = 0; j < 11; j++) {
+      var square = document.getElementById('square-' + i + '-' + j);
+        if (square.hasChildNodes()) {
+          square.childNodes[0].children[1].innerHTML = response.board[i][j];
+        }
+      }
+    }
+})
+
+socket.on('play', response => {
+  console.log(response)
 })
 
 // data object
