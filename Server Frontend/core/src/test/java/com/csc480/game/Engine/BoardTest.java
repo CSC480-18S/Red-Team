@@ -1,5 +1,7 @@
-package com.csc480.game.Engine.Model;
+package com.csc480.game.Engine;
 
+import com.csc480.game.Engine.Model.Board;
+import com.csc480.game.Engine.Model.Placement;
 import org.junit.Test;
 
 import java.util.ArrayList;
