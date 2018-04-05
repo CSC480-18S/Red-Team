@@ -64,12 +64,11 @@ class GameManager {
 
   play(newBoard, player) {
     // let sanitizedBoard = JSON.parse(newBoard)
-    console.log(newBoard)
+    // console.log(newBoard)
     let letters = this.extractLetters(newBoard)
     let words = this.extractWords(letters, newBoard)
     this._board.placeWords(words, player) // need to validation after this, especially for words
-    this._io.emit('wordPlayed', this._board)
-    console.log(words)
+    this._io.emit('wordPlayed', this._board.sendableBoard())
 
     // this.wordValidation(words)
     //   .then(response => {
@@ -110,6 +109,8 @@ class GameManager {
               y: j
             }
             letters.push(tile)
+          } else {
+            console.log('same letters')
           }
         }
       }
@@ -150,7 +151,7 @@ class GameManager {
         startPosition = _.cloneDeep(position)
 
         while (!endOfWord) {
-          if (newBoard[position.y][position.x] === undefined || newBoard[position.y][position.x] === null) {
+          if (position.x >= newBoard.length || position.y >= newBoard.length || newBoard[position.y][position.x] === undefined || newBoard[position.y][position.x] === null) {
             endOfWord = true
           } else {
             word += newBoard[position.y][position.x]

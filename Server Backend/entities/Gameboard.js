@@ -102,12 +102,18 @@ class Gameboard {
     this._initialized = true
   }
 
-  /**
-   * This method is only for a demo to replace the board
-   * @param {Array} board - board
-   */
-  replaceBoard(board) {
-    this.board = board
+  sendableBoard() {
+    let board = new Array(this._size)
+
+    for (let i = 0; i < this.board.length; i++) {
+      board[i] = new Array(this._size)
+
+      for (let j = 0; j < this.board[0].length; j++) {
+        board[i][j] = this.board[i][j].letter
+      }
+    }
+
+    return board
   }
 
   /**
@@ -127,7 +133,7 @@ class Gameboard {
 
       for (let i = word.sX; i <= word.eX; i++) {
         for (let j = word.sY; j <= word.eY; j++) {
-        /**
+          /**
          * Check to see if the word was somehow placed out of bounds
          */
           if (tempBoard[j][i] === undefined) {
@@ -171,7 +177,6 @@ class Gameboard {
         return word.word
       }
     }
-
     this.board = tempBoard
   }
 

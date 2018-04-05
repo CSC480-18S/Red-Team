@@ -9,33 +9,33 @@ class Tile {
   constructor(y, x, multiplier) {
     this._x = x
     this._y = y
-    this._multiplier = multiplier
-    this._letterPlaced = false
-    this._letter = null
-    this._playedBy = ''
-    this._timePlayedAt = null
+    this._m = multiplier
+    this._lP = false
+    this._l = null
+    this._pB = ''
+    this._tP = null
   }
 
   /**
    * Letter Setter
    */
   set letter(letter) {
-    this._letter = letter
-    this._letterPlaced = true
+    this._l = letter
+    this._lP = true
   }
 
   /**
    * Played by setter
    */
   set playedBy(playedBy) {
-    this._playedBy = playedBy
+    this._pB = playedBy
   }
 
   /**
    * Time played at setter
    */
   set timePlayedAt(timePlayedAt) {
-    this._timePlayedAt = timePlayedAt
+    this._tP = timePlayedAt
   }
 
   /**
@@ -56,35 +56,35 @@ class Tile {
    * Multiplier Getter
    */
   get multiplier() {
-    return this._multiplier
+    return this._m
   }
 
   /**
    * Letter placed getter
    */
   get letterPlaced() {
-    return this._letterPlaced
+    return this._lP
   }
 
   /**
    * Letter getter
    */
   get letter() {
-    return this._letter
+    return this._l
   }
 
   /**
    * Played by getter
    */
   get playedBy() {
-    return this._playedBy
+    return this._pB
   }
 
   /**
    * Time played at getter
    */
   get timePlayedAt() {
-    return this._timePlayedAt
+    return this._tP
   }
 }
 
