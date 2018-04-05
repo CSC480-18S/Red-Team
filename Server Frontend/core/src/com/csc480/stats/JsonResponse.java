@@ -1,4 +1,4 @@
-package stats;
+package com.csc480.stats;
 
 /**
  * This class exists solely so GSON can correctly
