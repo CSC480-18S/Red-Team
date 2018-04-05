@@ -65,6 +65,7 @@ project(":core") {
 
         compile 'io.socket:socket.io-client:0.6.2'
         compile 'com.mashape.unirest:unirest-java:1.4.9'
+        compile 'com.google.code.gson:gson:2.2.4'
 
     }
 }

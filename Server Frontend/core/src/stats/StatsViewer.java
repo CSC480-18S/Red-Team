@@ -10,13 +10,10 @@ public class StatsViewer extends Game {
     public StatsScreen screen;
     @Override
     public void create() {
+        //for testing purposes only
         StatsConnection stats = new StatsConnection();
-        try (Scanner scanner = new Scanner(stats.getUserStats("Gage"))) {
-            String responseBody = scanner.useDelimiter("\\A").next();
-            System.out.println(responseBody);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        System.out.println(stats.GreenStats().get().getData().getName());
+
         screen = new StatsScreen(this);
         setScreen(screen);
     }
