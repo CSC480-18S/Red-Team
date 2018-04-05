@@ -18,11 +18,6 @@ const tiles = letters.map(t => {
   }
 })
 
-// letter distribution, alphabetically
-const letterDist = [9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1]
-let totalLetters = 0
-let intervals = []
-
 class GameManager {
   constructor(io) {
     this._board = new Gameboard()
@@ -248,29 +243,6 @@ class GameManager {
 
     this._error = 0
     player.socket.emit('play', result)
-  }
-
-  /**
-   * Determines what new letters a player will get after they
-   * play their turn.
-   * @param {int} lettersUsed - number of letters to generate
-   */
-  getNewLetters(lettersUsed) {
-    let newLetters = []
-
-    // generate the new letters
-    for (let a = 0; a < lettersUsed; ++a) {
-      let index = Math.floor(Math.random() * totalLetters)
-
-      for (let i = 0; i < intervals.length; ++i) {
-        if (index <= intervals[i]) {
-          newLetters.push(letters[i])
-          break
-        }
-      }
-    }
-
-    return newLetters
   }
 
   /**
