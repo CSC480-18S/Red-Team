@@ -52,6 +52,7 @@ public class WordVerification {
 
     public ArrayList<PlayIdea> TESTgetWordsFromHand(String hand, char[] constraints, int index, TileData root, boolean horrizontal){
         ////////////
+        long startTime = System.currentTimeMillis();
         String TESTPRINTconstraints = "";
         for(int i = 0; i < constraints.length; i++){
             if(constraints[i] == 0)
@@ -95,6 +96,8 @@ public class WordVerification {
                         possiblePlays.add(p);
                     }
                 }
+                if(System.currentTimeMillis() - startTime > 10000)
+                    return possiblePlays;
             }
             //if there is nothing on the board then what is in the hand is valid
             return possiblePlays;
@@ -192,6 +195,8 @@ public class WordVerification {
             }else {
                 //System.out.println("word cant be longer than constraints");
             }
+            if(System.currentTimeMillis() - startTime > 10000)
+                return possiblePlays;
         }
         //System.out.println("Found "+possiblePlays.size()+" possible words.");
         return possiblePlays;

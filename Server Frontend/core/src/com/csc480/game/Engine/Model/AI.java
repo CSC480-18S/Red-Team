@@ -44,7 +44,7 @@ public class AI extends Player {
                     }
 
                     if (bestPlay != null && bestPlay.myWord != null && GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay.placements)) {
-                        //System.out.println("The AI found made a decent play");
+                        System.out.println("The AI is sending play of: "+GameManager.getInstance().JSONifyPlayIdea(bestPlay));
                         mySocket.emit("playWord", GameManager.getInstance().JSONifyPlayIdea(bestPlay));
                         GameManager.getInstance().theBoard.addWord(bestPlay.placements);
                         GameManager.getInstance().placementsUnderConsideration.clear();
