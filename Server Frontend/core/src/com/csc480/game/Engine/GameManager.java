@@ -13,6 +13,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * The Class that will hold all the game state and route Events to the GUI, SocketManager, and AI
@@ -200,14 +201,10 @@ public class GameManager {
             @Override
             public void call(Object... args) {
                 LogEvent("wordPlayed");
-                //System.out.println("wordPlayed");
+                System.out.println("frontend got wordPlayed");
                 try {
-                    JSONObject data = (JSONObject) args[0];
-                    //System.out.println("word played. data: "+data.toString());
-                    String boardString = data.getString("board");
-                    JSONArray board = new JSONArray(boardString);//data.getJSONArray("board");
-                    //System.out.println("board string to array: "+board.toString());
-                    JSONArray col;
+                    JSONArray board = (JSONArray) args[0];
+                    System.out.println("BACKEND BOARD STATE: "+board.toString());
                     //todo un mess this up, the state isnt being constant and the AI are generating with bad data
                     //TileData[][] parsed = parseServerBoard(board);
                     //find the board/user state differences
@@ -223,7 +220,7 @@ public class GameManager {
         }).on("gameEvent", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                System.out.println("gameEvent");
+                System.out.println("frontend got gameEvent");
                 try {
                     JSONObject data = (JSONObject) args[0];
                     String action = data.getString("action");
@@ -594,12 +591,12 @@ public class GameManager {
                 if(temp.the_game_board[j][10-i] != null)
                     childJsonArray.put("\""+temp.the_game_board[j][10-i].letter+"\"");
                 else
-                    childJsonArray.put("null");
+                    childJsonArray.put(JSONObject.NULL);
 
             }
             parentJsonArray.put(childJsonArray);
         }
-        //System.out.println(parentJsonArray.toString());
+        System.out.println(parentJsonArray.toString());
         return parentJsonArray;
     }
 
