@@ -50,29 +50,45 @@ class GameManager {
     return this._board.board
   }
 
-  play(newBoard, player) {
-    let sanitizedBoard = JSON.parse(newBoard)
-    let letters = this.extractLetters(sanitizedBoard)
-    let words = this.extractWords(letters, sanitizedBoard)
+  // play(newBoard, player) {
+  //   newBoard = JSON.parse(newBoard)
 
-    this.wordValidation(words)
-      .then(response => {
-        console.log('The board now has an answer')
-        let placement
-        if (response === true) {
-          // if invalid type of play, gets the word that was invalid, else is undefined
-          placement = this._board.placeWords(words, player)
-        } else {
-          // if the word is invalid
-          return this.handleResponse(this._error, response, player)
-        }
-        this.handleResponse(this._board.error, placement, player)
-        this._io.emit('wordPlayed', this._board)
-      })
-      .catch(e => {
-        console.log({code: 'D1', title: 'Database Error', desc: e.code})
-      })
-    console.log('The board is thinking')
+  //   for (let i = 0; i < newBoard.length; i++) {
+  //     for (let j = 0; j < newBoard[0].length; j++) {
+  //       let newBoardLetter = JSON.parse(newBoard[j][i])
+  //       this.board[j][i].letter = newBoardLetter
+  //     }
+  //   }
+  //   this._io.emit('wordPlayed', this.board)
+  // }
+
+  play(newBoard, player) {
+    // let sanitizedBoard = JSON.parse(newBoard)
+    console.log(newBoard)
+    let letters = this.extractLetters(newBoard)
+    let words = this.extractWords(letters, newBoard)
+    this._board.placeWords(words, player) // need to validation after this, especially for words
+    this._io.emit('wordPlayed', this._board)
+    console.log(words)
+
+    // this.wordValidation(words)
+    //   .then(response => {
+    //     console.log('The board now has an answer')
+    //     let placement
+    //     if (response === true) {
+    //       // if invalid type of play, gets the word that was invalid, else is undefined
+    //       placement = this._board.placeWords(words, player)
+    //     } else {
+    //       // if the word is invalid
+    //       return this.handleResponse(this._error, response, player)
+    //     }
+    //     this.handleResponse(this._board.error, placement, player)
+    //     this._io.emit('wordPlayed', this._board)
+    //   })
+    //   .catch(e => {
+    //     console.log({code: 'D1', title: 'Database Error', desc: e.code})
+    //   })
+    // console.log('The board is thinking')
   }
 
   /**
@@ -84,19 +100,16 @@ class GameManager {
     for (let i = 0; i < newBoard.length; i++) {
       for (let j = 0; j < newBoard[0].length; j++) {
         let currentBoardLetter = this.board[j][i].letter
-        //   console.log(currentBoardLetter)
-        let newBoardLetter = JSON.parse(newBoard[j][i])
+        let newBoardLetter = newBoard[j][i]
 
         if (newBoardLetter !== null) {
           if (currentBoardLetter !== newBoardLetter) {
             let tile = {
               letter: newBoardLetter,
-              x: j,
-              y: i
+              x: i,
+              y: j
             }
             letters.push(tile)
-          } else {
-            console.log('letters are the same')
           }
         }
       }
@@ -105,70 +118,62 @@ class GameManager {
   }
 
   /**
-   * Extracts words from the new board
-   * @param {Array} letters - letters
-   * @param {Array} newBoard - board given by the user
+   * Extracts words out of the newboard
+   * @param {Array} letters - array of letters
+   * @param {Array} newBoard- board
    */
   extractWords(letters, newBoard) {
     let words = []
-    letters.map(t => {
-      for (let k = 0; k < 2; k++) {
-        let temp = []
-        for (let i = 0; i < newBoard.length; i++) {
-          let tile = {
-            letter: JSON.parse(newBoard[k ? i : t.x][k ? t.y : i]),
-            x: k ? i : t.x,
-            y: k ? t.y : i
-          }
-          temp.push(tile)
+
+    letters.map(letterObject => {
+      for (let i = 0; i < 2; i++) {
+        let word = ''
+        let startOfWord = false
+        let endOfWord = false
+        let startPosition = null
+        let position = {
+          x: letterObject.x,
+          y: letterObject.y
         }
 
-        let nullFound = false
-        let word = []
-        for (let te of temp) {
-          if (te.letter !== null) {
-            // Converts k into a bool, then negates it
-            te['h'] = !!k
-            word.push(te)
+        while (!startOfWord) {
+          if (position.x < 0 || position.y < 0 || newBoard[position.y][position.x] === null) {
+            startOfWord = true
+            position.x = i === 0 ? position.x : position.x + 1
+            position.y = i === 0 ? position.y + 1 : position.y
           } else {
-            nullFound = true
-          }
-
-          if (nullFound || te.x === newBoard.length - 1 || te.y === newBoard.length - 1) {
-            if (word.length > 1) {
-              words.push(word)
-            }
-            word = []
-            nullFound = false
+            position.x = i === 0 ? position.x : position.x - 1
+            position.y = i === 0 ? position.y - 1 : position.y
           }
         }
+
+        startPosition = _.cloneDeep(position)
+
+        while (!endOfWord) {
+          if (newBoard[position.y][position.x] === undefined || newBoard[position.y][position.x] === null) {
+            endOfWord = true
+          } else {
+            word += newBoard[position.y][position.x]
+            position.x = i === 0 ? position.x : position.x + 1
+            position.y = i === 0 ? position.y + 1 : position.y
+          }
+        }
+
+        if (word.length > 1) {
+          let wordObject = {
+            word: word,
+            x: startPosition.x,
+            y: startPosition.y,
+            h: i === 1
+          }
+
+          words.push(wordObject)
+        }
+        word = ''
       }
     })
 
-    let word = ''
-    let wordObjects = []
-    // let wordCheck = false
-    for (let i = 0; i < words.length; i++) {
-      for (let j = 0; j < words[0].length; j++) {
-        // if (letters.includes(words[i][j])) {
-        //   wordCheck = true
-        // }
-        word += words[i][j].letter
-      }
-      // if (wordCheck) {
-      wordObjects.push({
-        word: word,
-        x: words[i][0].x,
-        y: words[i][0].y,
-        h: words[i][0].h
-      })
-      // }
-      word = ''
-      // wordCheck = false
-    }
-
-    let unique = _.uniqWith(wordObjects, _.isEqual)
-    return unique
+    return _.uniqWith(words, _.isEqual)
   }
 
   /**
