@@ -83,6 +83,18 @@ module.exports = function(io) {
     }
 
     /**
+     * Injects old data from a past connected player into a new player manager
+     * @param {Number} pos - position of the player
+     * @param {PlayerManager} p - manager
+     */
+    injectOldData(pos, p) {
+      console.table([[p.name, 'data injected.']])
+      let old = this._oldPlayerData[pos]
+      p.addPositionDetails(old.tiles, old.isTurn, old.score)
+      this._oldPlayerData.splice(pos, 1, null)
+    }
+
+    /**
      * Creates only one frontend manager instance
      * @param {Object} socket - socket object
      */
@@ -179,18 +191,6 @@ module.exports = function(io) {
           }
         }
       }
-    }
-
-    /**
-     * Injects old data from a past connected player into a new player manager
-     * @param {Number} pos - position of the player
-     * @param {PlayerManager} p - manager
-     */
-    injectOldData(pos, p) {
-      console.table([[p.name, 'data injected.']])
-      let old = this._oldPlayerData[pos]
-      p.addPositionDetails(old.tiles, old.isTurn, old.score)
-      this._oldPlayerData.splice(pos, 1, null)
     }
   }
 

@@ -134,7 +134,6 @@ class PlayerManager {
     this._socket.on('playWord', board => {
       console.table([[this.name, this.socket.id, 'made a play.']])
       this._gameManager.play(board, this)
-      this._serverManger.changeTurn(this.position)
     })
 
     this._socket.on('disconnect', () => {

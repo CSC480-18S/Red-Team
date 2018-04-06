@@ -19,13 +19,14 @@ const tiles = letters.map(t => {
 })
 
 class GameManager {
-  constructor(io) {
+  constructor(io, serverManager) {
     this._board = new Gameboard()
     this._tileScores = []
     this._greenScore = 0
     this._error = 0
     this._yellowScore = 0
     this._io = io
+    this._serverManager = serverManager
   }
 
   /**
@@ -64,7 +65,7 @@ class GameManager {
           // if the word is invalid
           return this.handleResponse(this._error, response, player)
         }
-        this.handleResponse(this._board.error, placement, player)
+        return this.handleResponse(this._board.error, placement, player)
       })
       .catch(e => {
         console.log({code: 'D1', title: 'Database Error', desc: e.code})
@@ -224,6 +225,7 @@ class GameManager {
     if (result.invalid) {
       result['reason'] = reason.toUpperCase()
       result['word'] = word.toUpperCase()
+      this._serverManager.changeTurn(player.position)
       player.socket.emit('play', result)
       this._error = 0
       return
