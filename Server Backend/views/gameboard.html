@@ -30,7 +30,7 @@
         })
         let board
 
-        socket.on('board', b => {
+        socket.on('wordPlayed', b => {
             board = b
             
             $('#board').empty()
