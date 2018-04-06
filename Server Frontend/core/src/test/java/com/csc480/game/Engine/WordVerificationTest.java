@@ -79,6 +79,16 @@ public class WordVerificationTest {
 
 
     @Test
-    public void genRegex() {
+    public void TESTgenRegex() {
+        char[] vertical = new char[11];
+        for(char t: vertical){
+            t = '\0';
+        }
+        vertical[4] = 't';
+        vertical[5] = 'a';
+        vertical[8] = 'u';
+        String regex = WordVerification.getInstance().genRegex(vertical, 5);
+        System.out.println(regex);
+        assertEquals(false, "aas".matches(regex));
     }
 }

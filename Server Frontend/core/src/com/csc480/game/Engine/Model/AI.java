@@ -50,17 +50,18 @@ public class AI extends Player {
                 case 1://play
                     //PlayIdea play;
                     PlayIdea bestPlay = PlayBestWord();
+                    System.out.println(this.name + " Pre loop");
                     while (bestPlay != null && !GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay.placements)) {
                         bestPlay = PlayBestWord();
                         if (bestPlay == null) break;
                     }
-
+                    System.out.println(this.name + " post loop");
                     if (bestPlay != null && bestPlay.myWord != null && GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay.placements)) {
                         //System.out.println("The AI found made a decent play");
-                        System.out.println("Im trying to play: "+bestPlay.myWord);
+                        System.out.println(this.name + " trying to play: "+bestPlay.myWord + "  while in state " + this.state);
                         System.out.println("JSONIFIED DATA TO BE SET: "+GameManager.getInstance().JSONifyPlayIdea(bestPlay));
                         mySocket.emit("playWord", GameManager.getInstance().JSONifyPlayIdea(bestPlay));
-                        state = 2;
+                        this.state = 2;
                         //GameManager.getInstance().theBoard.addWord(bestPlay.placements);
                         GameManager.getInstance().placementsUnderConsideration.clear();
                         //remove tiles from hand
@@ -71,6 +72,8 @@ public class AI extends Player {
                         tiles = GameManager.getInstance().getNewHand();
                         myCache.Clear();
                         TESTFindPlays(GameManager.getInstance().theBoard);
+                        //UPDATE MUST BE CALLED OR ELSE THE AI COMES TO A STANDSTILL IF IT DOES NOT FIND A BEST WORD
+                        update();
                     }
             }
         }
@@ -204,9 +207,11 @@ public class AI extends Player {
                             boolean invalid = data.getBoolean("invalid");
                             if (invalid) {
                                 if (state == 2)
+                                    System.out.println("State set back to 1");
                                     state = 1;
                             } else {
                                 if (state == 2)
+                                    System.out.println("State set to 0");
                                     state = 0;
                             }
                             update();
@@ -234,7 +239,7 @@ public class AI extends Player {
                         //System.out.println(myTurn);
                         if (myTurn) {
                             try {
-                                Thread.sleep(1000);
+                                Thread.sleep(5000);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
