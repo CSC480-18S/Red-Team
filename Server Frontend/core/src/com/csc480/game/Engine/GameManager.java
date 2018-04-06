@@ -38,12 +38,19 @@ public class GameManager {
     private ArrayList<String> eventBacklog;
 
 
+    /**
+     * Access THE instance of the GameManager
+     * @return instance
+     */
     public static GameManager getInstance() {
         if(instance == null)
             instance = new GameManager();
         return instance;
     }
 
+    /**
+     * Private because of singleton nature
+     */
     private GameManager(){
         thePlayers = new Player[4];
         theAIs = new AI[4];
@@ -531,7 +538,8 @@ public class GameManager {
 
     /**
      * ASSUMES THAT THE (0,0) tile is in the bottom left tiles corner!!!
-     * @param backend
+     * This returns tiles that exist on the backend, but not on the frontend
+     * @param backend board state from the server
      * @return
      */
     public ArrayList<TileData> getPlacementsFromBackendThatArentOnFrontEnd(TileData[][] backend){
@@ -550,6 +558,7 @@ public class GameManager {
 
     /**
      * ASSUMES THAT THE (0,0) tile is in the bottom left tiles corner!!!
+     * This returns tiles that exist on the frontend, but not on the backend
      * @param backend
      * @return
      */
@@ -566,7 +575,10 @@ public class GameManager {
         return diff;
     }
 
-
+    /**
+     * Add an event to be displayed to the GUI
+     * @param eventName
+     */
     public void LogEvent(String eventName) {
         ApplyEventBackLog();
         if(theGame != null && theGame.theGameScreen != null && theGame.theGameScreen.infoPanel !=null) {
@@ -578,6 +590,10 @@ public class GameManager {
         }
 
     }
+
+    /**
+     * Attempt to display any events gotten that have yet to be shown
+     */
     private void ApplyEventBackLog(){
         if(theGame != null && theGame.theGameScreen != null && theGame.theGameScreen.infoPanel !=null) {
             for(String s: eventBacklog)
@@ -587,6 +603,12 @@ public class GameManager {
 
     }
 
+    /**
+     * This function transforms a play idea into the format that the backend can read
+     *
+     * @param p
+     * @return 2D json array of the board state with the play idea added onto it
+     */
     public JSONArray JSONifyPlayIdea(PlayIdea p){
         Board temp = GameManager.getInstance().theBoard.getCopy();
         temp.addWord(p.placements);
@@ -606,6 +628,7 @@ public class GameManager {
         System.out.println(parentJsonArray.toString());
         return parentJsonArray;
     }
+
     public TileData[][] unJSONifyBackendBoard(JSONArray backend){
         TileData[][] state = new TileData[11][11];
         for (int i=0; i<11; i++){
@@ -621,6 +644,11 @@ public class GameManager {
         return state;
     }
 
+    /**
+     * THIS SHOULDNT BE USED IN THE FINAL PROJECT. WAITING ON BACKEND
+     * This gives 7 random letters
+     * @return
+     */
     public char[] getNewHand(){
         char[] ret = new char[7];
         for(int i =0; i < ret.length; i++){
@@ -629,6 +657,10 @@ public class GameManager {
         return ret;
     }
 
+    /**
+     * Transforms the Board State to JSON that the backend can read
+     * @return
+     */
     public String PrintBoardState(){
         JSONArray parentJsonArray = new JSONArray();
         // loop through your elements
