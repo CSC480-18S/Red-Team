@@ -47,7 +47,7 @@ public class AI extends Player {
                         //System.out.println("The AI found made a decent play");
                         System.out.println("JSONIFIED DATA TO BE SET: "+GameManager.getInstance().JSONifyPlayIdea(bestPlay));
                         mySocket.emit("playWord", GameManager.getInstance().JSONifyPlayIdea(bestPlay));
-                        GameManager.getInstance().theBoard.addWord(bestPlay.placements);
+                        //GameManager.getInstance().theBoard.addWord(bestPlay.placements);
                         GameManager.getInstance().placementsUnderConsideration.clear();
                         //remove tiles from hand
                         removeTilesFromHand(bestPlay);
@@ -164,25 +164,6 @@ public class AI extends Player {
                     mySocket.emit("whoAreYou", data);
 
                 }
-            }).on("dataUpdate", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    System.out.println(" got dataUpdate");
-                    try {
-                        JSONObject data = (JSONObject) args[0];
-                        System.out.println(data.toString());
-//                        Player response = (Player) data.get("state");
-//                        if (response.isAI) {
-                            //clear cache
-                            myCache.Clear();
-//                        }
-//                        else{
-//                            disconnectAI();
-//                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
             }).on("play", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
@@ -215,12 +196,12 @@ public class AI extends Player {
                         //reconnect an AI
                         System.out.println(myTurn);
                         if (myTurn) {
-                            /*
+
                             try {
-                                Thread.sleep(1000);
+                                Thread.sleep(10000);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
-                            }*/
+                            }
                             tiles = GameManager.getInstance().getNewHand();
                             myCache.Clear();
                             TESTFindPlays(GameManager.getInstance().theBoard);
