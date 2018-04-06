@@ -21,6 +21,7 @@ public class BoardTest {
         assertEquals(false,SetUpCenterHorizonalScaffolding().verifyWordPlacement(overlapOneCase()));
         assertEquals(false,SetUpCenterHorizonalScaffolding().verifyWordPlacement(unAttatchedManyCase()));
         assertEquals(false,SetUpCenterHorizonalScaffolding().verifyWordPlacement(unAttatchedOneCase()));
+        assertEquals(false,SetUpCenterVerticalScaffolding().verifyWordPlacement(adjacentLastNotValidOnHorizontal()));
 
         assertEquals(true, SetUpHorizonalBreakScaffolding().verifyWordPlacement(appendingHorizontalCase()));
     }
@@ -46,6 +47,16 @@ public class BoardTest {
         testing.add(new Placement('e',4,5));
         testing.add(new Placement('s',5,5));
         testing.add(new Placement('t',6,5));
+        b.addWord(testing);
+        return b;
+    }
+    private Board SetUpCenterVerticalScaffolding(){
+        Board b = new Board(11);
+        ArrayList<Placement> testing = new ArrayList<Placement>();
+        testing.add(new Placement('t',5,7));
+        testing.add(new Placement('e',5,6));
+        testing.add(new Placement('s',5,5));
+        testing.add(new Placement('t',5,4));
         b.addWord(testing);
         return b;
     }
@@ -91,4 +102,11 @@ public class BoardTest {
         testing.add(new Placement('a',6,7));
         return testing;
     }
+    private ArrayList<Placement> adjacentLastNotValidOnHorizontal(){//fail
+        ArrayList<Placement> testing = new ArrayList<Placement>();
+        testing.add(new Placement('o',6,5));
+        testing.add(new Placement('p',6,4));
+        return testing;
+    }
+
 }
