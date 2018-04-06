@@ -31,6 +31,7 @@ public class AI extends Player {
         connectSocket();
     }
     public void update(){
+        System.out.println("AI " + this.name + "           STATE: " + this.state);
         synchronized (GameManager.getInstance().theBoard.the_game_board) {
             switch (state) {
                 case 0://waiting
@@ -47,6 +48,7 @@ public class AI extends Player {
                         //System.out.println("The AI found made a decent play");
                         System.out.println("JSONIFIED DATA TO BE SET: "+GameManager.getInstance().JSONifyPlayIdea(bestPlay));
                         mySocket.emit("playWord", GameManager.getInstance().JSONifyPlayIdea(bestPlay));
+                        state = 2;
                         //GameManager.getInstance().theBoard.addWord(bestPlay.placements);
                         GameManager.getInstance().placementsUnderConsideration.clear();
                         //remove tiles from hand
@@ -193,12 +195,19 @@ public class AI extends Player {
                         JSONObject data = (JSONObject) args[0];
                         System.out.println(data.toString());
                         boolean myTurn = data.getBoolean("isTurn");
-                        //reconnect an AI
-                        System.out.println(myTurn);
-                        if (myTurn) {
+                        JSONArray jsonTiles = data.getJSONArray("tiles");
+                        char[] newTiles = new char[jsonTiles.length()];
+                        String test = jsonTiles.toString();
+                        for(int i = 0; i < newTiles.length; i++){
+                            newTiles[i] = jsonTiles.getString(i).charAt(0);
+                            System.out.print(newTiles[i]);
+                        }
 
+                        //reconnect an AI
+                        //System.out.println(myTurn);
+                        if (myTurn) {
                             try {
-                                Thread.sleep(10000);
+                                Thread.sleep(1000);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
@@ -208,6 +217,9 @@ public class AI extends Player {
                             state = 1;
                             tiles = GameManager.getInstance().getNewHand();
                             GameManager.getInstance().updatePlayers(GameManager.getInstance().thePlayers);
+                        }
+                        else{
+                            state = 0;
                         }
                         update();
                     } catch (ArrayIndexOutOfBoundsException e) {
