@@ -109,7 +109,7 @@ module.exports = function(io) {
      */
     createGameManager() {
       if (this._gameManager === null) {
-        this._gameManager = new GameManager(io)
+        this._gameManager = new GameManager(io, this)
       }
     }
 

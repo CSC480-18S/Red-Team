@@ -72,6 +72,29 @@ socket.on('wordPlayed', response => {
 
 socket.on('play', response => {
   console.log(response)
+  if(response.invalid){
+    for(let cplay of this.data.currentPlay){
+        for(let tile of this.data.tilesOnBoardValueAndPosition){
+            if(cplay === tile){
+                var square = document.getElementById('square-' + tile.xAxis + '-' + tile.yAxis);
+                square.removeChild(square.firstChild)
+            }
+        }
+    }
+
+    for(let cplay of this.data.currentPlay){
+        this.data.tilesOnBoardValueAndPosition.pop()
+    }
+
+    //   var i = this.data.tilesOnBoardValueAndPosition.length
+    //   while(i--){
+    //     var t = this.data.tilesOnBoardValueAndPosition[i]
+    //     var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis);
+    //     square.removeChild(square.firstChild)
+    //     var index = this.data.tilesOnBoardValueAndPosition.indexOf(t)
+    //     this.data.tilesOnBoardValueAndPosition.splice(index, 1)
+    currentPlay = []
+      }
 })
 
 // data object
@@ -86,7 +109,8 @@ var data = {
     tilesOnBoard: [],
     selectedTileCopyId: "",
     currentRoundtileIdsOnBoard: [],
-    tilesOnBoardValueAndPosition: []
+    tilesOnBoardValueAndPosition: [],
+    currentPlay: []
 }
 
 function generateTableRows () {
@@ -311,7 +335,7 @@ var putTileInSquare = function (squareId) {
                 // console.log(this.squares[i].id);
                 // console.log(squareId);
                 // console.log(this.squares[i].xAxis + " " + this.squares[i].yAxis);
-                this.tilesOnBoardValueAndPosition.push({tileLetter: document.getElementById(this.selectedTileId).children[1].innerHTML,
+                this.currentPlay.push({tileLetter: document.getElementById(this.selectedTileId).children[1].innerHTML,
                   xAxis: this.squares[i].xAxis,
                   yAxis: this.squares[i].yAxis
                 });
@@ -347,7 +371,7 @@ var putTileInSquare = function (squareId) {
                         }
                     }
 
-                    this.tilesOnBoardValueAndPosition.pop();
+                    this.currentPlay.pop();
                     // remove tile id in the current round
                     this.currentRoundtileIdsOnBoard.pop(this.selectedTileCopyId);
                 }
@@ -467,7 +491,9 @@ function emitBoard() {
     }
   }
 
+  this.data.tilesOnBoardValueAndPosition.push(...this.data.currentPlay);
   var tiles = (this.data.tilesOnBoardValueAndPosition);
+  console.log('lolololol :' + tiles)
   for (var i = 0; i < tiles.length; i++) {
     var x = tiles[i].xAxis;
     var y = tiles[i].yAxis;
