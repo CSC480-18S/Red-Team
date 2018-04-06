@@ -1,6 +1,7 @@
 package com.csc480.game.Engine;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.csc480.game.Engine.Model.*;
 import com.csc480.game.OswebbleGame;
 import io.socket.client.IO;
@@ -203,8 +204,11 @@ public class GameManager {
                 LogEvent("wordPlayed");
                 System.out.println("frontend got wordPlayed");
                 try {
-                    JSONArray board = (JSONArray) args[0];
+                    //JSONObject data = (JSONObject) args[0];
+                    //System.out.println("data: "+data.toString());
+                    JSONArray board = (JSONArray) args[0];//data.getJSONArray("board");
                     System.out.println("BACKEND BOARD STATE: "+board.toString());
+                    System.out.println("PARSED BACKEND BOARD STATE: "+unJSONifyBackendBoard(board));
                     //todo un mess this up, the state isnt being constant and the AI are generating with bad data
                     //TileData[][] parsed = parseServerBoard(board);
                     //find the board/user state differences
@@ -598,6 +602,20 @@ public class GameManager {
         }
         System.out.println(parentJsonArray.toString());
         return parentJsonArray;
+    }
+    public TileData[][] unJSONifyBackendBoard(JSONArray backend){
+        TileData[][] state = new TileData[11][11];
+        for (int i=0; i<11; i++){
+            JSONArray childJsonArray = backend.getJSONArray(i);
+            for (int j =0; j<11; j++){
+                char temp = 0;
+                if(childJsonArray.get(j) != null) {
+                    temp = ((String) childJsonArray.get(j)).charAt(0);
+                    state[j][10-i] = new TileData(new Vector2(j,10-i),temp,0,0,"",0);
+                }
+            }
+        }
+        return state;
     }
 
     public char[] getNewHand(){
