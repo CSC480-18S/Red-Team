@@ -72,19 +72,19 @@ socket.on('wordPlayed', response => {
 
 socket.on('play', response => {
   console.log(response)
+
   if(response.invalid){
-    for(let cplay of this.data.currentPlay){
-        for(let tile of this.data.tilesOnBoardValueAndPosition){
-            if(cplay === tile){
-                var square = document.getElementById('square-' + tile.xAxis + '-' + tile.yAxis);
-                square.removeChild(square.firstChild)
-            }
-        }
+    for(let i = 0; i < this.data.currentTileCount; i++){
+      var t = this.data.tilesOnBoardValueAndPosition[i]
+      console.log(t)
+      var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis);
+      square.removeChild(square.firstChild);
+      this.data.tilesOnBoardValueAndPosition.pop();
     }
 
-    for(let cplay of this.data.currentPlay){
-        this.data.tilesOnBoardValueAndPosition.pop()
-    }
+    this.data.currentTileCount = 0;
+  }
+
 
     //   var i = this.data.tilesOnBoardValueAndPosition.length
     //   while(i--){
@@ -93,8 +93,7 @@ socket.on('play', response => {
     //     square.removeChild(square.firstChild)
     //     var index = this.data.tilesOnBoardValueAndPosition.indexOf(t)
     //     this.data.tilesOnBoardValueAndPosition.splice(index, 1)
-    currentPlay = []
-      }
+
 })
 
 // data object
@@ -110,7 +109,7 @@ var data = {
     selectedTileCopyId: "",
     currentRoundtileIdsOnBoard: [],
     tilesOnBoardValueAndPosition: [],
-    currentPlay: []
+    currentTileCount: 0
 }
 
 function generateTableRows () {
@@ -335,7 +334,8 @@ var putTileInSquare = function (squareId) {
                 // console.log(this.squares[i].id);
                 // console.log(squareId);
                 // console.log(this.squares[i].xAxis + " " + this.squares[i].yAxis);
-                this.currentPlay.push({tileLetter: document.getElementById(this.selectedTileId).children[1].innerHTML,
+                this.currentTileCount++;
+                this.tilesOnBoardValueAndPosition.push({tileLetter: document.getElementById(this.selectedTileId).children[1].innerHTML,
                   xAxis: this.squares[i].xAxis,
                   yAxis: this.squares[i].yAxis
                 });
@@ -371,7 +371,8 @@ var putTileInSquare = function (squareId) {
                         }
                     }
 
-                    this.currentPlay.pop();
+                    this.tilesOnBoardValueAndPosition.pop();
+                    this.currentTileCount--;
                     // remove tile id in the current round
                     this.currentRoundtileIdsOnBoard.pop(this.selectedTileCopyId);
                 }
@@ -491,7 +492,6 @@ function emitBoard() {
     }
   }
 
-  this.data.tilesOnBoardValueAndPosition.push(...this.data.currentPlay);
   var tiles = (this.data.tilesOnBoardValueAndPosition);
   console.log('lolololol :' + tiles)
   for (var i = 0; i < tiles.length; i++) {
