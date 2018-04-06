@@ -26,6 +26,7 @@ public class GameManager {
     public Player[] thePlayers;
     public AI[] theAIs;
     public int numPlayers;
+    public int counter = 0;
     //public int currentPlayerIndex;
     public Board theBoard;
     public int greenScore;
@@ -108,7 +109,7 @@ public class GameManager {
      * Define the actions to be taken when events occur
      */
     public void setUpEvents(){
-        socket.on(io.socket.client.Socket.EVENT_CONNECT, new Emitter.Listener() {
+        socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
                 LogEvent("connected to the backend");
@@ -129,7 +130,7 @@ public class GameManager {
                 data.put("isSF",true);
                 socket.emit("whoAreYou",data);
             }
-        }).on(io.socket.client.Socket.EVENT_DISCONNECT, new Emitter.Listener() {
+        }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
                 LogEvent("disconnection");
@@ -167,6 +168,8 @@ public class GameManager {
             public void call(Object... args) {
                 LogEvent("Reconnecting an AI");
                 System.out.println("connectAI");
+                GameManager.getInstance().counter++;
+                System.out.println("AI CONNECT EVENT RECEIVED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + GameManager.getInstance().counter);
                 try {
                     JSONObject data = (JSONObject) args[0];
                     System.out.println(data.toString());
@@ -212,9 +215,9 @@ public class GameManager {
                     //todo un mess this up, the state isnt being constant and the AI are generating with bad data
                     //TileData[][] parsed = parseServerBoard(board);
                     //find the board/user state differences
-                    //wordHasBeenPlayed(parsed);
+                    wordHasBeenPlayed(unJSONifyBackendBoard(board));
                     //hard update the game and user states
-                    //hardUpdateBoardState(parsed);
+                    hardUpdateBoardState(unJSONifyBackendBoard(board));
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
                 }catch(JSONException e){
@@ -610,7 +613,7 @@ public class GameManager {
             for (int j =0; j<11; j++){
                 char temp = 0;
                 if(childJsonArray.get(j) != JSONObject.NULL) {
-                    temp = ((String) childJsonArray.get(j)).charAt(0);
+                    temp = ((String) childJsonArray.get(j)).toLowerCase().charAt(0);
                     state[j][10-i] = new TileData(new Vector2(j,10-i),temp,0,0,"",0);
                 }
             }

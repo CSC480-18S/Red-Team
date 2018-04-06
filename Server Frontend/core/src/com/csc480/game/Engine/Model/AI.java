@@ -31,7 +31,7 @@ public class AI extends Player {
         connectSocket();
     }
     public void update(){
-        System.out.println("AI " + this.name + "           STATE: " + this.state);
+        System.out.println("AI: " + this.name + "     CURRENT STATE: " + this.state);
         synchronized (GameManager.getInstance().theBoard.the_game_board) {
             switch (state) {
                 case 0://waiting
@@ -231,7 +231,7 @@ public class AI extends Player {
             }).on("playWord", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    System.out.println(" got playWord");
+                    System.out.println("AI got playWord, but does nothing");
                 }
             });
         //}

@@ -225,12 +225,12 @@ class GameManager {
     if (result.invalid) {
       result['reason'] = reason.toUpperCase()
       result['word'] = word.toUpperCase()
-      this._serverManager.changeTurn(player.position)
       player.socket.emit('play', result)
       this._error = 0
       return
     }
 
+    this._serverManager.changeTurn(player.position)
     this._io.emit('wordPlayed', {
       board: this._board.sendableBoard()
     })
