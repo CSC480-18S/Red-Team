@@ -21,7 +21,14 @@ public class AI extends Player {
     private static int counter = 0;
     public PriorityQueue myCache;
     public Socket mySocket;
-    private int state = 0;//0=waiting, 1=playing, 2=waitforVerification
+
+    /**
+     * The starting state of the AI
+     * 0 = waiting
+     * 1 = playing
+     * 2 = waitforVerification
+     */
+    private int state = 0;
     public AI(){
         super();
         this.isAI = true;
@@ -30,6 +37,10 @@ public class AI extends Player {
         myCache = new PriorityQueue(200);
         connectSocket();
     }
+
+    /**
+     * AI State Transition: used to think of words when it becomes the AI's turn and yield when it is not
+     */
     public void update(){
         System.out.println("AI: " + this.name + "     CURRENT STATE: " + this.state);
         synchronized (GameManager.getInstance().theBoard.the_game_board) {
@@ -92,6 +103,10 @@ public class AI extends Player {
         return;
     }
 
+    /**
+     * Remove the Tiles in a play from the AI's hand
+     * @param p
+     */
     private void removeTilesFromHand(PlayIdea p){
         ArrayList<Placement> copy = (ArrayList<Placement>) p.placements.clone();
         String play = "";
@@ -107,7 +122,9 @@ public class AI extends Player {
 
     }
 
-
+    /**
+     * Connect an AI to the backend
+     */
     public boolean connectSocket(){
         try{
             IO.Options opts = new IO.Options();
@@ -139,9 +156,16 @@ public class AI extends Player {
         return mySocket.connected();
     }
 
+    /**
+     * Kill an AI's connection to the back end
+     */
     public void disconnectAI(){
         mySocket.disconnect();
     }
+
+    /**
+     * Reconnect an AI to the backend
+     */
     public void ReConnectSocket(){
         try {
             IO.Options opts = new IO.Options();
@@ -154,7 +178,9 @@ public class AI extends Player {
         }
     }
 
-
+    /**
+     * Creates the Socket Listeners for each event the AI should respond to
+     */
     public void socketEvents(){
         //while(mySocket.connected()) {
             mySocket.on("whoAreYou", new Emitter.Listener() {

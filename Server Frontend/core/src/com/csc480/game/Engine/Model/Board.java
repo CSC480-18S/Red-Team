@@ -10,6 +10,9 @@ import java.util.ArrayList;
  * It provides functionality for word verification based on board state.
  */
 public class Board {
+    /**
+     * The array of tiles on the board
+     */
     public TileData[][] the_game_board;
 
     public Board(int size){
