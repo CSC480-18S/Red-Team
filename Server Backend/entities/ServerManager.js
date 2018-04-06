@@ -12,9 +12,8 @@ module.exports = function(io) {
     constructor() {
       this._gameManager = null
       this._frontendManager = null
-      // needs to be changed back to 4
-      this._players = new Array(5).fill(null)
-      this._oldPlayerData = new Array(5).fill(null)
+      this._players = new Array(4).fill(null)
+      this._oldPlayerData = new Array(4).fill(null)
       this._currentlyConnectedClients = 0
       this._firstTurnSet = false
       this.init()
@@ -33,18 +32,18 @@ module.exports = function(io) {
      */
     listenForClients() {
       io.on('connection', socket => {
-        // if (this._currentlyConnectedClients !== 4) {
-        socket.emit('whoAreYou')
+        if (this._currentlyConnectedClients !== 4) {
+          socket.emit('whoAreYou')
 
-        socket.on('whoAreYou', response => {
-          this.determineClientType(socket, response)
-        })
-        // } else {
-        //   console.table([['Error', 'too many clients connected']])
-        //   socket.emit('errorMessage', {
-        //     error: 'There are already 4 players connected to the game.'
-        //   })
-        // }
+          socket.on('whoAreYou', response => {
+            this.determineClientType(socket, response)
+          })
+        } else {
+          console.table([['Error', 'too many clients connected']])
+          socket.emit('errorMessage', {
+            error: 'There are already 4 players connected to the game.'
+          })
+        }
       })
     }
 

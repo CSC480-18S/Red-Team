@@ -52,29 +52,24 @@ class GameManager {
     // console.log(newBoard)
     let letters = this.extractLetters(newBoard)
     let words = this.extractWords(letters, newBoard)
-    this._board.placeWords(words, player) // need to validation after this, especially for words
-    this._io.emit('wordPlayed', {
-      board: this._board.sendableBoard()
-    })
 
-    // this.wordValidation(words)
-    //   .then(response => {
-    //     console.log('The board now has an answer')
-    //     let placement
-    //     if (response === true) {
-    //       // if invalid type of play, gets the word that was invalid, else is undefined
-    //       placement = this._board.placeWords(words, player)
-    //     } else {
-    //       // if the word is invalid
-    //       return this.handleResponse(this._error, response, player)
-    //     }
-    //     this.handleResponse(this._board.error, placement, player)
-    //     this._io.emit('wordPlayed', this._board)
-    //   })
-    //   .catch(e => {
-    //     console.log({code: 'D1', title: 'Database Error', desc: e.code})
-    //   })
-    // console.log('The board is thinking')
+    this.wordValidation(words)
+      .then(response => {
+        console.log('The board now has an answer')
+        let placement
+        if (response === true) {
+          // if invalid type of play, gets the word that was invalid, else is undefined
+          placement = this._board.placeWords(words, player)
+        } else {
+          // if the word is invalid
+          return this.handleResponse(this._error, response, player)
+        }
+        this.handleResponse(this._board.error, placement, player)
+      })
+      .catch(e => {
+        console.log({code: 'D1', title: 'Database Error', desc: e.code})
+      })
+    console.log('The board is thinking')
   }
 
   /**
@@ -229,10 +224,14 @@ class GameManager {
     if (result.invalid) {
       result['reason'] = reason.toUpperCase()
       result['word'] = word.toUpperCase()
+      player.socket.emit('play', result)
+      this._error = 0
+      return
     }
 
-    this._error = 0
-    player.socket.emit('play', result)
+    this._io.emit('wordPlayed', {
+      board: this._board.sendableBoard()
+    })
   }
 
   /**
