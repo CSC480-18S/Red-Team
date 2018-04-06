@@ -53,7 +53,9 @@ class GameManager {
     let letters = this.extractLetters(newBoard)
     let words = this.extractWords(letters, newBoard)
     this._board.placeWords(words, player) // need to validation after this, especially for words
-    this._io.emit('wordPlayed', this._board.sendableBoard())
+    this._io.emit('wordPlayed', {
+      board: this._board.sendableBoard()
+    })
 
     // this.wordValidation(words)
     //   .then(response => {
@@ -94,8 +96,6 @@ class GameManager {
               y: j
             }
             letters.push(tile)
-          } else {
-            console.log('same letters')
           }
         }
       }
