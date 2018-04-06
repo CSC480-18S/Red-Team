@@ -68,7 +68,7 @@ class GameManager {
         return this.handleResponse(this._board.error, placement, player)
       })
       .catch(e => {
-        console.log({code: 'D1', title: 'Database Error', desc: e.code})
+        console.log({code: 'D1', title: 'Database Error', desc: e})
       })
     console.log('The board is thinking')
   }

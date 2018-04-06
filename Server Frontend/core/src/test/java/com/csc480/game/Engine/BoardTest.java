@@ -26,6 +26,14 @@ public class BoardTest {
         assertEquals(true, SetUpHorizonalBreakScaffolding().verifyWordPlacement(appendingHorizontalCase()));
     }
 
+    @Test
+    public void verifyWordPlacement2(){
+        Board b = SetUpScaffoldingTEST();
+        assertEquals(true, b.verifyWordPlacement(horizontalPlacementJames()));
+        b.addWord(horizontalPlacementJames());
+        assertEquals(false, b.verifyWordPlacement(verticalPlacementJames()));
+        System.out.println(b.PrintBoard());
+    }
 
     private Board SetUpHorizonalBreakScaffolding(){
         Board b = new Board(11);
@@ -58,6 +66,22 @@ public class BoardTest {
         testing.add(new Placement('s',5,5));
         testing.add(new Placement('t',5,4));
         b.addWord(testing);
+        return b;
+    }
+    private Board SetUpScaffoldingTEST(){
+        Board b = new Board(11);
+        ArrayList<Placement> testing = new ArrayList<Placement>();
+        testing.add(new Placement('p',2,5));
+        testing.add(new Placement('r',3,5));
+        testing.add(new Placement('o',4,5));
+        testing.add(new Placement('s',5,5));
+        testing.add(new Placement('t',6,5));
+        b.addWord(testing);
+        testing.clear();
+        /*testing.add(new Placement('p',4,5));
+        testing.add(new Placement('s',5,5));
+        testing.add(new Placement('t',6,5));
+        b.addWord(testing);*/
         return b;
     }
 
@@ -107,6 +131,22 @@ public class BoardTest {
         testing.add(new Placement('o',6,5));
         testing.add(new Placement('p',6,4));
         return testing;
+    }
+    private ArrayList<Placement> verticalPlacementJames(){//fail
+        ArrayList<Placement> testing = new ArrayList<Placement>();
+        testing.add(new Placement('v',3,6));
+        testing.add(new Placement('a',4,6));
+        //testing.add(new Placement('t',6,5));
+        testing.add(new Placement('f',6,6));
+        testing.add(new Placement('u',7,6));
+        testing.add(new Placement('l',8,6));
+        return testing;
+    }
+    private ArrayList<Placement> horizontalPlacementJames(){//pass
+        ArrayList<Placement> testing = new ArrayList<Placement>();
+        testing.add(new Placement('p',5,4));
+        testing.add(new Placement('t',5,6));
+        return  testing;
     }
 
 }

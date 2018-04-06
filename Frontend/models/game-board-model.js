@@ -72,6 +72,28 @@ socket.on('wordPlayed', response => {
 
 socket.on('play', response => {
   console.log(response)
+
+  if(response.invalid){
+    for(let i = 0; i < this.data.currentTileCount; i++){
+      var t = this.data.tilesOnBoardValueAndPosition[i]
+      console.log(t)
+      var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis);
+      square.removeChild(square.firstChild);
+      this.data.tilesOnBoardValueAndPosition.pop();
+    }
+
+    this.data.currentTileCount = 0;
+  }
+
+
+    //   var i = this.data.tilesOnBoardValueAndPosition.length
+    //   while(i--){
+    //     var t = this.data.tilesOnBoardValueAndPosition[i]
+    //     var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis);
+    //     square.removeChild(square.firstChild)
+    //     var index = this.data.tilesOnBoardValueAndPosition.indexOf(t)
+    //     this.data.tilesOnBoardValueAndPosition.splice(index, 1)
+
 })
 
 // data object
@@ -86,7 +108,8 @@ var data = {
     tilesOnBoard: [],
     selectedTileCopyId: "",
     currentRoundtileIdsOnBoard: [],
-    tilesOnBoardValueAndPosition: []
+    tilesOnBoardValueAndPosition: [],
+    currentTileCount: 0
 }
 
 function generateTableRows () {
@@ -311,6 +334,7 @@ var putTileInSquare = function (squareId) {
                 // console.log(this.squares[i].id);
                 // console.log(squareId);
                 // console.log(this.squares[i].xAxis + " " + this.squares[i].yAxis);
+                this.currentTileCount++;
                 this.tilesOnBoardValueAndPosition.push({tileLetter: document.getElementById(this.selectedTileId).children[1].innerHTML,
                   xAxis: this.squares[i].xAxis,
                   yAxis: this.squares[i].yAxis
@@ -348,6 +372,7 @@ var putTileInSquare = function (squareId) {
                     }
 
                     this.tilesOnBoardValueAndPosition.pop();
+                    this.currentTileCount--;
                     // remove tile id in the current round
                     this.currentRoundtileIdsOnBoard.pop(this.selectedTileCopyId);
                 }
@@ -468,6 +493,7 @@ function emitBoard() {
   }
 
   var tiles = (this.data.tilesOnBoardValueAndPosition);
+  console.log('lolololol :' + tiles)
   for (var i = 0; i < tiles.length; i++) {
     var x = tiles[i].xAxis;
     var y = tiles[i].yAxis;
