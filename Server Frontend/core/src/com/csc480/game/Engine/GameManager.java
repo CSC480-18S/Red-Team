@@ -26,6 +26,7 @@ public class GameManager {
     public Player[] thePlayers;
     public AI[] theAIs;
     public int numPlayers;
+    public int counter = 0;
     //public int currentPlayerIndex;
     public Board theBoard;
     public int greenScore;
@@ -108,7 +109,7 @@ public class GameManager {
      * Define the actions to be taken when events occur
      */
     public void setUpEvents(){
-        socket.on(io.socket.client.Socket.EVENT_CONNECT, new Emitter.Listener() {
+        socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
                 LogEvent("connected to the backend");
@@ -129,7 +130,7 @@ public class GameManager {
                 data.put("isSF",true);
                 socket.emit("whoAreYou",data);
             }
-        }).on(io.socket.client.Socket.EVENT_DISCONNECT, new Emitter.Listener() {
+        }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
                 LogEvent("disconnection");
@@ -167,6 +168,8 @@ public class GameManager {
             public void call(Object... args) {
                 LogEvent("Reconnecting an AI");
                 System.out.println("connectAI");
+                GameManager.getInstance().counter++;
+                System.out.println("AI CONNECT EVENT RECEIVED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + GameManager.getInstance().counter);
                 try {
                     JSONObject data = (JSONObject) args[0];
                     System.out.println(data.toString());
