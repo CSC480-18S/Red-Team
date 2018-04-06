@@ -204,9 +204,9 @@ public class GameManager {
                 LogEvent("wordPlayed");
                 System.out.println("frontend got wordPlayed");
                 try {
-                    //JSONObject data = (JSONObject) args[0];
-                    //System.out.println("data: "+data.toString());
-                    JSONArray board = (JSONArray) args[0];//data.getJSONArray("board");
+                    JSONObject data = (JSONObject) args[0];
+                    System.out.println("data: "+data.toString());
+                    JSONArray board = data.getJSONArray("board");
                     System.out.println("BACKEND BOARD STATE: "+board.toString());
                     System.out.println("PARSED BACKEND BOARD STATE: "+unJSONifyBackendBoard(board));
                     //todo un mess this up, the state isnt being constant and the AI are generating with bad data
@@ -593,7 +593,7 @@ public class GameManager {
             JSONArray childJsonArray = new JSONArray();
             for (int j =0; j<11; j++){
                 if(temp.the_game_board[j][10-i] != null)
-                    childJsonArray.put("\""+temp.the_game_board[j][10-i].letter+"\"");
+                    childJsonArray.put(temp.the_game_board[j][10-i].letter+"");
                 else
                     childJsonArray.put(JSONObject.NULL);
 
@@ -609,7 +609,7 @@ public class GameManager {
             JSONArray childJsonArray = backend.getJSONArray(i);
             for (int j =0; j<11; j++){
                 char temp = 0;
-                if(childJsonArray.get(j) != null) {
+                if(childJsonArray.get(j) != JSONObject.NULL) {
                     temp = ((String) childJsonArray.get(j)).charAt(0);
                     state[j][10-i] = new TileData(new Vector2(j,10-i),temp,0,0,"",0);
                 }
