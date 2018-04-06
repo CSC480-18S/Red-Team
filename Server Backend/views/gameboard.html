@@ -28,10 +28,16 @@
         socket.on('connect', () => {
             console.log(socket.id)
         })
+        
+        socket.on('whoAreYou', () => {
+            socket.emit('whoAreYou', {
+                isClient: true
+            })
+        })
         let board
 
         socket.on('wordPlayed', b => {
-            board = b
+            board = b.board
             
             $('#board').empty()
             $('#board').append('<th></th>')
@@ -42,7 +48,11 @@
                 $('#board').append('<tr>')
                 $('#board').append(`<th>${i}</th>`)
                 for(let j = 0; j < board[0].length; j++){
-                    $('#board').append(`<td>${board[i][j]._letter}</td>`)
+                    if(board[i][j] === null){
+                        $('#board').append(`<td>.</td>`) 
+                    } else {
+                        $('#board').append(`<td>${board[i][j]}</td>`)
+                    }
                 }
                 $('#board').append('</tr>')
             }

@@ -96,8 +96,6 @@ class GameManager {
               y: j
             }
             letters.push(tile)
-          } else {
-            console.log('same letters')
           }
         }
       }
