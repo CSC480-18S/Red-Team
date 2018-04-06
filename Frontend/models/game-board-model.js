@@ -17,14 +17,55 @@ socket.on('whoAreYou', () => {
 })
 
 socket.on('wordPlayed', response => {
-  // console.log(response.playValue)
-  // console.log(response.board)
   for (i = 0; i < 11; i++) {
     for (j = 0; j < 11; j++) {
       var square = document.getElementById('square-' + i + '-' + j);
-        if (square.hasChildNodes()) {
-          square.childNodes[0].children[1].innerHTML = response.board[i][j];
+        if (!square.hasChildNodes()) {
+          var tile = {
+              id: "playedLetter: " + response.board[i][j],
+              letter: response.board[i][j],
+              value: 1,
+              highlightedColor: undefined,
+              visibility: "visible"
+          }
+          if (tile.letter != null) {
+          console.log(tile);
+          var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          svg.setAttribute("id", tile.id);
+          svg.setAttribute("visibility", "visible");
+          var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          rect.setAttribute("x",0);
+          rect.setAttribute("y",0);
+          rect.setAttribute("stroke", "black");
+          rect.setAttribute("stroke-width", "1px");
+          rect.setAttribute("width", "100%");
+          rect.setAttribute("height", "100%");
+          rect.setAttribute("fill", "#D3D3D3");
+          svg.appendChild(rect);
+          var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          text.setAttribute("x", "50%");
+          text.setAttribute("y", "60%");
+          text.setAttribute("alignment-baseline", "middle");
+          text.setAttribute("text-anchor", "middle");
+          text.setAttribute("fill", undefined);
+          text.textContent = tile.letter;
+          svg.appendChild(text);
+          var text2 = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          text2.setAttribute("x", "70%");
+          text2.setAttribute("y", "30%");
+          text2.setAttribute("fill", undefined);
+          text2.setAttribute("class", "letter-value");
+          text2.textContent = tile.value;
+          svg.appendChild(text2);
+          square.appendChild(svg);
+
+          this.data.tilesOnBoardValueAndPosition.push({tileLetter: tile.letter,
+            xAxis: i,
+            yAxis: j
+          });
+
         }
+      }
       }
     }
 })
@@ -240,7 +281,6 @@ var selectAndDeselectTile = function (tileId) {
 
 // when clicking on a square in the game board
 var putTileInSquare = function (squareId) {
-    //console.log("called putTileInSquare()");
     var square = document.getElementById(squareId);
     // if a tile in a slot has been clicked
     //if(this.selectedTileId !== "") {
@@ -306,6 +346,8 @@ var putTileInSquare = function (squareId) {
                             this.tileSlots[i].tile.highlightedColor = "#000000";
                         }
                     }
+
+                    this.tilesOnBoardValueAndPosition.pop();
                     // remove tile id in the current round
                     this.currentRoundtileIdsOnBoard.pop(this.selectedTileCopyId);
                 }
@@ -432,7 +474,7 @@ function emitBoard() {
     array[x][y] = tiles[i].tileLetter;
   }
 
-   //console.log(array);
+   console.log(array);
 
   socket.emit('playWord', array)
 }
