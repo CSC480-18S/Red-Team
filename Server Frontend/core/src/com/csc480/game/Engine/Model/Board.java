@@ -539,7 +539,7 @@ public class Board {
 
         //now we must check if the word is a real allowed word if it is,
         boolean isItAWord = WordVerification.getInstance().isWord(word);
-        System.out.println(isItAWord);
+        //System.out.println(isItAWord);
         return isItAWord;
     }
 
