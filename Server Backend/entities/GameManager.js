@@ -61,7 +61,7 @@ class GameManager {
 
   play(newBoard, player, callback) {
     let letters = this.extractLetters(newBoard)
-    let words = this.extractWords(letters, newBoard)
+    let words = this.extractWords(letters, newBoard, this.board.sendableBoard())
 
     console.log('DEBUG: THE BOARD IS THINKING...'.debug)
     this.wordValidation(words)
@@ -116,13 +116,14 @@ class GameManager {
    * @param {Array} letters - array of letters
    * @param {Array} newBoard- board
    */
-  extractWords(letters, newBoard) {
+  extractWords(letters, newBoard, oldBoard) {
     let words = []
 
     letters.map(letterObject => {
       let inSpace = 0
       for (let i = 0; i < 2; i++) {
         let word = ''
+        let oldBoardWord = ''
         let startOfWord = false
         let endOfWord = false
         let startPosition = null
@@ -155,6 +156,7 @@ class GameManager {
           } else {
             check++
             word += newBoard[position.y][position.x]
+            oldBoardWord += oldBoard[position.y][position.x]
             position.x = i === 0 ? position.x : position.x + 1
             position.y = i === 0 ? position.y + 1 : position.y
           }
@@ -164,7 +166,7 @@ class GameManager {
           inSpace++
         }
 
-        if (word.length > 1 || inSpace === 4) {
+        if ((word.length > 1 || inSpace === 4) && (oldBoardWord !== word)) {
           let wordObject = {
             word: word,
             x: startPosition.x,
@@ -174,6 +176,7 @@ class GameManager {
           words.push(wordObject)
         }
         word = ''
+        oldBoardWord = ''
         check = 0
       }
     })
