@@ -327,9 +327,6 @@ var putTileInSquare = function(squareId) {
 
     for (var i = 0; i < this.squares.length; i++) {
       if (squareId === this.squares[i].id) {
-        // console.log(this.squares[i].id);
-        // console.log(squareId);
-        // console.log(this.squares[i].xAxis + " " + this.squares[i].yAxis);
         this.currentPlayTileAmount++
         this.tilesOnBoardValueAndPosition.push({tileLetter: document.getElementById(this.selectedTileId).children[1].innerHTML,
           xAxis: this.squares[i].xAxis,
@@ -341,12 +338,25 @@ var putTileInSquare = function(squareId) {
     this.currentRoundtileIdsOnBoard.push(this.selectedTileCopyId)
   } else { // move around or distroy
     var selectedTileCopy = document.getElementById(this.selectedTileCopyId)
+    console.log(this.tilesOnBoardValueAndPosition);
+    this.tilesOnBoardValueAndPosition.pop();
+    this.currentTileCount--;
+    console.log(this.tilesOnBoardValueAndPosition);
     // console.log("selectedSquare.hasChildNodes(): " + selectedSquare.hasChildNodes());
-
     if (!selectedSquare.hasChildNodes()) {
       // console.log(selectedTileCopy.children[0].getAttribute("fill"));
       if (selectedTileCopy.children[0].getAttribute('fill') !== '#D3D3D3') {
         selectedSquare.appendChild(selectedTileCopy)
+
+        for (var i = 0; i < this.squares.length; i++) {
+          if (squareId === this.squares[i].id) {
+            this.currentPlayTileAmount++
+            this.tilesOnBoardValueAndPosition.push({tileLetter: document.getElementById(this.selectedTileId).children[1].innerHTML,
+              xAxis: this.squares[i].xAxis,
+              yAxis: this.squares[i].yAxis
+            })
+          }
+        }
       }
     } else {
       var childTile = selectedSquare.children[0]
@@ -486,7 +496,6 @@ function emitBoard() {
   }
 
   var tiles = (this.data.tilesOnBoardValueAndPosition)
-  console.log('lolololol :' + tiles)
   for (var i = 0; i < tiles.length; i++) {
     var x = tiles[i].xAxis
     var y = tiles[i].yAxis
