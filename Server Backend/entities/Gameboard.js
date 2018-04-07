@@ -141,7 +141,9 @@ class Gameboard {
     this._board = tempBoard
     return {
       error: 0,
-      word: null
+      words: words.map(word => {
+        return word.word
+      })
     }
   }
 
