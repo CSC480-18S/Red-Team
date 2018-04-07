@@ -5,6 +5,10 @@ class FrontendManager {
     this._socket = socket
   }
 
+  get id() {
+    return this._socket.id
+  }
+
   /**
    * Tells the frontend to connect an AI when a player has disconnected
    * @param {Number} position - position
