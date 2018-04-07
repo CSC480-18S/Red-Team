@@ -1,6 +1,6 @@
 'use strict'
 /**
- * Imports the GameManager, PlayerManager, and FrontendManager classes
+ * Imports the GameManager, PlayerManager, FrontendManager, and Debug classes
  */
 const GameManager = require('./GameManager')
 const PlayerManager = require('./PlayerManager')
@@ -17,7 +17,6 @@ module.exports = function(io) {
       this._maxPlayers = 4
       this._firstTurnSet = false
       this.init()
-      this.listenForClients()
     }
 
     /**
@@ -26,6 +25,7 @@ module.exports = function(io) {
     init() {
       this.createGameManager()
       this.createPlayerManagers()
+      this.listenForClients()
     }
 
     /**
@@ -34,7 +34,7 @@ module.exports = function(io) {
     listenForClients() {
       io.on('connection', socket => {
         console.log('DBEUG: INCOMING CONNECTION'.debug)
-        if (this._currentlyConnectedClients !== 4) {
+        if (this._currentlyConnectedClients !== this._maxPlayers) {
           socket.emit('whoAreYou')
 
           socket.on('whoAreYou', response => {
@@ -47,7 +47,7 @@ module.exports = function(io) {
           })
 
           socket.on('disconnect', () => {
-            this.removeClientFromManager(socket.id)
+            this.findClientThatLeft(socket.id)
           })
         } else {
           console.log(`ERROR: THERE ARE ALREADY MAX ${this._maxPlayers} PLAYERS CONNECTED`.error)
@@ -63,8 +63,9 @@ module.exports = function(io) {
      * @param {Object} socket - socket object
      */
     createFrontendManager(socket) {
-      // TODO: check to see if we need to make sure only one frontend is connected? @Landon
-      this._frontendManager = new FrontendManager(socket)
+      if (this._frontendManager === null) {
+        this._frontendManager = new FrontendManager(socket)
+      }
     }
 
     /**
@@ -113,7 +114,7 @@ module.exports = function(io) {
      * Removes a player from a manager once they leave the game
      * @param {String} socketId - id of socket
      */
-    removeClientFromManager(id) {
+    findClientThatLeft(id) {
       console.log('DEBUG: FINDING CLIENT TO REMOVE'.debug)
       for (let manager of this._playerManagers) {
         if (manager.id === id) {
@@ -122,6 +123,11 @@ module.exports = function(io) {
           manager.removePlayerInformation()
           return
         }
+      }
+
+      if (this._frontendManager.id === id) {
+        console.log('INFO: SERVER FRONTEND DISCONNECTED'.info)
+        this._frontendManager = null
       }
     }
 
@@ -152,6 +158,7 @@ module.exports = function(io) {
     determineWhoMadePlay(id, board) {
       for (let manager of this._playerManagers) {
         if (manager.id === id) {
+          console.log(`DEBUG: PLAYER ${`${manager.name}`.warn} ATTEMPTING TO MAKE A PLAY...`.debug)
           this._gameManager.play(board, manager)
         }
       }
