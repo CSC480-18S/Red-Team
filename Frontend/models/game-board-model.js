@@ -84,14 +84,6 @@ socket.on('play', response => {
 
     this.data.currentPlayTileAmount = 0
   }
-
-  //   var i = this.data.tilesOnBoardValueAndPosition.length
-  //   while(i--){
-  //     var t = this.data.tilesOnBoardValueAndPosition[i]
-  //     var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis);
-  //     square.removeChild(square.firstChild)
-  //     var index = this.data.tilesOnBoardValueAndPosition.indexOf(t)
-  //     this.data.tilesOnBoardValueAndPosition.splice(index, 1)
 })
 
 // data object
@@ -210,14 +202,11 @@ var drop = function(ev) {
   var isDoubleScore = false
   var i
   for (i = 0; i < this.doubleScoreGameBoardBlocks.length; i++) {
-    // console.log(ev.target.id + " " + this.doubleScoreGameBoardBlocks[i] + "\n");
     if (ev.target.id === this.doubleScoreGameBoardBlocks[i]) {
       isDoubleScore = true
       break
     }
   }
-
-  // console.log(isDoubleScore);
 
   if (isDoubleScore) {
     this.accumulator += (2 * this.scoreUnit)
@@ -254,48 +243,8 @@ var selectAndDeselectTile = function(tileId) {
     // record both tile and parent ID
     this.tilesOnBoard.push({tileId: tileId, parentId: parentId})
     // print out selected tile letter in console
-    // console.log(tile.children[1].innerHTML);
-    // console.log(tile.lastChild.innerHTML);
-
     this.selectedTileCopyId = ''
   }
-  // deselect/destroy tile if it is on the board
-
-  /*
-    else {
-        console.log(wrapper.className);
-        // find original parent id
-        for(var i = 0; i < this.tilesOnBoard.length; i++) {
-            if (this.tilesOnBoard[i].tileId === this.selectedTileId) {
-                this.selectedTileParentId = this.tilesOnBoard[i].parentId;
-                this.tilesOnBoard.splice(i, 1);
-
-            }
-        }
-
-        // put tile back to slot
-        var selectedTileCopy = document.getElementById(this.selectedTileCopyId);
-        // destroy tile on board (won't work here)
-        console.log("testttt");
-        selectedTile.parentNode.removeChild(selectedTileCopy);
-
-        //console.log(selectedTile);
-        // resize the tile (old way)
-        //selectedTile.className = 'slot-tile-size';
-        //document.getElementById(this.selectedTileParentId).appendChild(selectedTile);
-
-        // update slot information
-        for(var i = 0; i < tileSlotNumber; i++) {
-            if (this.selectedTileId === this.tileSlots[i].tile.id) {
-
-                //this.tileSlots[i] = {};
-                this.tileSlots[i].hasTile = true;
-            }
-        }
-
-        this.selectedTileId = '';
-    }
-    */
 }
 
 // when clicking on a square in the game board
@@ -311,7 +260,6 @@ var putTileInSquare = function(squareId) {
     var selectedTile = document.getElementById(this.selectedTileId)
     // copy the tile
     var cln = selectedTile.cloneNode(true)
-    // console.log("cln id: " + cln.id);
     // put the clone tile on the game board
     selectedSquare.appendChild(cln)
     //
@@ -338,13 +286,9 @@ var putTileInSquare = function(squareId) {
     this.currentRoundtileIdsOnBoard.push(this.selectedTileCopyId)
   } else { // move around or distroy
     var selectedTileCopy = document.getElementById(this.selectedTileCopyId)
-    console.log(this.tilesOnBoardValueAndPosition);
     this.tilesOnBoardValueAndPosition.pop();
     this.currentTileCount--;
-    console.log(this.tilesOnBoardValueAndPosition);
-    // console.log("selectedSquare.hasChildNodes(): " + selectedSquare.hasChildNodes());
     if (!selectedSquare.hasChildNodes()) {
-      // console.log(selectedTileCopy.children[0].getAttribute("fill"));
       if (selectedTileCopy.children[0].getAttribute('fill') !== '#D3D3D3') {
         selectedSquare.appendChild(selectedTileCopy)
 
@@ -361,7 +305,6 @@ var putTileInSquare = function(squareId) {
     } else {
       var childTile = selectedSquare.children[0]
       // only current round tiles can be put back
-      // console.log(childTile.children[0].getAttribute("fill"));
       if (childTile.children[0].getAttribute('fill') !== '#D3D3D3') {
         // selectedSquare.removeChild(selectedTileCopy);
         selectedSquare.removeChild(childTile)
@@ -383,30 +326,14 @@ var putTileInSquare = function(squareId) {
       }
     }
   }
-
-  //        if (square.hasChildNodes()) {
-  //
-  //        } else
-
-  //        for (var i = 0; i < this.tilesOnBoard.length; i++) {
-  //            if (this.selectedTileId === this.tilesOnBoard.tileId) {
-  //
-  //            }
-  //        }
-
-  // this.selectedTileId = '';
   // record the square position
   this.selectedSquareId = selectedSquare.id
-
-  // this.selectedTileId = "";
-  // }
 }
 
 var swap = function() {
   for (var i = 0; i < tileSlotNumber; i++) {
     var tile = randomTile()
     var shouldChange = Math.floor(2 * Math.random())
-    console.log(shouldChange)
     if (shouldChange) {
       this.tileSlots[i].tile.letter = tile.letter
       this.tileSlots[i].tile.value = tile.letterValue
@@ -416,8 +343,6 @@ var swap = function() {
 
 var refillSlots = function() {
   for (var i = 0; i < tileSlotNumber; i++) {
-    // console.log(this.tileSlots[i]);
-    // tileSlots[i] != null &&
     if (!this.tileSlots[i].hasTile) {
       // generate a tile in it (update id)
       var tile = randomTile()
@@ -440,41 +365,6 @@ var refillSlots = function() {
 
   this.currentRoundtileIdsOnBoard = []
   this.selectedTileId = ''
-
-  // For Zack
-  // create 2d array testing data
-//    var arr = new Array(row);
-//    for (i = 0; i < row; i++) {
-//        arr[i] = new Array(column);
-//        for (j = 0; j < column; j++) {
-//            arr[i][j] = 'A';
-//        }
-//    }
-  // store array data into squares
-//    for (i = 0; i < row; i++) {
-//        for (j = 0; j < column; j++) {
-//            var square = document.getElementById('square-' + i + '-' + j);
-//            if (square.hasChildNodes()) {
-//                square.childNodes[0].children[1].innerHTML = arr[i][j];
-//            }
-//        }
-//    }
-
-  // 20180331 Heng-Hao Pu: prepare for the connection with engine
-  // Make a request for a user with a given ID
-//    axios.get('refill.json')
-//        .then(function (response) {
-//            /*console.log(response);*/
-//            /*console.log(this); // this indicates window */
-//            for(var i = 0; i < data.tileSlots.length; i++) {
-//                for (key in response.data.tiles[i]) {
-//                    data.tileSlots[i].tile.letter = response.data.tiles[i][key];
-//                }
-//            }
-//        })
-//        .catch(function (error) {
-//            console.log(error);
-//        });
 }
 
 var shuffle = function() {
@@ -506,43 +396,3 @@ function emitBoard() {
 
   socket.emit('playWord', array)
 }
-
-/*
-var svg = function (id, letter, value) {
-
-    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("id", id);
-    // test (looks the same but not working)
-    //svg.setAttribute("v-on:click", "onClickTile('"+ id +"')");
-    // considering changeing this from window to this
-    //svg.addEventListener("v-on:click", selectAndDeselectTile(id));
-
-    var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    rect.setAttributeNS(null, "x", "0");
-    rect.setAttributeNS(null, "y", "0");
-    rect.setAttributeNS(null, "stroke", "black");
-    rect.setAttributeNS(null, "stroke-width", "1px");
-    rect.setAttributeNS(null, "width", "100%");
-    rect.setAttributeNS(null, "height", "100%");
-    rect.setAttributeNS(null, "fill", "#f4dc00");
-
-    var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    text.setAttribute("x", "50%");
-    text.setAttribute("y", "60%");
-    text.setAttribute("alignment-baseline", "middle");
-    text.setAttribute("text-anchor", "middle");
-    text.innerHTML = letter;
-
-    var letterValue = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    letterValue.setAttribute("x", "70%");
-    letterValue.setAttribute("y", "30%");
-    letterValue.setAttribute("class", "letter-value");
-    letterValue.innerHTML = value;
-
-    svg.appendChild(rect);
-    svg.appendChild(text);
-    svg.appendChild(letterValue);
-
-    return svg;
-}
-*/
