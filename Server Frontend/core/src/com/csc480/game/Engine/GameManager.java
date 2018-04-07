@@ -3,6 +3,7 @@ package com.csc480.game.Engine;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.csc480.game.Engine.Model.*;
+import com.csc480.game.GUI.GameScreen;
 import com.csc480.game.OswebbleGame;
 import io.socket.client.IO;
 import io.socket.emitter.Emitter;
@@ -240,6 +241,34 @@ public class GameManager {
                     String action = data.getString("action");
                     //System.out.println(action);
                     LogEvent(action);
+                }catch(ArrayIndexOutOfBoundsException e){
+                    e.printStackTrace();
+                }catch(JSONException e){
+                    e.printStackTrace();
+                }
+            }
+        }).on("updateState", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                System.out.println("frontend got updateState");
+                try {
+                    JSONObject data = (JSONObject) args[0];
+                    System.out.println(data);
+                    JSONArray players = data.getJSONArray("players");
+                    for(int i = 0; i < players.length(); i++){
+                        JSONObject player  = (JSONObject)players.get(i);
+                        int index = player.getInt("position");
+                        thePlayers[index].score = player.getInt("score");
+                        thePlayers[index].name = player.getString("name");
+                        thePlayers[index].team = player.getString("team");
+                        thePlayers[index].turn = player.getBoolean("isTurn");
+                        JSONArray hand = player.getJSONArray("hand");
+                        for(int j = 0; j < hand.length(); j++){
+                            thePlayers[index].tiles[j] = hand.getString(j).charAt(0);
+                        }
+                    }
+                    theGame.theGameScreen.UpdateInfoPanel();
+
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
                 }catch(JSONException e){
