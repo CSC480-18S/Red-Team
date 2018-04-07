@@ -35,8 +35,8 @@ public class WordVerification {
         try{
             Long startTime = System.nanoTime();
             //System.out.println("Starting Creating HashSet");
-            //file = new File(Gdx.files.internal("words.txt").path());
-            file = new File("C:\\Users\\James\\Documents\\GitHub\\Red-Team\\Server Frontend\\core\\assets\\words.txt");
+            file = new File(Gdx.files.internal("words.txt").path());
+            //file = new File("C:\\Users\\James\\Documents\\GitHub\\Red-Team\\Server Frontend\\core\\assets\\words.txt");
             inFileScanner = new Scanner(file);
             int c = 0;
             while (inFileScanner.hasNext()){

@@ -70,6 +70,7 @@ public class AI extends Player {
                     }else{
                         GameManager.getInstance().updatePlayers(GameManager.getInstance().thePlayers);
                         tiles = GameManager.getInstance().getNewHand();
+                        System.out.println("no plays found, hand : "+new String(tiles));
                         myCache.Clear();
                         TESTFindPlays(GameManager.getInstance().theBoard);
                         //UPDATE MUST BE CALLED OR ELSE THE AI COMES TO A STANDSTILL IF IT DOES NOT FIND A BEST WORD
@@ -266,6 +267,18 @@ public class AI extends Player {
                 @Override
                 public void call(Object... args) {
                     System.out.println(AI.this.name + " got playWord, but does nothing");
+                }
+            }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    System.out.println(AI.this.name + " got disconnect");
+                    mySocket.disconnect();
+                    mySocket = null;
+                }
+            }).on(Socket.EVENT_ERROR, new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    System.out.println(AI.this.name + " got error: "+args[0]);
                 }
             });
         //}
