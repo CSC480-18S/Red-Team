@@ -134,6 +134,7 @@ class PlayerManager {
     this._isAI = isAI
     this._socket = socket
     this._socketId = socket.id
+    this.sendEvent('dataUpdate')
   }
 
   /**
