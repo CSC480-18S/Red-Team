@@ -1,13 +1,11 @@
 'use strict'
 /**
- * Imports lodash and axios
+ * Imports lodash, axios, Gameboard, and Debug classes
  */
 const axios = require('axios')
 const _ = require('lodash')
-/**
- * Imports the Gameboard class
- */
 const Gameboard = require('./Gameboard')
+require('../helpers/Debug')
 
 // remove this once there is a connection to the DB
 const letters = 'abcdefghijklmnopqrstuvwxyz'.split('')
@@ -37,28 +35,26 @@ class GameManager {
   }
 
   play(newBoard, player) {
-    // let sanitizedBoard = JSON.parse(newBoard)
-    // console.log(newBoard)
     let letters = this.extractLetters(newBoard)
     let words = this.extractWords(letters, newBoard)
 
-    this.wordValidation(words)
-      .then(response => {
-        console.log('The board now has an answer')
-        let placement
-        if (response === true) {
-          // if invalid type of play, gets the word that was invalid, else is undefined
-          placement = this._gameBoard.placeWords(words, player)
-        } else {
-          // if the word is invalid
-          return this.handleResponse(this._error, response, player)
-        }
-        return this.handleResponse(this._gameBoard.error, placement, player)
-      })
-      .catch(e => {
-        console.log({code: 'D1', title: 'Database Error', desc: e})
-      })
-    console.log('The board is thinking')
+    // console.log('DEBUG: THE BOARD IS THINKING...'.debug)
+    // this.wordValidation(words)
+    //   .then(response => {
+    //     console.log('DEBUG: THE BOARD NOW HAS AN ANSWER...'.debug)
+    //     let placement
+    //     if (response === true) {
+    //       // if invalid type of play, gets the word that was invalid, else is undefined
+    //       placement = this._gameBoard.placeWords(words, player)
+    //     } else {
+    //       // if the word is invalid
+    //       return this.handleResponse(this._error, response, player)
+    //     }
+    //     return this.handleResponse(this._gameBoard.error, placement, player)
+    //   })
+    //   .catch(e => {
+    //     console.log(`ERROR: ${e}`.error)
+    //   })
   }
 
   /**
@@ -84,6 +80,8 @@ class GameManager {
         }
       }
     }
+    console.log(`DEBUG: LETTERS EXTRACTED`.debug)
+    console.log(`DATA: ${JSON.stringify(letters, null, 4)}`.data)
     return letters
   }
 
@@ -94,9 +92,9 @@ class GameManager {
    */
   extractWords(letters, newBoard) {
     let words = []
-    let inSpace = 0
 
     letters.map(letterObject => {
+      let inSpace = 0
       for (let i = 0; i < 2; i++) {
         let word = ''
         let startOfWord = false
@@ -147,14 +145,17 @@ class GameManager {
             y: startPosition.y,
             h: i === 1
           }
-
           words.push(wordObject)
         }
         word = ''
+        check = 0
       }
     })
 
-    return _.uniqWith(words, _.isEqual)
+    let uniqueWords = _.uniqWith(words, _.isEqual)
+    console.log(`DEBUG: WORDS EXTRACTED`.debug)
+    console.log(`DATA: ${JSON.stringify(uniqueWords, null, 4)}`.data)
+    return uniqueWords
   }
 
   /**
@@ -164,6 +165,7 @@ class GameManager {
   wordValidation(words) {
     let search = words.map(s => s.word).join(',')
 
+    console.log('DEBUG: CHECKING WORDS AGAINST DATABASE...'.debug)
     return axios.get('http://localhost:8090/dictionary/validate?words=' + search)
       .then(res => {
         return this.pruneResults(res.data)
@@ -175,6 +177,7 @@ class GameManager {
    * @param {Array} response - word data sent back from DB
    */
   pruneResults(response) {
+    console.log('DEBUG: PRUNING RESULTS OF DATABASE RESPONSE...'.debug)
     for (let word of response) {
       if (word.bad) {
         this._error = 6
@@ -194,6 +197,7 @@ class GameManager {
    * @param {String} word - word to be piped into the error message
    */
   handleResponse(error, word, player) {
+    console.log('DEBUG: HANDLING RESPONSE FROM DATABASE...'.debug)
     const result = {
       invalid: true
     }
@@ -242,6 +246,7 @@ class GameManager {
    * @param {Object} bonus - bonus to factor in
    */
   calculateScore(player, words, bonus) {
+    console.log('DEBUG: CALCULATING SCORE...'.debug)
     let cumulativeScore = 0
 
     words.map(w => {
