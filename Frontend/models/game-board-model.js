@@ -16,10 +16,14 @@ socket.on('whoAreYou', () => {
   })
 })
 
+socket.on('errorMessage', response => {
+  alert(response.error)
+})
+
 socket.on('wordPlayed', response => {
   this.data.currentPlayTileAmount = 0
-  for (i = 0; i < 11; i++) {
-    for (j = 0; j < 11; j++) {
+  for (i = 0; i < row; i++) {
+    for (j = 0; j < column; j++) {
       var square = document.getElementById('square-' + i + '-' + j)
       if (!square.hasChildNodes()) {
         var tile = {
@@ -429,13 +433,13 @@ var shuffle = function() {
 }
 
 function emitBoard() {
-  var array = new Array(11)
-  for (var i = 0; i < 11; i++) {
-    array[i] = new Array(11)
+  var array = new Array(row)
+  for (var i = 0; i < row; i++) {
+    array[i] = new Array(column)
   }
 
-  for (var i = 0; i < 11; i++) {
-    for (var j = 0; j < 11; j++) {
+  for (var i = 0; i < row; i++) {
+    for (var j = 0; j < column; j++) {
       if (array[i][j] == undefined) {
         array[i][j] = null
       }
