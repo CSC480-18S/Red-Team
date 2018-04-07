@@ -15,7 +15,6 @@ class Gameboard {
     this._board = new Array(this._size)
     this._initialized = false
     this._firstPlay = true
-    this._error = 0
     this.init()
   }
 
@@ -31,20 +30,6 @@ class Gameboard {
    */
   get board() {
     return this._board
-  }
-
-  /**
-   * Error setter
-   */
-  set error(error) {
-    this._error = error
-  }
-
-  /**
-   * Error getter
-   */
-  get error() {
-    return this._error
   }
 
   /**
@@ -89,7 +74,6 @@ class Gameboard {
    * @param {Array} words - array of words to place
    */
   placeWords(words, user) {
-    this._error = 0
     const tempBoard = _.cloneDeep(this._board)
 
     /**
@@ -105,8 +89,10 @@ class Gameboard {
          * Check to see if the word was somehow placed out of bounds
          */
           if (tempBoard[j][i] === undefined) {
-            this._error = 2
-            return word.word
+            return {
+              error: 2,
+              word: word.word
+            }
           }
           let l = tempBoard[j][i].letter
           let wordLetter = w.h ? word.word[i - word.sX].toUpperCase() : word.word[j - word.sY].toUpperCase()
@@ -115,8 +101,10 @@ class Gameboard {
          * Validate if the letter placed can be placed there
          */
           if (!this.validatePosition(l, wordLetter)) {
-            this._error = 3
-            return word.word
+            return {
+              error: 3,
+              word: word.word
+            }
           }
 
           /**
@@ -135,17 +123,26 @@ class Gameboard {
        */
       if (this._firstPlay) {
         if (!this.validateCenterTile(tempBoard)) {
-          return word.word
+          return {
+            error: 4,
+            word: word.word
+          }
         }
         continue
       }
 
       if (!validWordPlacement) {
-        this._error = 5
-        return word.word
+        return {
+          error: 5,
+          word: word.word
+        }
       }
     }
     this._board = tempBoard
+    return {
+      error: 0,
+      word: null
+    }
   }
 
   /**
@@ -181,7 +178,6 @@ class Gameboard {
   validateCenterTile(tempBoard) {
     const c = Math.floor(this._size / 2)
     if (!tempBoard[c][c].letterPlaced) {
-      this._error = 4
       return false
     } else {
       this._firstPlay = false
