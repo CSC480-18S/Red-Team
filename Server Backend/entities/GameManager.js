@@ -8,13 +8,38 @@ const Gameboard = require('./Gameboard')
 require('../helpers/Debug')
 
 // remove this once there is a connection to the DB
-const letters = 'abcdefghijklmnopqrstuvwxyz'.split('')
+const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 const tiles = letters.map(t => {
   return {
     letter: t,
-    score: 1
+    score: extractTileValue(t)
   }
 })
+
+function extractTileValue(letter) {
+  switch (letter) {
+    case 'A': case 'E': case 'I': case 'O':
+    case 'U': case 'L': case 'N': case 'S': case 'T': case 'R':
+      return 1
+    case 'D':
+    case 'G':
+      return 2
+    case 'B': case 'C':
+    case 'M': case 'P':
+      return 3
+    case 'F': case 'H':
+    case 'V': case 'W': case 'Y':
+      return 4
+    case 'K':
+      return 5
+    case 'J':
+    case 'X':
+      return 8
+    case 'Q':
+    case 'Z':
+      return 10
+  }
+}
 
 class GameManager {
   constructor(io, serverManager) {
@@ -31,7 +56,7 @@ class GameManager {
    * Board getter
    */
   get board() {
-    return this._gameBoard.board
+    return this._gameBoard
   }
 
   play(newBoard, player, callback) {
@@ -48,10 +73,10 @@ class GameManager {
           boardPlay = this._gameBoard.placeWords(words, player)
         } else {
           // if the word is invalid
-          return callback(this.handleResponse(response.error, response.word, player))
+          return callback(this.handleResponse(response.error, response, player))
         }
         // if the board has attempted to play a word
-        return callback(this.handleResponse(boardPlay.error, boardPlay.word, player))
+        return callback(this.handleResponse(boardPlay.error, boardPlay, player))
       })
       .catch(e => {
         console.log(`ERROR: ${e}`.error)
@@ -66,7 +91,7 @@ class GameManager {
     let letters = []
     for (let i = 0; i < newBoard.length; i++) {
       for (let j = 0; j < newBoard[0].length; j++) {
-        let currentBoardLetter = this.board[j][i].letter
+        let currentBoardLetter = this._gameBoard.board[j][i].letter
         let newBoardLetter = newBoard[j][i]
 
         if (newBoardLetter !== null) {
@@ -201,7 +226,7 @@ class GameManager {
    * Handles all types of responses that the gameboard can send back to a user.
    * @param {String} word - word to be piped into the error message
    */
-  handleResponse(error, word, player) {
+  handleResponse(error, play, player) {
     console.log('DEBUG: SENDING RESPONSE TO CLIENT...'.debug)
     const result = {
       invalid: true
@@ -232,13 +257,21 @@ class GameManager {
     }
     if (result.invalid) {
       result['reason'] = reason.toUpperCase()
-      result['word'] = word.toUpperCase()
+      result['word'] = play.word.toUpperCase()
       player.sendEvent('play', result)
       return false
     }
+    let score = this.calculateScore(player, play.words, null)
 
+    console.log('DEBUG: SENDING OUT WORD PLAYED EVENT'.debug)
     this._io.emit('wordPlayed', {
       board: this._gameBoard.sendableBoard()
+    })
+    console.log('DEBUG: SENDING OUT GAME EVENT EVENT'.debug)
+    let action = `${player.name} played ${play.words} for ${score} points`
+    console.log(`INFO: ${action}`.toUpperCase().info)
+    this._io.emit('gameEvent', {
+      action: action
     })
     return true
   }
@@ -258,9 +291,11 @@ class GameManager {
 
       let score = wordArray.map(l => {
         for (let t of tiles) {
-          if (t.letter === l) {
-            if (bonus.type === 'letter' && bonus.letter === l) {
-              return t.score * bonus.bonus
+          if (t.letter === l.toUpperCase()) {
+            if (bonus !== null) {
+              if (bonus.type === 'letter' && bonus.letter === l) {
+                return t.score * bonus.bonus
+              }
             }
             return t.score
           }
@@ -269,14 +304,17 @@ class GameManager {
         return prev + curr
       })
 
-      if (bonus.type === 'word') {
-        score = score * bonus.bonus
+      if (bonus !== null) {
+        if (bonus.type === 'word') {
+          score = score * bonus.bonus
+        }
       }
 
       cumulativeScore += score
     })
 
     this.addScore(player, cumulativeScore)
+    return cumulativeScore
   }
 
   /**
