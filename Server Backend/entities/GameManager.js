@@ -20,7 +20,7 @@ const tiles = letters.map(t => {
 
 class GameManager {
   constructor(io, serverManager) {
-    this._board = new Gameboard()
+    this._gameBoard = new Gameboard()
     this._tileScores = []
     this._greenScore = 0
     this._error = 0
@@ -33,20 +33,8 @@ class GameManager {
    * Board getter
    */
   get board() {
-    return this._board.board
+    return this._gameBoard.board
   }
-
-  // play(newBoard, player) {
-  //   newBoard = JSON.parse(newBoard)
-
-  //   for (let i = 0; i < newBoard.length; i++) {
-  //     for (let j = 0; j < newBoard[0].length; j++) {
-  //       let newBoardLetter = JSON.parse(newBoard[j][i])
-  //       this.board[j][i].letter = newBoardLetter
-  //     }
-  //   }
-  //   this._io.emit('wordPlayed', this.board)
-  // }
 
   play(newBoard, player) {
     // let sanitizedBoard = JSON.parse(newBoard)
@@ -60,12 +48,12 @@ class GameManager {
         let placement
         if (response === true) {
           // if invalid type of play, gets the word that was invalid, else is undefined
-          placement = this._board.placeWords(words, player)
+          placement = this._gameBoard.placeWords(words, player)
         } else {
           // if the word is invalid
           return this.handleResponse(this._error, response, player)
         }
-        return this.handleResponse(this._board.error, placement, player)
+        return this.handleResponse(this._gameBoard.error, placement, player)
       })
       .catch(e => {
         console.log({code: 'D1', title: 'Database Error', desc: e})
@@ -243,7 +231,7 @@ class GameManager {
 
     this._serverManager.changeTurn(player.position)
     this._io.emit('wordPlayed', {
-      board: this._board.sendableBoard()
+      board: this._gameBoard.sendableBoard()
     })
   }
 
@@ -313,7 +301,7 @@ class GameManager {
    * Creates a new gameboard and initializes it
    */
   resetGameboard() {
-    this._board = new Gameboard()
+    this._gameBoard = new Gameboard()
   }
 
   /**

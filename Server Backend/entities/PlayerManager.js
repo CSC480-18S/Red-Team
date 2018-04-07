@@ -8,18 +8,19 @@ let totalLetters = 0
 let intervals = []
 
 class PlayerManager {
-  constructor(position, name, team, ai, socket, gameManager, serverManager) {
-    this._name = name
-    this._team = team
-    this._isAI = ai
-    this._socket = socket
+  constructor(position) {
+    this._name = null
+    this._team = null
+    this._isAI = null
+    this._socket = null
+    this._socketId = null
     this._position = position
     this._tiles = []
     this._isTurn = false
     this._score = 0
-    this._gameManager = gameManager
-    this._serverManger = serverManager
-    this.init()
+    // this._gameManager = gameManager
+    // this._serverManger = serverManager
+    // this.init()
 
     // set up intervals
     // push first interval
@@ -89,6 +90,13 @@ class PlayerManager {
   }
 
   /**
+   * Socket id getter
+   */
+  get id() {
+    return this._socketId
+  }
+
+  /**
    * Score getter
    */
   get score() {
@@ -100,8 +108,30 @@ class PlayerManager {
     this.listenForPlayerEvents()
   }
 
-  addToHand() {
+  /**
+   * When a client connects, their information is injected into the manager
+   * @param {String} name - name of player
+   * @param {String} team - team player is on
+   * @param {Boolean} isAI - AI or not
+   * @param {Object} socket - socket object
+   */
+  createHandshakeWithClient(name, team, isAI, socket) {
+    this._name = name
+    this._team = team
+    this._isAI = isAI
+    this._socket = socket
+    this._socketId = socket.id
+  }
 
+  /**
+   * Removes player information
+   */
+  removePlayerInformation() {
+    this._name = null
+    this._team = null
+    this._isAI = null
+    this._socket = null
+    this._socketId = null
   }
 
   /**
@@ -125,21 +155,6 @@ class PlayerManager {
     }
 
     return newLetters
-  }
-
-  /**
-   * Listens for events that come from the client
-   */
-  listenForPlayerEvents() {
-    this._socket.on('playWord', board => {
-      console.table([[this.name, this.socket.id, 'made a play.']])
-      this._gameManager.play(board, this)
-    })
-
-    this._socket.on('disconnect', () => {
-      this._serverManger.removePlayer(this)
-      console.table([[this.name, this.socket.id, 'has disconnected.']])
-    })
   }
 
   /**
