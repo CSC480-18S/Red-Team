@@ -87,6 +87,10 @@ module.exports = function(io) {
       console.log(`DEBUG: CREATING ${this._maxPlayers} PLAYER MANAGERS`.debug)
       for (let i = 0; i < this._maxPlayers; i++) {
         this._playerManagers.push(new PlayerManager(i))
+        if (!this._firstTurnSet) {
+          this._playerManagers[i].isTurn = true
+          this._firstTurnSet = true
+        }
         console.log(`DEBUG: PLAYER MANAGER ${i} CREATED`.debug)
       }
       console.log(`DEBUG: ${this._maxPlayers} PLAYER MANAGERS CREATED`.debug)
@@ -159,8 +163,39 @@ module.exports = function(io) {
       for (let manager of this._playerManagers) {
         if (manager.id === id) {
           console.log(`DEBUG: PLAYER ${`${manager.name}`.warn} ATTEMPTING TO MAKE A PLAY...`.debug)
-          this._gameManager.play(board, manager)
+          this._gameManager.play(board, manager, (response) => {
+            if (response) {
+              this.updateTurn(manager)
+            }
+          })
+          return
         }
+      }
+    }
+
+    /**
+     * Updates who's turn it is
+     */
+    updateTurn(manager) {
+      let position = manager.position
+      console.log(`DEBUG: IT WAS PLAYER ${`${position}`.warn}'s TURN`.debug)
+      manager.isTurn = false
+      position++
+      if (position > 3) {
+        position = 0
+      }
+      this._playerManagers[position].isTurn = true
+      console.log(`DEBUG: IT IS NOW PLAYER ${`${position}`.warn}'s TURN`.debug)
+
+      this.updateClientData()
+    }
+
+    /**
+     * Updates clients' data
+     */
+    updateClientData() {
+      for (let manager of this._playerManagers) {
+        manager.sendEvent('dataUpdate')
       }
     }
   }
