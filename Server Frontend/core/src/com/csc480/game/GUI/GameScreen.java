@@ -139,7 +139,7 @@ public class GameScreen implements Screen {
         infoPanel.UpdatePlayerStatus(2, top.getPlayer().name, top.getPlayer().score);
         infoPanel.UpdatePlayerStatus(3, left.getPlayer().name, left.getPlayer().score);
 
-        infoPanel.UpdateProgressBars();
+        //infoPanel.UpdateProgressBars();
     }
 
     @Override
