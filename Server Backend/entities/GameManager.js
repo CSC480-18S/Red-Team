@@ -38,23 +38,23 @@ class GameManager {
     let letters = this.extractLetters(newBoard)
     let words = this.extractWords(letters, newBoard)
 
-    // console.log('DEBUG: THE BOARD IS THINKING...'.debug)
-    // this.wordValidation(words)
-    //   .then(response => {
-    //     console.log('DEBUG: THE BOARD NOW HAS AN ANSWER...'.debug)
-    //     let placement
-    //     if (response === true) {
-    //       // if invalid type of play, gets the word that was invalid, else is undefined
-    //       placement = this._gameBoard.placeWords(words, player)
-    //     } else {
-    //       // if the word is invalid
-    //       return this.handleResponse(this._error, response, player)
-    //     }
-    //     return this.handleResponse(this._gameBoard.error, placement, player)
-    //   })
-    //   .catch(e => {
-    //     console.log(`ERROR: ${e}`.error)
-    //   })
+    console.log('DEBUG: THE BOARD IS THINKING...'.debug)
+    this.wordValidation(words)
+      .then(response => {
+        console.log('DEBUG: THE BOARD NOW HAS AN ANSWER...'.debug)
+        let boardPlay = null
+        if (response === true) {
+          // if invalid type of play, gets the word that was invalid, else is undefined
+          boardPlay = this._gameBoard.placeWords(words, player)
+        } else {
+          // if the word is invalid
+          return this.handleResponse(this._error, response, player)
+        }
+        return this.handleResponse(this._gameBoard.error, boardPlay, player)
+      })
+      .catch(e => {
+        console.log(`ERROR: ${e}`.error)
+      })
   }
 
   /**
@@ -228,12 +228,11 @@ class GameManager {
     if (result.invalid) {
       result['reason'] = reason.toUpperCase()
       result['word'] = word.toUpperCase()
-      player.socket.emit('play', result)
+      player.sendEvent('play', result)
       this._error = 0
       return
     }
 
-    this._serverManager.changeTurn(player.position)
     this._io.emit('wordPlayed', {
       board: this._gameBoard.sendableBoard()
     })
