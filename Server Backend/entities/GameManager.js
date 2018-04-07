@@ -106,6 +106,7 @@ class GameManager {
    */
   extractWords(letters, newBoard) {
     let words = []
+    let inSpace = 0
 
     letters.map(letterObject => {
       for (let i = 0; i < 2; i++) {
@@ -118,15 +119,20 @@ class GameManager {
           y: letterObject.y
         }
 
+        let check = 0
         while (!startOfWord) {
           if (position.x < 0 || position.y < 0 || newBoard[position.y][position.x] === null) {
             startOfWord = true
             position.x = i === 0 ? position.x : position.x + 1
             position.y = i === 0 ? position.y + 1 : position.y
           } else {
+            check++
             position.x = i === 0 ? position.x : position.x - 1
             position.y = i === 0 ? position.y - 1 : position.y
           }
+        }
+        if (check === 1) {
+          inSpace++
         }
 
         startPosition = _.cloneDeep(position)
@@ -135,13 +141,18 @@ class GameManager {
           if (position.x >= newBoard.length || position.y >= newBoard.length || newBoard[position.y][position.x] === undefined || newBoard[position.y][position.x] === null) {
             endOfWord = true
           } else {
+            check++
             word += newBoard[position.y][position.x]
             position.x = i === 0 ? position.x : position.x + 1
             position.y = i === 0 ? position.y + 1 : position.y
           }
         }
 
-        if (word.length > 1) {
+        if (check === 2) {
+          inSpace++
+        }
+
+        if (word.length > 1 || inSpace === 4) {
           let wordObject = {
             word: word,
             x: startPosition.x,
