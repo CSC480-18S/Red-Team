@@ -20,38 +20,10 @@ class Gameboard {
   }
 
   /**
-   * Sets the board
+   * Board setter
    */
   set board(board) {
     this._board = board
-  }
-
-  /**
-   * Sets initialized
-   */
-  set initialized(initialized) {
-    this._initialized = initialized
-  }
-
-  /**
-   * Sets first play
-   */
-  set firstPlay(firstPlay) {
-    this._firstPlay = firstPlay
-  }
-
-  /**
-   * Sets error
-   */
-  set error(error) {
-    this._error = error
-  }
-
-  /**
-   * Size getter
-   */
-  get size() {
-    return this._size
   }
 
   /**
@@ -62,17 +34,10 @@ class Gameboard {
   }
 
   /**
-   * Initialized getter
+   * Error setter
    */
-  get initialized() {
-    return this._initialized
-  }
-
-  /**
-   * First play getter
-   */
-  get firstPlay() {
-    return this._firstPlay
+  set error(error) {
+    this._error = error
   }
 
   /**
@@ -91,25 +56,28 @@ class Gameboard {
       return true
     }
 
-    for (let i = 0; i < this.board.length; i++) {
-      this.board[i] = new Array(this._size)
+    for (let i = 0; i < this._board.length; i++) {
+      this._board[i] = new Array(this._size)
 
-      for (let j = 0; j < this.board[0].length; j++) {
-        this.board[i][j] = new Tile(j, i, '1')
+      for (let j = 0; j < this._board[0].length; j++) {
+        this._board[i][j] = new Tile(j, i, '1')
       }
     }
 
     this._initialized = true
   }
 
+  /**
+   * Creates a board of just characters to be sent to the clients
+   */
   sendableBoard() {
     let board = new Array(this._size)
 
-    for (let i = 0; i < this.board.length; i++) {
+    for (let i = 0; i < this._board.length; i++) {
       board[i] = new Array(this._size)
 
-      for (let j = 0; j < this.board[0].length; j++) {
-        board[i][j] = this.board[i][j].letter
+      for (let j = 0; j < this._board[0].length; j++) {
+        board[i][j] = this._board[i][j].letter
       }
     }
 
@@ -121,8 +89,8 @@ class Gameboard {
    * @param {Array} words - array of words to place
    */
   placeWords(words, user) {
-    this.error = 0
-    const tempBoard = _.cloneDeep(this.board)
+    this._error = 0
+    const tempBoard = _.cloneDeep(this._board)
 
     /**
      * For word placement validation
@@ -137,7 +105,7 @@ class Gameboard {
          * Check to see if the word was somehow placed out of bounds
          */
           if (tempBoard[j][i] === undefined) {
-            this.error = 2
+            this._error = 2
             return word.word
           }
           let l = tempBoard[j][i].letter
@@ -147,7 +115,7 @@ class Gameboard {
          * Validate if the letter placed can be placed there
          */
           if (!this.validatePosition(l, wordLetter)) {
-            this.error = 3
+            this._error = 3
             return word.word
           }
 
@@ -165,7 +133,7 @@ class Gameboard {
       /**
        * Check to see if center tile was played over on the first play
        */
-      if (this.firstPlay) {
+      if (this._firstPlay) {
         if (!this.validateCenterTile(tempBoard)) {
           return word.word
         }
@@ -173,11 +141,11 @@ class Gameboard {
       }
 
       if (!validWordPlacement) {
-        this.error = 5
+        this._error = 5
         return word.word
       }
     }
-    this.board = tempBoard
+    this._board = tempBoard
   }
 
   /**
@@ -207,16 +175,16 @@ class Gameboard {
   }
 
   /**
-   * Validates whetehr the first played word was played over the center tile
+   * Validates whether the first played word was played over the center tile
    * @param {Array} tempBoard - temp board
    */
   validateCenterTile(tempBoard) {
-    const c = Math.floor(this.size / 2)
+    const c = Math.floor(this._size / 2)
     if (!tempBoard[c][c].letterPlaced) {
-      this.error = 4
+      this._error = 4
       return false
     } else {
-      this.firstPlay = false
+      this._firstPlay = false
       return true
     }
   }
@@ -243,7 +211,7 @@ class Gameboard {
    * @param {Number} y - y coordinate
    */
   resetTileMultiplier(x, y) {
-    this.board[x][y].multiplier = 1
+    this._board[x][y].multiplier = 1
   }
 
   /**
@@ -252,7 +220,7 @@ class Gameboard {
    * @param {Number} y - y coordinate
    */
   tileInformation(x, y) {
-    return this.board[x][y]
+    return this._board[x][y]
   }
 }
 
