@@ -34,27 +34,20 @@ module.exports = function(io) {
     listenForClients() {
       io.on('connection', socket => {
         console.log('DBEUG: INCOMING CONNECTION'.debug)
-        if (this._currentlyConnectedClients !== this._maxPlayers) {
-          socket.emit('whoAreYou')
+        socket.emit('whoAreYou')
 
-          socket.on('whoAreYou', response => {
-            console.log('DEBUG: ASKING CLIENT WHO THEY ARE'.debug)
-            this.determineClientType(socket, response)
-          })
+        socket.on('whoAreYou', response => {
+          console.log('DEBUG: ASKING CLIENT WHO THEY ARE'.debug)
+          this.determineClientType(socket, response)
+        })
 
-          socket.on('playWord', board => {
-            this.determineWhoMadePlay(socket.id, board)
-          })
+        socket.on('playWord', board => {
+          this.determineWhoMadePlay(socket.id, board)
+        })
 
-          socket.on('disconnect', () => {
-            this.findClientThatLeft(socket.id)
-          })
-        } else {
-          console.log(`ERROR: THERE ARE ALREADY MAX ${this._maxPlayers} PLAYERS CONNECTED`.error)
-          socket.emit('errorMessage', {
-            error: 'There are already 4 players connected to the game.'
-          })
-        }
+        socket.on('disconnect', () => {
+          this.findClientThatLeft(socket.id)
+        })
       })
     }
 
@@ -123,6 +116,9 @@ module.exports = function(io) {
       for (let manager of this._playerManagers) {
         if (manager.id === id) {
           console.log(`INFO: PLAYER ${`${manager.name}`.warn} DISCONNECTED FROM ${'-->'.arrow} PLAYER MANAGER ${`${manager.position}`.warn}`.info)
+          if (!manager.isAI) {
+            this._frontendManager.sendEvent('connectAI', manager.position)
+          }
           this._currentlyConnectedClients--
           manager.removePlayerInformation()
           return
@@ -143,14 +139,22 @@ module.exports = function(io) {
      * @param {Object} socket - socket object
      */
     addClientToManager(name, team, isAI, socket) {
-      console.log('DEBUG: FINDING MANAGER TO ADD TO'.debug)
-      for (let manager of this._playerManagers) {
-        if (manager.id === null) {
-          manager.createHandshakeWithClient(name, team, isAI, socket)
-          console.log(`DEBUG: CLIENT ADDED TO ${'-->'.arrow} PLAYER MANAGER ${`${manager.position}`.warn}`.debug)
-          this._currentlyConnectedClients++
-          return
+      if (this._currentlyConnectedClients !== this._maxPlayers) {
+        console.log('DEBUG: FINDING MANAGER TO ADD TO'.debug)
+        for (let manager of this._playerManagers) {
+          if (manager.id === null) {
+            manager.createHandshakeWithClient(name, team, isAI, socket)
+            this.updateFrontendData()
+            console.log(`DEBUG: CLIENT ADDED TO ${'-->'.arrow} PLAYER MANAGER ${`${manager.position}`.warn}`.debug)
+            this._currentlyConnectedClients++
+            return
+          }
         }
+      } else {
+        console.log(`ERROR: THERE ARE ALREADY MAX ${this._maxPlayers} PLAYERS CONNECTED`.error)
+        socket.emit('errorMessage', {
+          error: 'There are already 4 players connected to the game.'
+        })
       }
     }
 
@@ -178,16 +182,17 @@ module.exports = function(io) {
      */
     updateTurn(manager) {
       let position = manager.position
-      console.log(`DEBUG: IT WAS PLAYER ${`${position}`.warn}'s TURN`.debug)
+      console.log(`INFO: IT WAS PLAYER ${`${position}`.warn}'s TURN`.info)
       manager.isTurn = false
       position++
       if (position > 3) {
         position = 0
       }
       this._playerManagers[position].isTurn = true
-      console.log(`DEBUG: IT IS NOW PLAYER ${`${position}`.warn}'s TURN`.debug)
+      console.log(`INFO: IT IS NOW PLAYER ${`${position}`.warn}'s TURN`.info)
 
       this.updateClientData()
+      this.updateFrontendData()
     }
 
     /**
@@ -195,8 +200,21 @@ module.exports = function(io) {
      */
     updateClientData() {
       for (let manager of this._playerManagers) {
-        manager.sendEvent('dataUpdate')
+        if (manager.id !== null) {
+          manager.sendEvent('dataUpdate')
+        }
       }
+    }
+
+    updateFrontendData() {
+      let players = this._playerManagers.map(player => {
+        return player.sendableData()
+      })
+
+      this._frontendManager.sendEvent('updateState', {
+        board: this._gameManager.board.sendableBoard(),
+        players: players
+      })
     }
   }
 
