@@ -18,9 +18,7 @@ class PlayerManager {
     this._tiles = []
     this._isTurn = false
     this._score = 0
-    // this._gameManager = gameManager
-    // this._serverManger = serverManager
-    // this.init()
+    this.init()
 
     // set up intervals
     // push first interval
@@ -104,8 +102,23 @@ class PlayerManager {
   }
 
   init() {
-    this.addToHand()
-    this.listenForPlayerEvents()
+    // this.addToHand()
+  }
+
+  sendEvent(event, data) {
+    switch (event) {
+      case 'play':
+        this.socket.emit(event, data)
+        break
+      case 'dataUpdate':
+        this.socket.emit(event, {
+          position: this.position,
+          tiles: this.tiles,
+          isTurn: this.isTurn,
+          score: this.score
+        })
+        break
+    }
   }
 
   /**
@@ -155,18 +168,6 @@ class PlayerManager {
     }
 
     return newLetters
-  }
-
-  /**
-   * Adds details when this position was already occupied by another player controller
-   * @param {Array} tiles - array of tiles
-   * @param {Boolean} isTurn - turn
-   * @param {Number} score - score
-   */
-  addPositionDetails(tiles, isTurn, score) {
-    this._tiles = tiles
-    this._isTurn = isTurn
-    this._score = score
   }
 
   /**
