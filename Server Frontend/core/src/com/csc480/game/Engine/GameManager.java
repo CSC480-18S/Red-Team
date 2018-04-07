@@ -262,10 +262,13 @@ public class GameManager {
                         thePlayers[index].name = player.getString("name");
                         thePlayers[index].team = player.getString("team");
                         thePlayers[index].turn = player.getBoolean("isTurn");
+                        System.out.println("updating player @ index "+index);
+                        /*
                         JSONArray hand = player.getJSONArray("hand");
                         for(int j = 0; j < hand.length(); j++){
                             thePlayers[index].tiles[j] = hand.getString(j).charAt(0);
                         }
+                        */
                     }
                     theGame.theGameScreen.UpdateInfoPanel();
 

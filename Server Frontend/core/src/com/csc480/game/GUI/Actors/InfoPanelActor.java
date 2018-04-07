@@ -104,6 +104,7 @@ public class InfoPanelActor extends Group{
     }
 
     public void UpdatePlayerStatus(int position, String name, int score){
+        System.out.println("updating info of "+position);
         switch (position){
             case 0:
                 p0Name.setText(name);
