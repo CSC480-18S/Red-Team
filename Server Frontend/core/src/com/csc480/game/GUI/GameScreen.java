@@ -44,6 +44,7 @@ public class GameScreen implements Screen {
 
 
     public GameScreen(OswebbleGame mainGame){
+        System.out.println("Density: "+Gdx.graphics.getDensity());
         //must calculate the aspect ratio to resize properly
         aspectRatio = (float)Gdx.graphics.getHeight() / (float)Gdx.graphics.getWidth();
         System.out.println("aspectRatio: "+aspectRatio);
@@ -57,9 +58,11 @@ public class GameScreen implements Screen {
 
         //set the SceneGraph stage
         viewCam = new OrthographicCamera();
-        view = new FitViewport(Gdx.graphics.getHeight(), Gdx.graphics.getHeight()*aspectRatio, viewCam);
+        view = new FitViewport(GUI_UNIT_SIZE * 45, GUI_UNIT_SIZE * 45 * aspectRatio, viewCam);//Gdx.graphics.getHeight(), Gdx.graphics.getHeight()*aspectRatio, viewCam);
         view.apply();
         stage = new Stage(view);
+        stage.setDebugAll(true);
+        stage.setDebugInvisible(false);
 
         oswebbleGame = mainGame;
 
