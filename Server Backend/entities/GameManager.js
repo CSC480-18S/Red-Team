@@ -34,7 +34,7 @@ class GameManager {
     return this._gameBoard.board
   }
 
-  play(newBoard, player) {
+  play(newBoard, player, callback) {
     let letters = this.extractLetters(newBoard)
     let words = this.extractWords(letters, newBoard)
 
@@ -48,9 +48,10 @@ class GameManager {
           boardPlay = this._gameBoard.placeWords(words, player)
         } else {
           // if the word is invalid
-          return this.handleResponse(this._error, response, player)
+          return callback(this.handleResponse(response.error, response.word, player))
         }
-        return this.handleResponse(this._gameBoard.error, boardPlay, player)
+        // if the board has attempted to play a word
+        return callback(this.handleResponse(boardPlay.error, boardPlay.word, player))
       })
       .catch(e => {
         console.log(`ERROR: ${e}`.error)
@@ -180,12 +181,16 @@ class GameManager {
     console.log('DEBUG: PRUNING RESULTS OF DATABASE RESPONSE...'.debug)
     for (let word of response) {
       if (word.bad) {
-        this._error = 6
-        return word.word
+        return {
+          error: 6,
+          word: word.word
+        }
       }
       if (!word.valid) {
-        this._error = 1
-        return word.word
+        return {
+          error: 1,
+          word: word.word
+        }
       }
     }
 
@@ -197,7 +202,7 @@ class GameManager {
    * @param {String} word - word to be piped into the error message
    */
   handleResponse(error, word, player) {
-    console.log('DEBUG: HANDLING RESPONSE FROM DATABASE...'.debug)
+    console.log('DEBUG: SENDING RESPONSE TO CLIENT...'.debug)
     const result = {
       invalid: true
     }
@@ -229,13 +234,13 @@ class GameManager {
       result['reason'] = reason.toUpperCase()
       result['word'] = word.toUpperCase()
       player.sendEvent('play', result)
-      this._error = 0
-      return
+      return false
     }
 
     this._io.emit('wordPlayed', {
       board: this._gameBoard.sendableBoard()
     })
+    return true
   }
 
   /**
