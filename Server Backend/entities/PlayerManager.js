@@ -122,6 +122,20 @@ class PlayerManager {
   }
 
   /**
+   * Creates an object that is sent over an event
+   */
+  sendableData() {
+    return {
+      name: this._name,
+      position: this._position,
+      isTurn: this._isTurn,
+      tiles: this._tiles,
+      score: this._score,
+      team: this._team
+    }
+  }
+
+  /**
    * When a client connects, their information is injected into the manager
    * @param {String} name - name of player
    * @param {String} team - team player is on
