@@ -471,6 +471,7 @@ public class GameManager {
      */
     public void hardUpdateBoardState(TileData[][] serverBoard){
         theBoard.the_game_board = serverBoard;
+        System.out.println("SERVER FRONTEND STATE UPDATED/////////////////////////////////////////////////////////////////////////////");
     }
 
     public void wordHasBeenPlayed(TileData[][] backendBoardState){

@@ -59,7 +59,7 @@ public class AI extends Player {
                     if (bestPlay != null && bestPlay.myWord != null && GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay.placements)) {
                         //System.out.println("The AI found made a decent play");
                         System.out.println(this.name + " trying to play: "+bestPlay.myWord + "  while in state " + this.state);
-                        System.out.println("JSONIFIED DATA TO BE SET: "+GameManager.getInstance().JSONifyPlayIdea(bestPlay));
+                        System.out.println(this.name + " JSONIFIED DATA TO BE SET: "+GameManager.getInstance().JSONifyPlayIdea(bestPlay));
                         mySocket.emit("playWord", GameManager.getInstance().JSONifyPlayIdea(bestPlay));
                         this.state = 2;
                         //GameManager.getInstance().theBoard.addWord(bestPlay.placements);
@@ -189,7 +189,8 @@ public class AI extends Player {
             mySocket.on("whoAreYou", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    System.out.println(" got whoAreYou");
+                    //System.out.println();
+                    System.out.println(AI.this.name+" got whoAreYou");
                     JSONObject data = new JSONObject();
                     data.put("isAI", true);
                     System.out.println(data.toString());
@@ -200,18 +201,18 @@ public class AI extends Player {
                 @Override
                 public void call(Object... args) {
 
-                        System.out.println(" got play");
+                        System.out.println(AI.this.name + " got play");
                         try {
                             JSONObject data = (JSONObject) args[0];
                             System.out.println(data.toString());
                             boolean invalid = data.getBoolean("invalid");
                             if (invalid) {
                                 if (state == 2)
-                                    System.out.println("State set back to 1");
+                                    System.out.println(AI.this.name + " State set back to 1");
                                     state = 1;
                             } else {
                                 if (state == 2)
-                                    System.out.println("State set to 0");
+                                    System.out.println(AI.this.name + " State set to 0");
                                     state = 0;
                             }
                             update();
@@ -222,7 +223,7 @@ public class AI extends Player {
             }).on("dataUpdate", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    System.out.println("got dataUpdate");
+                    System.out.println(AI.this.name + " got dataUpdate");
                     try {
                         JSONObject data = (JSONObject) args[0];
                         System.out.println(data.toString());
@@ -238,10 +239,11 @@ public class AI extends Player {
                         //reconnect an AI
                         //System.out.println(myTurn);
                         if (myTurn) {
-                            try {
-                                Thread.sleep(5000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
+                            long startTime = System.currentTimeMillis();
+                            while(System.currentTimeMillis() - startTime < 5000){
+                                if(System.currentTimeMillis() - startTime % 100 == 0) {
+                                    System.out.println(System.currentTimeMillis());
+                                }
                             }
                             tiles = GameManager.getInstance().getNewHand();
                             myCache.Clear();
@@ -263,7 +265,7 @@ public class AI extends Player {
             }).on("playWord", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    System.out.println("AI got playWord, but does nothing");
+                    System.out.println(AI.this.name + " got playWord, but does nothing");
                 }
             });
         //}
