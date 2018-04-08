@@ -98,14 +98,14 @@ socket.on('gameEvent', response => {
 })
 
 socket.on('dataUpdate', response => {    
-    //console.log('received dataUpdate event: ');
-    //console.log(response);
+    console.log('received dataUpdate event: ');
+    console.log(response);
     // response.position is the position of four players on the server
     // tested data
     //var tiles = ['T', 'E', 'S', 'T'];
-    var isTurn = true;
-    if (isTurn === false) {
-    //if (response.isTurn === false) {
+    //var isTurn = true;
+    //if (isTurn === false) {
+    if (response.isTurn === false) {
         document.getElementById('btnSwap').disabled = true;
         document.getElementById('btnPlace').disabled = true;
         document.getElementById('btnShuffle').disabled = true;
@@ -180,7 +180,8 @@ function generateTileSlots() {
         letter: tile.letter,
         value: tile.letterValue,
         highlightedColor: tile.highlightedColor,
-        visibility: tile.visibility
+        visibility: tile.visibility,
+        disabled: false
       }
     })
   }
@@ -254,80 +255,66 @@ var drop = function(ev) {
 
 // when clicking on a tile in a tile slot or in the game board
 var selectAndDeselectTile = function(tileId) {
-  // get the tile
-  var tile = document.getElementById(tileId)
-  // tile.children[0].stroke = "red"; (20180304 not working)
-  // set tile border color
-  for (var i = 0; i < tileSlotNumber; i++) {
-    if (tile.id === this.tileSlots[i].tile.id) {
-      this.tileSlots[i].tile.highlightedColor = '#d61515'
-    } else {
-      this.tileSlots[i].tile.highlightedColor = '#000000'
-    }
-  }
-  // get tile parent
-  var wrapper = tile.parentNode.parentNode.parentNode
-  // record Tile ID
-  this.selectedTileId = tileId
-  // select tile if it is in a slot
-  if (wrapper.className === 'wrapper-slots') {
-    // get tile
+    // get the tile
     var tile = document.getElementById(tileId)
-    // get tile's parent ID
-    var parentId = tile.parentNode.id
-    // record parent ID
-    this.selectedTileParentId = parentId
-    // record both tile and parent ID
-    this.tilesOnBoard.push({tileId: tileId, parentId: parentId})
-    // print out selected tile letter in console
-    this.selectedTileCopyId = ''
-  }
+    // tile.children[0].stroke = "red"; (20180304 not working)
+    // set tile border color
+    for (var i = 0; i < tileSlotNumber; i++) {
+        isDisable = this.tileSlots[i].tile.disabled;
+        if (tile.id === this.tileSlots[i].tile.id && !isDisable) {
+            this.tileSlots[i].tile.highlightedColor = '#d61515'
+        } else {
+        this.tileSlots[i].tile.highlightedColor = '#000000'
+        }
+    }
+    
+    if(!isDisable) {
+        // get tile parent
+        var wrapper = tile.parentNode.parentNode.parentNode
+        // record Tile ID
+        this.selectedTileId = tileId
+        // select tile if it is in a slot
+        if (wrapper.className === 'wrapper-slots') {
+          var isDisable = false;
+        // get tile
+        var tile = document.getElementById(tileId)
+        // get tile's parent ID
+        var parentId = tile.parentNode.id
+        // record parent ID
+        this.selectedTileParentId = parentId
+        // record both tile and parent ID
+        this.tilesOnBoard.push({tileId: tileId, parentId: parentId})
+        // print out selected tile letter in console
+        this.selectedTileCopyId = ''
+        }
+    }
 }
 
-// when clicking on a square in the game board
+// when clicking a square on the game board
 var putTileInSquare = function(squareId) {
-  var square = document.getElementById(squareId)
-  // if a tile in a slot has been clicked
-  // if(this.selectedTileId !== "") {
-  // get the square
-  var selectedSquare = document.getElementById(squareId)
-  // copy
-  if (this.selectedTileCopyId === '' && selectedSquare.children.length === 0) {
-    // get the tile
-    var selectedTile = document.getElementById(this.selectedTileId)
-    // copy the tile
-    var cln = selectedTile.cloneNode(true)
-    // put the clone tile on the game board
-    selectedSquare.appendChild(cln)
-    //
-    this.selectedTileCopyId = cln.id
-    // update slot information
-    for (var i = 0; i < tileSlotNumber; i++) {
-      if (this.selectedTileId === this.tileSlots[i].tile.id) {
-        // this.tileSlots[i] = {};
-        this.tileSlots[i].hasTile = false
-        this.tileSlots[i].tile.visibility = 'hidden'
-      }
-    }
-
-    for (var i = 0; i < this.squares.length; i++) {
-      if (squareId === this.squares[i].id) {
-        this.currentPlayTileAmount++
-        this.tilesOnBoardValueAndPosition.push({tileLetter: document.getElementById(this.selectedTileId).children[1].innerHTML,
-          xAxis: this.squares[i].xAxis,
-          yAxis: this.squares[i].yAxis
-        })
-      }
-    }
-    // add tile id in the current round
-    this.currentRoundtileIdsOnBoard.push(this.selectedTileCopyId)
-  } else { // move around or distroy
-    var selectedTileCopy = document.getElementById(this.selectedTileCopyId)
-    this.tilesOnBoardValueAndPosition.pop();
-    this.currentTileCount--;
-    if (!selectedSquare.hasChildNodes()) {
-      if (selectedTileCopy.children[0].getAttribute('fill') !== '#D3D3D3') {
-        selectedSquare.appendChild(selectedTileCopy)
+    var square = document.getElementById(squareId)
+    // if a tile in a slot has been clicked
+    if(this.selectedTileId !== "") {
+        // get the square
+        var selectedSquare = document.getElementById(squareId)
+        // copy
+        if (this.selectedTileCopyId === '' && selectedSquare.children.length === 0) {
+        // get the tile
+        var selectedTile = document.getElementById(this.selectedTileId)
+        // copy the tile
+        var cln = selectedTile.cloneNode(true)
+        // put the clone tile on the game board
+        selectedSquare.appendChild(cln)
+        //
+        this.selectedTileCopyId = cln.id
+        // update slot information
+        for (var i = 0; i < tileSlotNumber; i++) {
+          if (this.selectedTileId === this.tileSlots[i].tile.id) {
+            // this.tileSlots[i] = {};
+            this.tileSlots[i].hasTile = false
+            this.tileSlots[i].tile.visibility = 'hidden'
+          }
+        }
 
         for (var i = 0; i < this.squares.length; i++) {
           if (squareId === this.squares[i].id) {
@@ -338,33 +325,53 @@ var putTileInSquare = function(squareId) {
             })
           }
         }
-      }
-    } else {
-      var childTile = selectedSquare.children[0]
-      // only current round tiles can be put back
-      if (childTile.children[0].getAttribute('fill') !== '#D3D3D3') {
-        // selectedSquare.removeChild(selectedTileCopy);
-        selectedSquare.removeChild(childTile)
-        // update slot information
-        for (var i = 0; i < tileSlotNumber; i++) {
-          if (childTile.id === this.tileSlots[i].tile.id) {
-            // if (this.selectedTileId === this.tileSlots[i].tile.id) {
-            // this.tileSlots[i] = {};
-            this.tileSlots[i].hasTile = true
-            this.tileSlots[i].tile.visibility = 'visible'
-            this.tileSlots[i].tile.highlightedColor = '#000000'
+        // add tile id in the current round
+        this.currentRoundtileIdsOnBoard.push(this.selectedTileCopyId)
+        } else { // move around or distroy
+        var selectedTileCopy = document.getElementById(this.selectedTileCopyId)
+        this.tilesOnBoardValueAndPosition.pop();
+        this.currentTileCount--;
+        if (!selectedSquare.hasChildNodes()) {
+          if (selectedTileCopy.children[0].getAttribute('fill') !== '#D3D3D3') {
+            selectedSquare.appendChild(selectedTileCopy)
+
+            for (var i = 0; i < this.squares.length; i++) {
+              if (squareId === this.squares[i].id) {
+                this.currentPlayTileAmount++
+                this.tilesOnBoardValueAndPosition.push({tileLetter: document.getElementById(this.selectedTileId).children[1].innerHTML,
+                  xAxis: this.squares[i].xAxis,
+                  yAxis: this.squares[i].yAxis
+                })
+              }
+            }
+          }
+        } else {
+          var childTile = selectedSquare.children[0]
+          // only current round tiles can be put back
+          if (childTile.children[0].getAttribute('fill') !== '#D3D3D3') {
+            // selectedSquare.removeChild(selectedTileCopy);
+            selectedSquare.removeChild(childTile)
+            // update slot information
+            for (var i = 0; i < tileSlotNumber; i++) {
+              if (childTile.id === this.tileSlots[i].tile.id) {
+                // if (this.selectedTileId === this.tileSlots[i].tile.id) {
+                // this.tileSlots[i] = {};
+                this.tileSlots[i].hasTile = true
+                this.tileSlots[i].tile.visibility = 'visible'
+                this.tileSlots[i].tile.highlightedColor = '#000000'
+              }
+            }
+
+            this.tilesOnBoardValueAndPosition.pop()
+            this.currentPlayTileAmount--
+            // remove tile id in the current round
+            this.currentRoundtileIdsOnBoard.pop(this.selectedTileCopyId)
           }
         }
-
-        this.tilesOnBoardValueAndPosition.pop()
-        this.currentPlayTileAmount--
-        // remove tile id in the current round
-        this.currentRoundtileIdsOnBoard.pop(this.selectedTileCopyId)
-      }
+        }
+        // record the square position
+        this.selectedSquareId = selectedSquare.id
     }
-  }
-  // record the square position
-  this.selectedSquareId = selectedSquare.id
 }
 
 var swap = function() {
