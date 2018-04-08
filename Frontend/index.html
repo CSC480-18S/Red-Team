@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Aldrich|Press+Start+2P" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="views/styles.css">
 
     <title></title>
@@ -12,9 +12,13 @@
 <body>
     <div id="root">
 
+        <div id="textBox">
+            <p id="gameEvent"><b>Game Event</b></p>
+        </div>
+        
         <div class="wrapper-board">
             <div class="row-style" v-for="row in rows">
-                <div class="col-style" v-for="square in squares" v-if="square.xAxis === row" :id="square.id"  @click="onClickSquare(square.id)"></div>
+                <div class="col-style" :style="{background: backgroundColor}" v-for="square in squares" v-if="square.xAxis === row" :id="square.id"  @click="onClickSquare(square.id)"></div>
             </div>
         </div>
 
