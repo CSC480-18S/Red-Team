@@ -86,20 +86,57 @@ socket.on('play', response => {
   }
 })
 
+socket.on('gameEvent', response => {
+    console.log('received gameEvent: ');
+    console.log(response);
+    
+    // test data
+    var gameEvent = "This is a tested event message";
+    // gameEvent = response.action;
+    document.getElementById("gameEvent").innerHTML += "<br>";
+    document.getElementById("gameEvent").innerHTML += gameEvent;
+})
+
+socket.on('dataUpdate', response => {    
+    //console.log('received dataUpdate event: ');
+    //console.log(response);
+    // response.position is the position of four players on the server
+    // tested data
+    //var tiles = ['T', 'E', 'S', 'T'];
+    var isTurn = true;
+    if (isTurn === false) {
+    //if (response.isTurn === false) {
+        document.getElementById('btnSwap').disabled = true;
+        document.getElementById('btnPlace').disabled = true;
+        document.getElementById('btnShuffle').disabled = true;
+        for(var i = 0; i < tileSlotNumber; i++) {
+            this.data.tileSlots[i].tile.disabled = true;
+        }
+    } else {
+        document.getElementById('btnSwap').disabled = false;
+        document.getElementById('btnPlace').disabled = false;
+        document.getElementById('btnShuffle').disabled = false;
+        for(var i = 0; i < tileSlotNumber; i++) {
+            this.data.tileSlots[i].tile.disabled = false;
+        }
+    }
+})
+
 // data object
 var data = {
-  selectedTileId: '',
-  selectedTileParentId: '',
-  selectedSquareId: '',
-  // can change to computed property
-  rows: generateTableRows(),
-  squares: generateSquares(),
-  tileSlots: generateTileSlots(),
-  tilesOnBoard: [],
-  selectedTileCopyId: '',
-  currentRoundtileIdsOnBoard: [],
-  tilesOnBoardValueAndPosition: [],
-  currentPlayTileAmount: 0
+    selectedTileId: '',
+    selectedTileParentId: '',
+    selectedSquareId: '',
+    // can change to computed property
+    rows: generateTableRows(),
+    squares: generateSquares(),
+    tileSlots: generateTileSlots(),
+    tilesOnBoard: [],
+    selectedTileCopyId: '',
+    currentRoundtileIdsOnBoard: [],
+    tilesOnBoardValueAndPosition: [],
+    currentPlayTileAmount: 0,
+    backgroundColor: "rgb(171,171,171)"
 }
 
 function generateTableRows() {
