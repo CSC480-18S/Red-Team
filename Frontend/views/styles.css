@@ -178,3 +178,8 @@ button {
 #square-0-0 {
     background: rgb(242,195,50);
 }
+
+
+.bg-yellow { background: yellow; }
+.bg-green { background: green; }
+.bg-grey { background: grey; }

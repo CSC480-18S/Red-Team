@@ -136,7 +136,7 @@ var data = {
     currentRoundtileIdsOnBoard: [],
     tilesOnBoardValueAndPosition: [],
     currentPlayTileAmount: 0,
-    backgroundColor: "rgb(171,171,171)"
+    //backgroundColor: ["rgb(171,171,171)", "orange", "green"]
 }
 
 function generateTableRows() {
@@ -148,22 +148,35 @@ function generateTableRows() {
 }
 
 function generateSquares() {
-  var squares = []
-  for (var i = 0; i < row; i++) {
-    for (var j = 0; j < column; j++) {
-      // use sum to render square background color
-      var sum = i + j
-      switch (sum) {
-        case 1: case 3: case 5: case 7: case 9: case 11: case 13: case 15: case 17: case 19:
-          squares.push({id: 'square-' + i + '-' + j, xAxis: i, yAxis: j, isSquareGreen: true, isSquareYellow: false})
-          break
-        default:
-          squares.push({id: 'square-' + i + '-' + j, xAxis: i, yAxis: j, isSquareGreen: false, isSquareYellow: false})
-          break
-      }
+    var squares = []
+    for (var i = 0; i < row; i++) {
+        for (var j = 0; j < column; j++) {
+          // use sum to render square background color
+          //var sum = i + j
+          //switch (sum) {
+            //case 1: case 3: case 5: case 7: case 9: case 11: case 13: case 15: case 17: case 19:
+            squares.push({id: 'square-' + i + '-' + j, xAxis: i, yAxis: j, isSquareGreen: true, isSquareYellow: false, squareBackgroundColor: "rgb(171,171,171)"})
+              //break
+            //default:
+              //squares.push({id: 'square-' + i + '-' + j, xAxis: i, yAxis: j, isSquareGreen: false, isSquareYellow: false, squareBackgroundColor: "orange"})
+              //break
+          //}
+        }
     }
-  }
-
+    
+    for (var k = 0; k < squares.length; k++) {
+        switch (squares[k].id) {
+            case "square-0-0": case "square-0-7": case "square-2-4": case "square-3-7": case "square-3-10": case "square-4-2": case "square-6-8": case "square-7-0": case "square-7-3": case "square-8-6": case "square-10-3": case "square-10-10":                     
+                squares[k].squareBackgroundColor = "rgb(242,195,50)";
+                break;
+            case "square-0-3": case "square-0-10": case "square-2-6": case "square-3-0": case "square-3-3": case "square-4-8": case "square-6-2": case "square-7-7": case "square-7-10": case "square-8-4": case "square-10-0": case "square-10-7":     
+                squares[k].squareBackgroundColor = "rgb(24,180,76)";
+                break;
+            case "square-5-5": 
+                squares[k].squareBackgroundColor = "rgb(84,76,76)";
+                break;
+        }
+    }
   return squares
 }
 
@@ -402,7 +415,7 @@ var refillSlots = function() {
   // change color of tiles on board
   for (var i = 0; i < this.currentRoundtileIdsOnBoard.length; i++) {
     var tile = document.getElementById(this.currentRoundtileIdsOnBoard[i])
-    tile.children[0].setAttribute('fill', '#D3D3D3')
+    tile.children[0].setAttribute('fill', 'rgb(251,251,227)') //#D3D3D3
     tile.children[1].setAttribute('fill', '#000000')
     tile.children[2].setAttribute('fill', '#000000')
   }

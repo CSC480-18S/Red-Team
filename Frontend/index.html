@@ -18,7 +18,7 @@
         
         <div class="wrapper-board">
             <div class="row-style" v-for="row in rows">
-                <div class="col-style" :style="{background: backgroundColor}" v-for="square in squares" v-if="square.xAxis === row" :id="square.id"  @click="onClickSquare(square.id)"></div>
+                <div class="col-style" v-for="square in squares" v-if="square.xAxis === row" :id="square.id" :style="{background: square.squareBackgroundColor}" @click="onClickSquare(square.id)"></div>
             </div>
         </div>
 
