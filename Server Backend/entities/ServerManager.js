@@ -125,7 +125,7 @@ module.exports = function(io) {
         }
       }
 
-      if (this._frontendManager.id === id) {
+      if (this._frontendManager !== null && this._frontendManager.id === id) {
         console.log('INFO: SERVER FRONTEND DISCONNECTED'.info)
         this._frontendManager = null
       }
