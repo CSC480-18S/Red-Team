@@ -5,7 +5,21 @@ var vm = new Vue({
 
     // associate with data in model: the data object is added to a Vue instance
     data: data,
-
+    
+//    computed: {
+//        // a computed getter
+//        computedBackgroundColor: function () {
+//          // 'this' points to the vm instance
+//            var randomValue = Math.random();
+//            if ( randomValue > 0.66) {
+//                return this.backgroundColor[1];
+//            } else if(randomValue < 0.66 && randomValue > 0.33) {
+//                return this.backgroundColor[2];
+//            } else {
+//                return this.backgroundColor[0];
+//            }
+//        }
+//    },
     // associate with functions in model
     methods: {
 

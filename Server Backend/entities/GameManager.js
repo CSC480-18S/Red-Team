@@ -92,7 +92,7 @@ class GameManager {
     for (let i = 0; i < newBoard.length; i++) {
       for (let j = 0; j < newBoard[0].length; j++) {
         let currentBoardLetter = this._gameBoard.board[j][i].letter
-        let newBoardLetter = newBoard[j][i]
+        let newBoardLetter = newBoard[j][i] === null ? null : newBoard[j][i].toUpperCase()
 
         if (newBoardLetter !== null) {
           if (currentBoardLetter !== newBoardLetter) {
