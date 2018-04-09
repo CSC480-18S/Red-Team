@@ -16,6 +16,10 @@ module.exports = function(io) {
       this._currentlyConnectedClients = 0
       this._maxPlayers = 4
       this._firstTurnSet = false
+
+      this._usernames = ['465k', 'Am I Bill?', 'Who is Bill?', 'I <3 Demo Day',
+        'Dab Stan', 'Bill', 'Doug Lea', 'Graci Craig', 'Jearly', 'B-Ten', 'Jin Yang', 'Erlich Bachman',
+        'Where is Bill?', 'Bill Nye', 'Connect4', 'Pixel Art']
       this.init()
     }
 
@@ -102,7 +106,7 @@ module.exports = function(io) {
         this.createFrontendManager(socket)
         console.log('INFO: SERVER FRONTEND CONNECTED'.info)
       } else if (response.isClient) {
-        this.addClientToManager(`client_${this._currentlyConnectedClients}`, 'team_test', false, socket)
+        this.addClientToManager(this._usernames[Math.floor(Math.random() * this._usernames.length)], 'team_test', false, socket)
         console.log(`INFO: CLIENT ${'client_test'.warn} CONNECTED`.info)
       }
     }

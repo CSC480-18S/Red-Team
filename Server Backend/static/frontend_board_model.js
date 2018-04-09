@@ -97,13 +97,14 @@ socket.on('gameEvent', response => {
   // test data
   var gameEvent = response.action
   // gameEvent = response.action;
-  document.getElementById('gameEvent').innerHTML += '<br>'
-  document.getElementById('gameEvent').innerHTML += gameEvent
+  document.getElementById('actualEvent').innerHTML = '<br>'
+  document.getElementById('actualEvent').innerHTML = gameEvent
 })
 
 socket.on('dataUpdate', response => {
   console.log('received dataUpdate event: ')
   console.log(response)
+  this.data.username = response.name
   // response.position is the position of four players on the server
   // tested data
   // var tiles = ['T', 'E', 'S', 'T'];
@@ -139,7 +140,8 @@ var data = {
   selectedTileCopyId: '',
   currentRoundtileIdsOnBoard: [],
   tilesOnBoardValueAndPosition: [],
-  currentPlayTileAmount: 0
+  currentPlayTileAmount: 0,
+  username: ''
   // backgroundColor: ["rgb(171,171,171)", "orange", "green"]
 }
 

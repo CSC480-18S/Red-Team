@@ -113,6 +113,7 @@ class PlayerManager {
         break
       case 'dataUpdate':
         this.socket.emit(event, {
+          name: this.name,
           position: this.position,
           tiles: this.tiles,
           isTurn: this.isTurn,
