@@ -73,6 +73,7 @@ public class GameManager {
             thePlayers[i] = new Player();
         }
 
+
     }
     public void Update(){
         for(AI a: theAIs){
@@ -259,11 +260,15 @@ public class GameManager {
                     for(int i = 0; i < players.length(); i++){
                         JSONObject player  = (JSONObject)players.get(i);
                         int index = player.getInt("position");
-                        thePlayers[index].score = player.getInt("score");
-                        thePlayers[index].name = player.getString("name");
-                        thePlayers[index].team = player.getString("team");
-                        thePlayers[index].turn = player.getBoolean("isTurn");
-                        System.out.println("updating player @ index "+index);
+                        try {
+                            thePlayers[index].score = player.getInt("score");
+                            thePlayers[index].name = player.getString("name");
+                            thePlayers[index].team = player.getString("team");
+                            thePlayers[index].turn = player.getBoolean("isTurn");
+                            System.out.println("updating player @ index " + index);
+                        }catch (JSONException e){
+                            e.printStackTrace();
+                        }
                         /*
                         JSONArray hand = player.getJSONArray("hand");
                         for(int j = 0; j < hand.length(); j++){
