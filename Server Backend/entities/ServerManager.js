@@ -121,6 +121,7 @@ module.exports = function(io) {
           }
           this._currentlyConnectedClients--
           manager.removePlayerInformation()
+          this.updateFrontendData()
           return
         }
       }
