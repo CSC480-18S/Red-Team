@@ -93,15 +93,15 @@ socket.on('play', response => {
 socket.on('gameEvent', response => {
     console.log('received gameEvent: ');
     console.log(response);
-    
+
     // test data
-    var gameEvent = "This is a tested event message";
+    var gameEvent = response.action;
     // gameEvent = response.action;
     document.getElementById("gameEvent").innerHTML += "<br>";
     document.getElementById("gameEvent").innerHTML += gameEvent;
 })
 
-socket.on('dataUpdate', response => {    
+socket.on('dataUpdate', response => {
     console.log('received dataUpdate event: ');
     console.log(response);
     // response.position is the position of four players on the server
@@ -167,16 +167,16 @@ function generateSquares() {
           //}
         }
     }
-    
+
     for (var k = 0; k < squares.length; k++) {
         switch (squares[k].id) {
-            case "square-0-0": case "square-0-7": case "square-2-4": case "square-3-7": case "square-3-10": case "square-4-2": case "square-6-8": case "square-7-0": case "square-7-3": case "square-8-6": case "square-10-3": case "square-10-10":                     
+            case "square-0-0": case "square-0-7": case "square-2-4": case "square-3-7": case "square-3-10": case "square-4-2": case "square-6-8": case "square-7-0": case "square-7-3": case "square-8-6": case "square-10-3": case "square-10-10":
                 squares[k].squareBackgroundColor = "rgb(242,195,50)";
                 break;
-            case "square-0-3": case "square-0-10": case "square-2-6": case "square-3-0": case "square-3-3": case "square-4-8": case "square-6-2": case "square-7-7": case "square-7-10": case "square-8-4": case "square-10-0": case "square-10-7":     
+            case "square-0-3": case "square-0-10": case "square-2-6": case "square-3-0": case "square-3-3": case "square-4-8": case "square-6-2": case "square-7-7": case "square-7-10": case "square-8-4": case "square-10-0": case "square-10-7":
                 squares[k].squareBackgroundColor = "rgb(24,180,76)";
                 break;
-            case "square-5-5": 
+            case "square-5-5":
                 squares[k].squareBackgroundColor = "rgb(84,76,76)";
                 break;
         }
@@ -284,7 +284,7 @@ var selectAndDeselectTile = function(tileId) {
         this.tileSlots[i].tile.highlightedColor = '#000000'
         }
     }
-    
+
     if(!isDisable) {
         // get tile parent
         var wrapper = tile.parentNode.parentNode.parentNode
