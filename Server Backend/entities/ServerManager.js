@@ -144,6 +144,9 @@ module.exports = function(io) {
         for (let manager of this._playerManagers) {
           if (manager.id === null) {
             manager.createHandshakeWithClient(name, team, isAI, socket)
+            socket.emit('wordPlayed', {
+              board: this._gameManager.board.sendableBoard()
+            })
             this.updateFrontendData()
             console.log(`DEBUG: CLIENT ADDED TO ${'-->'.arrow} PLAYER MANAGER ${`${manager.position}`.warn}`.debug)
             this._currentlyConnectedClients++
