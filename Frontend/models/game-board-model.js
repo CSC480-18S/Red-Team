@@ -26,48 +26,48 @@ socket.on('wordPlayed', response => {
     for (j = 0; j < column; j++) {
       var square = document.getElementById('square-' + i + '-' + j)
       if (!square.hasChildNodes()) {
-        var tile = {
-          id: 'playedLetter: ' + response.board[i][j],
-          letter: response.board[i][j],
-          value: 1,
-          highlightedColor: undefined,
-          visibility: 'visible'
-        }
-        if (tile.letter != null) {
-          console.log(tile)
-          var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-          svg.setAttribute('id', tile.id)
-          svg.setAttribute('visibility', 'visible')
-          var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-          rect.setAttribute('x', 0)
-          rect.setAttribute('y', 0)
-          rect.setAttribute('stroke', 'black')
-          rect.setAttribute('stroke-width', '1px')
-          rect.setAttribute('width', '100%')
-          rect.setAttribute('height', '100%')
-          rect.setAttribute('fill', '#D3D3D3')
-          svg.appendChild(rect)
-          var text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-          text.setAttribute('x', '50%')
-          text.setAttribute('y', '60%')
-          text.setAttribute('alignment-baseline', 'middle')
-          text.setAttribute('text-anchor', 'middle')
-          text.setAttribute('fill', undefined)
-          text.textContent = tile.letter
-          svg.appendChild(text)
-          var text2 = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-          text2.setAttribute('x', '70%')
-          text2.setAttribute('y', '30%')
-          text2.setAttribute('fill', undefined)
-          text2.setAttribute('class', 'letter-value')
-          text2.textContent = tile.value
-          svg.appendChild(text2)
-          square.appendChild(svg)
-
-          this.data.tilesOnBoardValueAndPosition.push({tileLetter: tile.letter,
-            xAxis: i,
-            yAxis: j
-          })
+        if(response.board[i][j] !== null){
+          var tile = {
+            id: 'playedLetter: ' + response.board[i][j],
+            letter: response.board[i][j],
+            value: tileValue(response.board[i][j]),
+            highlightedColor: undefined,
+            visibility: 'visible'
+          }
+            console.log(tile)
+            var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+            svg.setAttribute('id', tile.id)
+            svg.setAttribute('visibility', 'visible')
+            var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+            rect.setAttribute('x', 0)
+            rect.setAttribute('y', 0)
+            rect.setAttribute('stroke', 'black')
+            rect.setAttribute('stroke-width', '1px')
+            rect.setAttribute('width', '100%')
+            rect.setAttribute('height', '100%')
+            rect.setAttribute('fill', '#D3D3D3')
+            svg.appendChild(rect)
+            var text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+            text.setAttribute('x', '50%')
+            text.setAttribute('y', '60%')
+            text.setAttribute('alignment-baseline', 'middle')
+            text.setAttribute('text-anchor', 'middle')
+            text.setAttribute('fill', undefined)
+            text.textContent = tile.letter
+            svg.appendChild(text)
+            var text2 = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+            text2.setAttribute('x', '70%')
+            text2.setAttribute('y', '30%')
+            text2.setAttribute('fill', undefined)
+            text2.setAttribute('class', 'letter-value')
+            text2.textContent = tile.value
+            svg.appendChild(text2)
+            square.appendChild(svg)
+  
+            this.data.tilesOnBoardValueAndPosition.push({tileLetter: tile.letter,
+              xAxis: i,
+              yAxis: j
+            })
         }
       }
     }
@@ -205,43 +205,36 @@ function generateTileSlots() {
   return tileSlots
 }
 
-function randomTile() {
-  var char = randomCharacter()
-  var value = 0
-  switch (char) {
+function tileValue(tile){
+  switch (tile) {
     case 'A': case 'E': case 'I': case 'O':
     case 'U': case 'L': case 'N': case 'S': case 'T': case 'R':
-      value = 1;
-      break;
+      return 1;
     case 'D':
     case 'G':
-      value = 2;
-      break;
+      return 2;
     case 'B': case 'C':
     case 'M': case 'P':
-      value = 3;
-      break;
+      return 3;
     case 'F': case 'H':
     case 'V': case 'W': case 'Y':
-      value = 4;
-      break;
+      return 4;
     case 'K':
-      value = 5;
-      break;
+      return 5;
     case 'J':
     case 'X':
-      value = 8;
-      break;
+      return 8;
     case 'Q':
     case 'Z':
-      value = 10;
-      break;
+      return 10;
   }
+}
 
-  function randomCharacter() {
-    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    return chars.substr(Math.floor(Math.random() * 26), 1)
-  }
+function randomTile() {
+  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  var char = chars.substr(Math.floor(Math.random() * 26), 1)
+
+  var value = tileValue(char);
 
   return {letter: char, letterValue: value, borderColor: '#000000', visibility: 'visible'}
 }
