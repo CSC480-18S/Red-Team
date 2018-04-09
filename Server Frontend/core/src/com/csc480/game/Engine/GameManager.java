@@ -271,6 +271,18 @@ public class GameManager {
                         }
                         */
                     }
+                    theGame.theGameScreen.bottom.setPlayer(thePlayers[0]);
+                    theGame.theGameScreen.bottom.updateState();
+
+                    theGame.theGameScreen.right.setPlayer(thePlayers[1]);
+                    theGame.theGameScreen.right.updateState();
+
+                    theGame.theGameScreen.top.setPlayer(thePlayers[2]);
+                    theGame.theGameScreen.top.updateState();
+
+                    theGame.theGameScreen.left.setPlayer(thePlayers[3]);
+                    theGame.theGameScreen.left.updateState();
+
                     theGame.theGameScreen.UpdateInfoPanel();
 
                 }catch(ArrayIndexOutOfBoundsException e){
