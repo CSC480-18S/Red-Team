@@ -188,10 +188,12 @@ module.exports = function(io) {
       let position = manager.position
       console.log(`INFO: IT WAS PLAYER ${`${position}`.warn}'s TURN`.info)
       manager.isTurn = false
-      position++
-      if (position > 3) {
-        position = 0
-      }
+      do {
+        position++
+        if (position > 3) {
+          position = 0
+        }
+      } while (this._playerManagers[position].id === null)
       this._playerManagers[position].isTurn = true
       console.log(`INFO: IT IS NOW PLAYER ${`${position}`.warn}'s TURN`.info)
 
@@ -211,14 +213,16 @@ module.exports = function(io) {
     }
 
     updateFrontendData() {
-      let players = this._playerManagers.map(player => {
-        return player.sendableData()
-      })
+      if (this._frontendManager !== null) {
+        let players = this._playerManagers.map(player => {
+          return player.sendableData()
+        })
 
-      this._frontendManager.sendEvent('updateState', {
-        board: this._gameManager.board.sendableBoard(),
-        players: players
-      })
+        this._frontendManager.sendEvent('updateState', {
+          board: this._gameManager.board.sendableBoard(),
+          players: players
+        })
+      }
     }
   }
 
