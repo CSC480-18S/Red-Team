@@ -68,8 +68,9 @@ public class GameManager {
             e.printStackTrace();
         }
         for(int i = 0; i < 4; i++){
-            theAIs[i] = new AI();
-            thePlayers[i] = theAIs[i];
+//            theAIs[i] = new AI();
+//            thePlayers[i] = theAIs[i];
+            thePlayers[i] = new Player();
         }
 
     }
