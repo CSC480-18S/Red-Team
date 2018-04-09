@@ -96,13 +96,13 @@ module.exports = function(io) {
      */
     determineClientType(socket, response) {
       if (response.isAI) {
-        this.addClientToManager('ai_test', 'team_test', true, socket)
+        this.addClientToManager(`ai_${this._currentlyConnectedClients}`, 'team_test', true, socket)
         console.log(`INFO: AI ${'ai_test'.warn} CONNECTED`.info)
       } else if (response.isSF) {
         this.createFrontendManager(socket)
         console.log('INFO: SERVER FRONTEND CONNECTED'.info)
       } else if (response.isClient) {
-        this.addClientToManager('client_test', 'team_test', false, socket)
+        this.addClientToManager(`client_${this._currentlyConnectedClients}`, 'team_test', false, socket)
         console.log(`INFO: CLIENT ${'client_test'.warn} CONNECTED`.info)
       }
     }
