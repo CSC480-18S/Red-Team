@@ -126,7 +126,7 @@ button {
     padding: 0.5rem;
     border-radius: 2px;
     width: 90%;
-    background: white;
+    /*background: white;*/
     border: 1.5px solid black;
 }
 
