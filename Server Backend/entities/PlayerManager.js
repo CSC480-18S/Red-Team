@@ -1,9 +1,8 @@
 'use strict'
-const console = require('better-console')
 
 // letter distribution, alphabetically
 const letterDist = [9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1]
-const letters = 'abcdefghijklmnopqrstuvwxyz'.split('')
+const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 let totalLetters = 0
 let intervals = []
 
@@ -29,6 +28,8 @@ class PlayerManager {
       intervals.push(intervals[i - 1] + letterDist[i])
       totalLetters += letterDist[i]
     }
+
+    // this.getNewLetters(7)
   }
 
   /**
@@ -182,15 +183,7 @@ class PlayerManager {
       }
     }
 
-    return newLetters
-  }
-
-  /**
-   * Adds tiles to the titles array
-   * @param {Array} tiles - array of tiles to add to the existing tiles
-   */
-  addTiles(tiles) {
-    this._tiles.push(...tiles)
+    this._tiles.push(...newLetters)
   }
 
   /**

@@ -116,7 +116,7 @@ module.exports = function(io) {
       for (let manager of this._playerManagers) {
         if (manager.id === id) {
           console.log(`INFO: PLAYER ${`${manager.name}`.warn} DISCONNECTED FROM ${'-->'.arrow} PLAYER MANAGER ${`${manager.position}`.warn}`.info)
-          if (!manager.isAI) {
+          if (this._frontendManager !== null && !manager.isAI) {
             this._frontendManager.sendEvent('connectAI', manager.position)
           }
           this._currentlyConnectedClients--
