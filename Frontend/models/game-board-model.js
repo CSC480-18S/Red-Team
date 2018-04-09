@@ -209,27 +209,33 @@ function randomTile() {
   var char = randomCharacter()
   var value = 0
   switch (char) {
-    case 'A': case 'E': case 'I': case 'O': case 'R': case 'S': case 'T':
-      value = 1
-      break
-    case 'D': case 'L': case 'N': case 'U':
-      value = 2
-      break
-    case 'G': case 'H': case 'Y':
-      value = 3
-      break
-    case 'B': case 'C': case 'F': case 'M': case 'P': case 'W':
-      value = 4
-      break
-    case 'K': case 'V':
-      value = 5
-      break
+    case 'A': case 'E': case 'I': case 'O':
+    case 'U': case 'L': case 'N': case 'S': case 'T': case 'R':
+      value = 1;
+      break;
+    case 'D':
+    case 'G':
+      value = 2;
+      break;
+    case 'B': case 'C':
+    case 'M': case 'P':
+      value = 3;
+      break;
+    case 'F': case 'H':
+    case 'V': case 'W': case 'Y':
+      value = 4;
+      break;
+    case 'K':
+      value = 5;
+      break;
+    case 'J':
     case 'X':
-      value = 8
-      break
-    case 'J': case 'Q': case 'Z':
-      value = 10
-      break
+      value = 8;
+      break;
+    case 'Q':
+    case 'Z':
+      value = 10;
+      break;
   }
 
   function randomCharacter() {
