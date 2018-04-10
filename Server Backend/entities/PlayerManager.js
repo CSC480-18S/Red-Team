@@ -1,18 +1,35 @@
 'use strict'
 
+// letter distribution, alphabetically
+const letterDist = [9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1]
+const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+let totalLetters = 0
+let intervals = []
+
 class PlayerManager {
-  constructor(position, name, team, ai, socket, gameManager, serverManager) {
-    this._name = name
-    this._team = team
-    this._isAI = ai
-    this._socket = socket
+  constructor(position) {
+    this._name = null
+    this._team = null
+    this._isAI = null
+    this._socket = null
+    this._socketId = null
     this._position = position
     this._tiles = []
     this._isTurn = false
     this._score = 0
-    this._gameManager = gameManager
-    this._serverManger = serverManager
-    this.listenForPlayerEvents()
+    this.init()
+
+    // set up intervals
+    // push first interval
+    intervals.push(letterDist[0])
+    totalLetters += letterDist[0]
+    // add the rest of the intervals
+    for (let i = 1; i < letterDist.length; ++i) {
+      intervals.push(intervals[i - 1] + letterDist[i])
+      totalLetters += letterDist[i]
+    }
+
+    // this.getNewLetters(7)
   }
 
   /**
@@ -72,68 +89,102 @@ class PlayerManager {
   }
 
   /**
+   * Socket id getter
+   */
+  get id() {
+    return this._socketId
+  }
+
+  /**
    * Score getter
    */
   get score() {
     return this._score
   }
 
-  /**
-   * Listens for events that come from the client
-   */
-  listenForPlayerEvents() {
-    this._socket.on('playWord', board => {
-      console.log(`Client ${this.position} sent playWord`)
-      this._gameManager.play(board, this)
-      this._serverManger.changeTurn(this.position)
-      /** TODO: Take board given, then cross check it with current board
-       * to pluck out played letters and cross check with tiles in hand
-       * to make sure what they sent us is real data and not fake data
-       */
-    })
+  init() {
+    // this.addToHand()
+  }
 
-    this._socket.on('disconnect', () => {
-      this._serverManger.removePlayer(this)
-    })
+  sendEvent(event, data) {
+    switch (event) {
+      case 'play':
+        this.socket.emit(event, data)
+        break
+      case 'dataUpdate':
+        this.socket.emit(event, {
+          name: this.name,
+          position: this.position,
+          tiles: this.tiles,
+          isTurn: this.isTurn,
+          score: this.score
+        })
+        break
+    }
   }
 
   /**
-   * Sent to the user in the event of an invalid play
-   * @param {Object} invalid - hold error information about play
+   * Creates an object that is sent over an event
    */
-  emitInvalidPlay(invalid) {
-    this._socket.emit('play', invalid)
-  }
-
-  /**
-   * Emits to the player if it is their turn
-   * @param {String} playerName - player name
-   */
-  emitWhosTurn(playerName) {
-    this._socket.emit('newTurn', {
+  sendableData() {
+    return {
+      name: this._name,
+      position: this._position,
       isTurn: this._isTurn,
-      whosTurn: playerName
-    })
+      tiles: this._tiles,
+      score: this._score,
+      team: this._team
+    }
   }
 
   /**
-   * Adds details when this position was already occupied by another player controller
-   * @param {Array} tiles - array of tiles
-   * @param {Boolean} isTurn - turn
-   * @param {Number} score - score
+   * When a client connects, their information is injected into the manager
+   * @param {String} name - name of player
+   * @param {String} team - team player is on
+   * @param {Boolean} isAI - AI or not
+   * @param {Object} socket - socket object
    */
-  addPositionDetails(tiles, isTurn, score) {
-    this._tiles = tiles
-    this._isTurn = isTurn
-    this._score = score
+  createHandshakeWithClient(name, team, isAI, socket) {
+    this._name = name
+    this._team = team
+    this._isAI = isAI
+    this._socket = socket
+    this._socketId = socket.id
+    this.sendEvent('dataUpdate')
   }
 
   /**
-   * Adds tiles to the titles array
-   * @param {Array} tiles - array of tiles to add to the existing tiles
+   * Removes player information
    */
-  addTiles(tiles) {
-    this._tiles.push(...tiles)
+  removePlayerInformation() {
+    this._name = null
+    this._team = null
+    this._isAI = null
+    this._socket = null
+    this._socketId = null
+  }
+
+  /**
+   * Determines what new letters a player will get after they
+   * play their turn.
+   * @param {int} lettersUsed - number of letters to generate
+   */
+  getNewLetters(lettersUsed) {
+    let newLetters = []
+
+    // generate the new letters
+    for (let a = 0; a < lettersUsed; ++a) {
+      let index = Math.floor(Math.random() * totalLetters)
+
+      for (let i = 0; i < intervals.length; ++i) {
+        if (index <= intervals[i]) {
+          newLetters.push(letters[i])
+          break
+        }
+      }
+    }
+
+    this._tiles.push(...newLetters)
   }
 
   /**

@@ -20,6 +20,10 @@ router.get('/testF', function(req, res, next) {
   res.render('serverTest')
 })
 
+router.get('/game', function(req, res, next) {
+  res.render('frontend_play_area')
+})
+
 /**
  * Exports this file so it can be used by other files.  Keep this at the bottom.
  */

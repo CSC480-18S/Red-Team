@@ -111,7 +111,7 @@ public class HandActor extends Group {
      */
     public void updateState(){
         ArrayList<Character> whatsInHand = new ArrayList<Character>();
-        System.out.println("associa player hand size of "+associatedPlayer.tiles.length);
+        //System.out.println("associa player hand size of "+associatedPlayer.tiles.length);
         for(int i = 0; i < associatedPlayer.tiles.length; i++) {
             if(associatedPlayer.tiles[i] != 0)
                 whatsInHand.add(new Character(associatedPlayer.tiles[i]));
@@ -134,6 +134,8 @@ public class HandActor extends Group {
         for(Character c: whatsInHand){
             this.addTile(new TileActor(c.charValue()));
         }
+        name.setText(associatedPlayer.name);
+        //name.act(0);
     }
 
 

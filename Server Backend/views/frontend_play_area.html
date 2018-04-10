@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css?family=Aldrich|Press+Start+2P" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="views/styles.css">
 
     <title></title>
 </head>
@@ -12,8 +11,13 @@
 <body>
     <div id="root">
 
+        <div id="usernameArea">
+            <h4 class="username">You are {{username}}</h4>
+        </div>
+
         <div id="textBox">
-            <p id="gameEvent"><b>Game Event</b></p>
+            <p class="gameEvent"><b>Game Event</b></p>
+            <p class="gameEvent" id="actualEvent"></p>
         </div>
         
         <div class="wrapper-board">
@@ -42,11 +46,12 @@
 
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <script type="text/javascript" src="/static/vuejs-2.5.16.min.js"></script>
+    <script type="text/javascript" src="/static/socketio-2.0.3.min.js"></script>
 
-    <script src="models/game-board-model.js"></script>
-    <script src="view-models/game-board-view-model.js"></script>
+    <script type="text/javascript" src="/static/frontend_board_model.js"></script>
+    <script type="text/javascript" src="/static/frontend_board_view_model.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/frontend_play_area.css">
 
 </body>
 </html>

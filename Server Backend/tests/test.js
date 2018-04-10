@@ -10,16 +10,121 @@ const ServerManager = require('../entities/ServerManager')
  */
 const _ = require('lodash')
 
+describe('Game Manager tests', () => {
+  it('should extract letter A from board', () => {
+    const gm = new GameManager()
+
+    let board = new Array(11)
+
+    for (let i = 0; i < board.length; i++) {
+      board[i] = new Array(11)
+
+      for (let j = 0; j < board[0].length; j++) {
+        board[i][j] = null
+      }
+    }
+
+    board[0][0] = 'A'
+
+    let letters = gm.extractLetters(board)
+
+    expect(letters).toEqual([{letter: 'A', x: 0, y: 0}])
+  })
+
+  it('should extract letter A,B,C from board', () => {
+    const gm = new GameManager()
+
+    let board = new Array(11)
+
+    for (let i = 0; i < board.length; i++) {
+      board[i] = new Array(11)
+
+      for (let j = 0; j < board[0].length; j++) {
+        board[i][j] = null
+      }
+    }
+
+    board[0][0] = 'A'
+    board[5][5] = 'B'
+    board[10][10] = 'C'
+
+    let letters = gm.extractLetters(board)
+
+    expect(letters).toEqual([{letter: 'A', x: 0, y: 0}, {letter: 'B', x: 5, y: 5}, {letter: 'C', x: 10, y: 10}])
+  })
+
+  it('should extract word BOB from board', () => {
+    const gm = new GameManager()
+
+    let board = new Array(11)
+
+    for (let i = 0; i < board.length; i++) {
+      board[i] = new Array(11)
+
+      for (let j = 0; j < board[0].length; j++) {
+        board[i][j] = null
+      }
+    }
+
+    board[0][0] = 'B'
+    board[0][1] = 'O'
+    board[0][2] = 'B'
+
+    let words = gm.extractWords([{letter: 'B', x: 0, y: 0}, {letter: 'O', x: 1, y: 0}, {letter: 'B', x: 2, y: 0}], board)
+
+    expect(words).toEqual([{word: 'BOB', x: 0, y: 0, h: true}])
+  })
+
+  it('should extract word BOB, MOM, and TOM from board', () => {
+    const gm = new GameManager()
+
+    let board = new Array(11)
+
+    for (let i = 0; i < board.length; i++) {
+      board[i] = new Array(11)
+
+      for (let j = 0; j < board[0].length; j++) {
+        board[i][j] = null
+      }
+    }
+
+    board[0][0] = 'B'
+    board[0][1] = 'O'
+    board[0][2] = 'B'
+
+    board[0][5] = 'M'
+    board[0][6] = 'O'
+    board[0][7] = 'M'
+
+    board[5][3] = 'T'
+    board[5][4] = 'O'
+    board[5][5] = 'M'
+
+    let words = gm.extractWords([
+      {letter: 'B', x: 0, y: 0}, {letter: 'O', x: 1, y: 0}, {letter: 'B', x: 2, y: 0},
+      {letter: 'M', x: 5, y: 0}, {letter: 'O', x: 6, y: 0}, {letter: 'M', x: 7, y: 0},
+      {letter: 'T', x: 3, y: 5}, {letter: 'O', x: 4, y: 5}, {letter: 'M', x: 5, y: 5}
+    ], board)
+
+    expect(words).toEqual([
+      {word: 'BOB', x: 0, y: 0, h: true},
+      {word: 'MOM', x: 5, y: 0, h: true},
+      {word: 'TOM', x: 3, y: 5, h: true}
+    ])
+  })
+})
+
 describe('New letters tests', () => {
-  const gm = new GameManager()
+  const pm = new PlayerManager()
+  pm.init()
 
   const lettersUsed1 = 1
   const lettersUsed2 = 4
   const lettersUsed3 = 7
 
-  const array1 = gm.getNewLetters(lettersUsed1)
-  const array2 = gm.getNewLetters(lettersUsed2)
-  const array3 = gm.getNewLetters(lettersUsed3)
+  const array1 = pm.getNewLetters(lettersUsed1)
+  const array2 = pm.getNewLetters(lettersUsed2)
+  const array3 = pm.getNewLetters(lettersUsed3)
 
   it('Array1 has ' + lettersUsed1 + ' elements', () => {
     expect(array1.length).toEqual(lettersUsed1)

@@ -171,7 +171,13 @@ button {
     overflow: auto;
 }
 
-#gameEvent {
+#usernameArea{
+    margin: 0 auto;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.gameEvent, .username {
     font-family: 'Aldrich', sans-serif;
 }
 
