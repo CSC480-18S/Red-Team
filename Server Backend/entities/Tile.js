@@ -6,9 +6,10 @@ class Tile {
    * @param {Number} y - y position
    * @param {String} multiplier - the multiplier this Tile has
    */
-  constructor(y, x, multiplier) {
+  constructor(y, x, multiplierType, multiplier) {
     this._x = x
     this._y = y
+    this._mT = multiplierType
     this._m = multiplier
     this._lP = false
     this._l = null
@@ -39,6 +40,20 @@ class Tile {
   }
 
   /**
+   * Multiplier type setter
+   */
+  set multiplierType(multiplierType) {
+    this._mT = multiplierType
+  }
+
+  /**
+   * Multiplier setter
+   */
+  set multiplier(multiplier) {
+    this._m = multiplier
+  }
+
+  /**
    * X Getter
    */
   get x() {
@@ -50,6 +65,13 @@ class Tile {
    */
   get y() {
     return this._y
+  }
+
+  /**
+   * Multiplier Type Getter
+   */
+  get multiplierType() {
+    return this._mT
   }
 
   /**

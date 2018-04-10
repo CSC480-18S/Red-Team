@@ -275,7 +275,7 @@ class GameManager {
       board: this._gameBoard.sendableBoard()
     })
     console.log('DEBUG: SENDING OUT GAME EVENT EVENT'.debug)
-    let action = `${player.name} played ${play.words} for ${score} points`
+    let action = `${player.name} played ${play.words.map(w => w.word)} for ${score} points`
     console.log(`INFO: ${action}`.toUpperCase().info)
     this._io.emit('gameEvent', {
       action: action
@@ -289,35 +289,41 @@ class GameManager {
    * @param {Array} words - array of words to calculate score for
    * @param {Object} bonus - bonus to factor in
    */
-  calculateScore(player, words, bonus) {
+  calculateScore(player, words) {
     console.log('DEBUG: CALCULATING SCORE...'.debug)
     let cumulativeScore = 0
 
     words.map(w => {
-      const wordArray = w.toUpperCase().split('')
+      let x = 0
+      let y = 0
+      const wordArray = w.word.toUpperCase().split('')
+      let wordBonus = 1
 
       let score = wordArray.map(l => {
+        let letterBonus = 1
         for (let t of this._tiles) {
           if (t.letter === l) {
-            if (bonus !== null) {
-              if (bonus.type === 'letter' && bonus.letter === l) {
-                return t.score * bonus.bonus
-              }
+            let boardTile = this._gameBoard.board[w.h ? w.y : w.y + y++][w.h ? w.x + x++ : w.x]
+            switch (boardTile.multiplierType) {
+              case 'word':
+                wordBonus = wordBonus * boardTile.multiplier
+                break
+              case 'letter':
+                letterBonus = boardTile.multiplier
+                break
+              default:
+                break
             }
-            return t.score
+            boardTile.multiplierType = null
+            boardTile.multiplier = null
+            return t.score * letterBonus
           }
         }
       }).reduce((prev, curr) => {
         return prev + curr
       })
 
-      if (bonus !== null) {
-        if (bonus.type === 'word') {
-          score = score * bonus.bonus
-        }
-      }
-
-      cumulativeScore += score
+      cumulativeScore += score * wordBonus
     })
 
     this.addScore(player, cumulativeScore)

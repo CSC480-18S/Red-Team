@@ -45,7 +45,18 @@ class Gameboard {
       this._board[i] = new Array(this._size)
 
       for (let j = 0; j < this._board[0].length; j++) {
-        this._board[i][j] = new Tile(j, i, '1')
+        let tile = '' + i + j
+        switch (tile) {
+          case '00': case '07': case '24': case '37': case '310': case '42': case '68': case '70': case '73': case '86': case '103': case '1010':
+            this._board[i][j] = new Tile(j, i, 'word', 2)
+            break
+          case '03': case '010': case '26': case '30': case '33': case '48': case '62': case '77': case '710': case '84': case '100': case '107':
+            this._board[i][j] = new Tile(j, i, 'letter', 2)
+            break
+          default:
+            this._board[i][j] = new Tile(j, i, null, null)
+            break
+        }
       }
     }
 
@@ -141,9 +152,7 @@ class Gameboard {
     this._board = tempBoard
     return {
       error: 0,
-      words: words.map(word => {
-        return word.word
-      })
+      words: words
     }
   }
 
