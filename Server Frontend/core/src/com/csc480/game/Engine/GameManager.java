@@ -68,9 +68,9 @@ public class GameManager {
             e.printStackTrace();
         }
         for(int i = 0; i < 4; i++){
-//            theAIs[i] = new AI();
-//            thePlayers[i] = theAIs[i];
-            thePlayers[i] = new Player();
+            theAIs[i] = new AI();
+            thePlayers[i] = theAIs[i];
+//            thePlayers[i] = new Player();
         }
 
     }
@@ -259,11 +259,27 @@ public class GameManager {
                     for(int i = 0; i < players.length(); i++){
                         JSONObject player  = (JSONObject)players.get(i);
                         int index = player.getInt("position");
-                        thePlayers[index].score = player.getInt("score");
-                        thePlayers[index].name = player.getString("name");
-                        thePlayers[index].team = player.getString("team");
-                        thePlayers[index].turn = player.getBoolean("isTurn");
-                        System.out.println("updating player @ index "+index);
+                        try {
+                            if(player.get("score") != null)
+                                thePlayers[index].score = player.getInt("score");
+                            else
+                                thePlayers[index].score = 0;
+
+                            if(player.get("name") != null)
+                                thePlayers[index].name = player.getString("name");
+                            else
+                                thePlayers[index].name = "";
+
+                            if(player.get("team") != null)
+                                thePlayers[index].team = player.getString("team");
+                            else
+                                thePlayers[index].team = "";
+
+                            thePlayers[index].turn = player.getBoolean("isTurn");
+                            System.out.println("updating player @ index " + index);
+                        }catch (JSONException e){
+                            e.printStackTrace();
+                        }
                         /*
                         JSONArray hand = player.getJSONArray("hand");
                         for(int j = 0; j < hand.length(); j++){

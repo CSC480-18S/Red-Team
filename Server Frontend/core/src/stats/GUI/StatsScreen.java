@@ -52,7 +52,7 @@ public class StatsScreen implements Screen {
         //Clear the screen from the last frame
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         //Set the entire screen to this color
-        Gdx.gl.glClearColor(.17f, .17f, .17f, 1);
+        Gdx.gl.glClearColor(.666f, .666f, .666f, 1);
         //perform the actions of the actors
         stage.act(delta);
         //render the actors
