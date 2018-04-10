@@ -210,25 +210,6 @@ class Gameboard {
 
     return false
   }
-
-  /**
-   * Resets a tile's multiplier to 1 so that if the word the tile is connected to is played again,
-   * the multiplier doesn't get played again as well
-   * @param {Number} x - x coordinate
-   * @param {Number} y - y coordinate
-   */
-  resetTileMultiplier(x, y) {
-    this._board[x][y].multiplier = 1
-  }
-
-  /**
-   * Pulls information about a sepcific tile
-   * @param {Number} x - x coordinate
-   * @param {Number} y - y coordinate
-   */
-  tileInformation(x, y) {
-    return this._board[x][y]
-  }
 }
 
 /**
