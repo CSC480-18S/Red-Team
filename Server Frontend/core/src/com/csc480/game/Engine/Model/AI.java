@@ -21,6 +21,7 @@ public class AI extends Player {
     private static int counter = 0;
     public PriorityQueue myCache;
     public Socket mySocket;
+    volatile boolean startIndex = true;
 
     /**
      * The starting state of the AI
@@ -71,10 +72,19 @@ public class AI extends Player {
                         GameManager.getInstance().updatePlayers(GameManager.getInstance().thePlayers);
                         tiles = GameManager.getInstance().getNewHand();
                         System.out.println("no plays found, hand : "+new String(tiles));
+                        System.out.println("THIS AI JUST SENT A DUMMY PLAY");
                         myCache.Clear();
-                        TESTFindPlays(GameManager.getInstance().theBoard);
+                        /*if(startIndex) {
+                            FindPlays(GameManager.getInstance().theBoard);
+                        }
+                        else{
+                            FindPlayInverted(GameManager.getInstance().theBoard);
+                        }*/
+
+                        mySocket.emit("playWord", GameManager.getInstance().JSONifyPlayIdea(getDummy()));
+                        this.state = 2;
                         //UPDATE MUST BE CALLED OR ELSE THE AI COMES TO A STANDSTILL IF IT DOES NOT FIND A BEST WORD
-                        update();
+                        //update();
                     }
             }
         }
@@ -124,6 +134,13 @@ public class AI extends Player {
             }
         }
 
+    }
+
+    public PlayIdea getDummy(){
+        ArrayList<Placement> dummyList = new ArrayList<Placement>();
+        dummyList.add(new Placement('a', 5, 5));
+        PlayIdea dummyShit = new PlayIdea("a", dummyList, (byte)0);
+        return dummyShit;
     }
 
     /**
@@ -241,14 +258,19 @@ public class AI extends Player {
                         //System.out.println(myTurn);
                         if (myTurn) {
                             long startTime = System.currentTimeMillis();
-                            while(System.currentTimeMillis() - startTime < 5000){
+                            while(System.currentTimeMillis() - startTime < 500){
                                 if(System.currentTimeMillis() - startTime % 100 == 0) {
                                     System.out.println(System.currentTimeMillis());
                                 }
                             }
                             tiles = GameManager.getInstance().getNewHand();
                             myCache.Clear();
-                            TESTFindPlays(GameManager.getInstance().theBoard);
+                            if(startIndex) {
+                                FindPlays(GameManager.getInstance().theBoard);
+                            }
+                            else{
+                                FindPlayInverted(GameManager.getInstance().theBoard);
+                            }
                             state = 1;
                             tiles = GameManager.getInstance().getNewHand();
                             GameManager.getInstance().updatePlayers(GameManager.getInstance().thePlayers);
@@ -307,10 +329,11 @@ public class AI extends Player {
 
 
 
-    public void TESTFindPlays(Board boardState){
+    public void FindPlays(Board boardState){
         //Invalidate the cache
         myCache.Clear();
-
+        this.startIndex = false;
+        System.out.println("Starting at bottom left corner");
         //AI ALGORITHM HERE
         boolean hasFoundASinglePlayableTile = false;
         for(int i = 0; i < boardState.the_game_board.length; i ++){
@@ -382,45 +405,81 @@ public class AI extends Player {
 
     }
 
-    /**
-     * This will generate all valid moves the AI could play, and add them to the cashe.
-     * @param boardState the Current Board
-     * @return
-     */
-    public void FindPlays(Board boardState){
+    public void FindPlayInverted(Board boardState){
         //Invalidate the cache
         myCache.Clear();
-
+        this.startIndex = true;
+        System.out.println("Starting at top right corner");
         //AI ALGORITHM HERE
+        boolean hasFoundASinglePlayableTile = false;
+        for(int i = boardState.the_game_board.length - 1; i >= 0; i --){
+            for(int j = boardState.the_game_board[0].length - 1 ; j >= 0; j--){
+                if(boardState.the_game_board[i][j] != null){
+                    //System.out.println("Thinking at "+i+", "+j);
+                    hasFoundASinglePlayableTile = true;
+                    //parse horiz
+                    char[] horConstr = new char[11];
+                    for(int h = 0; h < boardState.the_game_board.length; h++){
+                        if(boardState.the_game_board[h][j] != null)
+                            horConstr[h] = boardState.the_game_board[h][j].letter;
+                    }
+                    //get all possible plays with current tiles and boardstate
+                    //System.out.println("getting all possible plays horrizontally");
+                    ArrayList<PlayIdea> possiblePlays = WordVerification.getInstance()
+                            .TESTgetWordsFromHand(new String(tiles), horConstr, i, boardState.the_game_board[i][j], true);
 
-        char ham = GameManager.getInstance().theBoard.the_game_board[0][0].letter;
 
-        int x,y = 0;
-/*
-        if (GameManager.getInstance().thePlayers[(0)].isAI){
+                    //verify they dont fuck with tiles around where theyd be played
+                    for(int p = 0; p < possiblePlays.size(); p++){
+                        if(possiblePlays.get(p).placements.size() > 0)
+                            if( boardState.verifyWordPlacement(possiblePlays.get(p).placements)){
+                                //update that shit
+                                myCache.Push(possiblePlays.get(p));
+                                GameManager.getInstance().placementsUnderConsideration = possiblePlays.get(p).placements;
+//NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
+                            }
+                    }
+                    //parse vert
+                    char[] vertConstr = new char[11];
+                    //for(int v = boardState.the_game_board.length-1; v >= 0; v--){
+                    for(int v = 0; v < boardState.the_game_board.length; v++){
+                        if(boardState.the_game_board[i][v] != null)
+                            vertConstr[10-v] = boardState.the_game_board[i][v].letter;
+                    }
+                    //get all possible plays with current tiles and boardstate
+                    //System.out.println("getting all possible plays vertically!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    ArrayList<PlayIdea> possiblePlaysVert = WordVerification.getInstance()
+                            .TESTgetWordsFromHand(new String(tiles), vertConstr, j, boardState.the_game_board[i][j], false);
 
-
-
-
-
-
-
-
-        } else if (GameManager.getInstance().thePlayers.contains(AI.this)){
-
-
-
-        } else {
-            System.out.println("this is from ai algorithm class's else, there is no AI in thePlayers"
-                    + GameManager.getInstance().thePlayers);
+                    //verify they dont fuck with tiles around where theyd be played
+                    for(int p = 0; p < possiblePlaysVert.size(); p++){
+                        if(possiblePlaysVert.get(p).placements.size() > 0)
+                            if( boardState.verifyWordPlacement(possiblePlaysVert.get(p).placements)){
+                                //update that shit
+                                myCache.Push(possiblePlaysVert.get(p));
+                                GameManager.getInstance().placementsUnderConsideration = possiblePlaysVert.get(p).placements;
+//NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
+                            }
+                    }
+                }
+            }
         }
-*/
+        if(!hasFoundASinglePlayableTile){
+            //System.out.println("ITS THE FIRST MOVE OF THE BOARD OH BOY");
+            TileData centerTile =  new TileData(new Vector2(5,5), (char)0,0,0, this.name, System.currentTimeMillis());
+            char[] constraints = new char[11];
+            ArrayList<PlayIdea> possiblePlaysCent = WordVerification.getInstance().TESTgetWordsFromHand(new String(tiles), constraints, 5, centerTile, true);
+            if(!possiblePlaysCent.isEmpty()) {
+                myCache.Push(possiblePlaysCent.get(0));
+                GameManager.getInstance().placementsUnderConsideration = possiblePlaysCent.get(0).placements;
+//NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
+            } else{
+//SKIP MY TURN AND REDRAW//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                System.err.println("should skip and get new tiles");
+            }
+        }
 
     }
-
-
-
-
 
 
     private class PriorityQueue{
