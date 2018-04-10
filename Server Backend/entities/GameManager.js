@@ -1,76 +1,93 @@
 'use strict'
 /**
- * Imports lodash and axios
+ * Imports lodash, axios, Gameboard, and Debug classes
  */
 const axios = require('axios')
 const _ = require('lodash')
-/**
- * Imports the Gameboard class
- */
 const Gameboard = require('./Gameboard')
-
-// remove this once there is a connection to the DB
-const letters = 'abcdefghijklmnopqrstuvwxyz'.split('')
-const tiles = letters.map(t => {
-  return {
-    letter: t,
-    score: 1
-  }
-})
+require('../helpers/Debug')
 
 class GameManager {
   constructor(io, serverManager) {
-    this._board = new Gameboard()
+    this._gameBoard = new Gameboard()
     this._tileScores = []
     this._greenScore = 0
     this._error = 0
     this._yellowScore = 0
     this._io = io
     this._serverManager = serverManager
+    this._tiles = null
+    this.init()
   }
 
   /**
    * Board getter
    */
   get board() {
-    return this._board.board
+    return this._gameBoard
   }
 
-  // play(newBoard, player) {
-  //   newBoard = JSON.parse(newBoard)
+  init() {
+    (() => {
+      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+      const tiles = letters.map(t => {
+        return {
+          letter: t,
+          score: extractTileValue(t)
+        }
+      })
 
-  //   for (let i = 0; i < newBoard.length; i++) {
-  //     for (let j = 0; j < newBoard[0].length; j++) {
-  //       let newBoardLetter = JSON.parse(newBoard[j][i])
-  //       this.board[j][i].letter = newBoardLetter
-  //     }
-  //   }
-  //   this._io.emit('wordPlayed', this.board)
-  // }
+      this._tiles = tiles
+    })()
 
-  play(newBoard, player) {
-    // let sanitizedBoard = JSON.parse(newBoard)
-    // console.log(newBoard)
-    let letters = this.extractLetters(newBoard)
-    let words = this.extractWords(letters, newBoard)
+    function extractTileValue(letter) {
+      switch (letter) {
+        case 'A': case 'E': case 'I': case 'O':
+        case 'U': case 'L': case 'N': case 'S': case 'T': case 'R':
+          return 1
+        case 'D':
+        case 'G':
+          return 2
+        case 'B': case 'C':
+        case 'M': case 'P':
+          return 3
+        case 'F': case 'H':
+        case 'V': case 'W': case 'Y':
+          return 4
+        case 'K':
+          return 5
+        case 'J':
+        case 'X':
+          return 8
+        case 'Q':
+        case 'Z':
+          return 10
+      }
+    }
+  }
 
+  play(newBoard, player, callback) {
+    const letters = this.extractLetters(newBoard)
+    const words = this.extractWords(letters, newBoard)
+
+    console.log('DEBUG: THE BOARD IS THINKING...'.debug)
     this.wordValidation(words)
       .then(response => {
-        console.log('The board now has an answer')
-        let placement
+        console.log('DEBUG: THE BOARD NOW HAS AN ANSWER...'.debug)
+        let boardPlay = null
         if (response === true) {
           // if invalid type of play, gets the word that was invalid, else is undefined
-          placement = this._board.placeWords(words, player)
+          boardPlay = this._gameBoard.placeWords(words, player)
         } else {
           // if the word is invalid
-          return this.handleResponse(this._error, response, player)
+          return callback(this.handleResponse(response.error, response, player))
         }
-        return this.handleResponse(this._board.error, placement, player)
+        // if the board has attempted to play a word
+        return callback(this.handleResponse(boardPlay.error, boardPlay, player))
       })
       .catch(e => {
-        console.log({code: 'D1', title: 'Database Error', desc: e})
+        console.log(`ERROR: ${e}`.error)
       })
-    console.log('The board is thinking')
   }
 
   /**
@@ -78,15 +95,15 @@ class GameManager {
    * @param {Array} newBoard - board given by the user
    */
   extractLetters(newBoard) {
-    let letters = []
+    const letters = []
     for (let i = 0; i < newBoard.length; i++) {
       for (let j = 0; j < newBoard[0].length; j++) {
-        let currentBoardLetter = this.board[j][i].letter
-        let newBoardLetter = newBoard[j][i]
+        const currentBoardLetter = this._gameBoard.board[j][i].letter
+        const newBoardLetter = newBoard[j][i] === null ? null : newBoard[j][i].toUpperCase()
 
         if (newBoardLetter !== null) {
           if (currentBoardLetter !== newBoardLetter) {
-            let tile = {
+            const tile = {
               letter: newBoardLetter,
               x: i,
               y: j
@@ -96,6 +113,8 @@ class GameManager {
         }
       }
     }
+    console.log(`DEBUG: LETTERS EXTRACTED`.debug)
+    console.log(`DATA: ${JSON.stringify(letters, null, 4)}`.data)
     return letters
   }
 
@@ -105,9 +124,10 @@ class GameManager {
    * @param {Array} newBoard- board
    */
   extractWords(letters, newBoard) {
-    let words = []
+    const words = []
 
     letters.map(letterObject => {
+      let inSpace = 0
       for (let i = 0; i < 2; i++) {
         let word = ''
         let startOfWord = false
@@ -118,15 +138,20 @@ class GameManager {
           y: letterObject.y
         }
 
+        let check = 0
         while (!startOfWord) {
           if (position.x < 0 || position.y < 0 || newBoard[position.y][position.x] === null) {
             startOfWord = true
             position.x = i === 0 ? position.x : position.x + 1
             position.y = i === 0 ? position.y + 1 : position.y
           } else {
+            check++
             position.x = i === 0 ? position.x : position.x - 1
             position.y = i === 0 ? position.y - 1 : position.y
           }
+        }
+        if (check === 1) {
+          inSpace++
         }
 
         startPosition = _.cloneDeep(position)
@@ -135,27 +160,35 @@ class GameManager {
           if (position.x >= newBoard.length || position.y >= newBoard.length || newBoard[position.y][position.x] === undefined || newBoard[position.y][position.x] === null) {
             endOfWord = true
           } else {
+            check++
             word += newBoard[position.y][position.x]
             position.x = i === 0 ? position.x : position.x + 1
             position.y = i === 0 ? position.y + 1 : position.y
           }
         }
 
-        if (word.length > 1) {
+        if (check === 2) {
+          inSpace++
+        }
+
+        if (word.length > 1 || inSpace === 4) {
           let wordObject = {
             word: word,
             x: startPosition.x,
             y: startPosition.y,
             h: i === 1
           }
-
           words.push(wordObject)
         }
         word = ''
+        check = 0
       }
     })
 
-    return _.uniqWith(words, _.isEqual)
+    const uniqueWords = _.uniqWith(words, _.isEqual)
+    console.log(`DEBUG: WORDS EXTRACTED`.debug)
+    console.log(`DATA: ${JSON.stringify(uniqueWords, null, 4)}`.data)
+    return uniqueWords
   }
 
   /**
@@ -163,8 +196,9 @@ class GameManager {
    * @param {Array} words - words to be checked against the DB
    */
   wordValidation(words) {
-    let search = words.map(s => s.word).join(',')
+    const search = words.map(s => s.word).join(',')
 
+    console.log('DEBUG: CHECKING WORDS AGAINST DATABASE...'.debug)
     return axios.get('http://localhost:8090/dictionary/validate?words=' + search)
       .then(res => {
         return this.pruneResults(res.data)
@@ -176,14 +210,19 @@ class GameManager {
    * @param {Array} response - word data sent back from DB
    */
   pruneResults(response) {
+    console.log('DEBUG: PRUNING RESULTS OF DATABASE RESPONSE...'.debug)
     for (let word of response) {
       if (word.bad) {
-        this._error = 6
-        return word.word
+        return {
+          error: 6,
+          word: word.word
+        }
       }
       if (!word.valid) {
-        this._error = 1
-        return word.word
+        return {
+          error: 1,
+          word: word.word
+        }
       }
     }
 
@@ -194,7 +233,8 @@ class GameManager {
    * Handles all types of responses that the gameboard can send back to a user.
    * @param {String} word - word to be piped into the error message
    */
-  handleResponse(error, word, player) {
+  handleResponse(error, play, player) {
+    console.log('DEBUG: SENDING RESPONSE TO CLIENT...'.debug)
     const result = {
       invalid: true
     }
@@ -224,16 +264,23 @@ class GameManager {
     }
     if (result.invalid) {
       result['reason'] = reason.toUpperCase()
-      result['word'] = word.toUpperCase()
-      player.socket.emit('play', result)
-      this._error = 0
-      return
+      result['word'] = play.word.toUpperCase()
+      player.sendEvent('play', result)
+      return false
     }
+    let score = this.calculateScore(player, play.words, null)
 
-    this._serverManager.changeTurn(player.position)
+    console.log('DEBUG: SENDING OUT WORD PLAYED EVENT'.debug)
     this._io.emit('wordPlayed', {
-      board: this._board.sendableBoard()
+      board: this._gameBoard.sendableBoard()
     })
+    console.log('DEBUG: SENDING OUT GAME EVENT EVENT'.debug)
+    let action = `${player.name} played ${play.words} for ${score} points`
+    console.log(`INFO: ${action}`.toUpperCase().info)
+    this._io.emit('gameEvent', {
+      action: action
+    })
+    return true
   }
 
   /**
@@ -243,16 +290,19 @@ class GameManager {
    * @param {Object} bonus - bonus to factor in
    */
   calculateScore(player, words, bonus) {
+    console.log('DEBUG: CALCULATING SCORE...'.debug)
     let cumulativeScore = 0
 
     words.map(w => {
-      let wordArray = w.toUpperCase().split('')
+      const wordArray = w.toUpperCase().split('')
 
       let score = wordArray.map(l => {
-        for (let t of tiles) {
+        for (let t of this._tiles) {
           if (t.letter === l) {
-            if (bonus.type === 'letter' && bonus.letter === l) {
-              return t.score * bonus.bonus
+            if (bonus !== null) {
+              if (bonus.type === 'letter' && bonus.letter === l) {
+                return t.score * bonus.bonus
+              }
             }
             return t.score
           }
@@ -261,14 +311,17 @@ class GameManager {
         return prev + curr
       })
 
-      if (bonus.type === 'word') {
-        score = score * bonus.bonus
+      if (bonus !== null) {
+        if (bonus.type === 'word') {
+          score = score * bonus.bonus
+        }
       }
 
       cumulativeScore += score
     })
 
     this.addScore(player, cumulativeScore)
+    return cumulativeScore
   }
 
   /**
@@ -302,7 +355,7 @@ class GameManager {
    * Creates a new gameboard and initializes it
    */
   resetGameboard() {
-    this._board = new Gameboard()
+    this._gameBoard = new Gameboard()
   }
 
   /**

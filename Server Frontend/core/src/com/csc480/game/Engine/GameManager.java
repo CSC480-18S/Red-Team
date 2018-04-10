@@ -3,6 +3,7 @@ package com.csc480.game.Engine;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.csc480.game.Engine.Model.*;
+import com.csc480.game.GUI.GameScreen;
 import com.csc480.game.OswebbleGame;
 import io.socket.client.IO;
 import io.socket.emitter.Emitter;
@@ -67,9 +68,11 @@ public class GameManager {
             e.printStackTrace();
         }
         for(int i = 0; i < 4; i++){
-            theAIs[i] = new AI();
-            thePlayers[i] = theAIs[i];
+//            theAIs[i] = new AI();
+//            thePlayers[i] = theAIs[i];
+            thePlayers[i] = new Player();
         }
+
 
     }
     public void Update(){
@@ -240,6 +243,53 @@ public class GameManager {
                     String action = data.getString("action");
                     //System.out.println(action);
                     LogEvent(action);
+                }catch(ArrayIndexOutOfBoundsException e){
+                    e.printStackTrace();
+                }catch(JSONException e){
+                    e.printStackTrace();
+                }
+            }
+        }).on("updateState", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                System.out.println("frontend got updateState");
+                try {
+                    JSONObject data = (JSONObject) args[0];
+                    System.out.println(data);
+                    JSONArray players = data.getJSONArray("players");
+                    for(int i = 0; i < players.length(); i++){
+                        JSONObject player  = (JSONObject)players.get(i);
+                        int index = player.getInt("position");
+                        try {
+                            thePlayers[index].score = player.getInt("score");
+                            thePlayers[index].name = player.getString("name");
+                            thePlayers[index].team = player.getString("team");
+                            thePlayers[index].turn = player.getBoolean("isTurn");
+                            System.out.println("updating player @ index " + index);
+                        }catch (JSONException e){
+                            e.printStackTrace();
+                        }
+                        /*
+                        JSONArray hand = player.getJSONArray("hand");
+                        for(int j = 0; j < hand.length(); j++){
+                            thePlayers[index].tiles[j] = hand.getString(j).charAt(0);
+                        }
+                        */
+                    }
+                    theGame.theGameScreen.bottom.setPlayer(thePlayers[0]);
+                    theGame.theGameScreen.bottom.updateState();
+
+                    theGame.theGameScreen.right.setPlayer(thePlayers[1]);
+                    theGame.theGameScreen.right.updateState();
+
+                    theGame.theGameScreen.top.setPlayer(thePlayers[2]);
+                    theGame.theGameScreen.top.updateState();
+
+                    theGame.theGameScreen.left.setPlayer(thePlayers[3]);
+                    theGame.theGameScreen.left.updateState();
+
+                    theGame.theGameScreen.UpdateInfoPanel();
+
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
                 }catch(JSONException e){
@@ -471,6 +521,7 @@ public class GameManager {
      */
     public void hardUpdateBoardState(TileData[][] serverBoard){
         theBoard.the_game_board = serverBoard;
+        System.out.println("SERVER FRONTEND STATE UPDATED/////////////////////////////////////////////////////////////////////////////");
     }
 
     public void wordHasBeenPlayed(TileData[][] backendBoardState){

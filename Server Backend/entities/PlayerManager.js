@@ -1,24 +1,22 @@
 'use strict'
-const console = require('better-console')
 
 // letter distribution, alphabetically
 const letterDist = [9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1]
-const letters = 'abcdefghijklmnopqrstuvwxyz'.split('')
+const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 let totalLetters = 0
 let intervals = []
 
 class PlayerManager {
-  constructor(position, name, team, ai, socket, gameManager, serverManager) {
-    this._name = name
-    this._team = team
-    this._isAI = ai
-    this._socket = socket
+  constructor(position) {
+    this._name = null
+    this._team = null
+    this._isAI = null
+    this._socket = null
+    this._socketId = null
     this._position = position
     this._tiles = []
     this._isTurn = false
     this._score = 0
-    this._gameManager = gameManager
-    this._serverManger = serverManager
     this.init()
 
     // set up intervals
@@ -30,6 +28,8 @@ class PlayerManager {
       intervals.push(intervals[i - 1] + letterDist[i])
       totalLetters += letterDist[i]
     }
+
+    // this.getNewLetters(7)
   }
 
   /**
@@ -89,6 +89,13 @@ class PlayerManager {
   }
 
   /**
+   * Socket id getter
+   */
+  get id() {
+    return this._socketId
+  }
+
+  /**
    * Score getter
    */
   get score() {
@@ -96,12 +103,65 @@ class PlayerManager {
   }
 
   init() {
-    this.addToHand()
-    this.listenForPlayerEvents()
+    // this.addToHand()
   }
 
-  addToHand() {
+  sendEvent(event, data) {
+    switch (event) {
+      case 'play':
+        this.socket.emit(event, data)
+        break
+      case 'dataUpdate':
+        this.socket.emit(event, {
+          name: this.name,
+          position: this.position,
+          tiles: this.tiles,
+          isTurn: this.isTurn,
+          score: this.score
+        })
+        break
+    }
+  }
 
+  /**
+   * Creates an object that is sent over an event
+   */
+  sendableData() {
+    return {
+      name: this._name,
+      position: this._position,
+      isTurn: this._isTurn,
+      tiles: this._tiles,
+      score: this._score,
+      team: this._team
+    }
+  }
+
+  /**
+   * When a client connects, their information is injected into the manager
+   * @param {String} name - name of player
+   * @param {String} team - team player is on
+   * @param {Boolean} isAI - AI or not
+   * @param {Object} socket - socket object
+   */
+  createHandshakeWithClient(name, team, isAI, socket) {
+    this._name = name
+    this._team = team
+    this._isAI = isAI
+    this._socket = socket
+    this._socketId = socket.id
+    this.sendEvent('dataUpdate')
+  }
+
+  /**
+   * Removes player information
+   */
+  removePlayerInformation() {
+    this._name = null
+    this._team = null
+    this._isAI = null
+    this._socket = null
+    this._socketId = null
   }
 
   /**
@@ -124,42 +184,7 @@ class PlayerManager {
       }
     }
 
-    return newLetters
-  }
-
-  /**
-   * Listens for events that come from the client
-   */
-  listenForPlayerEvents() {
-    this._socket.on('playWord', board => {
-      console.table([[this.name, this.socket.id, 'made a play.']])
-      this._gameManager.play(board, this)
-    })
-
-    this._socket.on('disconnect', () => {
-      this._serverManger.removePlayer(this)
-      console.table([[this.name, this.socket.id, 'has disconnected.']])
-    })
-  }
-
-  /**
-   * Adds details when this position was already occupied by another player controller
-   * @param {Array} tiles - array of tiles
-   * @param {Boolean} isTurn - turn
-   * @param {Number} score - score
-   */
-  addPositionDetails(tiles, isTurn, score) {
-    this._tiles = tiles
-    this._isTurn = isTurn
-    this._score = score
-  }
-
-  /**
-   * Adds tiles to the titles array
-   * @param {Array} tiles - array of tiles to add to the existing tiles
-   */
-  addTiles(tiles) {
-    this._tiles.push(...tiles)
+    this._tiles.push(...newLetters)
   }
 
   /**

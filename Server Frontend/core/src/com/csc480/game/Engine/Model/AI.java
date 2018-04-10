@@ -50,17 +50,18 @@ public class AI extends Player {
                 case 1://play
                     //PlayIdea play;
                     PlayIdea bestPlay = PlayBestWord();
+                    System.out.println(this.name + " Pre loop");
                     while (bestPlay != null && !GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay.placements)) {
                         bestPlay = PlayBestWord();
                         if (bestPlay == null) break;
                     }
-
+                    System.out.println(this.name + " post loop");
                     if (bestPlay != null && bestPlay.myWord != null && GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay.placements)) {
                         //System.out.println("The AI found made a decent play");
-                        System.out.println("Im trying to play: "+bestPlay.myWord);
-                        System.out.println("JSONIFIED DATA TO BE SET: "+GameManager.getInstance().JSONifyPlayIdea(bestPlay));
+                        System.out.println(this.name + " trying to play: "+bestPlay.myWord + "  while in state " + this.state);
+                        System.out.println(this.name + " JSONIFIED DATA TO BE SET: "+GameManager.getInstance().JSONifyPlayIdea(bestPlay));
                         mySocket.emit("playWord", GameManager.getInstance().JSONifyPlayIdea(bestPlay));
-                        state = 2;
+                        this.state = 2;
                         //GameManager.getInstance().theBoard.addWord(bestPlay.placements);
                         GameManager.getInstance().placementsUnderConsideration.clear();
                         //remove tiles from hand
@@ -69,8 +70,11 @@ public class AI extends Player {
                     }else{
                         GameManager.getInstance().updatePlayers(GameManager.getInstance().thePlayers);
                         tiles = GameManager.getInstance().getNewHand();
+                        System.out.println("no plays found, hand : "+new String(tiles));
                         myCache.Clear();
                         TESTFindPlays(GameManager.getInstance().theBoard);
+                        //UPDATE MUST BE CALLED OR ELSE THE AI COMES TO A STANDSTILL IF IT DOES NOT FIND A BEST WORD
+                        update();
                     }
             }
         }
@@ -186,7 +190,8 @@ public class AI extends Player {
             mySocket.on("whoAreYou", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    System.out.println(" got whoAreYou");
+                    //System.out.println();
+                    System.out.println(AI.this.name+" got whoAreYou");
                     JSONObject data = new JSONObject();
                     data.put("isAI", true);
                     System.out.println(data.toString());
@@ -197,16 +202,18 @@ public class AI extends Player {
                 @Override
                 public void call(Object... args) {
 
-                        System.out.println(" got play");
+                        System.out.println(AI.this.name + " got play");
                         try {
                             JSONObject data = (JSONObject) args[0];
                             System.out.println(data.toString());
                             boolean invalid = data.getBoolean("invalid");
                             if (invalid) {
                                 if (state == 2)
+                                    System.out.println(AI.this.name + " State set back to 1");
                                     state = 1;
                             } else {
                                 if (state == 2)
+                                    System.out.println(AI.this.name + " State set to 0");
                                     state = 0;
                             }
                             update();
@@ -217,7 +224,7 @@ public class AI extends Player {
             }).on("dataUpdate", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    System.out.println("got dataUpdate");
+                    System.out.println(AI.this.name + " got dataUpdate");
                     try {
                         JSONObject data = (JSONObject) args[0];
                         System.out.println(data.toString());
@@ -233,10 +240,11 @@ public class AI extends Player {
                         //reconnect an AI
                         //System.out.println(myTurn);
                         if (myTurn) {
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
+                            long startTime = System.currentTimeMillis();
+                            while(System.currentTimeMillis() - startTime < 5000){
+                                if(System.currentTimeMillis() - startTime % 100 == 0) {
+                                    System.out.println(System.currentTimeMillis());
+                                }
                             }
                             tiles = GameManager.getInstance().getNewHand();
                             myCache.Clear();
@@ -258,7 +266,19 @@ public class AI extends Player {
             }).on("playWord", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    System.out.println("AI got playWord, but does nothing");
+                    System.out.println(AI.this.name + " got playWord, but does nothing");
+                }
+            }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    System.out.println(AI.this.name + " got disconnect");
+                    mySocket.disconnect();
+                    mySocket = null;
+                }
+            }).on(Socket.EVENT_ERROR, new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    System.out.println(AI.this.name + " got error: "+args[0]);
                 }
             });
         //}
