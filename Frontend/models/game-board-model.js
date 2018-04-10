@@ -16,54 +16,58 @@ socket.on('whoAreYou', () => {
   })
 })
 
+socket.on('errorMessage', response => {
+  alert(response.error)
+})
+
 socket.on('wordPlayed', response => {
   this.data.currentPlayTileAmount = 0
-  for (i = 0; i < 11; i++) {
-    for (j = 0; j < 11; j++) {
+  for (i = 0; i < row; i++) {
+    for (j = 0; j < column; j++) {
       var square = document.getElementById('square-' + i + '-' + j)
       if (!square.hasChildNodes()) {
-        var tile = {
-          id: 'playedLetter: ' + response.board[i][j],
-          letter: response.board[i][j],
-          value: 1,
-          highlightedColor: undefined,
-          visibility: 'visible'
-        }
-        if (tile.letter != null) {
-          console.log(tile)
-          var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-          svg.setAttribute('id', tile.id)
-          svg.setAttribute('visibility', 'visible')
-          var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-          rect.setAttribute('x', 0)
-          rect.setAttribute('y', 0)
-          rect.setAttribute('stroke', 'black')
-          rect.setAttribute('stroke-width', '1px')
-          rect.setAttribute('width', '100%')
-          rect.setAttribute('height', '100%')
-          rect.setAttribute('fill', '#D3D3D3')
-          svg.appendChild(rect)
-          var text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-          text.setAttribute('x', '50%')
-          text.setAttribute('y', '60%')
-          text.setAttribute('alignment-baseline', 'middle')
-          text.setAttribute('text-anchor', 'middle')
-          text.setAttribute('fill', undefined)
-          text.textContent = tile.letter
-          svg.appendChild(text)
-          var text2 = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-          text2.setAttribute('x', '70%')
-          text2.setAttribute('y', '30%')
-          text2.setAttribute('fill', undefined)
-          text2.setAttribute('class', 'letter-value')
-          text2.textContent = tile.value
-          svg.appendChild(text2)
-          square.appendChild(svg)
-
-          this.data.tilesOnBoardValueAndPosition.push({tileLetter: tile.letter,
-            xAxis: i,
-            yAxis: j
-          })
+        if(response.board[i][j] !== null){
+          var tile = {
+            id: 'playedLetter: ' + response.board[i][j],
+            letter: response.board[i][j],
+            value: tileValue(response.board[i][j]),
+            highlightedColor: undefined,
+            visibility: 'visible'
+          }
+            console.log(tile)
+            var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+            svg.setAttribute('id', tile.id)
+            svg.setAttribute('visibility', 'visible')
+            var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+            rect.setAttribute('x', 0)
+            rect.setAttribute('y', 0)
+            rect.setAttribute('stroke', 'black')
+            rect.setAttribute('stroke-width', '1px')
+            rect.setAttribute('width', '100%')
+            rect.setAttribute('height', '100%')
+            rect.setAttribute('fill', '#D3D3D3')
+            svg.appendChild(rect)
+            var text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+            text.setAttribute('x', '50%')
+            text.setAttribute('y', '60%')
+            text.setAttribute('alignment-baseline', 'middle')
+            text.setAttribute('text-anchor', 'middle')
+            text.setAttribute('fill', undefined)
+            text.textContent = tile.letter
+            svg.appendChild(text)
+            var text2 = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+            text2.setAttribute('x', '70%')
+            text2.setAttribute('y', '30%')
+            text2.setAttribute('fill', undefined)
+            text2.setAttribute('class', 'letter-value')
+            text2.textContent = tile.value
+            svg.appendChild(text2)
+            square.appendChild(svg)
+  
+            this.data.tilesOnBoardValueAndPosition.push({tileLetter: tile.letter,
+              xAxis: i,
+              yAxis: j
+            })
         }
       }
     }
@@ -89,15 +93,15 @@ socket.on('play', response => {
 socket.on('gameEvent', response => {
     console.log('received gameEvent: ');
     console.log(response);
-    
+
     // test data
-    var gameEvent = "This is a tested event message";
+    var gameEvent = response.action;
     // gameEvent = response.action;
     document.getElementById("gameEvent").innerHTML += "<br>";
     document.getElementById("gameEvent").innerHTML += gameEvent;
 })
 
-socket.on('dataUpdate', response => {    
+socket.on('dataUpdate', response => {
     console.log('received dataUpdate event: ');
     console.log(response);
     // response.position is the position of four players on the server
@@ -163,16 +167,16 @@ function generateSquares() {
           //}
         }
     }
-    
+
     for (var k = 0; k < squares.length; k++) {
         switch (squares[k].id) {
-            case "square-0-0": case "square-0-7": case "square-2-4": case "square-3-7": case "square-3-10": case "square-4-2": case "square-6-8": case "square-7-0": case "square-7-3": case "square-8-6": case "square-10-3": case "square-10-10":                     
+            case "square-0-0": case "square-0-7": case "square-2-4": case "square-3-7": case "square-3-10": case "square-4-2": case "square-6-8": case "square-7-0": case "square-7-3": case "square-8-6": case "square-10-3": case "square-10-10":
                 squares[k].squareBackgroundColor = "rgb(242,195,50)";
                 break;
-            case "square-0-3": case "square-0-10": case "square-2-6": case "square-3-0": case "square-3-3": case "square-4-8": case "square-6-2": case "square-7-7": case "square-7-10": case "square-8-4": case "square-10-0": case "square-10-7":     
+            case "square-0-3": case "square-0-10": case "square-2-6": case "square-3-0": case "square-3-3": case "square-4-8": case "square-6-2": case "square-7-7": case "square-7-10": case "square-8-4": case "square-10-0": case "square-10-7":
                 squares[k].squareBackgroundColor = "rgb(24,180,76)";
                 break;
-            case "square-5-5": 
+            case "square-5-5":
                 squares[k].squareBackgroundColor = "rgb(84,76,76)";
                 break;
         }
@@ -201,37 +205,36 @@ function generateTileSlots() {
   return tileSlots
 }
 
-function randomTile() {
-  var char = randomCharacter()
-  var value = 0
-  switch (char) {
-    case 'A': case 'E': case 'I': case 'O': case 'R': case 'S': case 'T':
-      value = 1
-      break
-    case 'D': case 'L': case 'N': case 'U':
-      value = 2
-      break
-    case 'G': case 'H': case 'Y':
-      value = 3
-      break
-    case 'B': case 'C': case 'F': case 'M': case 'P': case 'W':
-      value = 4
-      break
-    case 'K': case 'V':
-      value = 5
-      break
+function tileValue(tile){
+  switch (tile) {
+    case 'A': case 'E': case 'I': case 'O':
+    case 'U': case 'L': case 'N': case 'S': case 'T': case 'R':
+      return 1;
+    case 'D':
+    case 'G':
+      return 2;
+    case 'B': case 'C':
+    case 'M': case 'P':
+      return 3;
+    case 'F': case 'H':
+    case 'V': case 'W': case 'Y':
+      return 4;
+    case 'K':
+      return 5;
+    case 'J':
     case 'X':
-      value = 8
-      break
-    case 'J': case 'Q': case 'Z':
-      value = 10
-      break
+      return 8;
+    case 'Q':
+    case 'Z':
+      return 10;
   }
+}
 
-  function randomCharacter() {
-    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    return chars.substr(Math.floor(Math.random() * 26), 1)
-  }
+function randomTile() {
+  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  var char = chars.substr(Math.floor(Math.random() * 26), 1)
+
+  var value = tileValue(char);
 
   return {letter: char, letterValue: value, borderColor: '#000000', visibility: 'visible'}
 }
@@ -280,7 +283,7 @@ var selectAndDeselectTile = function(tileId) {
         this.tileSlots[i].tile.highlightedColor = '#000000'
         }
     }
-    
+
     if(!isDisable) {
         // get tile parent
         var wrapper = tile.parentNode.parentNode.parentNode
@@ -429,13 +432,13 @@ var shuffle = function() {
 }
 
 function emitBoard() {
-  var array = new Array(11)
-  for (var i = 0; i < 11; i++) {
-    array[i] = new Array(11)
+  var array = new Array(row)
+  for (var i = 0; i < row; i++) {
+    array[i] = new Array(column)
   }
 
-  for (var i = 0; i < 11; i++) {
-    for (var j = 0; j < 11; j++) {
+  for (var i = 0; i < row; i++) {
+    for (var j = 0; j < column; j++) {
       if (array[i][j] == undefined) {
         array[i][j] = null
       }

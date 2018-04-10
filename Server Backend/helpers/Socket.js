@@ -1,7 +1,2 @@
-var socketio = require('socket.io')
-function socket(server) {
-  var io = socketio(server)
-  return io
-}
-
-module.exports = socket
+const socketio = require('socket.io')
+module.exports = (server) => { return socketio(server) }

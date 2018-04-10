@@ -143,6 +143,8 @@ public class HandActor extends Group {
         for(Character c: whatsInHand){
             this.addTile(new TileActor(c.charValue()));
         }
+        name.setText(associatedPlayer.name);
+        //name.act(0);
     }
 
 

@@ -16,6 +16,10 @@ module.exports = function(io) {
       this._currentlyConnectedClients = 0
       this._maxPlayers = 4
       this._firstTurnSet = false
+
+      this._usernames = ['465k', 'Am I Bill?', 'Who is Bill?', 'I <3 Demo Day',
+        'Dab Stan', 'Bill', 'Doug Lea', 'Graci Craig', 'Jearly', 'B-Ten', 'Jin Yang', 'Erlich Bachman',
+        'Where is Bill?', 'Bill Nye', 'Connect4', 'Pixel Art']
       this.init()
     }
 
@@ -96,13 +100,13 @@ module.exports = function(io) {
      */
     determineClientType(socket, response) {
       if (response.isAI) {
-        this.addClientToManager('ai_test', 'team_test', true, socket)
+        this.addClientToManager(`ai_${this._currentlyConnectedClients}`, 'team_test', true, socket)
         console.log(`INFO: AI ${'ai_test'.warn} CONNECTED`.info)
       } else if (response.isSF) {
         this.createFrontendManager(socket)
         console.log('INFO: SERVER FRONTEND CONNECTED'.info)
       } else if (response.isClient) {
-        this.addClientToManager('client_test', 'team_test', false, socket)
+        this.addClientToManager(this._usernames[Math.floor(Math.random() * this._usernames.length)], 'team_test', false, socket)
         console.log(`INFO: CLIENT ${'client_test'.warn} CONNECTED`.info)
       }
     }
@@ -116,16 +120,17 @@ module.exports = function(io) {
       for (let manager of this._playerManagers) {
         if (manager.id === id) {
           console.log(`INFO: PLAYER ${`${manager.name}`.warn} DISCONNECTED FROM ${'-->'.arrow} PLAYER MANAGER ${`${manager.position}`.warn}`.info)
-          if (!manager.isAI) {
+          if (this._frontendManager !== null && !manager.isAI) {
             this._frontendManager.sendEvent('connectAI', manager.position)
           }
           this._currentlyConnectedClients--
           manager.removePlayerInformation()
+          this.updateFrontendData()
           return
         }
       }
 
-      if (this._frontendManager.id === id) {
+      if (this._frontendManager !== null && this._frontendManager.id === id) {
         console.log('INFO: SERVER FRONTEND DISCONNECTED'.info)
         this._frontendManager = null
       }
@@ -144,6 +149,9 @@ module.exports = function(io) {
         for (let manager of this._playerManagers) {
           if (manager.id === null) {
             manager.createHandshakeWithClient(name, team, isAI, socket)
+            socket.emit('wordPlayed', {
+              board: this._gameManager.board.sendableBoard()
+            })
             this.updateFrontendData()
             console.log(`DEBUG: CLIENT ADDED TO ${'-->'.arrow} PLAYER MANAGER ${`${manager.position}`.warn}`.debug)
             this._currentlyConnectedClients++
@@ -184,10 +192,12 @@ module.exports = function(io) {
       let position = manager.position
       console.log(`INFO: IT WAS PLAYER ${`${position}`.warn}'s TURN`.info)
       manager.isTurn = false
-      position++
-      if (position > 3) {
-        position = 0
-      }
+      do {
+        position++
+        if (position > 3) {
+          position = 0
+        }
+      } while (this._playerManagers[position].id === null)
       this._playerManagers[position].isTurn = true
       console.log(`INFO: IT IS NOW PLAYER ${`${position}`.warn}'s TURN`.info)
 
@@ -207,14 +217,16 @@ module.exports = function(io) {
     }
 
     updateFrontendData() {
-      let players = this._playerManagers.map(player => {
-        return player.sendableData()
-      })
+      if (this._frontendManager !== null) {
+        let players = this._playerManagers.map(player => {
+          return player.sendableData()
+        })
 
-      this._frontendManager.sendEvent('updateState', {
-        board: this._gameManager.board.sendableBoard(),
-        players: players
-      })
+        this._frontendManager.sendEvent('updateState', {
+          board: this._gameManager.board.sendableBoard(),
+          players: players
+        })
+      }
     }
   }
 

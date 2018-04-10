@@ -7,40 +7,6 @@ const _ = require('lodash')
 const Gameboard = require('./Gameboard')
 require('../helpers/Debug')
 
-// remove this once there is a connection to the DB
-const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
-const tiles = letters.map(t => {
-  return {
-    letter: t,
-    score: extractTileValue(t)
-  }
-})
-
-function extractTileValue(letter) {
-  switch (letter) {
-    case 'A': case 'E': case 'I': case 'O':
-    case 'U': case 'L': case 'N': case 'S': case 'T': case 'R':
-      return 1
-    case 'D':
-    case 'G':
-      return 2
-    case 'B': case 'C':
-    case 'M': case 'P':
-      return 3
-    case 'F': case 'H':
-    case 'V': case 'W': case 'Y':
-      return 4
-    case 'K':
-      return 5
-    case 'J':
-    case 'X':
-      return 8
-    case 'Q':
-    case 'Z':
-      return 10
-  }
-}
-
 class GameManager {
   constructor(io, serverManager) {
     this._gameBoard = new Gameboard()
@@ -50,6 +16,8 @@ class GameManager {
     this._yellowScore = 0
     this._io = io
     this._serverManager = serverManager
+    this._tiles = null
+    this.init()
   }
 
   /**
@@ -59,9 +27,48 @@ class GameManager {
     return this._gameBoard
   }
 
+  init() {
+    (() => {
+      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+      const tiles = letters.map(t => {
+        return {
+          letter: t,
+          score: extractTileValue(t)
+        }
+      })
+
+      this._tiles = tiles
+    })()
+
+    function extractTileValue(letter) {
+      switch (letter) {
+        case 'A': case 'E': case 'I': case 'O':
+        case 'U': case 'L': case 'N': case 'S': case 'T': case 'R':
+          return 1
+        case 'D':
+        case 'G':
+          return 2
+        case 'B': case 'C':
+        case 'M': case 'P':
+          return 3
+        case 'F': case 'H':
+        case 'V': case 'W': case 'Y':
+          return 4
+        case 'K':
+          return 5
+        case 'J':
+        case 'X':
+          return 8
+        case 'Q':
+        case 'Z':
+          return 10
+      }
+    }
+  }
+
   play(newBoard, player, callback) {
-    let letters = this.extractLetters(newBoard)
-    let words = this.extractWords(letters, newBoard)
+    const letters = this.extractLetters(newBoard)
+    const words = this.extractWords(letters, newBoard)
 
     console.log('DEBUG: THE BOARD IS THINKING...'.debug)
     this.wordValidation(words)
@@ -88,15 +95,15 @@ class GameManager {
    * @param {Array} newBoard - board given by the user
    */
   extractLetters(newBoard) {
-    let letters = []
+    const letters = []
     for (let i = 0; i < newBoard.length; i++) {
       for (let j = 0; j < newBoard[0].length; j++) {
-        let currentBoardLetter = this._gameBoard.board[j][i].letter
-        let newBoardLetter = newBoard[j][i] === null ? null : newBoard[j][i].toUpperCase()
+        const currentBoardLetter = this._gameBoard.board[j][i].letter
+        const newBoardLetter = newBoard[j][i] === null ? null : newBoard[j][i].toUpperCase()
 
         if (newBoardLetter !== null) {
           if (currentBoardLetter !== newBoardLetter) {
-            let tile = {
+            const tile = {
               letter: newBoardLetter,
               x: i,
               y: j
@@ -117,7 +124,7 @@ class GameManager {
    * @param {Array} newBoard- board
    */
   extractWords(letters, newBoard) {
-    let words = []
+    const words = []
 
     letters.map(letterObject => {
       let inSpace = 0
@@ -178,7 +185,7 @@ class GameManager {
       }
     })
 
-    let uniqueWords = _.uniqWith(words, _.isEqual)
+    const uniqueWords = _.uniqWith(words, _.isEqual)
     console.log(`DEBUG: WORDS EXTRACTED`.debug)
     console.log(`DATA: ${JSON.stringify(uniqueWords, null, 4)}`.data)
     return uniqueWords
@@ -189,7 +196,7 @@ class GameManager {
    * @param {Array} words - words to be checked against the DB
    */
   wordValidation(words) {
-    let search = words.map(s => s.word).join(',')
+    const search = words.map(s => s.word).join(',')
 
     console.log('DEBUG: CHECKING WORDS AGAINST DATABASE...'.debug)
     return axios.get('http://localhost:8090/dictionary/validate?words=' + search)
@@ -287,11 +294,11 @@ class GameManager {
     let cumulativeScore = 0
 
     words.map(w => {
-      let wordArray = w.toUpperCase().split('')
+      const wordArray = w.toUpperCase().split('')
 
       let score = wordArray.map(l => {
-        for (let t of tiles) {
-          if (t.letter === l.toUpperCase()) {
+        for (let t of this._tiles) {
+          if (t.letter === l) {
             if (bonus !== null) {
               if (bonus.type === 'letter' && bonus.letter === l) {
                 return t.score * bonus.bonus
