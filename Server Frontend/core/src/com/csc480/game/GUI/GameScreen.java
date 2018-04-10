@@ -61,8 +61,8 @@ public class GameScreen implements Screen {
         view = new FitViewport(GUI_UNIT_SIZE * 45, GUI_UNIT_SIZE * 45 * aspectRatio, viewCam);//Gdx.graphics.getHeight(), Gdx.graphics.getHeight()*aspectRatio, viewCam);
         view.apply();
         stage = new Stage(view);
-        stage.setDebugAll(true);
-        stage.setDebugInvisible(false);
+//        stage.setDebugAll(true);
+//        stage.setDebugInvisible(false);
 
         oswebbleGame = mainGame;
 
@@ -163,7 +163,7 @@ public class GameScreen implements Screen {
         //Clear the screen from the last frame
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         //Set the entire screen to this color
-        Gdx.gl.glClearColor(.17f, .17f, .17f, 1);
+        Gdx.gl.glClearColor(.666f, .666f, .666f, 1);
         //perform the actions of the actors
         stage.act(delta);
         //render the actors

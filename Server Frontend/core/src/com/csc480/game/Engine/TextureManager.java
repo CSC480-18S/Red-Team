@@ -16,7 +16,7 @@ public class TextureManager {
         private static TextureManager instance;
         //public final TextureAtlas textureAtlas;
         public Skin ui;
-        public final Texture rack;
+        //public final Texture rack;
         public final Texture background;
         public final Texture tile;
         public final TextureAtlas tilesAtlas;
@@ -25,6 +25,7 @@ public class TextureManager {
         public static final String GREEN_TILE = "~Green";
         public static final String GOLD_TILE = "~Gold";
         public static final String BLANK_TILE = "_Blank";
+        public static final String INVIS_TILE = "_Invis";
         public static final String EMPTY_TILE = "~Empty";
 
         public static TextureManager getInstance(){
@@ -39,7 +40,7 @@ public class TextureManager {
 //            ui.getFont("font").getData().
             ui.getFont("font").setUseIntegerPositions(false);
             ui.getFont("font").getData().setScale(.3f,.3f);
-            rack = new Texture(Gdx.files.internal("rack.jpg"));
+            //rack = new Texture(Gdx.files.internal("rack.jpg"));
 
             tile = new Texture(Gdx.files.internal("temp.png"));
             tilesAtlas = new TextureAtlas(Gdx.files.internal("tilesAtlas.atlas"));
@@ -51,11 +52,13 @@ public class TextureManager {
         public TextureAtlas.AtlasRegion getTileTexture(String tile){
             if(tile.length() == 1) tile = tile.toUpperCase();
             return tilesAtlas.findRegion(tile);
-
+        }
+        public TextureAtlas.AtlasRegion getSlotTexture(){
+            return tilesAtlas.findRegion("slot");
         }
         public void Dispose(){
             ui.dispose();
-            rack.dispose();
+            //rack.dispose();
             instance = null;
             tilesAtlas.dispose();
            // textureAtlas.dispose();
