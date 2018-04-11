@@ -23,6 +23,11 @@ class FrontendManager {
           position: data
         })
         break
+      case 'removeAI':
+        this._socket.emit(event, {
+          position: data
+        })
+        break
       case 'updateState':
         this._socket.emit(event, {
           board: data.board,

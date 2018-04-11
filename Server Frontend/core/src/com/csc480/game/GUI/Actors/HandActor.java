@@ -24,7 +24,7 @@ import java.util.ArrayList;
 public class HandActor extends Group {
     private boolean flip = false;
     ArrayList<TileActor> myHand;
-    Image rack;
+    //Image rack;
     Label name;
     Player associatedPlayer;
 
@@ -33,14 +33,22 @@ public class HandActor extends Group {
         myHand = new ArrayList<TileActor>();
         flip = flipTiles;
         //This could easily be put into an if statement to change the loaded image based on user color
-        //SHOULD MAKE A FUNCTION THAT MANAGES THIS TEXTURE IN THE TEXTURE MANAGER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        rack = new Image(TextureManager.getInstance().rack);
+        //GameScreen.GUI_UNIT_SIZE/2)+count*GameScreen.GUI_UNIT_SIZE, GameScreen.GUI_UNIT_SIZE/2
+        //rack = new Image(TextureManager.getInstance().rack);
+        //build the slots
+        for(int i = 0; i < 7; i++){
+            Image temp = new Image(TextureManager.getInstance().getSlotTexture());
+            temp.setPosition((GameScreen.GUI_UNIT_SIZE/2)+i*GameScreen.GUI_UNIT_SIZE, GameScreen.GUI_UNIT_SIZE/2);
+            temp.setScale((GameScreen.GUI_UNIT_SIZE/GameScreen.TILE_PIXEL_SIZE)/4);
+            addActor(temp);
+        }
+
         name = new Label("default",TextureManager.getInstance().ui,"default");
         name.setName("name");
         name.setPosition(GameScreen.GUI_UNIT_SIZE/2,0);
-        rack.setScale(.2f);
+        //rack.setScale(.2f);
         associatedPlayer = new Player();
-        this.addActor(rack);
+        //this.addActor(rack);
         this.addActor(name);
         addTile(new TileActor('A'));
         addTile(new TileActor('B'));
@@ -55,13 +63,10 @@ public class HandActor extends Group {
      * @param a
      */
     public void addTile(TileActor a){
-        if(flip) {
-            //todo flip the texture of the tile
-        }
-
-        super.addActor(a);
-        a.setPosition((GameScreen.GUI_UNIT_SIZE/2)+myHand.size()*GameScreen.GUI_UNIT_SIZE, GameScreen.GUI_UNIT_SIZE/2);
-        myHand.add(a);
+            super.addActor(a);
+            a.scaleBy(-.005f);
+            a.setPosition(((GameScreen.GUI_UNIT_SIZE/2)+myHand.size()*GameScreen.GUI_UNIT_SIZE)+GameScreen.GUI_UNIT_SIZE*.032f, GameScreen.GUI_UNIT_SIZE/2+GameScreen.GUI_UNIT_SIZE*.1f);//GameScreen.GUI_UNIT_SIZE/2);
+            myHand.add(a);
     }
 
     /**
@@ -78,7 +83,7 @@ public class HandActor extends Group {
             for(Actor child : this.getChildren()){
                 if(child instanceof TileActor){
                     MoveToAction mta = new MoveToAction();
-                    mta.setPosition((GameScreen.GUI_UNIT_SIZE/2)+count*GameScreen.GUI_UNIT_SIZE, GameScreen.GUI_UNIT_SIZE/2);
+                    mta.setPosition(((GameScreen.GUI_UNIT_SIZE/2)+count*GameScreen.GUI_UNIT_SIZE)+GameScreen.GUI_UNIT_SIZE*.032f, GameScreen.GUI_UNIT_SIZE/2+GameScreen.GUI_UNIT_SIZE*.1f);
                     mta.setDuration(1f);
                     child.addAction(mta);
                     count++;

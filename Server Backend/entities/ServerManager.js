@@ -1,6 +1,6 @@
 'use strict'
 /**
- * Imports the GameManager, PlayerManager, FrontendManager, and Debug classes
+ * Imports files
  */
 const GameManager = require('./GameManager')
 const PlayerManager = require('./PlayerManager')
@@ -70,7 +70,7 @@ module.exports = function(io) {
      */
     createGameManager() {
       if (this._gameManager === null) {
-        this._gameManager = new GameManager(io, this)
+        this._gameManager = new GameManager(io)
         console.log('DEBUG: GAME MANAGER CREATED'.debug)
       } else {
         console.log('ERROR: GAME MANAGER ALREADY CREATED'.error)
@@ -100,7 +100,7 @@ module.exports = function(io) {
      */
     determineClientType(socket, response) {
       if (response.isAI) {
-        this.addClientToManager(`ai_${this._currentlyConnectedClients}`, 'team_test', true, socket)
+        this.addClientToManager(`AI_` + this._usernames[Math.floor(Math.random() * this._usernames.length)], 'team_test', true, socket)
         console.log(`INFO: AI ${'ai_test'.warn} CONNECTED`.info)
       } else if (response.isSF) {
         this.createFrontendManager(socket)
@@ -109,6 +109,51 @@ module.exports = function(io) {
         this.addClientToManager(this._usernames[Math.floor(Math.random() * this._usernames.length)], 'team_test', false, socket)
         console.log(`INFO: CLIENT ${'client_test'.warn} CONNECTED`.info)
       }
+    }
+
+    /**
+     * Adds a client to a PlayerManager that does not have any data inside of it
+     * @param {String} name - name of player
+     * @param {String} team - team player is on
+     * @param {Boolean} isAI - AI or not
+     * @param {Object} socket - socket object
+     */
+    addClientToManager(name, team, isAI, socket) {
+      console.log('DEBUG: FINDING MANAGER TO ADD TO'.debug)
+      for (let manager of this._playerManagers) {
+        if (manager.id === null) {
+          manager.createHandshakeWithClient(name, team, isAI, socket)
+          socket.emit('boardUpdate', {
+            board: this._gameManager.board.sendableBoard()
+          })
+          this.updateFrontendData()
+          console.log(`DEBUG: CLIENT ADDED TO ${'-->'.arrow} PLAYER MANAGER ${`${manager.position}`.warn}`.debug)
+          this._currentlyConnectedClients++
+          return
+        }
+      }
+
+      for (let manager of this._playerManagers) {
+        if (this._frontendManager !== null && manager.isAI) {
+          console.log(`INFO: REMOVING AI ${manager.position}`.info)
+          this._currentlyConnectedClients--
+          this._frontendManager.sendEvent('removeAI', manager.position)
+          manager.removePlayerInformation()
+          this.updateFrontendData()
+          manager.createHandshakeWithClient(name, team, isAI, socket)
+          socket.emit('boardUpdate', {
+            board: this._gameManager.board.sendableBoard()
+          })
+          this.updateFrontendData()
+          console.log(`DEBUG: CLIENT ADDED TO ${'-->'.arrow} PLAYER MANAGER ${`${manager.position}`.warn}`.debug)
+          this._currentlyConnectedClients++
+          return
+        }
+      }
+      console.log(`ERROR: THERE ARE ALREADY MAX ${this._maxPlayers} PLAYERS CONNECTED`.error)
+      socket.emit('errorMessage', {
+        error: 'There are already 4 players connected to the game.'
+      })
     }
 
     /**
@@ -133,36 +178,6 @@ module.exports = function(io) {
       if (this._frontendManager !== null && this._frontendManager.id === id) {
         console.log('INFO: SERVER FRONTEND DISCONNECTED'.info)
         this._frontendManager = null
-      }
-    }
-
-    /**
-     * Adds a client to a PlayerManager that does not have any data inside of it
-     * @param {String} name - name of player
-     * @param {String} team - team player is on
-     * @param {Boolean} isAI - AI or not
-     * @param {Object} socket - socket object
-     */
-    addClientToManager(name, team, isAI, socket) {
-      if (this._currentlyConnectedClients !== this._maxPlayers) {
-        console.log('DEBUG: FINDING MANAGER TO ADD TO'.debug)
-        for (let manager of this._playerManagers) {
-          if (manager.id === null) {
-            manager.createHandshakeWithClient(name, team, isAI, socket)
-            socket.emit('wordPlayed', {
-              board: this._gameManager.board.sendableBoard()
-            })
-            this.updateFrontendData()
-            console.log(`DEBUG: CLIENT ADDED TO ${'-->'.arrow} PLAYER MANAGER ${`${manager.position}`.warn}`.debug)
-            this._currentlyConnectedClients++
-            return
-          }
-        }
-      } else {
-        console.log(`ERROR: THERE ARE ALREADY MAX ${this._maxPlayers} PLAYERS CONNECTED`.error)
-        socket.emit('errorMessage', {
-          error: 'There are already 4 players connected to the game.'
-        })
       }
     }
 

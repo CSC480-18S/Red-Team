@@ -45,7 +45,18 @@ class Gameboard {
       this._board[i] = new Array(this._size)
 
       for (let j = 0; j < this._board[0].length; j++) {
-        this._board[i][j] = new Tile(j, i, '1')
+        let tile = '' + i + j
+        switch (tile) {
+          case '00': case '07': case '24': case '37': case '310': case '42': case '68': case '70': case '73': case '86': case '103': case '1010':
+            this._board[i][j] = new Tile(j, i, 'word', 2)
+            break
+          case '03': case '010': case '26': case '30': case '33': case '48': case '62': case '77': case '710': case '84': case '100': case '107':
+            this._board[i][j] = new Tile(j, i, 'letter', 2)
+            break
+          default:
+            this._board[i][j] = new Tile(j, i, null, null)
+            break
+        }
       }
     }
 
@@ -80,6 +91,8 @@ class Gameboard {
      * For word placement validation
      */
     let validWordPlacement = false
+    let invalidWord = null
+    let firstPlayBypass = false
     for (let w of words) {
       let word = this.createWordObject(w)
 
@@ -128,22 +141,24 @@ class Gameboard {
             word: word.word
           }
         }
+        firstPlayBypass = true
         continue
       }
 
       if (!validWordPlacement) {
-        return {
-          error: 5,
-          word: word.word
-        }
+        invalidWord = word.word
+      }
+    }
+    if (!firstPlayBypass && !validWordPlacement) {
+      return {
+        error: 5,
+        word: invalidWord
       }
     }
     this._board = tempBoard
     return {
       error: 0,
-      words: words.map(word => {
-        return word.word
-      })
+      words: words
     }
   }
 
@@ -200,25 +215,6 @@ class Gameboard {
     }
 
     return false
-  }
-
-  /**
-   * Resets a tile's multiplier to 1 so that if the word the tile is connected to is played again,
-   * the multiplier doesn't get played again as well
-   * @param {Number} x - x coordinate
-   * @param {Number} y - y coordinate
-   */
-  resetTileMultiplier(x, y) {
-    this._board[x][y].multiplier = 1
-  }
-
-  /**
-   * Pulls information about a sepcific tile
-   * @param {Number} x - x coordinate
-   * @param {Number} y - y coordinate
-   */
-  tileInformation(x, y) {
-    return this._board[x][y]
   }
 }
 

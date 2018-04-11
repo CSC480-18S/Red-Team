@@ -10,10 +10,12 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RotateByAction;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.csc480.game.Engine.GameManager;
 import com.csc480.game.Engine.TestingInputProcessor;
+import com.csc480.game.Engine.TextureManager;
 import com.csc480.game.GUI.Actors.*;
 import com.csc480.game.OswebbleGame;
 
@@ -33,7 +35,7 @@ public class GameScreen implements Screen {
     OswebbleGame oswebbleGame;
     public final HandActor top,bottom,left,right;
     public final InfoPanelActor infoPanel;
-
+    public Image oswego;
     float unitScale = 1/TILE_PIXEL_SIZE;
 
     //Scene2D stuff and Actors we need to keep references to
@@ -61,8 +63,8 @@ public class GameScreen implements Screen {
         view = new FitViewport(GUI_UNIT_SIZE * 45, GUI_UNIT_SIZE * 45 * aspectRatio, viewCam);//Gdx.graphics.getHeight(), Gdx.graphics.getHeight()*aspectRatio, viewCam);
         view.apply();
         stage = new Stage(view);
-        stage.setDebugAll(true);
-        stage.setDebugInvisible(false);
+//        stage.setDebugAll(true);
+//        stage.setDebugInvisible(false);
 
         oswebbleGame = mainGame;
 
@@ -97,8 +99,9 @@ public class GameScreen implements Screen {
         //top
         top = new HandActor(true);
         tileRacks.addActor(top);
-        top.setPosition(GUI_UNIT_SIZE * 10, GUI_UNIT_SIZE * 12);
-        top.rotateBy(180);
+//        top.setPosition(GUI_UNIT_SIZE * 10, GUI_UNIT_SIZE * 12);
+//        top.rotateBy(180);
+        top.setPosition(GUI_UNIT_SIZE * 2, GUI_UNIT_SIZE * 10.125f);
         //right
         right = new HandActor(false);
         tileRacks.addActor(right);
@@ -107,7 +110,6 @@ public class GameScreen implements Screen {
         tileRacks.moveBy(-GUI_UNIT_SIZE/2,-GUI_UNIT_SIZE);
         tileRacks.scaleBy(.1f);
         playArea.addActor(tileRacks);
-
         infoPanel = new InfoPanelActor();
         infoPanel.moveBy(GameScreen.GUI_UNIT_SIZE*14,0);
         playArea.addActor(infoPanel);
@@ -131,6 +133,9 @@ public class GameScreen implements Screen {
         left.updateState();
 
         UpdateInfoPanel();
+        oswego = new Image(TextureManager.getInstance().getTileTexture("oswego"));
+        oswego.setPosition(-GUI_UNIT_SIZE*30,GUI_UNIT_SIZE*5);
+        stage.addActor(oswego);
 
     }
     public void UpdateInfoPanel(){
@@ -163,7 +168,7 @@ public class GameScreen implements Screen {
         //Clear the screen from the last frame
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         //Set the entire screen to this color
-        Gdx.gl.glClearColor(.17f, .17f, .17f, 1);
+        Gdx.gl.glClearColor(.666f, .666f, .666f, 1);
         //perform the actions of the actors
         stage.act(delta);
         //render the actors

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Array;
 import com.csc480.game.Engine.GameManager;
@@ -152,6 +153,11 @@ public class InfoPanelActor extends Group{
         if(logOfEvents.size >= 4){
             logOfEvents.removeIndex(0);
         }
+        MoveByAction mba = new MoveByAction();
+        mba.setAmount(2000f,0);
+        mba.setDuration(10f);
+        if(event.toLowerCase().contains("goose"))GameManager.getInstance().theGame.theGameScreen.oswego.addAction(mba);
+        GameManager.getInstance().theGame.theGameScreen.oswego.setPosition(-GameScreen.GUI_UNIT_SIZE*30,GameScreen.GUI_UNIT_SIZE*7);
         logOfEvents.add(event);
         eventLog.setItems(logOfEvents);
         eventLog.setSelectedIndex(logOfEvents.size-1);

@@ -73,6 +73,10 @@ public class TestingInputProcessor implements InputProcessor {
             //System.out.println("logging");
             GameManager.getInstance().updatePlayers(GameManager.getInstance().theAIs);
         }
+        else if(character == '4'){
+            //System.out.println("logging");
+            GameManager.getInstance().LogEvent("goose");
+        }
         else if(character == '\'') {
             System.out.println("entering");
             Long startTime = System.nanoTime();
@@ -107,7 +111,7 @@ public class TestingInputProcessor implements InputProcessor {
             GameManager.getInstance().updatePlayers(GameManager.getInstance().theAIs);
             System.out.println("Finding all AI plays for tiles");
             Long startTime = System.nanoTime();
-            GameManager.getInstance().theAIs[0].TESTFindPlays(GameManager.getInstance().theBoard);
+            GameManager.getInstance().theAIs[0].FindPlays(GameManager.getInstance().theBoard);
             System.out.println("finding all possible AI plays took nanos: "+(System.nanoTime()-startTime));
             PlayIdea bestPlay = GameManager.getInstance().theAIs[0].PlayBestWord();
             while(bestPlay != null && !GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay.placements)){

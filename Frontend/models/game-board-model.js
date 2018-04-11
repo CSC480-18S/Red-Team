@@ -20,7 +20,7 @@ socket.on('errorMessage', response => {
   alert(response.error)
 })
 
-socket.on('wordPlayed', response => {
+socket.on('boardUpdate', response => {
   this.data.currentPlayTileAmount = 0
   for (i = 0; i < row; i++) {
     for (j = 0; j < column; j++) {
