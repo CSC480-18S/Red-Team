@@ -1,6 +1,6 @@
 'use strict'
 /**
- * Imports the GameManager, PlayerManager, FrontendManager, and Debug classes
+ * Imports files
  */
 const GameManager = require('./GameManager')
 const PlayerManager = require('./PlayerManager')
@@ -70,7 +70,7 @@ module.exports = function(io) {
      */
     createGameManager() {
       if (this._gameManager === null) {
-        this._gameManager = new GameManager(io, this)
+        this._gameManager = new GameManager(io)
         console.log('DEBUG: GAME MANAGER CREATED'.debug)
       } else {
         console.log('ERROR: GAME MANAGER ALREADY CREATED'.error)
