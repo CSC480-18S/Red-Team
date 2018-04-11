@@ -91,6 +91,8 @@ class Gameboard {
      * For word placement validation
      */
     let validWordPlacement = false
+    let invalidWord = null
+    let firstPlayBypass = false
     for (let w of words) {
       let word = this.createWordObject(w)
 
@@ -139,14 +141,18 @@ class Gameboard {
             word: word.word
           }
         }
+        firstPlayBypass = true
         continue
       }
 
       if (!validWordPlacement) {
-        return {
-          error: 5,
-          word: word.word
-        }
+        invalidWord = word.word
+      }
+    }
+    if (!firstPlayBypass && !validWordPlacement) {
+      return {
+        error: 5,
+        word: invalidWord
       }
     }
     this._board = tempBoard
