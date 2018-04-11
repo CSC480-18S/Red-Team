@@ -112,31 +112,6 @@ module.exports = function(io) {
     }
 
     /**
-     * Removes a player from a manager once they leave the game
-     * @param {String} socketId - id of socket
-     */
-    findClientThatLeft(id) {
-      console.log('DEBUG: FINDING CLIENT TO REMOVE'.debug)
-      for (let manager of this._playerManagers) {
-        if (manager.id === id) {
-          console.log(`INFO: PLAYER ${`${manager.name}`.warn} DISCONNECTED FROM ${'-->'.arrow} PLAYER MANAGER ${`${manager.position}`.warn}`.info)
-          if (this._frontendManager !== null && !manager.isAI) {
-            this._frontendManager.sendEvent('connectAI', manager.position)
-          }
-          this._currentlyConnectedClients--
-          manager.removePlayerInformation()
-          this.updateFrontendData()
-          return
-        }
-      }
-
-      if (this._frontendManager !== null && this._frontendManager.id === id) {
-        console.log('INFO: SERVER FRONTEND DISCONNECTED'.info)
-        this._frontendManager = null
-      }
-    }
-
-    /**
      * Adds a client to a PlayerManager that does not have any data inside of it
      * @param {String} name - name of player
      * @param {String} team - team player is on
@@ -158,11 +133,54 @@ module.exports = function(io) {
             return
           }
         }
+
+        for (let manager of this._playerManagers) {
+          if (this._frontendManager !== null && manager.isAI) {
+            console.log(`INFO: REMOVING AI ${manager.position}`.info)
+            this._currentlyConnectedClients--
+            this._frontendManager.sendEvent('removeAI', manager.position)
+            manager.removePlayerInformation()
+            this.updateFrontendData()
+            manager.createHandshakeWithClient(name, team, isAI, socket)
+            socket.emit('boardUpdate', {
+              board: this._gameManager.board.sendableBoard()
+            })
+            this.updateFrontendData()
+            console.log(`DEBUG: CLIENT ADDED TO ${'-->'.arrow} PLAYER MANAGER ${`${manager.position}`.warn}`.debug)
+            this._currentlyConnectedClients++
+            return
+          }
+        }
       } else {
         console.log(`ERROR: THERE ARE ALREADY MAX ${this._maxPlayers} PLAYERS CONNECTED`.error)
         socket.emit('errorMessage', {
           error: 'There are already 4 players connected to the game.'
         })
+      }
+    }
+
+    /**
+     * Removes a player from a manager once they leave the game
+     * @param {String} socketId - id of socket
+     */
+    findClientThatLeft(id) {
+      console.log('DEBUG: FINDING CLIENT TO REMOVE'.debug)
+      for (let manager of this._playerManagers) {
+        if (manager.id === id) {
+          console.log(`INFO: PLAYER ${`${manager.name}`.warn} DISCONNECTED FROM ${'-->'.arrow} PLAYER MANAGER ${`${manager.position}`.warn}`.info)
+          if (this._frontendManager !== null && !manager.isAI) {
+            this._frontendManager.sendEvent('connectAI', manager.position)
+          }
+          this._currentlyConnectedClients--
+          manager.removePlayerInformation()
+          this.updateFrontendData()
+          return
+        }
+      }
+
+      if (this._frontendManager !== null && this._frontendManager.id === id) {
+        console.log('INFO: SERVER FRONTEND DISCONNECTED'.info)
+        this._frontendManager = null
       }
     }
 
