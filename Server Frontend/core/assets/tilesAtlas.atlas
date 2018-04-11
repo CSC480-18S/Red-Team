@@ -172,6 +172,13 @@ X
   orig: 513, 572
   offset: 0, 0
   index: -1
+oswego
+  rotate: false
+  xy: 3633, 3796
+  size: 459, 222
+  orig: 459, 222
+  offset: 0, 0
+  index: -1
 slot
   rotate: false
   xy: 2, 17

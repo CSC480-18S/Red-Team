@@ -20,8 +20,10 @@ public class GameBoardTable extends Group {
         super();
         board = new Table();
         board.setPosition(0,0);
-        board.setHeight(GameScreen.GUI_UNIT_SIZE*8.75f);
-        board.setWidth(GameScreen.GUI_UNIT_SIZE*8.75f);
+        board.setHeight(GameScreen.GUI_UNIT_SIZE*8.8f);
+        board.setWidth(GameScreen.GUI_UNIT_SIZE*8.8f);
+//        board.setHeight(GameScreen.GUI_UNIT_SIZE*9.25f);
+//        board.setWidth(GameScreen.GUI_UNIT_SIZE*9.25f);
         for(int i= 0; i < 11; i++){
             for(int j = 0; j < 11; j++){
                 Image tile = new Image(TextureManager.getInstance().getTileTexture(TextureManager.EMPTY_TILE));
@@ -67,8 +69,10 @@ public class GameBoardTable extends Group {
 
         board = new Table();
         board.setPosition(0,GameScreen.GUI_UNIT_SIZE*.125f);
-        board.setHeight(GameScreen.GUI_UNIT_SIZE*8.75f);
-        board.setWidth(GameScreen.GUI_UNIT_SIZE*8.75f);
+        board.setHeight(GameScreen.GUI_UNIT_SIZE*8.8f);
+        board.setWidth(GameScreen.GUI_UNIT_SIZE*8.8f);
+//        board.setHeight(GameScreen.GUI_UNIT_SIZE*9.25f);
+//        board.setWidth(GameScreen.GUI_UNIT_SIZE*9.25f);
         for(int i= 0; i < 11; i++){
             for(int j = 0; j < 11; j++){
                 Image tile = new Image(TextureManager.getInstance().getTileTexture(TextureManager.INVIS_TILE));

@@ -73,6 +73,10 @@ public class TestingInputProcessor implements InputProcessor {
             //System.out.println("logging");
             GameManager.getInstance().updatePlayers(GameManager.getInstance().theAIs);
         }
+        else if(character == '4'){
+            //System.out.println("logging");
+            GameManager.getInstance().LogEvent("goose");
+        }
         else if(character == '\'') {
             System.out.println("entering");
             Long startTime = System.nanoTime();

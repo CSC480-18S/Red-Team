@@ -63,14 +63,10 @@ public class HandActor extends Group {
      * @param a
      */
     public void addTile(TileActor a){
-        if(flip) {
-            //todo flip the texture of the tile
-        }
-
-        super.addActor(a);
-        a.scaleBy(-.005f);
-        a.setPosition(((GameScreen.GUI_UNIT_SIZE/2)+myHand.size()*GameScreen.GUI_UNIT_SIZE)+GameScreen.GUI_UNIT_SIZE*.032f, GameScreen.GUI_UNIT_SIZE/2+GameScreen.GUI_UNIT_SIZE*.1f);//GameScreen.GUI_UNIT_SIZE/2);
-        myHand.add(a);
+            super.addActor(a);
+            a.scaleBy(-.005f);
+            a.setPosition(((GameScreen.GUI_UNIT_SIZE/2)+myHand.size()*GameScreen.GUI_UNIT_SIZE)+GameScreen.GUI_UNIT_SIZE*.032f, GameScreen.GUI_UNIT_SIZE/2+GameScreen.GUI_UNIT_SIZE*.1f);//GameScreen.GUI_UNIT_SIZE/2);
+            myHand.add(a);
     }
 
     /**

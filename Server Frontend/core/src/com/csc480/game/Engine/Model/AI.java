@@ -74,13 +74,12 @@ public class AI extends Player {
                         System.out.println("no plays found, hand : "+new String(tiles));
                         System.out.println("THIS AI JUST SENT A DUMMY PLAY");
                         myCache.Clear();
-                        /*if(startIndex) {
+                        if(startIndex) {
                             FindPlays(GameManager.getInstance().theBoard);
                         }
                         else{
                             FindPlayInverted(GameManager.getInstance().theBoard);
-                        }*/
-
+                        }
                         mySocket.emit("playWord", GameManager.getInstance().JSONifyPlayIdea(getDummy()));
                         this.state = 2;
                         //UPDATE MUST BE CALLED OR ELSE THE AI COMES TO A STANDSTILL IF IT DOES NOT FIND A BEST WORD
