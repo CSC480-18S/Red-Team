@@ -21,6 +21,7 @@ import java.util.Collection;
  * The Class that will hold all the game state and route Events to the GUI, SocketManager, and AI
  */
 public class GameManager {
+    public static boolean produceAI = false;
     private static GameManager instance;
     public OswebbleGame theGame;
     public ArrayList<Placement> placementsUnderConsideration;//ones being considered
@@ -68,9 +69,12 @@ public class GameManager {
             e.printStackTrace();
         }
         for(int i = 0; i < 4; i++){
-            theAIs[i] = new AI();
-            thePlayers[i] = theAIs[i];
-//            thePlayers[i] = new Player();
+            if(produceAI) {
+                theAIs[i] = new AI();
+                thePlayers[i] = theAIs[i];
+            }else {
+                thePlayers[i] = new Player();
+            }
         }
 
 
@@ -211,19 +215,17 @@ public class GameManager {
                     e.printStackTrace();
                 }
             }
-        }).on("wordPlayed", new Emitter.Listener() {
+        }).on("boardUpdate", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                LogEvent("wordPlayed");
-                System.out.println("frontend got wordPlayed");
+                LogEvent("boardUpdate");
+                System.out.println("frontend got boardUpdate");
                 try {
                     JSONObject data = (JSONObject) args[0];
                     System.out.println("data: "+data.toString());
                     JSONArray board = data.getJSONArray("board");
                     System.out.println("BACKEND BOARD STATE: "+board.toString());
                     System.out.println("PARSED BACKEND BOARD STATE: "+unJSONifyBackendBoard(board));
-                    //todo un mess this up, the state isnt being constant and the AI are generating with bad data
-                    //TileData[][] parsed = parseServerBoard(board);
                     //find the board/user state differences
                     wordHasBeenPlayed(unJSONifyBackendBoard(board));
                     //hard update the game and user states
@@ -266,7 +268,7 @@ public class GameManager {
                             else
                                 thePlayers[index].score = 0;
 
-                            if(player.get("name") != null)
+                            if(player.get("name") != JSONObject.NULL)
                                 thePlayers[index].name = player.getString("name");
                             else
                                 thePlayers[index].name = "";
