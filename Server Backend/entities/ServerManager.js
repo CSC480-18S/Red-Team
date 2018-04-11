@@ -100,7 +100,7 @@ module.exports = function(io) {
      */
     determineClientType(socket, response) {
       if (response.isAI) {
-        this.addClientToManager(`ai_${this._currentlyConnectedClients}`, 'team_test', true, socket)
+        this.addClientToManager(`AI_` + this._usernames[Math.floor(Math.random() * this._usernames.length)], 'team_test', true, socket)
         console.log(`INFO: AI ${'ai_test'.warn} CONNECTED`.info)
       } else if (response.isSF) {
         this.createFrontendManager(socket)
