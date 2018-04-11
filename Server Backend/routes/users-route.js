@@ -1,167 +1,258 @@
 /**
- * Imports the `express` and `router` modules
+ * Imports the `express`, `router` and other modules
+ * for using JWT, cookies, and axios
  */
-const express = require("express");
-const router = express.Router();
+const express = require('express')
+const router = express.Router()
+const jwt = require('jsonwebtoken')
+const Axios = require('axios')
+const config = require('../config')
+const VerifyToken = require('../helpers/VerifyTokens')
+const cookieParser = require('cookie-parser')
+const {URL} = require('url')
 
-/**
- * Users array
- */
-var users = [];
+router.use(cookieParser())
+
+const axios = Axios.create({baseURL: 'http://localhost:8091/'})
+
+let error = 0
 
 /**
  * Route that creates a user
  */
-router.post("/createUser", function (req, res, next) {
-    /**
-     * TODO generate shortID and JWT
-     */
+router.post('/createUser', function(req, res, next) {
+  const newUser = {
+    username: req.body.username,
+    team: req.body.team
+  }
 
-    /**
-     * Create new user object
-     */
-     const newUser = {
-        userName: req.body.userName
+  checkUserExists(newUser).then(response => {
+    if (response.length > 0) {
+      error = 1
+      return handleErrors(newUser.username)
     }
-
-    /** 
-     * Add new user object to users array
-     */
-    users.push(newUser);
-    
+    return addUser(newUser)
+  }).then(response => {
+    // create a token
+    if (error === 0) {
+      let token = jwt.sign({ id: newUser._id }, config.secret, {
+        expiresIn: '1 year' // expires in 1 year
+      })
+      // save token as cookie
+      res.cookie('token', token, { expires: new Date(253402300000000) })
+      res.json({ username: newUser.username, team: newUser.team })
+      return
+    }
+    error = 0
     /**
-     * Logs to the console what user was added
-     */
-    console.log("User: " + newUser.userName + " added.")
+      * Returns to the user a JSON object containing the new user
+      */
+    res.json(response)
+  }).catch(e => {
+    console.log(e)
+  })
+})
 
-    /**
-     * Returns to the user a JSON object containing the new user
-     */
-    res.json(newUser);
-});
+/**
+ * Helper function for adding
+ * players to the DB
+ */
+function addUser(newUser) {
+  /**
+ * Take GUIs team name and
+ * translate it to the proper
+ * URL for database
+ */
+  let teamURL
+  if (newUser.team === 'Gold') {
+    teamURL = 'http://localhost:8091/teams/1'
+  } else if (newUser.team === 'Green') {
+    teamURL = 'http://localhost:8091/teams/2'
+  } else throw error
+
+  return axios.post('players', {
+    username: newUser.username,
+    team: teamURL
+  })
+    .then(function(response) {
+      console.log('player added')
+    })
+    .catch(function(e) {
+      error = 2
+    })
+}
+
+/**
+ * Helper function for checking
+ * whether a username is already
+ * taken in the DB
+ */
+function checkUserExists(newUser) {
+  return axios.get('players/search/findByUsername?username=' + newUser.username, {
+  })
+    .then(function(response) {
+      return response.data._embedded.players
+    })
+    .catch(function(e) {
+      error = 1
+    })
+}
+
+/**
+ * Helper function for handling
+ * error messages when creating
+ * users
+ */
+function handleErrors(username) {
+  const result = {
+    invalid: true
+  }
+  let reason = null
+
+  result['username'] = username.toUpperCase()
+
+  switch (error) {
+    case 1:
+      reason = 'Username is already taken'
+      break
+    case 2:
+      reason = 'There was a problem registering the user'
+      break
+    default:
+      result.invalid = false
+      return result
+  }
+
+  result['reason'] = reason.toUpperCase()
+
+  return result
+}
 
 /**
  * Route that updates a user's score
  */
-router.put("/updateScore", function (req, res, next) {
-    /**
-     * The word score to be updated
-     */
-    const wscore = req.body.user;
-
-    /**
+router.patch('/updateScore', VerifyToken, function(req, res, next) {
+  /**
      * The player score to be updated
      */
-    const pscore = req.body.user;
-    
-    /**
-     * TODO update scores on the database
-     */
-    
+  const user = req.body.username
+  const totalScore = req.body.totalScore
 
-    /**
-     * TODO Returns a success/fail boolean
+  /**
+     * Update score on the database
      */
-    
-});
+  getUserURL(user, res).then(response => {
+    const userUrl = new URL(response)
+    const path = userUrl.pathname.substr(1)
+    axios.patch(path, {
+      totalScore: totalScore
+    })
+      .then(function(response) {
+        res.status(200).json({code: 'U2', title: 'Score updated', desc: 'Total score updated'})
+      })
+      .catch(function(e) {
+        res.status(400).json({code: 'U4', title: 'Server error', desc: 'Something went wrong'})
+      })
+  })
+    .catch(function(e) {
+      res.status(300).json({code: 'U3', title: 'User error', desc: 'User was not found'})
+    })
+})
+
+/**
+ * Helper function for getting
+ * a user's URL in order to
+ * update their total score
+ */
+function getUserURL(user, res) {
+  return axios.get('players/search/findByUsername?username=' + user, {
+  })
+    .then(function(response) {
+      return response.data._embedded.players[0]._links.self.href
+    })
+    .catch(function(e) {
+      throw e
+    })
+}
 
 /**
  * Route that gets a user's data
  */
-router.get("/getUser", function (req, res, next) {
-    /**
-     * The JWT of the user to be retreived
+router.get('/getUser', VerifyToken, function(req, res, next) {
+  /**
+     * Looks up the user on the database
      */
-    const userToken = req.body.user;
-
-    /**
-     * TODO look up the user on the databse
-     */
-
-    
-    /**
-     * TODO returns a JSON containing user information
-     */
-    res.json();
-});
+  axios.get('players/search/findByUsername?username=' + req.query.username, {
+  })
+    .then(function(response) {
+      if (response.data._embedded.players[0]) {
+        console.log('You have been logged in')
+        res.json(response.data._embedded.players[0])
+      } else {
+        res.status(400).json({code: 'U3', title: 'User error', desc: 'User was not found'})
+      }
+    })
+    .catch(function(e) {
+      res.status(400).json({code: 'U3', title: 'User error', desc: 'User was not found'})
+    })
+})
 
 /**
  * Route that returns the user's team
  */
-router.get("/currentTeam", function (req, res, next) {
-    /**
-     * The JWT of the user to be retreived
+router.get('/currentTeam', VerifyToken, function(req, res, next) {
+  /**
+     * Looks up the user's team
      */
-    const userToken = req.body.user;
-
-    /**
-     * TODO look up the user on the databse
-     */
-
-    
-    /**
-     * TODO returns a String for the user's team
-     */
-    
-});
-
-/**
- * Route that sets the user's team manually
- */
-router.put("/setTeam", function (req, res, next) {
-    /**
-     * The JWT of the user to be retreived
-     */
-    const userToken = req.body.user;
-
-    /**
-     * The team the user will be assigned to
-     */
-    const team = req.body.user;
-    
-    /**
-     * TODO update user's team on the database
-     */
-    
-
-    /**
-     * TODO Returns a success/fail boolean
-     */
-    
-});
+  getTeamLink(req.query.username, res).then(response => {
+    const teamUrl = new URL(response)
+    const path = teamUrl.pathname.substr(1)
+    axios.get(path, {
+    })
+      .then(function(response) {
+        // Returns a JSON containing team information
+        res.json(response.data)
+      })
+      .catch(function(e) {
+        res.status(400).json({code: 'U4', title: 'Server error', desc: 'Something went wrong'})
+      })
+  })
+    .catch(function(e) {
+      res.status(400).json({code: 'U4', title: 'Server error', desc: 'Something went wrong'})
+    })
+})
 
 /**
- * Route that adds the user to the current game
+ * Helper function for getting the
+ * team URL to be called
  */
-router.put("/addUser", function (req, res, next) {
-    /**
-     * The JWT of the user to be added
-     */
-    const userToken = req.body.user;
-    
-    /**
-     * TODO update the databse to reflect the user that joined
-     */
-    
-
-    /**
-     * TODO Returns a success/fail boolean
-     */
-    
-});
+function getTeamLink(username, res) {
+  return axios.get('players/search/findByUsername?username=' + username, {
+  })
+    .then(function(response) {
+      return response.data._embedded.players[0]._links.team.href
+    })
+    .catch(function(e) {
+      throw e
+    })
+}
 
 /**
  * Route that returns all of the users
  */
-router.get("/allUsers", function (req, res, next) {
-
-    /**
+router.get('/allUsers', function(req, res, next) {
+  /**
      * Sends the user a JSON object containing all of the users
      */
-	res.json({
-		all_users: users
-	});
-});
+  axios.get('players', {
+  })
+    .then(function(response) {
+      res.json(response.data._embedded.players)
+    })
+    .catch(function(e) {
+      res.status(500).json({code: 'U4', title: 'Server error', desc: 'Something went wrong'})
+    })
+})
 
 /**
  * Exports this file so it can be used by other files.  Keep this at the bottom.

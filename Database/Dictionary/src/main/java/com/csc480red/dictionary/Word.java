@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
 
 /**
  * Represents a data entity containing a word.
@@ -12,7 +13,8 @@ import javax.persistence.Id;
  *
  */
 @Entity
-public class Word {
+@Inheritance
+public abstract class Word {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)

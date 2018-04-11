@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>PlayWord</title>
+</head>
+<body>
+    <main>
+        <form action="playWords" method="POST">
+            <input type="number" name="x" pattern="[0-9]" placeholder="x-coordinate" required>
+            <input type="number" name="y" pattern="[0-9]" placeholder="y-coordinate" required>
+            <input type="text" name="word" placeholder="word" required>
+            <select name="h">
+                <option value="true">true</option>
+                <option value="false">false</option>
+            </select>
+            <button type="submit">Submit</button>
+        </form>
+
+        <div id="dialog-confirm" title="Empty the recycle bin?">
+
+        </div>
+    </main>
+
+    <script type="text/javascript" src="/static/jquery-3.3.1.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            var $form = $('form');
+            $form.submit(function(){
+                $.post($(this).attr('action'), $(this).serialize(), function(response){
+                        let r = response.data
+
+                        if(r.invalid){
+                            alert(`Error: ${r.invalid}\nWord: ${r.word}\nReason: ${r.reason}`)
+                        } else {
+                            alert(`Word was played!`)
+                        }
+                },'json');
+                return false;
+            });
+        });
+    </script>
+</body>
+</html>

@@ -8,17 +8,24 @@
     "test": "node tests/setup.js",
     "cover": "nyc npm run test",
     "report": "nyc --reporter=lcov npm run test",
-    "lint": "eslint **/*.js --ignore-pattern node_modules/; exit 0"
+    "lint": "eslint **/*.js --ignore-pattern node_modules/; exit 0",
+    "codecov": "nyc npm test && nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
   "author": "CSC 480-18S",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.18.0",
     "body-parser": "^1.18.2",
+    "cookie-parser": "^1.4.3",
     "ejs": "^2.5.7",
     "express": "^4.16.2",
-    "lodash": "^4.17.5"
+    "jsonwebtoken": "^8.1.1",
+    "lodash": "^4.17.5",
+    "shortid": "^2.2.8",
+    "socket.io": "^2.0.4"
   },
   "devDependencies": {
+    "codecov": "^3.0.0",
     "eslint": "^4.18.0",
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-import": "^2.8.0",
@@ -30,7 +37,8 @@
     "jasmine-console-reporter": "^2.0.1",
     "nodemon": "^1.14.12",
     "nyc": "^11.4.1",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "url": "^0.11.0"
   },
   "nyc": {
     "exclude": [

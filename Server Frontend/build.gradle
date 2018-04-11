@@ -62,7 +62,11 @@ project(":core") {
         compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.4"
         compile "com.kotcrab.vis:vis-ui:1.3.0"
         compile "com.github.czyzby:gdx-lml:1.9.1.9.6"
-        
+
+        compile 'io.socket:socket.io-client:0.6.2'
+        compile 'com.mashape.unirest:unirest-java:1.4.9'
+        compile 'com.google.code.gson:gson:2.2.4'
+
     }
 }
 

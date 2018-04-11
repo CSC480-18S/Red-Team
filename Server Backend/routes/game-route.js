@@ -3,15 +3,40 @@
  */
 const express = require('express')
 const router = express.Router()
-const GB = require('../helpers/Gameboard')
 
-const g = new GB(15)
-g.init()
-g.placeWord({ x: 2, y: 2 }, { x: 7, y: 2 }, 'oswego')
-g.placeWord({ x: 7, y: 1 }, { x: 7, y: 4 }, 'doge')
-
+/**
+ * Returns the game board to the user
+ */
 router.get('/gameBoard', function(req, res, next) {
-  res.render('gameboard', {board: g._board})
+  res.render('gameboard')
+})
+
+/**
+ * This route will be changed, no documentation as of now
+ */
+router.get('/playWords', function(req, res, next) {
+  res.render('playWord')
+})
+
+/**
+ * This route will be changed, no documentation as of now
+ */
+router.post('/playWords', function(req, res, next) {
+  let words = req.body
+  if (!(words instanceof Array)) {
+    let newWord = {
+      word: words.word,
+      x: JSON.parse(words.x),
+      y: JSON.parse(words.y),
+      h: JSON.parse(words.h)
+    }
+
+    words = [newWord]
+  }
+
+  const user = req.username
+
+  g.play(words, res, user)
 })
 
 /**
