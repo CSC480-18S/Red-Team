@@ -1,7 +1,9 @@
 package com.csc480.game.Engine;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.csc480.game.Engine.Model.*;
+import com.csc480.game.GUI.GameScreen;
 import com.csc480.game.OswebbleGame;
 import io.socket.client.IO;
 import io.socket.emitter.Emitter;
@@ -13,6 +15,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * The Class that will hold all the game state and route Events to the GUI, SocketManager, and AI
@@ -24,6 +27,7 @@ public class GameManager {
     public Player[] thePlayers;
     public AI[] theAIs;
     public int numPlayers;
+    public int counter = 0;
     //public int currentPlayerIndex;
     public Board theBoard;
     public int greenScore;
@@ -35,12 +39,19 @@ public class GameManager {
     private ArrayList<String> eventBacklog;
 
 
+    /**
+     * Access THE instance of the GameManager
+     * @return instance
+     */
     public static GameManager getInstance() {
         if(instance == null)
             instance = new GameManager();
         return instance;
     }
 
+    /**
+     * Private because of singleton nature
+     */
     private GameManager(){
         thePlayers = new Player[4];
         theAIs = new AI[4];
@@ -59,7 +70,9 @@ public class GameManager {
         for(int i = 0; i < 4; i++){
             theAIs[i] = new AI();
             thePlayers[i] = theAIs[i];
+//            thePlayers[i] = new Player();
         }
+
 
     }
     public void Update(){
@@ -106,7 +119,7 @@ public class GameManager {
      * Define the actions to be taken when events occur
      */
     public void setUpEvents(){
-        socket.on(io.socket.client.Socket.EVENT_CONNECT, new Emitter.Listener() {
+        socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
                 LogEvent("connected to the backend");
@@ -127,7 +140,7 @@ public class GameManager {
                 data.put("isSF",true);
                 socket.emit("whoAreYou",data);
             }
-        }).on(io.socket.client.Socket.EVENT_DISCONNECT, new Emitter.Listener() {
+        }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
                 LogEvent("disconnection");
@@ -165,6 +178,8 @@ public class GameManager {
             public void call(Object... args) {
                 LogEvent("Reconnecting an AI");
                 System.out.println("connectAI");
+                GameManager.getInstance().counter++;
+                System.out.println("AI CONNECT EVENT RECEIVED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + GameManager.getInstance().counter);
                 try {
                     JSONObject data = (JSONObject) args[0];
                     System.out.println(data.toString());
@@ -200,20 +215,19 @@ public class GameManager {
             @Override
             public void call(Object... args) {
                 LogEvent("wordPlayed");
-                //System.out.println("wordPlayed");
+                System.out.println("frontend got wordPlayed");
                 try {
                     JSONObject data = (JSONObject) args[0];
-                    //System.out.println("word played. data: "+data.toString());
-                    String boardString = data.getString("board");
-                    JSONArray board = new JSONArray(boardString);//data.getJSONArray("board");
-                    //System.out.println("board string to array: "+board.toString());
-                    JSONArray col;
+                    System.out.println("data: "+data.toString());
+                    JSONArray board = data.getJSONArray("board");
+                    System.out.println("BACKEND BOARD STATE: "+board.toString());
+                    System.out.println("PARSED BACKEND BOARD STATE: "+unJSONifyBackendBoard(board));
                     //todo un mess this up, the state isnt being constant and the AI are generating with bad data
                     //TileData[][] parsed = parseServerBoard(board);
                     //find the board/user state differences
-                    //wordHasBeenPlayed(parsed);
+                    wordHasBeenPlayed(unJSONifyBackendBoard(board));
                     //hard update the game and user states
-                    //hardUpdateBoardState(parsed);
+                    hardUpdateBoardState(unJSONifyBackendBoard(board));
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
                 }catch(JSONException e){
@@ -223,12 +237,71 @@ public class GameManager {
         }).on("gameEvent", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                System.out.println("gameEvent");
+                System.out.println("frontend got gameEvent");
                 try {
                     JSONObject data = (JSONObject) args[0];
                     String action = data.getString("action");
                     //System.out.println(action);
                     LogEvent(action);
+                }catch(ArrayIndexOutOfBoundsException e){
+                    e.printStackTrace();
+                }catch(JSONException e){
+                    e.printStackTrace();
+                }
+            }
+        }).on("updateState", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                System.out.println("frontend got updateState");
+                try {
+                    JSONObject data = (JSONObject) args[0];
+                    System.out.println(data);
+                    JSONArray players = data.getJSONArray("players");
+                    for(int i = 0; i < players.length(); i++){
+                        JSONObject player  = (JSONObject)players.get(i);
+                        int index = player.getInt("position");
+                        try {
+                            if(player.get("score") != null)
+                                thePlayers[index].score = player.getInt("score");
+                            else
+                                thePlayers[index].score = 0;
+
+                            if(player.get("name") != null)
+                                thePlayers[index].name = player.getString("name");
+                            else
+                                thePlayers[index].name = "";
+
+                            if(player.get("team") != null)
+                                thePlayers[index].team = player.getString("team");
+                            else
+                                thePlayers[index].team = "";
+
+                            thePlayers[index].turn = player.getBoolean("isTurn");
+                            System.out.println("updating player @ index " + index);
+                        }catch (JSONException e){
+                            e.printStackTrace();
+                        }
+                        /*
+                        JSONArray hand = player.getJSONArray("hand");
+                        for(int j = 0; j < hand.length(); j++){
+                            thePlayers[index].tiles[j] = hand.getString(j).charAt(0);
+                        }
+                        */
+                    }
+                    theGame.theGameScreen.bottom.setPlayer(thePlayers[0]);
+                    theGame.theGameScreen.bottom.updateState();
+
+                    theGame.theGameScreen.right.setPlayer(thePlayers[1]);
+                    theGame.theGameScreen.right.updateState();
+
+                    theGame.theGameScreen.top.setPlayer(thePlayers[2]);
+                    theGame.theGameScreen.top.updateState();
+
+                    theGame.theGameScreen.left.setPlayer(thePlayers[3]);
+                    theGame.theGameScreen.left.updateState();
+
+                    theGame.theGameScreen.UpdateInfoPanel();
+
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
                 }catch(JSONException e){
@@ -460,6 +533,7 @@ public class GameManager {
      */
     public void hardUpdateBoardState(TileData[][] serverBoard){
         theBoard.the_game_board = serverBoard;
+        System.out.println("SERVER FRONTEND STATE UPDATED/////////////////////////////////////////////////////////////////////////////");
     }
 
     public void wordHasBeenPlayed(TileData[][] backendBoardState){
@@ -527,7 +601,8 @@ public class GameManager {
 
     /**
      * ASSUMES THAT THE (0,0) tile is in the bottom left tiles corner!!!
-     * @param backend
+     * This returns tiles that exist on the backend, but not on the frontend
+     * @param backend board state from the server
      * @return
      */
     public ArrayList<TileData> getPlacementsFromBackendThatArentOnFrontEnd(TileData[][] backend){
@@ -546,6 +621,7 @@ public class GameManager {
 
     /**
      * ASSUMES THAT THE (0,0) tile is in the bottom left tiles corner!!!
+     * This returns tiles that exist on the frontend, but not on the backend
      * @param backend
      * @return
      */
@@ -562,7 +638,10 @@ public class GameManager {
         return diff;
     }
 
-
+    /**
+     * Add an event to be displayed to the GUI
+     * @param eventName
+     */
     public void LogEvent(String eventName) {
         ApplyEventBackLog();
         if(theGame != null && theGame.theGameScreen != null && theGame.theGameScreen.infoPanel !=null) {
@@ -574,6 +653,10 @@ public class GameManager {
         }
 
     }
+
+    /**
+     * Attempt to display any events gotten that have yet to be shown
+     */
     private void ApplyEventBackLog(){
         if(theGame != null && theGame.theGameScreen != null && theGame.theGameScreen.infoPanel !=null) {
             for(String s: eventBacklog)
@@ -583,7 +666,13 @@ public class GameManager {
 
     }
 
-    public String JSONifyPlayIdea(PlayIdea p){
+    /**
+     * This function transforms a play idea into the format that the backend can read
+     *
+     * @param p
+     * @return 2D json array of the board state with the play idea added onto it
+     */
+    public JSONArray JSONifyPlayIdea(PlayIdea p){
         Board temp = GameManager.getInstance().theBoard.getCopy();
         temp.addWord(p.placements);
         JSONArray parentJsonArray = new JSONArray();
@@ -592,17 +681,37 @@ public class GameManager {
             JSONArray childJsonArray = new JSONArray();
             for (int j =0; j<11; j++){
                 if(temp.the_game_board[j][10-i] != null)
-                    childJsonArray.put("\""+temp.the_game_board[j][10-i].letter+"\"");
+                    childJsonArray.put(temp.the_game_board[j][10-i].letter+"");
                 else
-                    childJsonArray.put("null");
+                    childJsonArray.put(JSONObject.NULL);
 
             }
             parentJsonArray.put(childJsonArray);
         }
-        //System.out.println(parentJsonArray.toString());
-        return parentJsonArray.toString();
+        System.out.println(parentJsonArray.toString());
+        return parentJsonArray;
     }
 
+    public TileData[][] unJSONifyBackendBoard(JSONArray backend){
+        TileData[][] state = new TileData[11][11];
+        for (int i=0; i<11; i++){
+            JSONArray childJsonArray = backend.getJSONArray(i);
+            for (int j =0; j<11; j++){
+                char temp = 0;
+                if(childJsonArray.get(j) != JSONObject.NULL) {
+                    temp = ((String) childJsonArray.get(j)).toLowerCase().charAt(0);
+                    state[j][10-i] = new TileData(new Vector2(j,10-i),temp,0,0,"",0);
+                }
+            }
+        }
+        return state;
+    }
+
+    /**
+     * THIS SHOULDNT BE USED IN THE FINAL PROJECT. WAITING ON BACKEND
+     * This gives 7 random letters
+     * @return
+     */
     public char[] getNewHand(){
         char[] ret = new char[7];
         for(int i =0; i < ret.length; i++){
@@ -611,6 +720,10 @@ public class GameManager {
         return ret;
     }
 
+    /**
+     * Transforms the Board State to JSON that the backend can read
+     * @return
+     */
     public String PrintBoardState(){
         JSONArray parentJsonArray = new JSONArray();
         // loop through your elements

@@ -26,6 +26,16 @@
         socket.on('connectAI', response => {
             console.log("Connecting AI #" + response.position + "...")
         })
+
+        socket.on('updateState', response => {
+            console.log('UPDATE STATE EVENT')
+            console.log(response)
+        })
+
+        socket.on('gameEvent', response => {
+            console.log('GAME EVENT EVENT')
+            console.log(response)
+        })
     </script>
 </body>
 </html>

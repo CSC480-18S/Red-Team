@@ -20,8 +20,8 @@ public class GameBoardTable extends Group {
         super();
         board = new Table();
         board.setPosition(0,0);
-        board.setHeight(Gdx.graphics.getHeight()/5);
-        board.setWidth(Gdx.graphics.getWidth()/5* GameScreen.aspectRatio);
+        board.setHeight(GameScreen.GUI_UNIT_SIZE*8.75f);
+        board.setWidth(GameScreen.GUI_UNIT_SIZE*8.75f);
         for(int i= 0; i < 11; i++){
             for(int j = 0; j < 11; j++){
                 Image tile = new Image(TextureManager.getInstance().getTileTexture(TextureManager.EMPTY_TILE));
@@ -63,8 +63,22 @@ public class GameBoardTable extends Group {
         setTile(7,10, TextureManager.GOLD_TILE);
 
         setTile(10,0, TextureManager.GOLD_TILE);
-        System.out.println(board.getChildren().size);
         addActor(board);
+
+        board = new Table();
+        board.setPosition(0,GameScreen.GUI_UNIT_SIZE*.125f);
+        board.setHeight(GameScreen.GUI_UNIT_SIZE*8.75f);
+        board.setWidth(GameScreen.GUI_UNIT_SIZE*8.75f);
+        for(int i= 0; i < 11; i++){
+            for(int j = 0; j < 11; j++){
+                Image tile = new Image(TextureManager.getInstance().getTileTexture(TextureManager.INVIS_TILE));
+                tile.setName("`");
+                board.add(tile);
+            }
+            board.row();
+        }
+        addActor(board);
+
 
     }
     public void setTile(int x, int y, String letter){

@@ -10,6 +10,9 @@ import java.util.ArrayList;
  * It provides functionality for word verification based on board state.
  */
 public class Board {
+    /**
+     * The array of tiles on the board
+     */
     public TileData[][] the_game_board;
 
     public Board(int size){
@@ -55,6 +58,12 @@ public class Board {
         boolean connectedToWordFlag = true;
         ArrayList<Placement> myCopyOfPlacements = (ArrayList<Placement>) placements.clone();
         TileData[][] test_game_board = new TileData[the_game_board.length][the_game_board.length];
+        if(myCopyOfPlacements == null){
+            return false;
+        }
+        if(myCopyOfPlacements.get(0) == null){
+            return false;
+        }
         int xFlag = myCopyOfPlacements.get(0).xPos;
         int yFlag = myCopyOfPlacements.get(0).yPos;
         int minX = myCopyOfPlacements.get(0).xPos;
@@ -533,7 +542,7 @@ public class Board {
 
         //now we must check if the word is a real allowed word if it is,
         boolean isItAWord = WordVerification.getInstance().isWord(word);
-        System.out.println(isItAWord);
+        //System.out.println(isItAWord);
         return isItAWord;
     }
 

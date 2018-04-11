@@ -21,7 +21,15 @@ public class AI extends Player {
     private static int counter = 0;
     public PriorityQueue myCache;
     public Socket mySocket;
-    private int state = 0;//0=waiting, 1=playing, 2=waitforVerification
+    volatile boolean startIndex = true;
+
+    /**
+     * The starting state of the AI
+     * 0 = waiting
+     * 1 = playing
+     * 2 = waitforVerification
+     */
+    private int state = 0;
     public AI(){
         super();
         this.isAI = true;
@@ -30,7 +38,12 @@ public class AI extends Player {
         myCache = new PriorityQueue(200);
         connectSocket();
     }
+
+    /**
+     * AI State Transition: used to think of words when it becomes the AI's turn and yield when it is not
+     */
     public void update(){
+        System.out.println("AI: " + this.name + "     CURRENT STATE: " + this.state);
         synchronized (GameManager.getInstance().theBoard.the_game_board) {
             switch (state) {
                 case 0://waiting
@@ -38,15 +51,19 @@ public class AI extends Player {
                 case 1://play
                     //PlayIdea play;
                     PlayIdea bestPlay = PlayBestWord();
+                    System.out.println(this.name + " Pre loop");
                     while (bestPlay != null && !GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay.placements)) {
                         bestPlay = PlayBestWord();
                         if (bestPlay == null) break;
                     }
-
+                    System.out.println(this.name + " post loop");
                     if (bestPlay != null && bestPlay.myWord != null && GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay.placements)) {
                         //System.out.println("The AI found made a decent play");
+                        System.out.println(this.name + " trying to play: "+bestPlay.myWord + "  while in state " + this.state);
+                        System.out.println(this.name + " JSONIFIED DATA TO BE SET: "+GameManager.getInstance().JSONifyPlayIdea(bestPlay));
                         mySocket.emit("playWord", GameManager.getInstance().JSONifyPlayIdea(bestPlay));
-                        GameManager.getInstance().theBoard.addWord(bestPlay.placements);
+                        this.state = 2;
+                        //GameManager.getInstance().theBoard.addWord(bestPlay.placements);
                         GameManager.getInstance().placementsUnderConsideration.clear();
                         //remove tiles from hand
                         removeTilesFromHand(bestPlay);
@@ -54,8 +71,20 @@ public class AI extends Player {
                     }else{
                         GameManager.getInstance().updatePlayers(GameManager.getInstance().thePlayers);
                         tiles = GameManager.getInstance().getNewHand();
+                        System.out.println("no plays found, hand : "+new String(tiles));
+                        System.out.println("THIS AI JUST SENT A DUMMY PLAY");
                         myCache.Clear();
-                        TESTFindPlays(GameManager.getInstance().theBoard);
+                        /*if(startIndex) {
+                            FindPlays(GameManager.getInstance().theBoard);
+                        }
+                        else{
+                            FindPlayInverted(GameManager.getInstance().theBoard);
+                        }*/
+
+                        mySocket.emit("playWord", GameManager.getInstance().JSONifyPlayIdea(getDummy()));
+                        this.state = 2;
+                        //UPDATE MUST BE CALLED OR ELSE THE AI COMES TO A STANDSTILL IF IT DOES NOT FIND A BEST WORD
+                        //update();
                     }
             }
         }
@@ -87,6 +116,11 @@ public class AI extends Player {
         }*/
         return;
     }
+
+    /**
+     * Remove the Tiles in a play from the AI's hand
+     * @param p
+     */
     private void removeTilesFromHand(PlayIdea p){
         ArrayList<Placement> copy = (ArrayList<Placement>) p.placements.clone();
         String play = "";
@@ -102,7 +136,16 @@ public class AI extends Player {
 
     }
 
+    public PlayIdea getDummy(){
+        ArrayList<Placement> dummyList = new ArrayList<Placement>();
+        dummyList.add(new Placement('a', 5, 5));
+        PlayIdea dummyShit = new PlayIdea("a", dummyList, (byte)0);
+        return dummyShit;
+    }
 
+    /**
+     * Connect an AI to the backend
+     */
     public boolean connectSocket(){
         try{
             IO.Options opts = new IO.Options();
@@ -134,9 +177,16 @@ public class AI extends Player {
         return mySocket.connected();
     }
 
+    /**
+     * Kill an AI's connection to the back end
+     */
     public void disconnectAI(){
         mySocket.disconnect();
     }
+
+    /**
+     * Reconnect an AI to the backend
+     */
     public void ReConnectSocket(){
         try {
             IO.Options opts = new IO.Options();
@@ -149,52 +199,38 @@ public class AI extends Player {
         }
     }
 
-
+    /**
+     * Creates the Socket Listeners for each event the AI should respond to
+     */
     public void socketEvents(){
         //while(mySocket.connected()) {
             mySocket.on("whoAreYou", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    System.out.println(" got whoAreYou");
+                    //System.out.println();
+                    System.out.println(AI.this.name+" got whoAreYou");
                     JSONObject data = new JSONObject();
                     data.put("isAI", true);
                     System.out.println(data.toString());
                     mySocket.emit("whoAreYou", data);
 
                 }
-            }).on("newGame", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    System.out.println(" got newGame");
-                    try {
-                        JSONObject data = (JSONObject) args[0];
-                        System.out.println(data.toString());
-                        Player response = (Player) data.get("state");
-                        if (response.isAI) {
-                            //clear cache
-                            myCache.Clear();
-                        }
-                        else{
-                            disconnectAI();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
             }).on("play", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
 
-                        System.out.println(" got play");
+                        System.out.println(AI.this.name + " got play");
                         try {
                             JSONObject data = (JSONObject) args[0];
                             System.out.println(data.toString());
                             boolean invalid = data.getBoolean("invalid");
                             if (invalid) {
                                 if (state == 2)
+                                    System.out.println(AI.this.name + " State set back to 1");
                                     state = 1;
                             } else {
                                 if (state == 2)
+                                    System.out.println(AI.this.name + " State set to 0");
                                     state = 0;
                             }
                             update();
@@ -202,28 +238,45 @@ public class AI extends Player {
                             e.printStackTrace();
                         }
                 }
-            }).on("newTurn", new Emitter.Listener() {
+            }).on("dataUpdate", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    System.out.println("got newTurn");
+                    System.out.println(AI.this.name + " got dataUpdate");
                     try {
                         JSONObject data = (JSONObject) args[0];
                         System.out.println(data.toString());
                         boolean myTurn = data.getBoolean("isTurn");
+                        JSONArray jsonTiles = data.getJSONArray("tiles");
+                        char[] newTiles = new char[jsonTiles.length()];
+                        String test = jsonTiles.toString();
+                        for(int i = 0; i < newTiles.length; i++){
+                            newTiles[i] = jsonTiles.getString(i).charAt(0);
+                            System.out.print(newTiles[i]);
+                        }
+
                         //reconnect an AI
-                        System.out.println(myTurn);
+                        //System.out.println(myTurn);
                         if (myTurn) {
-                            /*
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }*/
+                            long startTime = System.currentTimeMillis();
+                            while(System.currentTimeMillis() - startTime < 500){
+                                if(System.currentTimeMillis() - startTime % 100 == 0) {
+                                    System.out.println(System.currentTimeMillis());
+                                }
+                            }
+                            tiles = GameManager.getInstance().getNewHand();
                             myCache.Clear();
-                            TESTFindPlays(GameManager.getInstance().theBoard);
+                            if(startIndex) {
+                                FindPlays(GameManager.getInstance().theBoard);
+                            }
+                            else{
+                                FindPlayInverted(GameManager.getInstance().theBoard);
+                            }
                             state = 1;
                             tiles = GameManager.getInstance().getNewHand();
                             GameManager.getInstance().updatePlayers(GameManager.getInstance().thePlayers);
+                        }
+                        else{
+                            state = 0;
                         }
                         update();
                     } catch (ArrayIndexOutOfBoundsException e) {
@@ -235,7 +288,19 @@ public class AI extends Player {
             }).on("playWord", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    System.out.println(" got playWord");
+                    System.out.println(AI.this.name + " got playWord, but does nothing");
+                }
+            }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    System.out.println(AI.this.name + " got disconnect");
+                    mySocket.disconnect();
+                    mySocket = null;
+                }
+            }).on(Socket.EVENT_ERROR, new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    System.out.println(AI.this.name + " got error: "+args[0]);
                 }
             });
         //}
@@ -264,10 +329,11 @@ public class AI extends Player {
 
 
 
-    public void TESTFindPlays(Board boardState){
+    public void FindPlays(Board boardState){
         //Invalidate the cache
         myCache.Clear();
-
+        this.startIndex = false;
+        System.out.println("Starting at bottom left corner");
         //AI ALGORITHM HERE
         boolean hasFoundASinglePlayableTile = false;
         for(int i = 0; i < boardState.the_game_board.length; i ++){
@@ -289,6 +355,7 @@ public class AI extends Player {
 
                     //verify they dont fuck with tiles around where theyd be played
                     for(int p = 0; p < possiblePlays.size(); p++){
+                        if(possiblePlays.get(p).placements.size() > 0)
                         if( boardState.verifyWordPlacement(possiblePlays.get(p).placements)){
                             //update that shit
                             myCache.Push(possiblePlays.get(p));
@@ -310,6 +377,7 @@ public class AI extends Player {
 
                     //verify they dont fuck with tiles around where theyd be played
                     for(int p = 0; p < possiblePlaysVert.size(); p++){
+                        if(possiblePlaysVert.get(p).placements.size() > 0)
                         if( boardState.verifyWordPlacement(possiblePlaysVert.get(p).placements)){
                             //update that shit
                             myCache.Push(possiblePlaysVert.get(p));
@@ -337,45 +405,81 @@ public class AI extends Player {
 
     }
 
-    /**
-     * This will generate all valid moves the AI could play, and add them to the cashe.
-     * @param boardState the Current Board
-     * @return
-     */
-    public void FindPlays(Board boardState){
+    public void FindPlayInverted(Board boardState){
         //Invalidate the cache
         myCache.Clear();
-
+        this.startIndex = true;
+        System.out.println("Starting at top right corner");
         //AI ALGORITHM HERE
+        boolean hasFoundASinglePlayableTile = false;
+        for(int i = boardState.the_game_board.length - 1; i >= 0; i --){
+            for(int j = boardState.the_game_board[0].length - 1 ; j >= 0; j--){
+                if(boardState.the_game_board[i][j] != null){
+                    //System.out.println("Thinking at "+i+", "+j);
+                    hasFoundASinglePlayableTile = true;
+                    //parse horiz
+                    char[] horConstr = new char[11];
+                    for(int h = 0; h < boardState.the_game_board.length; h++){
+                        if(boardState.the_game_board[h][j] != null)
+                            horConstr[h] = boardState.the_game_board[h][j].letter;
+                    }
+                    //get all possible plays with current tiles and boardstate
+                    //System.out.println("getting all possible plays horrizontally");
+                    ArrayList<PlayIdea> possiblePlays = WordVerification.getInstance()
+                            .TESTgetWordsFromHand(new String(tiles), horConstr, i, boardState.the_game_board[i][j], true);
 
-        char ham = GameManager.getInstance().theBoard.the_game_board[0][0].letter;
 
-        int x,y = 0;
-/*
-        if (GameManager.getInstance().thePlayers[(0)].isAI){
+                    //verify they dont fuck with tiles around where theyd be played
+                    for(int p = 0; p < possiblePlays.size(); p++){
+                        if(possiblePlays.get(p).placements.size() > 0)
+                            if( boardState.verifyWordPlacement(possiblePlays.get(p).placements)){
+                                //update that shit
+                                myCache.Push(possiblePlays.get(p));
+                                GameManager.getInstance().placementsUnderConsideration = possiblePlays.get(p).placements;
+//NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
+                            }
+                    }
+                    //parse vert
+                    char[] vertConstr = new char[11];
+                    //for(int v = boardState.the_game_board.length-1; v >= 0; v--){
+                    for(int v = 0; v < boardState.the_game_board.length; v++){
+                        if(boardState.the_game_board[i][v] != null)
+                            vertConstr[10-v] = boardState.the_game_board[i][v].letter;
+                    }
+                    //get all possible plays with current tiles and boardstate
+                    //System.out.println("getting all possible plays vertically!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    ArrayList<PlayIdea> possiblePlaysVert = WordVerification.getInstance()
+                            .TESTgetWordsFromHand(new String(tiles), vertConstr, j, boardState.the_game_board[i][j], false);
 
-
-
-
-
-
-
-
-        } else if (GameManager.getInstance().thePlayers.contains(AI.this)){
-
-
-
-        } else {
-            System.out.println("this is from ai algorithm class's else, there is no AI in thePlayers"
-                    + GameManager.getInstance().thePlayers);
+                    //verify they dont fuck with tiles around where theyd be played
+                    for(int p = 0; p < possiblePlaysVert.size(); p++){
+                        if(possiblePlaysVert.get(p).placements.size() > 0)
+                            if( boardState.verifyWordPlacement(possiblePlaysVert.get(p).placements)){
+                                //update that shit
+                                myCache.Push(possiblePlaysVert.get(p));
+                                GameManager.getInstance().placementsUnderConsideration = possiblePlaysVert.get(p).placements;
+//NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
+                            }
+                    }
+                }
+            }
         }
-*/
+        if(!hasFoundASinglePlayableTile){
+            //System.out.println("ITS THE FIRST MOVE OF THE BOARD OH BOY");
+            TileData centerTile =  new TileData(new Vector2(5,5), (char)0,0,0, this.name, System.currentTimeMillis());
+            char[] constraints = new char[11];
+            ArrayList<PlayIdea> possiblePlaysCent = WordVerification.getInstance().TESTgetWordsFromHand(new String(tiles), constraints, 5, centerTile, true);
+            if(!possiblePlaysCent.isEmpty()) {
+                myCache.Push(possiblePlaysCent.get(0));
+                GameManager.getInstance().placementsUnderConsideration = possiblePlaysCent.get(0).placements;
+//NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
+            } else{
+//SKIP MY TURN AND REDRAW//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                System.err.println("should skip and get new tiles");
+            }
+        }
 
     }
-
-
-
-
 
 
     private class PriorityQueue{
