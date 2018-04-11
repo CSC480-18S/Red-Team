@@ -271,7 +271,7 @@ class GameManager {
     let score = this.calculateScore(player, play.words, null)
 
     console.log('DEBUG: SENDING OUT WORD PLAYED EVENT'.debug)
-    this._io.emit('wordPlayed', {
+    this._io.emit('boardUpdate', {
       board: this._gameBoard.sendableBoard()
     })
     console.log('DEBUG: SENDING OUT GAME EVENT EVENT'.debug)

@@ -149,7 +149,7 @@ module.exports = function(io) {
         for (let manager of this._playerManagers) {
           if (manager.id === null) {
             manager.createHandshakeWithClient(name, team, isAI, socket)
-            socket.emit('wordPlayed', {
+            socket.emit('boardUpdate', {
               board: this._gameManager.board.sendableBoard()
             })
             this.updateFrontendData()
