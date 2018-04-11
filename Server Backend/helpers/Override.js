@@ -1,3 +1,4 @@
+'use strict'
 /**
  * Imports package.json
  */

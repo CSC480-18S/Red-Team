@@ -1,3 +1,4 @@
+'use strict'
 /**
  * Imports the `express`, `router` and other modules
  * for using JWT and cookies
