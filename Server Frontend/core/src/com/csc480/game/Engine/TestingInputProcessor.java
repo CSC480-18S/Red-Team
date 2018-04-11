@@ -107,7 +107,7 @@ public class TestingInputProcessor implements InputProcessor {
             GameManager.getInstance().updatePlayers(GameManager.getInstance().theAIs);
             System.out.println("Finding all AI plays for tiles");
             Long startTime = System.nanoTime();
-            GameManager.getInstance().theAIs[0].TESTFindPlays(GameManager.getInstance().theBoard);
+            GameManager.getInstance().theAIs[0].FindPlays(GameManager.getInstance().theBoard);
             System.out.println("finding all possible AI plays took nanos: "+(System.nanoTime()-startTime));
             PlayIdea bestPlay = GameManager.getInstance().theAIs[0].PlayBestWord();
             while(bestPlay != null && !GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay.placements)){
