@@ -257,7 +257,7 @@ public class AI extends Player {
                         //System.out.println(myTurn);
                         if (myTurn) {
                             long startTime = System.currentTimeMillis();
-                            while(System.currentTimeMillis() - startTime < 500){
+                            while(System.currentTimeMillis() - startTime < 6000){
                                 if(System.currentTimeMillis() - startTime % 100 == 0) {
                                     System.out.println(System.currentTimeMillis());
                                 }
