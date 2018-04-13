@@ -49,6 +49,10 @@ module.exports = function(io) {
           this.determineWhoMadePlay(socket.id, board)
         })
 
+        socket.on('swap', letters => {
+          this.determineWhoSwapped(socket.id, letters)
+        })
+
         socket.on('disconnect', () => {
           this.findClientThatLeft(socket.id)
         })
@@ -196,6 +200,17 @@ module.exports = function(io) {
             }
           })
           return
+        }
+      }
+    }
+
+    determineWhoSwapped(id, letters) {
+      for (let manager of this._playerManagers) {
+        if (manager.id === id) {
+          console.log(`INFO: PLAYER ${`${manager.name}`.warn} HAS SWAPPED TILES`.info)
+          console.log(`DEBUG: ${JSON.stringify(letters, null, 4)}`)
+          manager.manipulateHand(letters)
+          this.updateTurn(manager)
         }
       }
     }
