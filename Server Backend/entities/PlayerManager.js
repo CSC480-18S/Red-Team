@@ -1,10 +1,9 @@
 'use strict'
 
-// letter distribution, alphabetically
-const letterDist = [9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1]
-const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
-let totalLetters = 0
-let intervals = []
+/**
+ * Imports files
+ */
+const ld = require('../helpers/LetterDistributor')
 
 class PlayerManager {
   constructor(position) {
@@ -19,17 +18,7 @@ class PlayerManager {
     this._score = 0
     this.init()
 
-    // set up intervals
-    // push first interval
-    intervals.push(letterDist[0])
-    totalLetters += letterDist[0]
-    // add the rest of the intervals
-    for (let i = 1; i < letterDist.length; ++i) {
-      intervals.push(intervals[i - 1] + letterDist[i])
-      totalLetters += letterDist[i]
-    }
-
-    // this.getNewLetters(7)
+    this.addToHand()
   }
 
   /**
@@ -154,6 +143,37 @@ class PlayerManager {
   }
 
   /**
+   * Once a play is made, the player's hand is updated
+   * @param {Array} tilesUsed - tiles that were used in a play
+   */
+  playMade(tilesUsed) {
+    this.removeTiles(tilesUsed)
+    this.addToHand()
+  }
+
+  /**
+   * Puts new tiles into the player's hand
+   */
+  addToHand() {
+    let newLetters = []
+    let lettersToGenerate = 7 - this._tiles.length
+
+    // generate the new letters
+    for (let a = 0; a < lettersToGenerate; a++) {
+      let index = Math.floor(Math.random() * ld.totalLetters)
+
+      for (let i = 0; i < ld.intervals.length; i++) {
+        if (index <= ld.intervals[i]) {
+          newLetters.push(ld.letters[i])
+          break
+        }
+      }
+    }
+
+    this._tiles.push(...newLetters)
+  }
+
+  /**
    * Removes player information
    */
   removePlayerInformation() {
@@ -165,45 +185,25 @@ class PlayerManager {
   }
 
   /**
-   * Determines what new letters a player will get after they
-   * play their turn.
-   * @param {int} lettersUsed - number of letters to generate
+   * Removes tiles from array
+   * @param {Array} tiles - array of tiles to remove
    */
-  getNewLetters(lettersUsed) {
-    let newLetters = []
+  removeTiles(tilesToBeRemoved) {
+    let currentHand = this._tiles
 
-    // generate the new letters
-    for (let a = 0; a < lettersUsed; ++a) {
-      let index = Math.floor(Math.random() * totalLetters)
-
-      for (let i = 0; i < intervals.length; ++i) {
-        if (index <= intervals[i]) {
-          newLetters.push(letters[i])
+    for (let t = tilesToBeRemoved.length - 1; t >= 0; t--) {
+      let tile = tilesToBeRemoved[t]
+      for (let i = currentHand.length - 1; i >= 0; i--) {
+        let letter = currentHand[i]
+        if (tile.letter === letter) {
+          currentHand.splice(i, 1)
+          tilesToBeRemoved.splice(t, 1)
           break
         }
       }
     }
 
-    this._tiles.push(...newLetters)
-  }
-
-  /**
-   * Removes tiles from array
-   * @param {Array} tiles - array of tiles to remove
-   */
-  removeTiles(tiles) {
-    let newTiles = []
-
-    this._tiles.forEach(t => {
-      let i = tiles.indexOf(t)
-      if (i === -1) { // if t does not exist in the tiles array
-        newTiles.push(t) // push to new array (letters that aren't being removed)
-      } else { // if t is in the tiles array, remove it from the tiles array so multiple of the same letter is not removed
-        tiles.splice(i, 1)
-      }
-    })
-
-    this._tiles = newTiles
+    this._tiles = currentHand
   }
 
   /**

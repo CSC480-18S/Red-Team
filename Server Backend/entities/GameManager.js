@@ -27,7 +27,17 @@ class GameManager {
   }
 
   play(newBoard, player, callback) {
-    const words = ex(newBoard, this._gameBoard.board)
+    const letters = ex.extractLetters(newBoard, this._gameBoard.board, player)
+
+    if (!letters) {
+      let response = {
+        error: 7,
+        word: ''
+      }
+      return callback(rh(response.error, response, player, this))
+    }
+
+    const words = ex.extractWords(letters, newBoard)
 
     console.log('DEBUG: THE BOARD IS THINKING...'.debug)
     this.wordValidation(words)
@@ -42,6 +52,9 @@ class GameManager {
           return callback(rh(response.error, response, player, this))
         }
         // if the board has attempted to play a word
+        if (boardPlay.error === 0) {
+          player.playMade(letters)
+        }
         return callback(rh(boardPlay.error, boardPlay, player, this))
       })
       .catch(e => {

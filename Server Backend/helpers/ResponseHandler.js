@@ -31,6 +31,9 @@ module.exports = (er, play, player, sm) => {
     case 6:
       reason = 'Word is a bad word'
       break
+    case 7:
+      reason = 'This player has cheated'
+      break
     default:
       result.invalid = false
   }
