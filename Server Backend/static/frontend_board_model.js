@@ -105,6 +105,7 @@ socket.on('dataUpdate', response => {
   console.log('received dataUpdate event: ')
   console.log(response)
   this.data.username = response.name
+  this.data.tileSlots = generateTiles(response.tiles)
   // response.position is the position of four players on the server
   // tested data
   // var tiles = ['T', 'E', 'S', 'T'];
@@ -135,7 +136,7 @@ var data = {
   // can change to computed property
   rows: generateTableRows(),
   squares: generateSquares(),
-  tileSlots: generateTileSlots(),
+  tileSlots: [],
   tilesOnBoard: [],
   selectedTileCopyId: '',
   currentRoundtileIdsOnBoard: [],
@@ -187,19 +188,20 @@ function generateSquares() {
 }
 
 // initialize slots and inside tiles
-function generateTileSlots() {
+function generateTiles(tilesToGenerate) {
   var tileSlots = []
-  for (var i = 0; i < this.tileSlotNumber; i++) {
-    var tile = randomTile()
+  for (var i = 0; i < tilesToGenerate.length; i++) {
+    var letter = tilesToGenerate[i]
+    var tileValue = this.tileValue(letter)
     tileSlots.push({
       id: 'slot' + i,
       hasTile: true,
       tile: {
         id: ('tile' + i),
-        letter: tile.letter,
-        value: tile.letterValue,
-        highlightedColor: tile.highlightedColor,
-        visibility: tile.visibility,
+        letter: letter,
+        value: tileValue,
+        highlightedColor: undefined,
+        visibility: 'visible',
         disabled: false
       }
     })
@@ -232,14 +234,14 @@ function tileValue(tile) {
   }
 }
 
-function randomTile() {
-  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  var char = chars.substr(Math.floor(Math.random() * 26), 1)
+// function randomTile() {
+//   var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+//   var char = chars.substr(Math.floor(Math.random() * 26), 1)
 
-  var value = tileValue(char)
+//   var value = tileValue(char)
 
-  return {letter: char, letterValue: value, borderColor: '#000000', visibility: 'visible'}
-}
+//   return {letter: char, letterValue: value, borderColor: '#000000', visibility: 'visible'}
+// }
 
 var drag = function(ev) {
   ev.dataTransfer.setData('text', ev.target.id)
@@ -403,31 +405,31 @@ var swap = function() {
   }
 }
 
-var refillSlots = function() {
-  for (var i = 0; i < tileSlotNumber; i++) {
-    if (!this.tileSlots[i].hasTile) {
-      // generate a tile in it (update id)
-      var tile = randomTile()
-      this.tileSlots[i].tile.id = 'tile' + currentTileCount
-      this.tileSlots[i].tile.letter = tile.letter
-      this.tileSlots[i].tile.value = tile.letterValue
-      this.tileSlots[i].tile.visibility = 'visible'
-      this.tileSlots[i].tile.highlightedColor = 'black'
-      currentTileCount++
-    }
-  }
+// var refillSlots = function() {
+//   for (var i = 0; i < tileSlotNumber; i++) {
+//     if (!this.tileSlots[i].hasTile) {
+//       // generate a tile in it (update id)
+//       var tile = randomTile()
+//       this.tileSlots[i].tile.id = 'tile' + currentTileCount
+//       this.tileSlots[i].tile.letter = tile.letter
+//       this.tileSlots[i].tile.value = tile.letterValue
+//       this.tileSlots[i].tile.visibility = 'visible'
+//       this.tileSlots[i].tile.highlightedColor = 'black'
+//       currentTileCount++
+//     }
+//   }
 
-  // change color of tiles on board
-  for (var i = 0; i < this.currentRoundtileIdsOnBoard.length; i++) {
-    var tile = document.getElementById(this.currentRoundtileIdsOnBoard[i])
-    tile.children[0].setAttribute('fill', 'rgb(251,251,227)') // #D3D3D3
-    tile.children[1].setAttribute('fill', '#000000')
-    tile.children[2].setAttribute('fill', '#000000')
-  }
+//   // change color of tiles on board
+//   for (var i = 0; i < this.currentRoundtileIdsOnBoard.length; i++) {
+//     var tile = document.getElementById(this.currentRoundtileIdsOnBoard[i])
+//     tile.children[0].setAttribute('fill', 'rgb(251,251,227)') // #D3D3D3
+//     tile.children[1].setAttribute('fill', '#000000')
+//     tile.children[2].setAttribute('fill', '#000000')
+//   }
 
-  this.currentRoundtileIdsOnBoard = []
-  this.selectedTileId = ''
-}
+//   this.currentRoundtileIdsOnBoard = []
+//   this.selectedTileId = ''
+// }
 
 var shuffle = function() {
   this.tileSlots.sort(function() { return 0.5 - Math.random() })
