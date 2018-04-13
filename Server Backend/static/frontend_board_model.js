@@ -88,6 +88,11 @@ socket.on('play', response => {
 
     this.data.currentPlayTileAmount = 0
   }
+
+  for (let i = 0; i < this.data.tileSlots.length; i++) {
+    this.data.tileSlots[i].hasTile = true
+    this.data.tileSlots[i].tile.visibility = 'visible'
+  }
 })
 
 socket.on('gameEvent', response => {
@@ -395,14 +400,8 @@ var putTileInSquare = function(squareId) {
 }
 
 var swap = function() {
-  for (var i = 0; i < tileSlotNumber; i++) {
-    var tile = randomTile()
-    var shouldChange = Math.floor(2 * Math.random())
-    if (shouldChange) {
-      this.tileSlots[i].tile.letter = tile.letter
-      this.tileSlots[i].tile.value = tile.letterValue
-    }
-  }
+  socket.emit('swap', [this.tileSlots[0].tile.letter, this.tileSlots[1].tile.letter, this.tileSlots[2].tile.letter,
+    this.tileSlots[3].tile.letter, this.tileSlots[4].tile.letter, this.tileSlots[5].tile.letter, this.tileSlots[6].tile.letter])
 }
 
 // var refillSlots = function() {

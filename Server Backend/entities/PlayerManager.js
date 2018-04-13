@@ -146,7 +146,7 @@ class PlayerManager {
    * Once a play is made, the player's hand is updated
    * @param {Array} tilesUsed - tiles that were used in a play
    */
-  playMade(tilesUsed) {
+  manipulateHand(tilesUsed) {
     this.removeTiles(tilesUsed)
     this.addToHand()
   }
@@ -195,7 +195,7 @@ class PlayerManager {
       let tile = tilesToBeRemoved[t]
       for (let i = currentHand.length - 1; i >= 0; i--) {
         let letter = currentHand[i]
-        if (tile.letter === letter) {
+        if (tile === letter) {
           currentHand.splice(i, 1)
           tilesToBeRemoved.splice(t, 1)
           break

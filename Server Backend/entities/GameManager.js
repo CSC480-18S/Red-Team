@@ -53,7 +53,8 @@ class GameManager {
         }
         // if the board has attempted to play a word
         if (boardPlay.error === 0) {
-          player.playMade(letters)
+          let ls = letters.map(l => l.letter)
+          player.manipulateHand(ls)
         }
         return callback(rh(boardPlay.error, boardPlay, player, this))
       })
