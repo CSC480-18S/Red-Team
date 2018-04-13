@@ -99,7 +99,7 @@ public class InfoPanelActor extends Group{
         eventLog = new List<String>(TextureManager.getInstance().ui, "default");
         eventLog.setPosition(GameScreen.GUI_UNIT_SIZE, GameScreen.GUI_UNIT_SIZE*5);
         eventLog.setWidth(GameScreen.GUI_UNIT_SIZE*10);
-        myLayout.add(eventLog).fillX().padLeft(10f).padRight(10f).padBottom(10f);
+        myLayout.add(eventLog).fillX().padLeft(10f).padRight(10f).padBottom(10f).maxWidth(200f);
 
         addActor(myLayout);
     }
@@ -124,23 +124,39 @@ public class InfoPanelActor extends Group{
                 p3Score.setText(score+"");
                 break;
         }
+        UpdateProgressBars();
 
     }
 
     public void UpdateProgressBars(){
         int gr = 0, gl =0;
-        if(GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer.team.compareTo("green") == 0){
+        if(GameManager.getInstance().theGame == null)return;
+        if(GameManager.getInstance().theGame.theGameScreen == null)return;
+
+        if(GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer != null)
+        if(GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer.team.toLowerCase().compareTo("green") == 0){
             gr += GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer.score;
-        }else{gl += GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer.score;}
-        if(GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer.team.compareTo("green") == 0){
+        }else if(GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer.team.toLowerCase().compareTo("gold") == 0)
+            {gl += GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer.score;}
+
+        if(GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer != null)
+        if(GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer.team.toLowerCase().compareTo("green") == 0){
             gr += GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer.score;
-        }else{gl += GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer.score;}
-        if(GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer.team.compareTo("green") == 0){
+        }else if(GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer.team.toLowerCase().compareTo("gold") == 0)
+            {gl += GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer.score;}
+
+        if(GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer != null)
+        if(GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer.team.toLowerCase().compareTo("green") == 0){
             gr += GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer.score;
-        }else{ gl += GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer.score;}
-        if(GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer.team.compareTo("green") == 0){
+        }else if(GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer.team.toLowerCase().compareTo("gold") == 0)
+            { gl += GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer.score;}
+
+
+        if(GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer != null)
+        if(GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer.team.toLowerCase().compareTo("green") == 0){
             gr += GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer.score;
-        }else{gl += GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer.score;}
+        }else if(GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer.team.toLowerCase().compareTo("gold") == 0)
+            {gl += GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer.score;}
         green.setValue(gr);
         gold.setValue(gl);
     }
@@ -157,10 +173,28 @@ public class InfoPanelActor extends Group{
         mba.setAmount(2000f,0);
         mba.setDuration(10f);
         if(event.toLowerCase().contains("goose"))GameManager.getInstance().theGame.theGameScreen.oswego.addAction(mba);
-        GameManager.getInstance().theGame.theGameScreen.oswego.setPosition(-GameScreen.GUI_UNIT_SIZE*30,GameScreen.GUI_UNIT_SIZE*7);
+            if(GameManager.getInstance().theGame != null && GameManager.getInstance().theGame.theGameScreen != null)
+                GameManager.getInstance().theGame.theGameScreen.oswego.setPosition(-GameScreen.GUI_UNIT_SIZE*30,GameScreen.GUI_UNIT_SIZE*7);
+        Array<String> tempEvents = new Array<String>();
+        for(String s : logOfEvents)
+            tempEvents.add(s);
         logOfEvents.add(event);
-        eventLog.setItems(logOfEvents);
-        eventLog.setSelectedIndex(logOfEvents.size-1);
+        if(event.length() > 37){
+            char br = '-';
+            int br_index = 36;
+            while (br != ' ' && br_index > 0){
+                br_index--;
+                br = event.charAt(br_index);
+            }
+
+            String line1 = event.substring(0,br_index);
+            String line2 = event.substring(br_index,event.length());
+            event = line1 + "\n" + line2;
+
+        }
+        tempEvents.add(event);
+        eventLog.setItems(tempEvents);
+        eventLog.setSelectedIndex(-1);//.setSelectedIndex(logOfEvents.size-1);
         //eventLog.getItems().add(event);
 
     }

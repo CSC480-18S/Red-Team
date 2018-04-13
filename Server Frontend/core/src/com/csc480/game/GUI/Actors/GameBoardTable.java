@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -85,12 +86,25 @@ public class GameBoardTable extends Group {
 
 
     }
-    public void setTile(int x, int y, String letter){
+    private void setTile(int x, int y, String letter){
         System.out.println("setting tile:"+letter);
         Cell center = board.getCells().get( x+(11*(10-y)) );
-        Image i = new Image(TextureManager.getInstance().getTileTexture(letter));
-        i.setName(letter.toLowerCase());
-        center.setActor(i);
+        if(center.getActor() == null || center.getActor().getName().compareTo(letter.toLowerCase()) != 0){
+            System.out.println("updating tile");
+            Image i = new Image(TextureManager.getInstance().getTileTexture(letter));
+            i.setName(letter.toLowerCase());
+            center.setActor(i);
+        }
+    }
+    private void clearTile(int x, int y){
+        Cell center = board.getCells().get( x+(11*(10-y)) );
+        if(center.getActor().getName().compareTo("`") != 0){
+            System.out.println("nullifying tile");
+            Actor a = center.getActor();
+            Image tile = new Image(TextureManager.getInstance().getTileTexture(TextureManager.INVIS_TILE));
+            tile.setName("`");
+            center.setActor(tile);
+        }
     }
 
     @Override
@@ -101,10 +115,11 @@ public class GameBoardTable extends Group {
                 for(int i = 0; i < toDraw.length; i++){
                     for(int j = 0; j < toDraw.length; j++){
                         if(toDraw[i][j] != null){
-
                             if(toDraw[i][j].letter != board.getCells().get( i+(11*(10-j))).getActor().getName().charAt(0)){
                                 setTile(i,j, toDraw[i][j].letter+"");
                             }
+                        }else{
+                            clearTile(i,j);
                         }
                     }
                 }

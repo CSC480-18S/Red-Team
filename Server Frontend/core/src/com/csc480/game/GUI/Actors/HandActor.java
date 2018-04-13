@@ -1,6 +1,7 @@
 package com.csc480.game.GUI.Actors;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -26,6 +27,7 @@ public class HandActor extends Group {
     ArrayList<TileActor> myHand;
     //Image rack;
     Label name;
+    Label yourTurn;
     Player associatedPlayer;
 
     public HandActor(boolean flipTiles){
@@ -43,6 +45,9 @@ public class HandActor extends Group {
             addActor(temp);
         }
 
+        yourTurn = new Label("Its Your Turn",TextureManager.getInstance().ui,"default");
+        yourTurn.setPosition(GameScreen.GUI_UNIT_SIZE*2,0);
+        yourTurn.setVisible(false);
         name = new Label("default",TextureManager.getInstance().ui,"default");
         name.setName("name");
         name.setPosition(GameScreen.GUI_UNIT_SIZE/2,0);
@@ -115,11 +120,18 @@ public class HandActor extends Group {
      * Will sync the tiles display with the GameState
      */
     public void updateState(){
+        if(associatedPlayer.turn)
+            yourTurn.setVisible(true);
+        else
+            yourTurn.setVisible(false);
         ArrayList<Character> whatsInHand = new ArrayList<Character>();
         //System.out.println("associa player hand size of "+associatedPlayer.tiles.length);
         for(int i = 0; i < associatedPlayer.tiles.length; i++) {
             if(associatedPlayer.tiles[i] != 0)
-                whatsInHand.add(new Character(associatedPlayer.tiles[i]));
+                if(associatedPlayer.isAI)
+                    whatsInHand.add(new Character(associatedPlayer.tiles[i]));
+                else
+                    whatsInHand.add(new Character('_'));
         }
         //remove tiles that arent here
         for(int i = 0; i < this.getChildren().size;i++){

@@ -70,7 +70,7 @@ public class AI extends Player {
                         GameManager.getInstance().updatePlayers(GameManager.getInstance().thePlayers);
                     }else{
                         GameManager.getInstance().updatePlayers(GameManager.getInstance().thePlayers);
-                        tiles = GameManager.getInstance().getNewHand();
+//                        tiles = GameManager.getInstance().getNewHand();
                         System.out.println("no plays found, hand : "+new String(tiles));
                         System.out.println("THIS AI JUST SENT A DUMMY PLAY");
                         myCache.Clear();
@@ -80,8 +80,14 @@ public class AI extends Player {
                         else{
                             FindPlayInverted(GameManager.getInstance().theBoard);
                         }
-                        mySocket.emit("playWord", GameManager.getInstance().JSONifyPlayIdea(getDummy()));
-                        this.state = 2;
+                        JSONArray toSwap = new JSONArray();
+                        for(int i = 0; i < tiles.length; i++){
+                            if(tiles[i] != 0){
+                                toSwap.put((tiles[i]+"").toUpperCase());
+                            }
+                        }
+                        mySocket.emit("swap", toSwap);
+                        this.state = 0;
                         //UPDATE MUST BE CALLED OR ELSE THE AI COMES TO A STANDSTILL IF IT DOES NOT FIND A BEST WORD
                         //update();
                     }
@@ -247,10 +253,9 @@ public class AI extends Player {
                         boolean myTurn = data.getBoolean("isTurn");
                         JSONArray jsonTiles = data.getJSONArray("tiles");
                         char[] newTiles = new char[jsonTiles.length()];
-                        String test = jsonTiles.toString();
                         for(int i = 0; i < newTiles.length; i++){
-                            newTiles[i] = jsonTiles.getString(i).charAt(0);
-                            System.out.print(newTiles[i]);
+                            tiles[i] = jsonTiles.getString(i).toLowerCase().charAt(0);
+//                            System.out.println(tiles[i]);
                         }
 
                         //reconnect an AI
@@ -262,7 +267,7 @@ public class AI extends Player {
                                     System.out.println(System.currentTimeMillis());
                                 }
                             }
-                            tiles = GameManager.getInstance().getNewHand();
+//                            tiles = GameManager.getInstance().getNewHand();
                             myCache.Clear();
                             if(startIndex) {
                                 FindPlays(GameManager.getInstance().theBoard);
@@ -271,8 +276,12 @@ public class AI extends Player {
                                 FindPlayInverted(GameManager.getInstance().theBoard);
                             }
                             state = 1;
-                            tiles = GameManager.getInstance().getNewHand();
-                            GameManager.getInstance().updatePlayers(GameManager.getInstance().thePlayers);
+//                            tiles = GameManager.getInstance().getNewHand();
+                            try {
+                                GameManager.getInstance().updatePlayers(GameManager.getInstance().thePlayers);
+                            }catch (NullPointerException e){
+                                e.printStackTrace();
+                            }
                         }
                         else{
                             state = 0;

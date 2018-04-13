@@ -139,7 +139,7 @@ public class GameManager {
         }).on("whoAreYou", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                LogEvent("whoAreYou");
+//                LogEvent("whoAreYou");
                 JSONObject data = new JSONObject();
                 data.put("isSF",true);
                 socket.emit("whoAreYou",data);
@@ -184,7 +184,8 @@ public class GameManager {
                 try {
                     JSONObject data = (JSONObject) args[0];
                     int position = data.getInt("position");
-                    theAIs[position].disconnectAI();
+                    if(theAIs[position] != null)
+                        theAIs[position].disconnectAI();
                     theAIs[position] = null;
                     thePlayers[position] = new Player();
 
@@ -234,7 +235,7 @@ public class GameManager {
         }).on("boardUpdate", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                LogEvent("boardUpdate");
+//                LogEvent("boardUpdate");
                 System.out.println("frontend got boardUpdate");
                 try {
                     JSONObject data = (JSONObject) args[0];
@@ -279,7 +280,7 @@ public class GameManager {
                         JSONObject player  = (JSONObject)players.get(i);
                         int index = player.getInt("position");
                         try {
-                            if(player.get("score") != null)
+                            if(player.get("score") != JSONObject.NULL)
                                 thePlayers[index].score = player.getInt("score");
                             else
                                 thePlayers[index].score = 0;
@@ -289,7 +290,7 @@ public class GameManager {
                             else
                                 thePlayers[index].name = "";
 
-                            if(player.get("team") != null)
+                            if(player.get("team") != JSONObject.NULL)
                                 thePlayers[index].team = player.getString("team");
                             else
                                 thePlayers[index].team = "";
@@ -306,19 +307,29 @@ public class GameManager {
                         }
                         */
                     }
-                    theGame.theGameScreen.bottom.setPlayer(thePlayers[0]);
-                    theGame.theGameScreen.bottom.updateState();
+                    if(theGame!= null){
+                        if(theGame.theGameScreen != null) {
+                            if(theGame.theGameScreen.bottom != null){
+                                theGame.theGameScreen.bottom.setPlayer(thePlayers[0]);
+                                theGame.theGameScreen.bottom.updateState();
+                            }
+                            if(theGame.theGameScreen.right != null) {
+                                theGame.theGameScreen.right.setPlayer(thePlayers[1]);
+                                theGame.theGameScreen.right.updateState();
+                            }
+                            if(theGame.theGameScreen.top != null) {
+                                theGame.theGameScreen.top.setPlayer(thePlayers[2]);
+                                theGame.theGameScreen.top.updateState();
+                            }
 
-                    theGame.theGameScreen.right.setPlayer(thePlayers[1]);
-                    theGame.theGameScreen.right.updateState();
+                            if(theGame.theGameScreen.left != null) {
+                                theGame.theGameScreen.left.setPlayer(thePlayers[3]);
+                                theGame.theGameScreen.left.updateState();
+                            }
 
-                    theGame.theGameScreen.top.setPlayer(thePlayers[2]);
-                    theGame.theGameScreen.top.updateState();
-
-                    theGame.theGameScreen.left.setPlayer(thePlayers[3]);
-                    theGame.theGameScreen.left.updateState();
-
-                    theGame.theGameScreen.UpdateInfoPanel();
+                            theGame.theGameScreen.UpdateInfoPanel();
+                        }
+                    }
 
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
@@ -407,6 +418,13 @@ public class GameManager {
     public void updatePlayers(Player[] backEndPlayers){
         //currentPlayerIndex = currentPlayer;
         //Update the Players
+        if(theGame == null)return;
+        if(theGame.theGameScreen == null)return;
+        if(theGame.theGameScreen.bottom == null ||
+                theGame.theGameScreen.top == null ||
+                theGame.theGameScreen.left == null ||
+                theGame.theGameScreen.right == null) return;
+
         for(int i = 0; i < 4; i++){
             Player p = backEndPlayers[i];
             //cover existing players

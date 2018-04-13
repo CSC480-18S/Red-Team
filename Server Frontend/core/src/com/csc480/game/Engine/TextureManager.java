@@ -50,6 +50,7 @@ public class TextureManager {
         }
 
         public TextureAtlas.AtlasRegion getTileTexture(String tile){
+            if(tile.compareTo("_") == 0) return tilesAtlas.findRegion(BLANK_TILE);
             if(tile.length() == 1) tile = tile.toUpperCase();
             return tilesAtlas.findRegion(tile);
         }
