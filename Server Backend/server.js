@@ -37,6 +37,11 @@ const override = require('./helpers/Override')
 const port = 3000
 
 /**
+ * TODO: Enable this when nginx is put in front @Landon
+ */
+// app.set('trust proxy', true)
+
+/**
  * Set the headers the server accepts
  */
 app.use(function(req, res, next) {
