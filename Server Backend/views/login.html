@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Oswebble | Login</title>
+</head>
+<body>
+    <main id="main-area">
+        <section id="login-area">
+            <div id="login">
+                <div id="logo-area">
+                    <img id="logo" src="/static/imgs/logo.png" alt="Oswebble">
+                    <h2>Welcome!</h2>
+                </div>
+                <div id="button-area">
+                        <button type="button" class="btn btn-lg btn-block">Play!</button>
+                        <h4>Current Players in game:</h4>
+                </div>
+                <div id="status-area">
+                    <div class="stats">
+                        <h4><i class="fas fa-user"></i> Players</h4>
+                        <h1>5</h1>
+                    </div>
+                    <div class="stats">
+                        <h4><i class="fas fa-gamepad"></i> AI</h4>
+                        <h1>5</h1>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <footer id="footer">
+                <div id="copyright"></div>
+        </footer>
+    </main>
+
+    <script type="text/javascript" src="/static/js/tether-1.2.4.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap-4.0.0.min.js"></script>
+
+    <script type="text/javascript">
+        $('#copyright').append(`Copyright © ${new Date().getFullYear()}. SUNY Oswego. All Rights Reserved.`);
+    </script>
+
+    <link rel="stylesheet" href="/static/css/bootstrap-4.0.0.min.css"></script>
+    <link rel="stylesheet" href="/static/css/login.css">
+    <link rel="stylesheet" href="/static/css/fontawesome-5.0.1.0.min.css">
+</body>
+</html>

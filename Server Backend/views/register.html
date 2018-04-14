@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Oswebble | Login</title>
+</head>
+<body>
+    <main id="main-area">
+        <section id="register-area">
+            <div id="register">
+                <div id="logo-area">
+                    <img id="logo" src="/static/imgs/logo.png" alt="Oswebble">
+                    <h2>Register!</h2>
+                </div>
+                <form id="form-area">
+                    <div id="form" class="form-group">
+                        <label for="username">Username</label>
+                        <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                  <div class="input-group-text"><i class="fas fa-user"></i></div>
+                                </div>
+                                <input type="text" class="form-control" name="username" placeholder="Username" required>
+                              </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="team" id="greenTeam" value="G" required>
+                            <label class="form-check-label" for="greenTeam">
+                                Green Team
+                            </label>
+                            </div>
+                            <div class="form-check">
+                            <input class="form-check-input" type="radio" name="team" id="yellowTeam" value="Y" required>
+                            <label class="form-check-label" for="yellowTeam">
+                                Yellow Team
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-lg btn-block">Play!</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        <footer id="footer">
+                <div id="copyright"></div>
+        </footer>
+    </main>
+
+    <script type="text/javascript" src="/static/js/tether-1.2.4.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap-4.0.0.min.js"></script>
+
+    <script type="text/javascript">
+        $('#copyright').append(`Copyright © ${new Date().getFullYear()}. SUNY Oswego. All Rights Reserved.`);
+    </script>
+
+    <link rel="stylesheet" href="/static/css/bootstrap-4.0.0.min.css"></script>
+    <link rel="stylesheet" href="/static/css/register.css">
+    <link rel="stylesheet" href="/static/css/fontawesome-5.0.1.0.min.css">
+</body>
+</html>
