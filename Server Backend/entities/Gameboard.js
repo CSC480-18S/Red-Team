@@ -149,6 +149,9 @@ class Gameboard {
         invalidWord = word.word
       }
     }
+    /**
+     * Make sure that the entire play has valid placement
+     */
     if (!firstPlayBypass && !validWordPlacement) {
       return {
         error: 5,
