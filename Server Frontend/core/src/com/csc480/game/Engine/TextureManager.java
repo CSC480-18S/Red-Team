@@ -18,7 +18,10 @@ public class TextureManager {
         public Skin ui;
         //public final Texture rack;
         public final Texture background;
-        public final Texture tile;
+        public final Texture infoBackground;
+        public final Texture greenBar;
+        public final Texture goldBar;
+//        public final Texture tile;
         public final TextureAtlas tilesAtlas;
 
         public static final String DARK_TILE = "~Dark";
@@ -37,14 +40,18 @@ public class TextureManager {
         private TextureManager(){
             //TextureAtlas uiAtlas = new TextureAtlas();
             ui = new Skin(Gdx.files.internal("skin/exempleSkin.json"));
+//            ui = new Skin(Gdx.files.internal("skin/OswegoSkin/OswebbleSkin.json"));
 //            ui.getFont("font").getData().
             ui.getFont("font").setUseIntegerPositions(false);
             ui.getFont("font").getData().setScale(.3f,.3f);
             //rack = new Texture(Gdx.files.internal("rack.jpg"));
 
-            tile = new Texture(Gdx.files.internal("temp.png"));
+//            tile = new Texture(Gdx.files.internal("temp.png"));
             tilesAtlas = new TextureAtlas(Gdx.files.internal("tilesAtlas.atlas"));
             background = new Texture(Gdx.files.internal("Background.jpg"));
+            infoBackground = new Texture(Gdx.files.internal("board.png"));
+            greenBar = new Texture(Gdx.files.internal("greenBar.png"));
+            goldBar = new Texture(Gdx.files.internal("goldBar.png"));
             //ui.addRegions(uiAtlas);
             //textureAtlas = new TextureAtlas(Gdx.files.internal("spriteAtlas.atlas"));
         }

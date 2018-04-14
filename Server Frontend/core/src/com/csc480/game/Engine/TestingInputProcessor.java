@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.csc480.game.Engine.Model.AI;
 import com.csc480.game.Engine.Model.Placement;
 import com.csc480.game.Engine.Model.PlayIdea;
@@ -70,8 +71,16 @@ public class TestingInputProcessor implements InputProcessor {
             GameManager.getInstance().PrintBoardState();
         }
         else if(character == '3'){
-            //System.out.println("logging");
-            GameManager.getInstance().updatePlayers(GameManager.getInstance().theAIs);
+            Array<String> playersScores = new Array<String>();
+            playersScores.add("name scored X points!");
+            playersScores.add("name scored X points!");
+            playersScores.add("name scored X points!");
+            playersScores.add("name scored X points!");
+
+            String winner = "No one";
+                winner = "Congratulations, No One!!!";
+            String winningTeam = "Green";
+            GameManager.getInstance().theGame.theGameScreen.gameOverActor.update(winner,playersScores,winningTeam);
         }
         else if(character == '4'){
             //System.out.println("logging");

@@ -2,6 +2,7 @@ package com.csc480.game.Engine;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.csc480.game.Engine.Model.*;
 import com.csc480.game.GUI.GameScreen;
 import com.csc480.game.OswebbleGame;
@@ -346,16 +347,24 @@ public class GameManager {
                 //"gameData": array of all data of the scores and such
                 try {
                     JSONObject data = (JSONObject) args[0];
-                    JSONObject score = data.getJSONObject("score");
-                    JSONArray gameData = data.getJSONArray("gameData");
-                    Double timeout = data.getDouble("timeOut");
-                    //todo figure out exact format server is sending it
-                    //set all player's turns to false
-                    for(Player p: thePlayers){
-                        p.turn = false;
+                    System.out.println(data.toString());
+                    JSONArray scores = data.getJSONArray("scores");
+                    Array<String> playersScores = new Array<String>();
+                    for(int i = 0; i < scores.length(); i++){
+                        JSONObject j = (JSONObject) scores.get(i);
+                        playersScores.add(j.getString("name")+" scored "+j.getInt("score")+ " points!");
                     }
+
+                    String winner = "Congratulations, Everyone!!!";
+                    if(data.get("winner") != JSONObject.NULL)
+                           winner = "Congratulations, "+data.getString("winner")+"!!!";
+                    String winningTeam = "No one";
+                    if(data.get("winningTeam") != JSONObject.NULL)
+                        winningTeam = data.getString("winningTeam");
+
                     //todo call @GUI stuff
-                    //todo reset game after time
+                    theGame.theGameScreen.gameOverActor.update(winner, playersScores, winningTeam);
+                    theGame.theGameScreen.gameOverActor.setVisible(true);
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
                 }catch(JSONException e){
@@ -366,6 +375,7 @@ public class GameManager {
             @Override
             public void call(Object... args) {
                 System.out.println("newGame");
+                theGame.theGameScreen.gameOverActor.setVisible(false);
                 //todo hard reset board
                 //todo Hit /game/usersInGame and hard reset players
             }

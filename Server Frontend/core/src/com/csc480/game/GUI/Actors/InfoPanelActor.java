@@ -37,32 +37,32 @@ public class InfoPanelActor extends Group{
         //myLayout.setPosition(getWidth()/2, getHeight()/2);
 
 
-        Image bg = new Image(TextureManager.getInstance().background);
-        bg.setScale(.25f,.4f);
+        Image bg = new Image(TextureManager.getInstance().infoBackground);
+//        bg.setScale(.25f,1f);
         bg.setPosition(0, 0);
         //bg.setWidth(getWidth());
         //bg.setHeight(getHeight());
-        myLayout.background(bg.getDrawable());
-
+        myLayout.background(bg.getDrawable()).top();
         Label title = new Label("Scores", TextureManager.getInstance().ui, "default");
-        title.setColor(Color.BLACK);
+        title.setColor(Color.RED);
         title.setName("title");
         //title.setPosition(GameScreen.GUI_UNIT_SIZE*4,GameScreen.GUI_UNIT_SIZE*12);
-        myLayout.add(title).expandX().padTop(10f);
+        myLayout.add(title).expandX().padTop(15f);
         myLayout.row();
         //addActor(title);
-        green = new ProgressBar(0,100.0f,1.0f,false,TextureManager.getInstance().ui, "default-horizontal");
+        green = new ProgressBar(0f,250f,1f,false,TextureManager.getInstance().ui, "default-horizontal");
         //green.setWidth(getWidth());
-        myLayout.add(green).fillX().padLeft(10f).padRight(10f);;
+        green.setHeight(GameScreen.GUI_UNIT_SIZE/10);
+        myLayout.add(green).fillX().padLeft(10f).padRight(10f).maxHeight(5f);
 
 
         myLayout.row();
-        green.setValue(50.0f);//todo remove this//////////////////////////////////////////
+        green.setValue(250f);//todo remove this//////////////////////////////////////////
 
-        gold = new ProgressBar(0,250,1,false,TextureManager.getInstance().ui, "default-horizontal");
-        green.setValue(10);//todo remove this////////////////////////////////////////////
-        gold.setWidth(getWidth());
-        myLayout.add(gold).fillX().padLeft(10f).padRight(10f);
+        gold = new ProgressBar(0f,250f,1f,false,TextureManager.getInstance().ui, "default-horizontal");
+        green.setValue(50f);//todo remove this////////////////////////////////////////////
+        gold.setHeight(GameScreen.GUI_UNIT_SIZE);
+        myLayout.add(gold).fillX().padLeft(10f).padRight(10f).maxHeight(5f);
         myLayout.row();
 
 
@@ -125,7 +125,6 @@ public class InfoPanelActor extends Group{
                 break;
         }
         UpdateProgressBars();
-
     }
 
     public void UpdateProgressBars(){
@@ -134,37 +133,41 @@ public class InfoPanelActor extends Group{
         if(GameManager.getInstance().theGame.theGameScreen == null)return;
 
         if(GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer != null)
-        if(GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer.team.toLowerCase().compareTo("green") == 0){
+        if(GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer.team.toLowerCase().compareTo("g") == 0){
             gr += GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer.score;
-        }else if(GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer.team.toLowerCase().compareTo("gold") == 0)
+        }else if(GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer.team.toLowerCase().compareTo("y") == 0)
             {gl += GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer.score;}
 
         if(GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer != null)
-        if(GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer.team.toLowerCase().compareTo("green") == 0){
+        if(GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer.team.toLowerCase().compareTo("g") == 0){
             gr += GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer.score;
-        }else if(GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer.team.toLowerCase().compareTo("gold") == 0)
+        }else if(GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer.team.toLowerCase().compareTo("y") == 0)
             {gl += GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer.score;}
 
         if(GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer != null)
-        if(GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer.team.toLowerCase().compareTo("green") == 0){
+        if(GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer.team.toLowerCase().compareTo("g") == 0){
             gr += GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer.score;
-        }else if(GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer.team.toLowerCase().compareTo("gold") == 0)
+        }else if(GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer.team.toLowerCase().compareTo("y") == 0)
             { gl += GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer.score;}
 
-
         if(GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer != null)
-        if(GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer.team.toLowerCase().compareTo("green") == 0){
+        if(GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer.team.toLowerCase().compareTo("g") == 0){
             gr += GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer.score;
-        }else if(GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer.team.toLowerCase().compareTo("gold") == 0)
-            {gl += GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer.score;}
-        green.setValue(gr);
-        gold.setValue(gl);
+        }else if(GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer.team.toLowerCase().compareTo("y") == 0) {
+            gl += GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer.score;
+
+        }
+        green.setRange(0f,gr+gl+0f);
+        gold.setRange(0f,gr+gl+0f);
+        green.setValue(gr+0f);
+        gold.setValue(gl+0f);
+
     }
 
-
-
-
-
+    /**
+     * Display an event on the GUI's list of events
+     * @param event text to display
+     */
     public void LogEvent(String event){
         if(logOfEvents.size >= 4){
             logOfEvents.removeIndex(0);

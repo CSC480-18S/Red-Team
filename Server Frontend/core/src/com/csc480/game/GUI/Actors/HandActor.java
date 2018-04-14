@@ -4,12 +4,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csc480.game.Engine.Model.AI;
 import com.csc480.game.Engine.Model.Placement;
 import com.csc480.game.Engine.Model.Player;
@@ -28,12 +31,18 @@ public class HandActor extends Group {
     //Image rack;
     Label name;
     Label yourTurn;
+    Image turn;
     Player associatedPlayer;
 
     public HandActor(boolean flipTiles){
         super();
         myHand = new ArrayList<TileActor>();
         flip = flipTiles;
+        turn = new Image(TextureManager.getInstance().greenBar);
+        if(flip)
+            turn.setPosition(0,GameScreen.GUI_UNIT_SIZE);
+        turn.setScale(.0575f,.1f);
+        addActor(turn);
         //This could easily be put into an if statement to change the loaded image based on user color
         //GameScreen.GUI_UNIT_SIZE/2)+count*GameScreen.GUI_UNIT_SIZE, GameScreen.GUI_UNIT_SIZE/2
         //rack = new Image(TextureManager.getInstance().rack);
@@ -58,6 +67,7 @@ public class HandActor extends Group {
         addTile(new TileActor('A'));
         addTile(new TileActor('B'));
         addTile(new TileActor('C'));
+
     }
 
     public Player getPlayer(){
@@ -105,25 +115,25 @@ public class HandActor extends Group {
     public void setPlayer(Player newPlayer){
         associatedPlayer = newPlayer;
         name.setText(associatedPlayer.name);
-        if(associatedPlayer.team.toLowerCase().compareTo("gold") == 0){
-            //todo get these assets
-            //rack.setDrawable(new SpriteDrawable(new Sprite(TextureManager.getInstance().tilesAtlas.findRegion("goldRack"))));
-
+        if(associatedPlayer.team.toLowerCase().compareTo("Y") == 0){
+            turn.setDrawable(new TextureRegionDrawable(new TextureRegion(TextureManager.getInstance().goldBar)));
         } else {
-            //rack.setDrawable(new SpriteDrawable(new Sprite(TextureManager.getInstance().tilesAtlas.findRegion("greenRack"))));
+            turn.setDrawable(new TextureRegionDrawable(new TextureRegion(TextureManager.getInstance().greenBar)));
         }
         updateState();
-        updateState();
+        //updateState();
     }
 
     /**
      * Will sync the tiles display with the GameState
      */
     public void updateState(){
-        if(associatedPlayer.turn)
-            yourTurn.setVisible(true);
-        else
-            yourTurn.setVisible(false);
+        if(associatedPlayer != null) {
+            if (associatedPlayer.turn)
+                turn.setVisible(true);
+            else
+                turn.setVisible(false);
+        }else turn.setVisible(false);
         ArrayList<Character> whatsInHand = new ArrayList<Character>();
         //System.out.println("associa player hand size of "+associatedPlayer.tiles.length);
         for(int i = 0; i < associatedPlayer.tiles.length; i++) {

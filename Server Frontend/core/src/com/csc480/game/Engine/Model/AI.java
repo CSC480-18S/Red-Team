@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 public class AI extends Player {
     private static int counter = 0;
+    private static boolean greenTeam = true;
     public PriorityQueue myCache;
     public Socket mySocket;
     volatile boolean startIndex = true;
@@ -34,7 +35,13 @@ public class AI extends Player {
         super();
         this.isAI = true;
         this.name = "AI"+(counter++);
-        this.team = "green";
+        if(greenTeam){
+            this.team = "G";
+            greenTeam = !greenTeam;
+        }else {
+            this.team = "Y";
+            greenTeam = !greenTeam;
+        }
         myCache = new PriorityQueue(200);
         connectSocket();
     }
@@ -216,6 +223,7 @@ public class AI extends Player {
                     System.out.println(AI.this.name+" got whoAreYou");
                     JSONObject data = new JSONObject();
                     data.put("isAI", true);
+                    data.put("team",team);
                     System.out.println(data.toString());
                     mySocket.emit("whoAreYou", data);
 
