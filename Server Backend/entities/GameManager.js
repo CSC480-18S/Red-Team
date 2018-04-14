@@ -125,10 +125,10 @@ class GameManager {
     player.addScore(score)
 
     switch (player.team) {
-      case 'Green':
+      case 'G':
         this._greenScore += score
         break
-      case 'Yellow':
+      case 'Y':
         this._yellowScore += score
         break
     }

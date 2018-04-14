@@ -20,6 +20,10 @@ socket.on('errorMessage', response => {
   alert(response.error)
 })
 
+socket.on('gameOver', response => {
+  alert(`${JSON.stringify(response, null, 4)}`)
+})
+
 socket.on('boardUpdate', response => {
   this.data.currentPlayTileAmount = 0
   for (i = 0; i < row; i++) {

@@ -16,6 +16,7 @@ module.exports = function(io) {
       this._currentlyConnectedClients = 0
       this._maxPlayers = 4
       this._firstTurnSet = false
+      this._swaps = 0
 
       this._usernames = ['465k', 'Am I Bill?', 'Who is Bill?', 'I <3 Demo Day',
         'Dab Stan', 'Bill', 'Doug Lea', 'Graci Craig', 'Jearly', 'B-Ten', 'Jin Yang', 'Erlich Bachman',
@@ -208,9 +209,41 @@ module.exports = function(io) {
       for (let manager of this._playerManagers) {
         if (manager.id === id) {
           console.log(`INFO: PLAYER ${`${manager.name}`.warn} HAS SWAPPED TILES`.info)
+          this._swaps++
+          if (this._swaps === this._currentlyConnectedClients) {
+            console.log(`INFO: ALL PLAYERS HAVE SWAPPED, GAME OVER`.info)
+            for (let manager of this._playerManagers) {
+              if (manager.id !== null) {
+                manager.isTurn = false
+                manager.sendEvent('dataUpdate')
+              }
+            }
+            let finalScores = []
+            let winner = null
+            let highestScore = 0
+            for (let manager of this._playerManagers) {
+              if (manager.id !== null) {
+                if (manager.score > highestScore) {
+                  highestScore = manager.score
+                  winner = manager.name
+                }
+                let data = {
+                  name: manager.name,
+                  score: manager.score
+                }
+                finalScores.push(data)
+              }
+            }
+            io.emit('gameOver', {
+              scores: finalScores,
+              winner: winner,
+              winningTeam: this._gameManager._yellowScore > this._gameManager._greenScore ? 'Yellow' : 'Green'
+            })
+            return
+          }
           console.log(`DEBUG: ${JSON.stringify(letters, null, 4)}`)
           manager.manipulateHand(letters)
-          this.updateTurn(manager)
+          this.updateTurn(manager, true)
         }
       }
     }
@@ -218,7 +251,7 @@ module.exports = function(io) {
     /**
      * Updates who's turn it is
      */
-    updateTurn(manager) {
+    updateTurn(manager, swapped) {
       let position = manager.position
       console.log(`INFO: IT WAS PLAYER ${`${position}`.warn}'s TURN`.info)
       manager.isTurn = false
@@ -229,6 +262,9 @@ module.exports = function(io) {
         }
       } while (this._playerManagers[position].id === null)
       this._playerManagers[position].isTurn = true
+      if (!swapped) {
+        this._swaps = 0
+      }
       console.log(`INFO: IT IS NOW PLAYER ${`${position}`.warn}'s TURN`.info)
 
       this.updateClientData()
