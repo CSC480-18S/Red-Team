@@ -32,31 +32,29 @@ class GameManager {
     if (!letters) {
       let response = {
         error: 7,
-        word: ''
+        data: ''
       }
       return callback(rh(response.error, response, player, this))
     }
 
     const words = ex.extractWords(letters, newBoard)
 
-    console.log('DEBUG: THE BOARD IS THINKING...'.debug)
     this.wordValidation(words)
       .then(response => {
-        console.log('DEBUG: THE BOARD NOW HAS AN ANSWER...'.debug)
         let boardPlay = null
         if (response === true) {
           // if invalid type of play, gets the word that was invalid, else is undefined
           boardPlay = this._gameBoard.placeWords(words, player)
         } else {
           // if the word is invalid
-          return callback(rh(response.error, response, player, this))
+          return callback(rh(response, player, this))
         }
         // if the board has attempted to play a word
         if (boardPlay.error === 0) {
           let ls = letters.map(l => l.letter)
           player.manipulateHand(ls)
         }
-        return callback(rh(boardPlay.error, boardPlay, player, this))
+        return callback(rh(boardPlay, player, this))
       })
       .catch(e => {
         console.log(`ERROR: ${e}`.error)
@@ -87,13 +85,13 @@ class GameManager {
       if (word.bad) {
         return {
           error: 6,
-          word: word.word
+          data: word.word
         }
       }
       if (!word.valid) {
         return {
           error: 1,
-          word: word.word
+          data: word.word
         }
       }
     }
@@ -105,7 +103,6 @@ class GameManager {
    * Calculates the score of a play
    * @param {Object} player - player to add score to
    * @param {Array} words - array of words to calculate score for
-   * @param {Object} bonus - bonus to factor in
    */
   calculateScore(player, words) {
     console.log('DEBUG: CALCULATING SCORE...'.debug)
@@ -125,10 +122,10 @@ class GameManager {
     player.addScore(score)
 
     switch (player.team) {
-      case 'G':
+      case 'Green':
         this._greenScore += score
         break
-      case 'Y':
+      case 'Yellow':
         this._yellowScore += score
         break
     }

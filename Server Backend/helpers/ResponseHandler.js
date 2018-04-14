@@ -6,13 +6,13 @@
  * @param {Object} player - player oject
  * @param {Object} io - socket object
  */
-module.exports = (er, play, player, sm) => {
+module.exports = (data, player, sm) => {
   const result = {
     invalid: true
   }
   let reason = null
 
-  switch (er) {
+  switch (data.error) {
     case 1:
       reason = 'Not a valid word'
       break
@@ -39,18 +39,18 @@ module.exports = (er, play, player, sm) => {
   }
   if (result.invalid) {
     result['reason'] = reason.toUpperCase()
-    result['word'] = play.word.toUpperCase()
+    result['data'] = data.data
     player.sendEvent('play', result)
     return false
   }
-  let score = sm.calculateScore(player, play.words)
+  let score = sm.calculateScore(player, data.data)
 
   console.log('DEBUG: SENDING OUT WORD PLAYED EVENT'.debug)
   sm._io.emit('boardUpdate', {
     board: sm._gameBoard.sendableBoard()
   })
   console.log('DEBUG: SENDING OUT GAME EVENT EVENT'.debug)
-  let action = `${player.name} played ${play.words.map(w => w.word)} for ${score} points`
+  let action = `${player.name} played ${data.data.map(w => w.word)} for ${score} points`
   console.log(`INFO: ${action}`.toUpperCase().info)
   sm._io.emit('gameEvent', {
     action: action
