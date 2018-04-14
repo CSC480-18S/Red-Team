@@ -18,8 +18,7 @@ const socket = require('./helpers/Socket')(server)
 /**
  * Imports the routes to be used
  */
-const indexRoute = require('./routes/index-route')
-const gameRoute = require('./routes/game-route')
+const mainRoute = require('./routes/main-route')
 const statsRoute = require('./routes/stats-route')
 const usersRoute = require('./routes/users-route')
 
@@ -76,9 +75,8 @@ app.set('json spaces', 2)
 /**
  * Setting the routes to be used
  */
-app.use('/', indexRoute)
+app.use('/', mainRoute)
 app.use('/api', [statsRoute, usersRoute])
-app.use('/api/game/', gameRoute)
 
 app.use('/static', express.static(path.join(__dirname, '/static')))
 
