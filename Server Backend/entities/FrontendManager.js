@@ -1,13 +1,50 @@
 'use strict'
 
 class FrontendManager {
-  constructor(socket) {
-    this._socket = socket
-    this._socketId = socket.id
+  constructor() {
+    this._socket = null
+    this._socketId = null
+    this._boardInformation = null
+    this._playersInformation = null
+    this.listenForEvents()
   }
 
   get id() {
     return this._socketId
+  }
+
+  updateGameInformation(board, players) {
+    this._boardInformation = board
+    this._playersInformation = players
+  }
+
+  /**
+   * Listens for events coming from the frontend
+   */
+  listenForEvents() {
+    if (this._socketId !== null) {
+      this._socket.on('disconnect', () => {
+        this.removeFrontendInformation()
+      })
+    }
+  }
+
+  /**
+   * Creates a connection to the frontend
+   * @param {Object} socket - socket object
+   */
+  createHandshakeWithFrontend(socket) {
+    this._socket = socket
+    this._socketId = socket.id
+  }
+
+  /**
+   * Removes frontend information
+   */
+  removeFrontendInformation() {
+    console.log('INFO: SERVER FRONTEND DISCONNECTED'.info)
+    this._socket = null
+    this._socketId = null
   }
 
   /**
@@ -16,24 +53,26 @@ class FrontendManager {
    * @param {Object} data - data to be sent
    */
   sendEvent(event, data) {
-    console.log(`DEBUG: SENDING SERVER FRONTEND ${event.toUpperCase()} EVENT`.debug)
-    switch (event) {
-      case 'connectAI':
-        this._socket.emit(event, {
-          position: data
-        })
-        break
-      case 'removeAI':
-        this._socket.emit(event, {
-          position: data
-        })
-        break
-      case 'updateState':
-        this._socket.emit(event, {
-          board: data.board,
-          players: data.players
-        })
-        break
+    if (this._socketId !== null) {
+      console.log(`DEBUG: SENDING SERVER FRONTEND ${event.toUpperCase()} EVENT`.debug)
+      switch (event) {
+        case 'connectAI':
+          this._socket.emit(event, {
+            position: data
+          })
+          break
+        case 'removeAI':
+          this._socket.emit(event, {
+            position: data
+          })
+          break
+        case 'updateState':
+          this._socket.emit(event, {
+            board: this._boardInformation,
+            players: this._playersInformation
+          })
+          break
+      }
     }
   }
 }

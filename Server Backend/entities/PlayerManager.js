@@ -4,9 +4,10 @@
  * Imports files
  */
 const ld = require('../helpers/LetterDistributor')
+require('../helpers/Debug')
 
 class PlayerManager {
-  constructor(position) {
+  constructor(position, gameManager) {
     this._name = null
     this._team = null
     this._isAI = null
@@ -16,9 +17,8 @@ class PlayerManager {
     this._tiles = []
     this._isTurn = false
     this._score = 0
+    this._gameManager = gameManager
     this.init()
-
-    this.addToHand()
   }
 
   /**
@@ -92,7 +92,14 @@ class PlayerManager {
   }
 
   init() {
-    // this.addToHand()
+    this.addToHand()
+    this.listenForEvents()
+  }
+
+  listenForEvents() {
+    this._socket.on('disconnect', () => {
+      this.removePlayerInformation()
+    })
   }
 
   sendEvent(event, data) {
@@ -109,6 +116,10 @@ class PlayerManager {
           score: this.score
         })
         break
+      case 'boardUpdate':
+        this.socket.emit(event, {
+          board: this._gameManager.board.sendableBoard()
+        })
     }
   }
 
@@ -140,6 +151,7 @@ class PlayerManager {
     this._socket = socket
     this._socketId = socket.id
     this.sendEvent('dataUpdate')
+    this.sendEvent('boardUpdate')
   }
 
   /**
@@ -177,6 +189,7 @@ class PlayerManager {
    * Removes player information
    */
   removePlayerInformation() {
+    console.log(`INFO: PLAYER ${`${this.name}`.warn} DISCONNECTED FROM ${'-->'.arrow} PLAYER MANAGER ${`${this.position}`.warn}`.info)
     this._name = null
     this._team = null
     this._isAI = null
@@ -185,7 +198,7 @@ class PlayerManager {
   }
 
   /**
-   * Removes tiles from array
+   * Removes tiles from hand
    * @param {Array} tiles - array of tiles to remove
    */
   removeTiles(tilesToBeRemoved) {

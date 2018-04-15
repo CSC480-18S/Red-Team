@@ -9,6 +9,11 @@ const sc = require('../helpers/ScoreCalculator')
 const rh = require('../helpers/ResponseHandler')
 const ex = require('../helpers/Extractor')
 
+let state = Object.freeze({
+  IN_GAME: 0,
+  GAME_OVER: 1
+})
+
 class GameManager {
   constructor(io) {
     this._gameBoard = new Gameboard()
