@@ -8,7 +8,15 @@ const router = express.Router()
  * The actual game area
  */
 router.get('/game', function(req, res, next) {
-  res.render('frontend_play_area')
+  res.render('gameboard')
+})
+
+router.get('/login', function(req, res, next) {
+  res.render('login')
+})
+
+router.get('/register', function(req, res, next) {
+  res.render('register')
 })
 
 /**

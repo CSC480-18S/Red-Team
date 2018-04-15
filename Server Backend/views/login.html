@@ -21,11 +21,11 @@
                 <div id="status-area">
                     <div class="stats">
                         <h4><i class="fas fa-user"></i> Players</h4>
-                        <h1>5</h1>
+                        <h1 id="players"></h1>
                     </div>
                     <div class="stats">
                         <h4><i class="fas fa-gamepad"></i> AI</h4>
-                        <h1>5</h1>
+                        <h1 id="ai"></h1>
                     </div>
                 </div>
             </div>
@@ -38,6 +38,16 @@
     <script type="text/javascript" src="/static/js/tether-1.2.4.min.js"></script>
     <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="/static/js/bootstrap-4.0.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/socketio-2.0.3.min.js"></script>
+
+    <script type="text/javascript">
+        let socket = io()
+
+        socket.on('connections', response => {
+            $('#players').text(response.players)
+            $('#ai').text(response.ai)
+        })
+    </script>
 
     <script type="text/javascript">
         $('#copyright').append(`Copyright © ${new Date().getFullYear()}. SUNY Oswego. All Rights Reserved.`);
