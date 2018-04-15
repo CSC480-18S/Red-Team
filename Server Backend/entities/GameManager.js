@@ -8,6 +8,9 @@ require('../helpers/Debug')
 const sc = require('../helpers/ScoreCalculator')
 const rh = require('../helpers/ResponseHandler')
 const ex = require('../helpers/Extractor')
+const dg = require('../helpers/Debug')
+const PlayerManager = require('./PlayerManager')
+const FrontendManager = require('./FrontendManager')
 
 let state = Object.freeze({
   IN_GAME: 0,
@@ -15,13 +18,25 @@ let state = Object.freeze({
 })
 
 class GameManager {
-  constructor(io) {
+  constructor(io, serverManager) {
     this._gameBoard = new Gameboard()
+    this._serverManager = serverManager
+    this._playerManagers = []
+    this._frontendManager = null
     this._tileScores = []
     this._greenScore = 0
     this._error = 0
     this._yellowScore = 0
+    this._swaps = 0
     this._io = io
+    this.init()
+  }
+
+  /**
+   * Server manager getter
+   */
+  get serverManager() {
+    return this._serverManager
   }
 
   /**
@@ -31,7 +46,175 @@ class GameManager {
     return this._gameBoard
   }
 
-  play(newBoard, player, callback) {
+  init() {
+    this.createPlayerManagers()
+    this.createFrontendManager()
+  }
+
+  /**
+   * Removes player from server manager count
+   */
+  removePlayer() {
+    this._serverManager.updateConnectionCounts('p', -1)
+  }
+
+  /**
+     * Creates 4 player managers
+     */
+  createPlayerManagers() {
+    dg(`creating 4 player managers`, 'debug')
+    for (let i = 0; i < 4; i++) {
+      this._playerManagers.push(new PlayerManager(i, this))
+      this._playerManagers[0].isTurn = true
+    }
+    dg('player managers created', 'debug')
+  }
+
+  /**
+     * Creates only one frontend manager instance
+     */
+  createFrontendManager() {
+    if (this._frontendManager === null) {
+      this._frontendManager = new FrontendManager()
+      dg('frontend created', 'debug')
+    }
+  }
+
+  /**
+   * Adds information for the frontend
+   * @param {Object} socket - socket object
+   */
+  addFrontend(socket) {
+    if (this._frontendManager.id === null) {
+      this._frontendManager.createHandshakeWithFrontend(socket)
+    }
+  }
+
+  /**
+     * Adds a client to a PlayerManager that does not have any data inside of it
+     * @param {String} name - name of player
+     * @param {String} team - team player is on
+     * @param {Boolean} isAI - AI or not
+     * @param {Object} socket - socket object
+     */
+  addPlayer(name, team, isAI, socket) {
+    for (let manager of this._playerManagers) {
+      if (manager.id === null) {
+        manager.createHandshakeWithClient(name, team, isAI, socket)
+        this.updateFrontendData()
+        dg(`client added to player manager ${manager.position}`, 'debug')
+        return true
+      }
+    }
+    return false
+  }
+
+  /**
+     * Removes an AI player if an actual person tries to connect and there are AI playing
+     * @param {String} name - name of player
+     * @param {String} team - name of team
+     * @param {Object} socket - socket object
+     */
+  removeAI(name, team, socket) {
+    for (let manager of this._playerManagers) {
+      if (this._frontendManager.socketId !== null && manager.isAI) {
+        dg(`removing ai from position ${manager.position}`, 'debug')
+        this._frontendManager.sendEvent('removeAI', manager.position)
+        manager.removePlayerInformation()
+        this.addClientToManager(name, team, false, socket)
+        return
+      }
+    }
+  }
+
+  /**
+   * Updates the frontend
+   */
+  updateFrontendData() {
+    let data = {
+      board: this.board.sendableBoard(),
+      players: this._playerManagers
+    }
+
+    this._frontendManager.sendEvent('updateState', data)
+  }
+
+  /**
+  * Updates clients' data
+  */
+  updateClientData() {
+    for (let manager of this._playerManagers) {
+      if (manager.id !== null) {
+        manager.sendEvent('dataUpdate')
+      }
+    }
+  }
+
+  /**
+   * Updates who's turn it is
+   */
+  updateTurn(manager, swapped) {
+    let position = manager.position
+    dg(`it was player ${manager.position}'s turn`, 'debug')
+    manager.isTurn = false
+    do {
+      position++
+      if (position > 3) {
+        position = 0
+      }
+    } while (this._playerManagers[position].id === null)
+    this._playerManagers[position].isTurn = true
+    if (!swapped) {
+      this._swaps = 0
+    }
+    dg(`it is now player ${position}'s turn`, 'debug')
+
+    this.updateClientData()
+    this.updateFrontendData()
+  }
+
+  swapMade(manager) {
+    this._swaps++
+    if (this._swaps === this._currentlyConnectedClients) {
+      this.gameOver()
+      return
+    }
+    manager.manipulateHand(manager.tiles)
+    this.updateTurn(manager, true)
+  }
+
+  gameOver() {
+    dg('all players have swapped tiles, game over', 'info')
+    for (let manager of this._playerManagers) {
+      if (manager.id !== null) {
+        manager.isTurn = false
+        manager.sendEvent('dataUpdate')
+      }
+    }
+    let finalScores = []
+    let winner = null
+    let highestScore = 0
+    for (let manager of this._playerManagers) {
+      if (manager.id !== null) {
+        if (manager.score > highestScore) {
+          highestScore = manager.score
+          winner = manager.name
+        }
+        let data = {
+          name: manager.name,
+          score: manager.score
+        }
+        finalScores.push(data)
+      }
+    }
+    this._io.emit('gameOver', {
+      scores: finalScores,
+      winner: winner,
+      winningTeam: this._yellowScore > this._greenScore ? 'Yellow' : 'Green'
+    })
+  }
+
+  play(newBoard, player) {
     const letters = ex.extractLetters(newBoard, this._gameBoard.board, player)
 
     if (!letters) {
@@ -39,7 +222,7 @@ class GameManager {
         error: 7,
         data: ''
       }
-      return callback(rh(response.error, response, player, this))
+      return rh(response.error, response, player, this)
     }
 
     const words = ex.extractWords(letters, newBoard)
@@ -52,14 +235,14 @@ class GameManager {
           boardPlay = this._gameBoard.placeWords(words, player)
         } else {
           // if the word is invalid
-          return callback(rh(response, player, this))
+          return rh(response, player, this)
         }
         // if the board has attempted to play a word
         if (boardPlay.error === 0) {
           let ls = letters.map(l => l.letter)
           player.manipulateHand(ls)
         }
-        return callback(rh(boardPlay, player, this))
+        return rh(boardPlay, player, this)
       })
       .catch(e => {
         console.log(`ERROR: ${e}`.error)

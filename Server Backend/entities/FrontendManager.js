@@ -1,32 +1,23 @@
 'use strict'
+const dg = require('../helpers/Debug')
 
 class FrontendManager {
   constructor() {
     this._socket = null
     this._socketId = null
-    this._boardInformation = null
-    this._playersInformation = null
-    this.listenForEvents()
   }
 
   get id() {
     return this._socketId
   }
 
-  updateGameInformation(board, players) {
-    this._boardInformation = board
-    this._playersInformation = players
-  }
-
   /**
    * Listens for events coming from the frontend
    */
   listenForEvents() {
-    if (this._socketId !== null) {
-      this._socket.on('disconnect', () => {
-        this.removeFrontendInformation()
-      })
-    }
+    this._socket.on('disconnect', () => {
+      this.removeFrontendInformation()
+    })
   }
 
   /**
@@ -36,13 +27,14 @@ class FrontendManager {
   createHandshakeWithFrontend(socket) {
     this._socket = socket
     this._socketId = socket.id
+    this.listenForEvents()
   }
 
   /**
    * Removes frontend information
    */
   removeFrontendInformation() {
-    console.log('INFO: SERVER FRONTEND DISCONNECTED'.info)
+    dg('server frontend disconnected', 'info')
     this._socket = null
     this._socketId = null
   }
@@ -68,8 +60,10 @@ class FrontendManager {
           break
         case 'updateState':
           this._socket.emit(event, {
-            board: this._boardInformation,
-            players: this._playersInformation
+            board: data.board,
+            players: data.players.map(p => {
+              return p.sendableData()
+            })
           })
           break
       }

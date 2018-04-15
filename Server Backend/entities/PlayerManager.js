@@ -4,7 +4,7 @@
  * Imports files
  */
 const ld = require('../helpers/LetterDistributor')
-require('../helpers/Debug')
+const dg = require('../helpers/Debug')
 
 class PlayerManager {
   constructor(position, gameManager) {
@@ -93,13 +93,27 @@ class PlayerManager {
 
   init() {
     this.addToHand()
-    this.listenForEvents()
   }
 
+  /**
+   * Listens for events coming from cient
+   */
   listenForEvents() {
-    this._socket.on('disconnect', () => {
-      this.removePlayerInformation()
-    })
+    if (this._socketId !== null) {
+      this._socket.on('disconnect', () => {
+        this.removePlayerInformation()
+        this._gameManager.removePlayer()
+      })
+
+      this._socket.on('play', newBoard => {
+        this._gameManager.play(newBoard, this)
+      })
+
+      this._socket.on('swap', () => {
+        dg(`player ${this.name} has swapped tiles`, 'info')
+        this._gameManager.swapMade(this)
+      })
+    }
   }
 
   sendEvent(event, data) {
@@ -152,6 +166,7 @@ class PlayerManager {
     this._socketId = socket.id
     this.sendEvent('dataUpdate')
     this.sendEvent('boardUpdate')
+    this.listenForEvents()
   }
 
   /**
@@ -189,7 +204,7 @@ class PlayerManager {
    * Removes player information
    */
   removePlayerInformation() {
-    console.log(`INFO: PLAYER ${`${this.name}`.warn} DISCONNECTED FROM ${'-->'.arrow} PLAYER MANAGER ${`${this.position}`.warn}`.info)
+    dg(`player ${this.name} disconnected from player manager ${this.position}`, 'debug')
     this._name = null
     this._team = null
     this._isAI = null
