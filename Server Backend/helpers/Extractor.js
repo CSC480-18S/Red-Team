@@ -3,6 +3,7 @@
  * Imports files
  */
 const _ = require('lodash')
+const dg = require('../helpers/Debug')
 
 function extractLetters(newBoard, currentBoard, player) {
   const letters = []
@@ -23,15 +24,15 @@ function extractLetters(newBoard, currentBoard, player) {
       }
     }
   }
-  console.log(`DEBUG: LETTERS EXTRACTED`.debug)
-  console.log(`DATA: ${JSON.stringify(letters, null, 4)}`.data)
-  console.log('DEBUG: CHECKING AGAINST PLAYER\'S HAND...'.debug)
+  dg('letters extracted', 'debug')
+  dg(JSON.stringify(letters, null, 4), 'data')
+  dg('checking against player\'s hand', 'debug')
 
   for (let i = 0; i < letters.length; i++) {
     let inHand = player.tiles.indexOf(letters[i].letter)
 
     if (inHand === -1) {
-      console.log(`INFO: PLAYER ${player.name} HAS CHEATED`.info)
+      dg(`player ${player.name} has cheated`, 'info')
       return false
     }
   }
@@ -102,8 +103,8 @@ function extractWords(letters, newBoard) {
   })
 
   const uniqueWords = _.uniqWith(words, _.isEqual)
-  console.log(`DEBUG: WORDS EXTRACTED`.debug)
-  console.log(`DATA: ${JSON.stringify(uniqueWords, null, 4)}`.data)
+  dg('words extracted', 'debug')
+  dg(JSON.stringify(uniqueWords, null, 4), 'data')
   return uniqueWords
 }
 

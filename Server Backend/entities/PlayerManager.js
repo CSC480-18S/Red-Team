@@ -105,7 +105,7 @@ class PlayerManager {
         this._gameManager.removePlayer()
       })
 
-      this._socket.on('play', newBoard => {
+      this._socket.on('playWord', newBoard => {
         this._gameManager.play(newBoard, this)
       })
 

@@ -1,12 +1,17 @@
 'use strict'
+
 /**
- * Handles reponses going to players
- * @param {Number} er - error number
- * @param {Object} play - play object
- * @param {Object} player - player oject
- * @param {Object} io - socket object
+ * Imports files
  */
-module.exports = (data, player, sm) => {
+const dg = require('./Debug')
+
+/**
+ * Handles responses going out to users
+ * @param {Object} data - data object
+ * @param {Object} player - player object
+ * @param {Objecr} gm - game manager object
+ */
+module.exports = (data, player, gm) => {
   const result = {
     invalid: true
   }
@@ -43,16 +48,16 @@ module.exports = (data, player, sm) => {
     player.sendEvent('play', result)
     return false
   }
-  let score = sm.calculateScore(player, data.data)
+  let score = gm.calculateScore(player, data.data)
 
-  console.log('DEBUG: SENDING OUT WORD PLAYED EVENT'.debug)
-  sm._io.emit('boardUpdate', {
-    board: sm._gameBoard.sendableBoard()
+  dg('sending out word played event', 'debug')
+  gm._io.emit('boardUpdate', {
+    board: gm.board.sendableBoard()
   })
-  console.log('DEBUG: SENDING OUT GAME EVENT EVENT'.debug)
+  dg('sending out game event event', 'debug')
   let action = `${player.name} played ${data.data.map(w => w.word)} for ${score} points`
-  console.log(`INFO: ${action}`.toUpperCase().info)
-  sm._io.emit('gameEvent', {
+  dg(action, 'info')
+  gm._io.emit('gameEvent', {
     action: action
   })
   return true

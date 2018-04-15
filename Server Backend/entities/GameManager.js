@@ -175,11 +175,14 @@ class GameManager {
 
   swapMade(manager) {
     this._swaps++
-    if (this._swaps === this._currentlyConnectedClients) {
+    if (this._swaps === 4) {
       this.gameOver()
       return
     }
     manager.manipulateHand(manager.tiles)
+    this._io.emit('gameEvent', {
+      action: `${manager.name} swapped tiles`
+    })
     this.updateTurn(manager, true)
   }
 
@@ -220,9 +223,9 @@ class GameManager {
     if (!letters) {
       let response = {
         error: 7,
-        data: ''
+        data: 'cheater'
       }
-      return rh(response.error, response, player, this)
+      return rh(response, player, this)
     }
 
     const words = ex.extractWords(letters, newBoard)
@@ -256,7 +259,7 @@ class GameManager {
   wordValidation(words) {
     const search = words.map(s => s.word).join(',')
 
-    console.log('DEBUG: CHECKING WORDS AGAINST DATABASE...'.debug)
+    dg('checking words against database', 'debug')
     return axios.get('http://localhost:8090/dictionary/validate?words=' + search)
       .then(res => {
         return this.pruneResults(res.data)
@@ -268,7 +271,7 @@ class GameManager {
    * @param {Array} response - word data sent back from DB
    */
   pruneResults(response) {
-    console.log('DEBUG: PRUNING RESULTS OF DATABASE RESPONSE...'.debug)
+    dg('pruning results of database response', 'debug')
     for (let word of response) {
       if (word.bad) {
         return {
@@ -293,10 +296,10 @@ class GameManager {
    * @param {Array} words - array of words to calculate score for
    */
   calculateScore(player, words) {
-    console.log('DEBUG: CALCULATING SCORE...'.debug)
     let score = sc(words, this._gameBoard.board)
 
     this.addScore(player, score)
+    this.updateTurn(player, false)
     return score
   }
 
