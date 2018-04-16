@@ -121,7 +121,7 @@ class GameManager {
         dg(`removing ai from position ${manager.position}`, 'debug')
         this._frontendManager.sendEvent('removeAI', manager.position)
         manager.removePlayerInformation()
-        this.addClientToManager(name, team, false, socket)
+        manager.createHandshakeWithClient(name, team, false, socket)
         return
       }
     }
