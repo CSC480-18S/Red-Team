@@ -8,8 +8,8 @@ public class StatsViewer extends Game {
     @Override
     public void create() {
         //for testing purposes only
-        StatsConnection stats = new StatsConnection();
-        System.out.println(stats.GreenStats().get().getData().getName());
+       StatsConnection stats = new StatsConnection();
+       System.out.println(stats.GreenStats().get().getData().getName());
 
         screen = new StatsScreen(this);
         setScreen(screen);
