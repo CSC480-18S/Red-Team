@@ -1,0 +1,97 @@
+@font-face {
+    font-family: 'bs';
+    src: url("/static/webfonts/b-sans.otf") format("openType");
+ }
+
+ $font-main: 'bs', sans-serif;
+
+html,body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: $font-main;
+}
+
+#main-area{
+    height: 100%;
+    width: 100%;
+    background: rgba(168.3, 168.3, 168.3, 0.5);
+    display: grid;
+    grid-template-areas: "register" "footer";
+    grid-template-rows: 1fr auto;
+}
+
+#register-area{
+    grid-area: register;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    #register {
+        box-shadow: 0 3px 6px rgba(0,0,0,0.3), inset 0 -3px 3px rgba(0,0,0,0.1);
+        background: #FFCC33;
+        border-radius: 20px;
+        height: 50%;
+        width: 20%;
+        display: grid;
+        grid-template-areas: "logo" "form";
+        grid-template-rows: auto 1fr;
+        justify-items: center;
+
+        #logo-area{
+            grid-area: logo;
+            text-align: center;
+            
+            #logo{
+                display: block;
+                margin: auto;
+                width: 75%;
+            }
+        }
+
+        #form-area{
+            width: 100%;
+            grid-area: form;
+
+            #form{
+                margin: auto;
+                width: 90%;
+
+                #username{
+                    margin-bottom: 10px;
+                }
+
+                .btn{
+                    margin: auto;
+                    margin-top: 10px;
+                    background: rgba(18,178,74, 0.7);
+                    border-color:rgba(18,178,74, 0.7);
+                    color: white;
+    
+                    &:hover{
+                        background: rgb(18,178,74);
+                        border-color: rgb(18,178,74);
+                    }
+                }
+            }
+        }
+    }
+}
+
+#footer {
+    text-align:center;
+    grid-area: footer;
+    background: rgb(18,178,74);
+    color: white;
+    padding: 5px;
+}
+
+@media screen and (max-width: 568px) {
+    #register-area{
+         #register {
+             height: 90%;
+             width: 90%;
+         }
+     }
+ }

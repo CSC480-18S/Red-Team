@@ -1,6 +1,10 @@
 'use strict'
 
+/**
+ * Imports files
+ */
 const tiles = require('../entities/Bag')
+const dg = require('./Debug')
 
 /**
  * Calculates the scor of a play
@@ -8,7 +12,7 @@ const tiles = require('../entities/Bag')
 * @param {Array} gameBoard - board
 */
 module.exports = (words, gameBoard) => {
-  console.log('DEBUG: CALCULATING SCORE...'.debug)
+  dg('calculating score...', 'debug')
   let cumulativeScore = 0
   words.map(w => {
     let x = 0

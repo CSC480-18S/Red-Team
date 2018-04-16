@@ -95,6 +95,7 @@ class Gameboard {
     let firstPlayBypass = false
     for (let w of words) {
       let word = this.createWordObject(w)
+      let wordActual = word.word
 
       for (let i = word.sX; i <= word.eX; i++) {
         for (let j = word.sY; j <= word.eY; j++) {
@@ -102,10 +103,7 @@ class Gameboard {
          * Check to see if the word was somehow placed out of bounds
          */
           if (tempBoard[j][i] === undefined) {
-            return {
-              error: 2,
-              word: word.word
-            }
+            return this.validatorDispatcher(2, wordActual)
           }
           let l = tempBoard[j][i].letter
           let wordLetter = w.h ? word.word[i - word.sX].toUpperCase() : word.word[j - word.sY].toUpperCase()
@@ -114,10 +112,7 @@ class Gameboard {
          * Validate if the letter placed can be placed there
          */
           if (!this.validatePosition(l, wordLetter)) {
-            return {
-              error: 3,
-              word: word.word
-            }
+            return this.validatorDispatcher(3, wordActual)
           }
 
           /**
@@ -136,29 +131,35 @@ class Gameboard {
        */
       if (this._firstPlay) {
         if (!this.validateCenterTile(tempBoard)) {
-          return {
-            error: 4,
-            word: word.word
-          }
+          return this.validatorDispatcher(4, wordActual)
         }
         firstPlayBypass = true
         continue
       }
 
       if (!validWordPlacement) {
-        invalidWord = word.word
+        invalidWord = wordActual
       }
     }
+    /**
+     * Make sure that the entire play has valid placement
+     */
     if (!firstPlayBypass && !validWordPlacement) {
-      return {
-        error: 5,
-        word: invalidWord
-      }
+      return this.validatorDispatcher(5, invalidWord)
     }
     this._board = tempBoard
+    return this.validatorDispatcher(0, words)
+  }
+
+  /**
+   * Dispatches error codes and words from the validatior
+   * @param {Number} e - error code
+   * @param {String/Array} w - word(s)
+   */
+  validatorDispatcher(e, w) {
     return {
-      error: 0,
-      words: words
+      error: e,
+      data: w
     }
   }
 

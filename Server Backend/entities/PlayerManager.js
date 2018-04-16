@@ -4,9 +4,10 @@
  * Imports files
  */
 const ld = require('../helpers/LetterDistributor')
+const dg = require('../helpers/Debug')
 
 class PlayerManager {
-  constructor(position) {
+  constructor(position, gameManager) {
     this._name = null
     this._team = null
     this._isAI = null
@@ -16,9 +17,8 @@ class PlayerManager {
     this._tiles = []
     this._isTurn = false
     this._score = 0
+    this._gameManager = gameManager
     this.init()
-
-    this.addToHand()
   }
 
   /**
@@ -92,7 +92,28 @@ class PlayerManager {
   }
 
   init() {
-    // this.addToHand()
+    this.addToHand()
+  }
+
+  /**
+   * Listens for events coming from cient
+   */
+  listenForEvents() {
+    if (this._socketId !== null) {
+      this._socket.on('disconnect', () => {
+        this.removePlayerInformation()
+        this._gameManager.removePlayer()
+      })
+
+      this._socket.on('playWord', newBoard => {
+        this._gameManager.play(newBoard, this)
+      })
+
+      this._socket.on('swap', () => {
+        dg(`player ${this.name} has swapped tiles`, 'info')
+        this._gameManager.swapMade(this)
+      })
+    }
   }
 
   sendEvent(event, data) {
@@ -109,6 +130,10 @@ class PlayerManager {
           score: this.score
         })
         break
+      case 'boardUpdate':
+        this.socket.emit(event, {
+          board: this._gameManager.board.sendableBoard()
+        })
     }
   }
 
@@ -140,6 +165,8 @@ class PlayerManager {
     this._socket = socket
     this._socketId = socket.id
     this.sendEvent('dataUpdate')
+    this.sendEvent('boardUpdate')
+    this.listenForEvents()
   }
 
   /**
@@ -177,6 +204,7 @@ class PlayerManager {
    * Removes player information
    */
   removePlayerInformation() {
+    dg(`player ${this.name} disconnected from player manager ${this.position}`, 'debug')
     this._name = null
     this._team = null
     this._isAI = null
@@ -185,7 +213,7 @@ class PlayerManager {
   }
 
   /**
-   * Removes tiles from array
+   * Removes tiles from hand
    * @param {Array} tiles - array of tiles to remove
    */
   removeTiles(tilesToBeRemoved) {

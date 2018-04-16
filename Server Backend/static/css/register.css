@@ -1,0 +1,77 @@
+@font-face {
+  font-family: 'bs';
+  src: url("/static/webfonts/b-sans.otf") format("openType"); }
+
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: "bs", sans-serif; }
+
+#main-area {
+  height: 100%;
+  width: 100%;
+  background: rgba(168, 168, 168, 0.5);
+  display: grid;
+  grid-template-areas: "register" "footer";
+  grid-template-rows: 1fr auto; }
+
+#register-area {
+  grid-area: register;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center; }
+  #register-area #register {
+    -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3), inset 0 -3px 3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3), inset 0 -3px 3px rgba(0, 0, 0, 0.1);
+    background: #FFCC33;
+    border-radius: 20px;
+    height: 50%;
+    width: 20%;
+    display: grid;
+    grid-template-areas: "logo" "form";
+    grid-template-rows: auto 1fr;
+    justify-items: center; }
+    #register-area #register #logo-area {
+      grid-area: logo;
+      text-align: center; }
+      #register-area #register #logo-area #logo {
+        display: block;
+        margin: auto;
+        width: 75%; }
+    #register-area #register #form-area {
+      width: 100%;
+      grid-area: form; }
+      #register-area #register #form-area #form {
+        margin: auto;
+        width: 90%; }
+        #register-area #register #form-area #form #username {
+          margin-bottom: 10px; }
+        #register-area #register #form-area #form .btn {
+          margin: auto;
+          margin-top: 10px;
+          background: rgba(18, 178, 74, 0.7);
+          border-color: rgba(18, 178, 74, 0.7);
+          color: white; }
+          #register-area #register #form-area #form .btn:hover {
+            background: #12b24a;
+            border-color: #12b24a; }
+
+#footer {
+  text-align: center;
+  grid-area: footer;
+  background: #12b24a;
+  color: white;
+  padding: 5px; }
+
+@media screen and (max-width: 568px) {
+  #register-area #register {
+    height: 90%;
+    width: 90%; } }

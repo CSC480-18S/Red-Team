@@ -1,65 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Gameboard</title>
-    <style>
-        h1{
-            display: inline;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css?family=Aldrich|Press+Start+2P" rel="stylesheet">
+
+    <title></title>
 </head>
+
 <body>
-    
-    <table id="board" class="table">
+    <div id="root">
 
-    </table>
+        <div id="usernameArea">
+            <h4 class="username">You are {{username}}</h4>
+        </div>
 
-    <script type="text/javascript" src="/static/tether-1.2.4.min.js"></script>
-    <script type="text/javascript" src="/static/jquery-3.3.1.min.js"></script>
-    <link rel="stylesheet" href="/static/bootstrap-4.0.0.min.css"></script>
-    <script type="text/javascript" src="/static/bootstrap-4.0.0.min.js"></script>
-    <script type="text/javascript" src="/static/socketio-2.0.3.min.js"></script>
-
-    <script>
-        let socket = io()
-        socket.on('connect', () => {
-            console.log(socket.id)
-        })
+        <div id="textBox">
+            <p class="gameEvent"><b>Game Event</b></p>
+            <p class="gameEvent" id="actualEvent"></p>
+        </div>
         
-        socket.on('whoAreYou', () => {
-            socket.emit('whoAreYou', {
-                isSF: true
-            })
-        })
-        let board
+        <div class="wrapper-board">
+            <div class="row-style" v-for="row in rows">
+                <div class="col-style" v-for="square in squares" v-if="square.xAxis === row" :id="square.id" :style="{background: square.squareBackgroundColor}" @click="onClickSquare(square.id)"></div>
+            </div>
+        </div>
 
-        socket.on('boardUpdate', b => {
-            board = b.board
-            
-            $('#board').empty()
-            $('#board').append('<th></th>')
-            for(let i = 0; i < board.length; i++){
-                $('#board').append(`<th>${i}</th>`)
-            }
-            for(let i = 0; i < board.length; i++){
-                $('#board').append('<tr>')
-                $('#board').append(`<th>${i}</th>`)
-                for(let j = 0; j < board[0].length; j++){
-                    if(board[i][j] === null){
-                        $('#board').append(`<td>.</td>`) 
-                    } else {
-                        $('#board').append(`<td>${board[i][j]}</td>`)
-                    }
-                }
-                $('#board').append('</tr>')
-            }
+        <div class="wrapper-slots">
+            <div class="row-style">
+                <div class="slot-style" v-for="tileSlot in tileSlots" :id="tileSlot.id">
+                    <svg :id="tileSlot.tile.id" :visibility="tileSlot.tile.visibility" @click="onClickTile(tileSlot.tile.id)">
+                        <rect x="0" y="0" stroke="black" stroke-width="1px" width="100%" height="100%" fill="#f4dc00"/>
+                        <text x="50%" y="60%" alignment-baseline="middle" text-anchor="middle" :fill="tileSlot.tile.highlightedColor">{{ tileSlot.tile.letter }}</text>
+                        <text class="letter-value" x="70%" y="30%" :fill="tileSlot.tile.highlightedColor">{{ tileSlot.tile.value }}</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
 
-        })
+        <div class="wrapper-buttons">
+            <button id="btnSwap" @click="onClickSwap">SWAP</button>
+            <button id="btnPlace" @click="onClickPlace" onclick="emitBoard()">PLACE</button>
+            <button id="btnShuffle" @click="onClickShuffle">SHUFFLE</button>
+        </div>
 
-    </script>
-    
+    </div>
+
+    <script type="text/javascript" src="/static/js/vuejs-2.5.16.min.js"></script>
+    <script type="text/javascript" src="/static/js/socketio-2.0.3.min.js"></script>
+
+    <script type="text/javascript" src="/static/js/frontend_board_model.js"></script>
+    <script type="text/javascript" src="/static/js/frontend_board_view_model.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/frontend_play_area.css">
+
 </body>
 </html>
