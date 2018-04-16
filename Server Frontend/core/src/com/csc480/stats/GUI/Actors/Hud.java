@@ -113,7 +113,7 @@ public class Hud {
     //-----------------------Bonuses Used-------------------------------
     private int G_BUP1 = 14;
 
-    Label G_BUWords = new Label("Bonuses Used: "+ String.format("%10d pts",G_BUP1) ,TextureManager.getInstance().ui);
+    Label G_BUWords = new Label("Bonuses Used: "+ String.format("%10d",G_BUP1) ,TextureManager.getInstance().ui);
 
 
     //-----------------------Top Players-------------------------------
@@ -236,7 +236,7 @@ public class Hud {
     //-----------------------Bonuses Used-------------------------------
     private int Y_BUP1 = 14;
 
-    Label Y_BUWords = new Label("Bonuses Used: "+ String.format("%10d pts",Y_BUP1) ,TextureManager.getInstance().ui);
+    Label Y_BUWords = new Label("Bonuses Used: "+ String.format("%10d",Y_BUP1) ,TextureManager.getInstance().ui);
 
 
     //-----------------------Top Players-------------------------------

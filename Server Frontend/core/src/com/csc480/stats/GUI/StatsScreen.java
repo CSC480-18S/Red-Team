@@ -37,20 +37,22 @@ public class StatsScreen implements Screen {
         viewCam = new OrthographicCamera();
        // view = new FitViewport(Gdx.graphics.getHeight(), Gdx.graphics.getHeight()*aspectRatio, viewCam);
        // view = new FitViewport(GameScreen.GUI_UNIT_SIZE * 45, GameScreen.GUI_UNIT_SIZE *45 * aspectRatio, viewCam);
+        //view = new FitViewport(GameScreen.GUI_UNIT_SIZE * 37, GameScreen.GUI_UNIT_SIZE *37 * aspectRatio, viewCam);
         view = new FitViewport(GameScreen.GUI_UNIT_SIZE * 37, GameScreen.GUI_UNIT_SIZE *37 * aspectRatio, viewCam);
         view.apply();
         stage = new Stage(view);
 
 //////////////////////////////////////////////////////////////////////////
         batch = new SpriteBatch();
-        sprite = new Sprite(new Texture(Gdx.files.internal("StatsAssets/statsBackground.png")));
+        //sprite = new Sprite(new Texture(Gdx.files.internal("StatsAssets/statsBackground.png")));
+        sprite = new Sprite(new Texture(Gdx.files.internal("Background.jpg")));
        // sprite.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         //sprite.setSize(,Gdx.graphics.getHeight());
 
         StatsTables table  = new StatsTables();
         //table.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        table.setWidth(Gdx.graphics.getWidth()*aspectRatio);
-        table.setHeight(Gdx.graphics.getHeight() *aspectRatio+30);
+        table.setWidth(GameScreen.GUI_UNIT_SIZE * 37);
+        table.setHeight(GameScreen.GUI_UNIT_SIZE * 37 *aspectRatio);
         //table.setDebug(true);
 
         stage.addActor(table);
