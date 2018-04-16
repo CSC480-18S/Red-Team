@@ -3,26 +3,40 @@
  */
 const express = require('express')
 const router = express.Router()
-const GB = require('../entities/Gameboard')
-const VerifyToken = require('../helpers/VerifyTokens')
-
-let g = new GB()
-g.init()
 
 /**
  * Returns the game board to the user
  */
-router.get('/gameBoard', VerifyToken, function(req, res, next) {
-  res.render('gameboard', {board: g._board})
+router.get('/gameBoard', function(req, res, next) {
+  res.render('gameboard')
 })
 
 /**
  * This route will be changed, no documentation as of now
  */
-router.post('/playWord', VerifyToken, function(req, res, next) {
-  const r = req.body
+router.get('/playWords', function(req, res, next) {
+  res.render('playWord')
+})
 
-  g.consumeInput(r.x, r.y, r.h, r.word, res)
+/**
+ * This route will be changed, no documentation as of now
+ */
+router.post('/playWords', function(req, res, next) {
+  let words = req.body
+  if (!(words instanceof Array)) {
+    let newWord = {
+      word: words.word,
+      x: JSON.parse(words.x),
+      y: JSON.parse(words.y),
+      h: JSON.parse(words.h)
+    }
+
+    words = [newWord]
+  }
+
+  const user = req.username
+
+  g.play(words, res, user)
 })
 
 /**

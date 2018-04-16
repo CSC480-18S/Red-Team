@@ -1,38 +1,48 @@
 'use strict'
 /**
- * Imports the lodash library
+ * Imports lodash and axios
  */
 const _ = require('lodash')
+
 /**
- * Imports the Tile class
+ * Imports the Tile and GameboardResponse class
  */
 const Tile = require('./Tile')
-const axios = require('axios')
 
 class Gameboard {
-  /**
-   * @param {Number} size - the size of the board for both height and width
-   */
   constructor() {
     this._size = 11
     this._board = new Array(this._size)
     this._initialized = false
     this._firstPlay = true
     this._error = 0
+    this.init()
   }
 
+  /**
+   * Sets the board
+   */
   set board(board) {
     this._board = board
   }
 
+  /**
+   * Sets initialized
+   */
   set initialized(initialized) {
     this._initialized = initialized
   }
 
+  /**
+   * Sets first play
+   */
   set firstPlay(firstPlay) {
     this._firstPlay = firstPlay
   }
 
+  /**
+   * Sets error
+   */
   set error(error) {
     this._error = error
   }
@@ -81,103 +91,30 @@ class Gameboard {
       return true
     }
 
-    for (let i = 0; i < this._board.length; i++) {
-      this._board[i] = new Array(this._size)
+    for (let i = 0; i < this.board.length; i++) {
+      this.board[i] = new Array(this._size)
 
-      for (let j = 0; j < this._board[0].length; j++) {
-        this._board[i][j] = new Tile(j, i, '1')
+      for (let j = 0; j < this.board[0].length; j++) {
+        this.board[i][j] = new Tile(j, i, '1')
       }
     }
 
-    this.initialized = true
-  }
-  /**
-   * Method consumes the user's input.  If the word is not valid, it does not attempt to place the word on the board and will send back to the user that the word is invalid
-   * @param {Number} x - start x
-   * @param {Number} y - start y
-   * @param {Boolean} h - is the word horizontal
-   * @param {String} word - the word to be validated
-   */
-  consumeInput(x, y, h, word, res) {
-    if (word.trim() === '') {
-      this.error = 1
-      return res.json(this.handleResponse(word))
-    }
-
-    this.wordIsValid(word).then(t => {
-      console.log('The board now has an answer')
-      if (t === true) {
-        this.placeWord({ x: x, y: y }, { x: h ? x + word.length - 1 : x, y: h ? y : y + word.length - 1 }, word, h)
-      }
-      return res.json(this.handleResponse(word))
-    }).catch(e => {
-      return res.json(e)
-    })
-    console.log('The board is thinking')
+    this._initialized = true
   }
 
   /**
-   * This method handles all types of responses that the gameboard can send back to a user.
-   * @param {String} word - word to be piped into the error message
+   * This method is only for a demo to replace the board
+   * @param {Array} board - board
    */
-  handleResponse(word) {
-    const result = {
-      invalid: true
-    }
-    let reason = null
-
-    result['word'] = word.toUpperCase()
-
-    switch (this.error) {
-      case 1:
-        reason = 'Not a valid word'
-        break
-      case 2:
-        reason = 'Placed out of the bounds of the board'
-        break
-      case 3:
-        reason = 'Invalid placement'
-        break
-      case 4:
-        reason = 'Word was not played over the center tile'
-        break
-      case 5:
-        reason = 'Word not connected to played tiles'
-        break
-      default:
-        result.invalid = false
-        return result
-    }
-
-    result['reason'] = reason.toUpperCase()
-
-    return result
+  replaceBoard(board) {
+    this.board = board
   }
 
   /**
-   * Method that checks to see if the word is in the DB
-   * @param {String} word - the word to be checked against the DB
+   * Method that places words on the baord
+   * @param {Array} words - array of words to place
    */
-  wordIsValid(word) {
-    return axios.get('http://localhost:8080/dictionary/validate?word=' + word)
-      .then((res) => {
-        if (res.data) {
-          return true
-        }
-        this.error = 1
-      }).catch((e) => {
-        console.log(e)
-      })
-  }
-
-  /**
-   * Method that places a word on the baord
-   * @param {Object} startCoords - object structured as such: {x: x, y: y}
-   * @param {Object} endCoords - object structured as such: {x: x, y: y}
-   * @param {String} word - word that will be placed on the board
-   * @param {Boolean} h - is this word horizontal
-   */
-  placeWord(startCoords, endCoords, word, h) {
+  placeWords(words, user) {
     this.error = 0
     const tempBoard = _.cloneDeep(this.board)
 
@@ -185,56 +122,98 @@ class Gameboard {
      * For word placement validation
      */
     let validWordPlacement = false
+    for (let w of words) {
+      let word = this.createWordObject(w)
 
-    for (let i = startCoords.x; i <= endCoords.x; i++) {
-      for (let j = startCoords.y; j <= endCoords.y; j++) {
+      for (let i = word.sX; i <= word.eX; i++) {
+        for (let j = word.sY; j <= word.eY; j++) {
         /**
          * Check to see if the word was somehow placed out of bounds
          */
-        if (tempBoard[j][i] === undefined) {
-          this.error = 2
-          return
-        }
-        let l = tempBoard[j][i].letter
-        let wordLetter = h ? word[i - startCoords.x].toUpperCase() : word[j - startCoords.y].toUpperCase()
+          if (tempBoard[j][i] === undefined) {
+            this.error = 2
+            return word.word
+          }
+          let l = tempBoard[j][i].letter
+          let wordLetter = w.h ? word.word[i - word.sX].toUpperCase() : word.word[j - word.sY].toUpperCase()
 
-        /**
-         * Validate the letter to be placed
+          /**
+         * Validate if the letter placed can be placed there
          */
-        if (!this.validatePosition(l, wordLetter)) {
-          this.error = 3
-          return
+          if (!this.validatePosition(l, wordLetter)) {
+            this.error = 3
+            return word.word
+          }
+
+          /**
+           * Check whether or not the letter to be placed is being placed over a letter already there
+           */
+          if (!validWordPlacement && tempBoard[j][i].letterPlaced) {
+            validWordPlacement = true
+          }
+
+          this.tileSetter(tempBoard[j][i], wordLetter, user)
         }
+      }
 
-        if (!validWordPlacement && tempBoard[j][i].letterPlaced) {
-          validWordPlacement = true
+      /**
+       * Check to see if center tile was played over on the first play
+       */
+      if (this.firstPlay) {
+        if (!this.validateCenterTile(tempBoard)) {
+          return word.word
         }
-
-        tempBoard[j][i].letter = wordLetter
+        continue
       }
-    }
 
-    /**
-     * Center tile validation
-     */
-    if (this.firstPlay) {
-      const c = Math.floor(this.size / 2)
-      if (!tempBoard[c][c].letterPlaced) {
-        this.error = 4
-        return
-      } else {
-        this.firstPlay = false
-        this.board = tempBoard
-        return
+      if (!validWordPlacement) {
+        this.error = 5
+        return word.word
       }
-    }
-
-    if (!validWordPlacement) {
-      this.error = 5
-      return
     }
 
     this.board = tempBoard
+  }
+
+  /**
+   * Helper method that sets properties of a tile
+   * @param {Object} tile - tile to work with
+   * @param {String} letter - letter to be set in the tile
+   * @param {String} user - user that played the letter
+   */
+  tileSetter(tile, letter, user) {
+    tile.letter = letter
+    tile.playedBy = user
+    tile.timePlayedAt = new Date().getTime()
+  }
+
+  /**
+   * Creates an object that holds word data
+   * @param {Object} w - word object
+   */
+  createWordObject(w) {
+    return {
+      word: w.word,
+      sX: w.x,
+      sY: w.y,
+      eX: w.h ? w.x + w.word.length - 1 : w.x,
+      eY: w.h ? w.y : w.y + w.word.length - 1
+    }
+  }
+
+  /**
+   * Validates whetehr the first played word was played over the center tile
+   * @param {Array} tempBoard - temp board
+   */
+  validateCenterTile(tempBoard) {
+    const c = Math.floor(this.size / 2)
+    if (!tempBoard[c][c].letterPlaced) {
+      this.error = 4
+      return false
+    } else {
+      this.firstPlay = false
+      return true
+    }
   }
 
   /**
@@ -243,13 +222,23 @@ class Gameboard {
    * @param {String} toBePlacedLetter - the letter that is to be placed on the board
    */
   validatePosition(currentLetter, toBePlacedLetter) {
-    if (currentLetter === '.') {
+    if (currentLetter === null) {
       return true
     } else if (currentLetter === toBePlacedLetter) {
       return true
     }
 
     return false
+  }
+
+  /**
+   * Pulls information about a sepcific tile
+   * X and Y need to be reversed because of the way 2D arrays are created
+   * @param {Number} x - x coordinate
+   * @param {Number} y - y coordinate
+   */
+  tileInformation(x, y) {
+    return this.board[y][x]
   }
 }
 
