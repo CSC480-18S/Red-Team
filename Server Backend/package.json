@@ -28,7 +28,6 @@
     "socket.io": "^2.0.4"
   },
   "devDependencies": {
-    "codecov": "^3.0.0",
     "eslint": "^4.18.0",
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-import": "^2.8.0",
