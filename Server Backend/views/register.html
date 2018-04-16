@@ -14,7 +14,7 @@
                     <img id="logo" src="/static/imgs/logo.png" alt="Oswebble">
                     <h2>Register!</h2>
                 </div>
-                <form id="form-area">
+                <form id="form-area" method="POST" action="/register">
                     <div id="form" class="form-group">
                         <label for="username">Username</label>
                         <div class="input-group mb-2">
@@ -24,13 +24,13 @@
                                 <input type="text" class="form-control" name="username" placeholder="Username" required>
                               </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="team" id="greenTeam" value="G" required>
+                            <input class="form-check-input" type="radio" name="team" id="greenTeam" value="Green" required>
                             <label class="form-check-label" for="greenTeam">
                                 Green Team
                             </label>
                             </div>
                             <div class="form-check">
-                            <input class="form-check-input" type="radio" name="team" id="yellowTeam" value="Y" required>
+                            <input class="form-check-input" type="radio" name="team" id="yellowTeam" value="Yellow" required>
                             <label class="form-check-label" for="yellowTeam">
                                 Yellow Team
                             </label>

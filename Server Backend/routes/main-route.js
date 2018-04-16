@@ -3,24 +3,40 @@
  */
 const express = require('express')
 const router = express.Router()
+const mg = require('../helpers/MacGrabber')
 
-/**
- * The actual game area
- */
-router.get('/game', function(req, res, next) {
-  res.render('gameboard')
-})
+let users = []
 
-router.get('/login', function(req, res, next) {
-  res.render('login')
-})
+router.get('/', function(req, res, next) {
+  let ip = req.ip
+  ip = ip.split(':')[3]
+  for (let i = 0; i < users.length; i++) {
+    if (users[i].mac === mg(ip)) {
+      res.render('login')
+      return
+    }
+  }
 
-router.get('/register', function(req, res, next) {
   res.render('register')
 })
 
 router.get('/admin', function(req, res, next) {
   res.render('admin')
+})
+
+router.post('/register', function(req, res, next) {
+  console.log(req.body)
+  let ip = req.ip
+  ip = ip.split(':')[3]
+  let user = {
+    username: req.body.username.trim(),
+    team: req.body.team.trim(),
+    mac: mg(ip)
+  }
+
+  users.push(user)
+
+  res.json('success')
 })
 
 /**
