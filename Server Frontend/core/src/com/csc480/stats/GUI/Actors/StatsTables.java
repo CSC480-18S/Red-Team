@@ -303,7 +303,8 @@ public class StatsTables extends Group {
         table.defaults().pad(2F);
         table.setFillParent(true);
         table.setBackground(new TextureRegionDrawable(
-                new TextureRegion(new Texture(Gdx.files.internal("StatsAssets/statsBackground.png")))));
+               // new TextureRegion(new Texture(Gdx.files.internal("StatsAssets/statsBackground.png")))));
+                new TextureRegion(new Texture(Gdx.files.internal("Background.jpg")))));
         //table.setDebug(true);
 
         //The Green/Gold Team labels----------------
