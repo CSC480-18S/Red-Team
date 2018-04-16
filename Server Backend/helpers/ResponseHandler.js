@@ -51,9 +51,7 @@ module.exports = (data, player, gm) => {
   let score = gm.calculateScore(player, data.data)
 
   dg('sending out word played event', 'debug')
-  gm._io.emit('boardUpdate', {
-    board: gm.board.sendableBoard()
-  })
+  gm.boardUpdate()
   dg('sending out game event event', 'debug')
   let action = `${player.name} played ${data.data.map(w => w.word)} for ${score} points`
   dg(action, 'info')

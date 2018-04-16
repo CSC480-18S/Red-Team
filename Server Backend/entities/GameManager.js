@@ -150,6 +150,19 @@ class GameManager {
     }
   }
 
+  swapMade(manager) {
+    this._swaps++
+    if (this._swaps === 4) {
+      this.gameOver()
+      return
+    }
+    manager.manipulateHand(manager.tiles)
+    this._io.emit('gameEvent', {
+      action: `${manager.name} swapped tiles`
+    })
+    this.updateTurn(manager, true)
+  }
+
   /**
    * Updates who's turn it is
    */
@@ -173,19 +186,6 @@ class GameManager {
     this.updateFrontendData()
   }
 
-  swapMade(manager) {
-    this._swaps++
-    if (this._swaps === 4) {
-      this.gameOver()
-      return
-    }
-    manager.manipulateHand(manager.tiles)
-    this._io.emit('gameEvent', {
-      action: `${manager.name} swapped tiles`
-    })
-    this.updateTurn(manager, true)
-  }
-
   gameOver() {
     dg('all players have swapped tiles, game over', 'info')
     for (let manager of this._playerManagers) {
@@ -194,6 +194,9 @@ class GameManager {
         manager.sendEvent('dataUpdate')
       }
     }
+
+    this._swaps = 0
+
     let finalScores = []
     let winner = null
     let highestScore = 0
@@ -214,6 +217,32 @@ class GameManager {
       scores: finalScores,
       winner: winner,
       winningTeam: this._yellowScore > this._greenScore ? 'Yellow' : 'Green'
+    })
+
+    let timeUntil = 5
+    let timer = setInterval(() => {
+      if (timeUntil !== 0) {
+        console.log(timeUntil)
+        this._io.emit('newGameCountdown', {
+          timer: timeUntil
+        })
+        timeUntil--
+      } else {
+        clearInterval(timer)
+        console.log('starting new game')
+        this.startNewGame()
+      }
+    }, 1000)
+  }
+
+  /**
+   * Sends out a boardUpdate event to all clients
+   */
+  boardUpdate() {
+    this._io.emit('boardUpdate', {
+      board: this.board.sendableBoard(),
+      yellow: this._yellowScore,
+      green: this._greenScore
     })
   }
 
@@ -328,6 +357,12 @@ class GameManager {
   startNewGame() {
     this.resetScores()
     this.resetGameboard()
+    this._io.emit('newGame')
+    this.boardUpdate()
+    this.updateClientData()
+    this._io.emit('gameEvent', {
+      action: 'New game started'
+    })
   }
 
   /**
@@ -335,6 +370,7 @@ class GameManager {
    */
   resetGameboard() {
     this._gameBoard = new Gameboard()
+    this._playerManagers[0].isTurn = true
   }
 
   /**
@@ -344,7 +380,7 @@ class GameManager {
     this._greenScore = 0
     this._yellowScore = 0
 
-    this._players.map(p => {
+    this._playerManagers.map(p => {
       p.resetScore()
     })
   }

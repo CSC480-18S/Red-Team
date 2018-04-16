@@ -75,7 +75,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 /**
  * Sets the JSON spacing for JSON data that is sent back to the user
  */
-app.set('json spaces', 2)
+app.set('json spaces', 4)
 
 /**
  * Setting the routes to be used
@@ -83,7 +83,20 @@ app.set('json spaces', 2)
 app.use('/', mainRoute)
 app.use('/api', [statsRoute, usersRoute])
 
-app.use('/static', express.static(path.join(__dirname, '/static')))
+/**
+ * TODO: Figure out authentication on the routes @Landon
+ */
+function isLoggedIn(req, res, next) {
+  let allow = true
+
+  if (allow) {
+    next()
+  } else {
+    res.status(400).json({ code: 'A1', title: 'Auth error', desc: 'Not authorized.' })
+  }
+}
+
+app.use('/static', isLoggedIn, express.static(path.join(__dirname, '/static')))
 
 /**
  * Called when the server is ready and it listens on the specified port
