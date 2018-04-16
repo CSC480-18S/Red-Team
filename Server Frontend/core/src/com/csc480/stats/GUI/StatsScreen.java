@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.csc480.game.GUI.GameScreen;
 import com.csc480.stats.GUI.Actors.StatsTables;
 import com.csc480.stats.StatsViewer;
 
@@ -34,14 +35,17 @@ public class StatsScreen implements Screen {
 
         //set the SceneGraph stage
         viewCam = new OrthographicCamera();
-        view = new FitViewport(Gdx.graphics.getHeight(), Gdx.graphics.getHeight()*aspectRatio, viewCam);
+       // view = new FitViewport(Gdx.graphics.getHeight(), Gdx.graphics.getHeight()*aspectRatio, viewCam);
+       // view = new FitViewport(GameScreen.GUI_UNIT_SIZE * 45, GameScreen.GUI_UNIT_SIZE *45 * aspectRatio, viewCam);
+        view = new FitViewport(GameScreen.GUI_UNIT_SIZE * 37, GameScreen.GUI_UNIT_SIZE *37 * aspectRatio, viewCam);
         view.apply();
         stage = new Stage(view);
 
 //////////////////////////////////////////////////////////////////////////
         batch = new SpriteBatch();
         sprite = new Sprite(new Texture(Gdx.files.internal("StatsAssets/statsBackground.png")));
-        sprite.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+       // sprite.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        //sprite.setSize(,Gdx.graphics.getHeight());
 
         StatsTables table  = new StatsTables();
         //table.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
