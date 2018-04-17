@@ -39,11 +39,13 @@ public class TextureManager {
 
         private TextureManager(){
             //TextureAtlas uiAtlas = new TextureAtlas();
-            ui = new Skin(Gdx.files.internal("skin/exempleSkin.json"));
-//            ui = new Skin(Gdx.files.internal("skin/OswegoSkin/OswebbleSkin.json"));
+//            ui = new Skin(Gdx.files.internal("skin/exempleSkin.json"));
+            ui = new Skin(Gdx.files.internal("skin/OsweebleSkinFinal.json"));
 //            ui.getFont("font").getData().
-            ui.getFont("font").setUseIntegerPositions(false);
-            ui.getFont("font").getData().setScale(.3f,.3f);
+            ui.getFont("BloggerSans").setUseIntegerPositions(false);
+            ui.getFont("BloggerSans").getData().setScale(.2f,.2f);
+            ui.getFont("BloggerSansBold").setUseIntegerPositions(false);
+            ui.getFont("BloggerSansBold").getData().setScale(.2f,.2f);
             //rack = new Texture(Gdx.files.internal("rack.jpg"));
 
 //            tile = new Texture(Gdx.files.internal("temp.png"));

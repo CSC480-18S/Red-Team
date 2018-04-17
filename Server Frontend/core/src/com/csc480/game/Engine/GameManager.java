@@ -280,6 +280,7 @@ public class GameManager {
                     for(int i = 0; i < players.length(); i++){
                         JSONObject player  = (JSONObject)players.get(i);
                         int index = player.getInt("position");
+                        boolean isAI = player.getBoolean("isAI");
                         try {
                             if(player.get("score") != JSONObject.NULL)
                                 thePlayers[index].score = player.getInt("score");
@@ -295,6 +296,16 @@ public class GameManager {
                                 thePlayers[index].team = player.getString("team");
                             else
                                 thePlayers[index].team = "";
+
+                            if(player.get("tiles") != JSONObject.NULL){
+                                JSONArray hand = player.getJSONArray("tiles");
+                                for(int h = 0; h < hand.length(); h++){
+                                    if(isAI)
+                                        thePlayers[index].tiles[h] = hand.getString(h).toLowerCase().charAt(0);
+                                    else
+                                        thePlayers[index].tiles[h] = '_';
+                                }
+                            }
 
                             thePlayers[index].turn = player.getBoolean("isTurn");
                             System.out.println("updating player @ index " + index);
@@ -376,8 +387,17 @@ public class GameManager {
             public void call(Object... args) {
                 System.out.println("newGame");
                 theGame.theGameScreen.gameOverActor.setVisible(false);
-                //todo hard reset board
-                //todo Hit /game/usersInGame and hard reset players
+            }
+        }).on("newGameCountdown", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                System.out.println("ferver frontend got newGameCountdown");
+                JSONObject data = (JSONObject) args[0];
+                int t = 20;
+                if(data.get("time") != JSONObject.NULL)
+                    t = data.getInt("time");
+                theGame.theGameScreen.gameOverActor.updateTime(t);
+//                theGame.theGameScreen.gameOverActor.setVisible(false);
             }
         });
     }

@@ -35,7 +35,7 @@ public class GameScreen implements Screen {
     OswebbleGame oswebbleGame;
     public HandActor top,bottom,left,right;
     public InfoPanelActor infoPanel;
-    public Image oswego;
+    public BonusActor oswego;
     public GameOverActor gameOverActor;
     float unitScale = 1/TILE_PIXEL_SIZE;
 
@@ -208,9 +208,9 @@ public class GameScreen implements Screen {
         left.updateState();
 
         UpdateInfoPanel();
-        stage.setDebugAll(true);
-        stage.setDebugInvisible(false);
-        oswego = new Image(TextureManager.getInstance().getTileTexture("oswego"));
+//        stage.setDebugAll(true);
+//        stage.setDebugInvisible(false);
+        oswego = new BonusActor();//new Image(TextureManager.getInstance().getTileTexture("oswego"));
         oswego.setPosition(-GUI_UNIT_SIZE*30,GUI_UNIT_SIZE*5);
         stage.addActor(oswego);
 

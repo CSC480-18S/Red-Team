@@ -36,10 +36,10 @@ public class AI extends Player {
         this.isAI = true;
         this.name = "AI"+(counter++);
         if(greenTeam){
-            this.team = "G";
+            this.team = "Green";
             greenTeam = !greenTeam;
         }else {
-            this.team = "Y";
+            this.team = "Yellow";
             greenTeam = !greenTeam;
         }
         myCache = new PriorityQueue(200);
