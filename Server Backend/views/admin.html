@@ -91,7 +91,7 @@
             let navInfo = ''
             $('#overall-info').empty();
             for(let i = 0; i < players.length; i++){
-                navInfo += `<p>POSITION ${i}: ${players[i].name}</p>`
+                navInfo += `<p>POSITION ${i}: ${players[i].name} TILES: [${players[i].tiles}]</p>`
             }
             $('#overall-info').append(navInfo)
 
