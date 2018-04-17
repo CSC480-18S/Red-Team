@@ -261,8 +261,11 @@ public class GameManager {
                 try {
                     JSONObject data = (JSONObject) args[0];
                     String action = data.getString("action");
+                    boolean isBonus = data.getBoolean("bonus");
                     //System.out.println(action);
-                    LogEvent(action);
+                    if(isBonus)
+                        BonusEvent(action);
+                        LogEvent(action);
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
                 }catch(JSONException e){
@@ -596,6 +599,10 @@ public class GameManager {
             eventBacklog.add(eventName);
         }
 
+    }
+
+    public void BonusEvent(String eventName){
+        theGame.theGameScreen.infoPanel.ShowBonus(eventName);
     }
 
     /**

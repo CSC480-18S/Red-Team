@@ -211,7 +211,8 @@ public class GameScreen implements Screen {
 //        stage.setDebugAll(true);
 //        stage.setDebugInvisible(false);
         oswego = new BonusActor();//new Image(TextureManager.getInstance().getTileTexture("oswego"));
-        oswego.setPosition(-GUI_UNIT_SIZE*30,GUI_UNIT_SIZE*5);
+        oswego.setScale(.75f);
+        oswego.setPosition(-GUI_UNIT_SIZE*45,GUI_UNIT_SIZE*5);
         stage.addActor(oswego);
 
         gameOverActor = new GameOverActor();

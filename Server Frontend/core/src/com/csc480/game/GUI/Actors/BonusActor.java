@@ -14,7 +14,8 @@ public class BonusActor extends Group{
         charriot = new Image(TextureManager.getInstance().getTileTexture("oswego"));
         charriot.setPosition(0,0);
         message = new Label("Bonus Word", TextureManager.getInstance().ui, "default");
-
+        message.setFontScale(1f);
+        message.setPosition(50f, 90f);
         addActor(charriot);
         addActor(message);
     }

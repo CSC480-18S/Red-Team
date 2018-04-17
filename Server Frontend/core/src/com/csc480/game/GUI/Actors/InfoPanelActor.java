@@ -45,8 +45,8 @@ public class InfoPanelActor extends Group{
         title.setColor(Color.RED);
         title.setName("title");
         //title.setPosition(GameScreen.GUI_UNIT_SIZE*4,GameScreen.GUI_UNIT_SIZE*12);
-        myLayout.add(title).expandX().padTop(15f);
-        myLayout.row();
+//        myLayout.add(title).expandX().padTop(15f);
+//        myLayout.row();
         //addActor(title)
 
 
@@ -56,7 +56,7 @@ public class InfoPanelActor extends Group{
 //        green.setScaleY(.01f);
 //        green.setWidth(getWidth());
 //        green.setHeight(GameScreen.GUI_UNIT_SIZE/10);
-        myLayout.add(green).fillX().pad(10f);
+        myLayout.add(green).fillX().padBottom(5f).padTop(19f);
         myLayout.row();
 
 
@@ -65,7 +65,7 @@ public class InfoPanelActor extends Group{
         gold = new ProgressBar(0f,250f,1f,false,TextureManager.getInstance().ui, "GoldProgress");
         gold.getStyle().background.setMinHeight(10f);
         gold.getStyle().knobBefore.setMinHeight(10f);
-        myLayout.add(gold).fillX().padLeft(10f).padRight(10f);
+        myLayout.add(gold).fillX().padBottom(10);
         myLayout.row();
         gold.setValue(50f);//todo remove this////////////////////////////////////////////
 //
@@ -179,12 +179,6 @@ public class InfoPanelActor extends Group{
         if(logOfEvents.size >= 4){
             logOfEvents.removeIndex(0);
         }
-        MoveByAction mba = new MoveByAction();
-        mba.setAmount(2000f,0);
-        mba.setDuration(10f);
-        if(event.toLowerCase().contains("oswego bonus"))GameManager.getInstance().theGame.theGameScreen.oswego.addAction(mba);
-            if(GameManager.getInstance().theGame != null && GameManager.getInstance().theGame.theGameScreen != null)
-                GameManager.getInstance().theGame.theGameScreen.oswego.setPosition(-GameScreen.GUI_UNIT_SIZE*30,GameScreen.GUI_UNIT_SIZE*7);
         Array<String> tempEvents = new Array<String>();
         for(String s : logOfEvents)
             tempEvents.add(s);
@@ -207,5 +201,14 @@ public class InfoPanelActor extends Group{
         eventLog.setSelectedIndex(-1);//.setSelectedIndex(logOfEvents.size-1);
         //eventLog.getItems().add(event);
 
+    }
+    public void ShowBonus(String event){
+        MoveByAction mba = new MoveByAction();
+        mba.setAmount(2000f,0);
+        mba.setDuration(20f);
+//        if(event.toLowerCase().contains("oswego bonus"))
+        GameManager.getInstance().theGame.theGameScreen.oswego.addAction(mba);
+        if(GameManager.getInstance().theGame != null && GameManager.getInstance().theGame.theGameScreen != null)
+            GameManager.getInstance().theGame.theGameScreen.oswego.setPosition(-GameScreen.GUI_UNIT_SIZE*40,GameScreen.GUI_UNIT_SIZE*5);
     }
 }
