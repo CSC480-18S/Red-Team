@@ -420,6 +420,8 @@ var grey = function() {
         tile.children[1].setAttribute('fill', '#000000')
         tile.children[2].setAttribute('fill', '#000000')
    }
+   this.currentRoundtileIdsOnBoard = []
+   this.selectedTileId = ''
 }
 // var refillSlots = function() {
 //   for (var i = 0; i < tileSlotNumber; i++) {
