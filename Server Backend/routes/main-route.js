@@ -19,6 +19,10 @@ router.get('/register', function(req, res, next) {
   res.render('register')
 })
 
+router.get('/admin', function(req, res, next) {
+  res.render('admin')
+})
+
 /**
  * Exports this file so it can be used by other files.  Keep this at the bottom.
  */

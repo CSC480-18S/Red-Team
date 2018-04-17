@@ -17,7 +17,7 @@ module.exports = (io) => {
     constructor() {
       this._gameBoard = new Gameboard()
       this._playerManagers = []
-      this._frontendManager = null
+      this._frontendManagers = []
       this._greenScore = 0
       this._yellowScore = 0
       this._swaps = 0
@@ -36,7 +36,6 @@ module.exports = (io) => {
     init() {
       dg('game manager created', 'debug')
       this.createPlayerManagers()
-      this.createFrontendManager()
       this.listenForClients()
     }
 
@@ -55,11 +54,10 @@ module.exports = (io) => {
     /**
      * Creates only one frontend manager instance
      */
-    createFrontendManager() {
-      if (this._frontendManager === null) {
-        this._frontendManager = new FrontendManager()
-        dg('frontend created', 'debug')
-      }
+    createFrontendManager(socket) {
+      let manager = new FrontendManager(socket)
+      this._frontendManagers.push(manager)
+      dg('frontend added', 'debug')
     }
 
     /**
@@ -91,8 +89,8 @@ module.exports = (io) => {
         // this.updateConnectionCounts('a', 1)
         dg('ai connected', 'info')
       } else if (response.isSF) {
-        this.addFrontend(socket)
-        dg('server frontend connected', 'info')
+        this.createFrontendManager(socket)
+        dg('a server frontend connected', 'info')
       } else if (response.isClient) {
         this.addClientToManager('client_test', 'Yellow', false, socket)
         // this.updateConnectionCounts('p', 1)
@@ -108,16 +106,19 @@ module.exports = (io) => {
      * @param {Object} socket - socket object
      */
     addClientToManager(name, team, isAI, socket) {
+      let n = isAI === true ? 'AI' : 'CLIENT'
       console.log('DEBUG: FINDING MANAGER TO ADD TO')
       for (let manager of this._playerManagers) {
         if (manager.id === null) {
-          manager.createHandshakeWithClient(name, team, isAI, socket)
+          manager.createHandshakeWithClient(`${n}_${manager.position}`, team, isAI, socket)
+          this.emitGameEvent(`${manager.name} entered the game.`)
           this.updateFrontendData()
           if (isAI) {
             dg(`ai added to --> player manager ${manager.position}`, 'debug')
           } else {
             dg(`client added to --> player manager ${manager.position}`, 'debug')
           }
+
           return
         }
       }
@@ -125,10 +126,12 @@ module.exports = (io) => {
       for (let manager of this._playerManagers) {
         if (this._frontendManager !== null && manager.isAI) {
           console.log(`INFO: REMOVING AI ${manager.position}`)
-          this._frontendManager.sendEvent('removeAI', manager.position)
+          for (let frontend of this._frontendManagers) {
+            frontend.sendEvent('removeAI', manager.position)
+          }
           manager.removeInformation()
-          this.updateFrontendData()
-          manager.createHandshakeWithClient(name, team, isAI, socket)
+          manager.createHandshakeWithClient(`${n}_${manager.position}`, team, isAI, socket)
+          this.emitGameEvent(`${manager.name} entered the game.`)
           this.updateFrontendData()
           dg(`client added to --> player manager ${manager.position}`, 'debug')
           return
@@ -148,11 +151,22 @@ module.exports = (io) => {
       console.log('DEBUG: FINDING CLIENT TO REMOVE')
       for (let manager of this._playerManagers) {
         if (manager.id === id) {
-          if (this._frontendManager !== null && !manager.isAI) {
-            this._frontendManager.sendEvent('connectAI', manager.position)
+          this.emitGameEvent(`${manager.name} left the game.`)
+          for (let frontend of this._frontendManagers) {
+            if (!manager.isAI) {
+              frontend.sendEvent('connectAI', manager.position)
+            }
           }
           manager.removeInformation()
           this.updateFrontendData()
+          return
+        }
+      }
+
+      for (let i = 0; i < this._frontendManagers.length; i++) {
+        if (this._frontendManagers[i].id === id) {
+          dg('a frontend has disconnected', 'debug')
+          this._frontendManagers.splice(i, 1)
           return
         }
       }
@@ -180,25 +194,19 @@ module.exports = (io) => {
     }
 
     /**
-   * Adds information for the frontend
-   * @param {Object} socket - socket object
-   */
-    addFrontend(socket) {
-      if (this._frontendManager.id === null) {
-        this._frontendManager.createHandshakeWithFrontend(socket)
-      }
-    }
-
-    /**
    * Updates the frontend
    */
     updateFrontendData() {
       let data = {
         board: this._gameBoard.sendableBoard(),
-        players: this._playerManagers
+        players: this._playerManagers,
+        yellow: this._yellowScore,
+        green: this._greenScore
       }
 
-      this._frontendManager.sendEvent('updateState', data)
+      for (let frontend of this._frontendManagers) {
+        frontend.sendEvent('updateState', data)
+      }
     }
 
     /**
@@ -278,10 +286,11 @@ module.exports = (io) => {
       io.emit('gameOver', {
         scores: finalScores,
         winner: winner === null ? 'No one!' : winner,
-        winningTeam: {
-          team: this._yellowScore > this._greenScore ? 'Yellow' : 'Green',
-          score: this._yellowScore > this._greenScore ? this._yellowScore : this._greenScore
-        }
+        winningTeam: this._yellowScore > this._greenScore ? 'Yellow' : 'Green'
+        // winningTeam: {
+        //   team: this._yellowScore > this._greenScore ? 'Yellow' : 'Green',
+        //   score: this._yellowScore > this._greenScore ? this._yellowScore : this._greenScore
+        // }
       })
 
       let timeUntil = 5

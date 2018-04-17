@@ -2,22 +2,13 @@
 const dg = require('../helpers/Debug')
 
 class FrontendManager {
-  constructor() {
-    this._socket = null
-    this._socketId = null
+  constructor(socket) {
+    this._socket = socket
+    this._socketId = socket.id
   }
 
   get id() {
     return this._socketId
-  }
-
-  /**
-   * Listens for events coming from the frontend
-   */
-  listenForEvents() {
-    this._socket.on('disconnect', () => {
-      this.removeFrontendInformation()
-    })
   }
 
   /**
@@ -28,15 +19,6 @@ class FrontendManager {
     this._socket = socket
     this._socketId = socket.id
     this.listenForEvents()
-  }
-
-  /**
-   * Removes frontend information
-   */
-  removeFrontendInformation() {
-    dg('server frontend disconnected', 'info')
-    this._socket = null
-    this._socketId = null
   }
 
   /**
@@ -63,7 +45,9 @@ class FrontendManager {
             board: data.board,
             players: data.players.map(p => {
               return p.sendableData()
-            })
+            }),
+            yellow: data.yellow,
+            green: data.green
           })
           break
       }
