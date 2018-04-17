@@ -139,6 +139,7 @@ class PlayerManager {
   sendableData() {
     return {
       name: this._name,
+      isAI: this._isAI,
       position: this._position,
       isTurn: this._isTurn,
       tiles: this._tiles,
