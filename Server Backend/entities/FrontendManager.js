@@ -2,22 +2,13 @@
 const dg = require('../helpers/Debug')
 
 class FrontendManager {
-  constructor() {
-    this._socket = null
-    this._socketId = null
+  constructor(socket) {
+    this._socket = socket
+    this._socketId = socket.id
   }
 
   get id() {
     return this._socketId
-  }
-
-  /**
-   * Listens for events coming from the frontend
-   */
-  listenForEvents() {
-    this._socket.on('disconnect', () => {
-      this.removeFrontendInformation()
-    })
   }
 
   /**
@@ -31,22 +22,13 @@ class FrontendManager {
   }
 
   /**
-   * Removes frontend information
-   */
-  removeFrontendInformation() {
-    dg('server frontend disconnected', 'info')
-    this._socket = null
-    this._socketId = null
-  }
-
-  /**
    * Determines the event that needs to be sent
    * @param {String} event - name of event
    * @param {Object} data - data to be sent
    */
   sendEvent(event, data) {
     if (this._socketId !== null) {
-      console.log(`DEBUG: SENDING SERVER FRONTEND ${event.toUpperCase()} EVENT`.debug)
+      dg(`sending server frontend ${event} event`, 'debug')
       switch (event) {
         case 'connectAI':
           this._socket.emit(event, {
@@ -63,7 +45,9 @@ class FrontendManager {
             board: data.board,
             players: data.players.map(p => {
               return p.sendableData()
-            })
+            }),
+            yellow: data.yellow,
+            green: data.green
           })
           break
       }

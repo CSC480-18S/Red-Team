@@ -1,0 +1,83 @@
+@font-face {
+  font-family: 'bs';
+  src: url("/static/webfonts/b-sans.otf") format("openType"); }
+
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: lightgray; }
+
+* {
+  font-family: "bs", sans-serif; }
+
+#main-area {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  margin: auto;
+  grid-template-areas: "nav-area nav-area nav-area" "players-title board-area event-title" "players-area board-area event-area" "scores-title board-area event-area" "scores-area board-area event-area";
+  grid-template-rows: auto auto 1fr auto 1fr; }
+
+#players-title {
+  grid-area: players-title; }
+
+#event-title {
+  grid-area: event-title; }
+
+#scores-title {
+  grid-area: scores-title; }
+
+.title {
+  border: 1px solid black; }
+  .title h1 {
+    margin: 10px; }
+
+#nav-area {
+  grid-area: nav-area;
+  background: lightgreen;
+  color: white;
+  text-align: center; }
+  #nav-area h2 {
+    margin-top: 10px; }
+  #nav-area #overall-info {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -ms-flex-pack: distribute;
+        justify-content: space-around; }
+
+#players-area {
+  grid-area: players-area;
+  overflow-y: scroll; }
+
+#scores-area {
+  grid-area: scores-area;
+  overflow-y: scroll; }
+
+#board-area {
+  grid-area: board-area; }
+
+#event-area {
+  grid-area: event-area;
+  overflow-y: scroll; }
+
+.update {
+  margin-left: 10px;
+  border-bottom: 5px solid black; }
+  .update .time {
+    margin-bottom: 0px;
+    border-bottom: 1px solid black;
+    font-weight: bold;
+    font-size: 24px; }
+  .update .data {
+    border-bottom: 1px solid gray; }
+    .update .data p {
+      margin-top: 5px;
+      margin-bottom: 5px;
+      font-size: 14px; }

@@ -100,12 +100,8 @@ class PlayerManager {
    */
   listenForEvents() {
     if (this._socketId !== null) {
-      this._socket.on('disconnect', () => {
-        this.removePlayerInformation()
-        this._gameManager.removePlayer()
-      })
-
       this._socket.on('playWord', newBoard => {
+        dg(`${this.name} attempting to make play...`, 'debug')
         this._gameManager.play(newBoard, this)
       })
 
@@ -173,7 +169,7 @@ class PlayerManager {
    * Once a play is made, the player's hand is updated
    * @param {Array} tilesUsed - tiles that were used in a play
    */
-  manipulateHand(tilesUsed) {
+  updateHand(tilesUsed) {
     this.removeTiles(tilesUsed)
     this.addToHand()
   }
@@ -201,10 +197,10 @@ class PlayerManager {
   }
 
   /**
-   * Removes player information
+   * Removes information
    */
-  removePlayerInformation() {
-    dg(`player ${this.name} disconnected from player manager ${this.position}`, 'debug')
+  removeInformation() {
+    dg(`${this.name} disconnected from player manager ${this.position}`, 'debug')
     this._name = null
     this._team = null
     this._isAI = null

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Oswebble | Admin</title>
+</head>
+<body>
+
+    <main id="main-area">
+        <nav id="nav-area">
+            <h2>Admin Area</h2>
+            <div id="overall-info"></div>
+        </nav>
+        <div id="players-title" class="title">
+            <h1>Players</h1>
+        </div>
+        <section id="players-area" class="area">
+        </section>
+        <div id="scores-title" class="title">
+            <h1>Scores</h1>
+        </div>
+        <section id="scores-area" class="area">
+        </section>
+        <section id="board-area" class="area">
+            <table id="board" class="table"></table>
+        </section>
+        <div id="event-title" class="title">
+            <h1>Events</h1>
+        </div>
+        <section id="event-area" class="area">
+        </section>
+    </main>
+
+    <script type="text/javascript" src="/static/js/tether-1.2.4.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap-4.0.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/socketio-2.0.3.min.js"></script>
+
+    <script>
+        $('#board').append('<th></th>')
+        for(let i = 0; i < 11; i++){
+            $('#board').append(`<th>${i}</th>`)
+        }
+        for(let i = 0; i < 11; i++){
+            let row = '<tr>'
+            row += `<th>${i}</th>`
+            for(let j = 0; j < 11; j++){
+                row += `<td>.</td>`
+            }
+            row += '</tr>'
+            $('#board').append(row)
+        }
+    </script>
+
+    <script type="text/javascript">
+        function updateBoard(board){
+            $('#board').empty()
+            $('#board').append('<th></th>')
+            for(let i = 0; i < board.length; i++){
+                $('#board').append(`<th>${i}</th>`)
+            }
+            for(let i = 0; i < board.length; i++){
+                let row = '<tr>'
+                row += `<th>${i}</th>`
+                for(let j = 0; j < board.length; j++){
+                    row += `<td>${board[i][j] === null ? '.': board[i][j]}</td>`
+                }
+                row += '</tr>'
+                $('#board').append(row)
+            }
+        }
+
+        function updatePlayers(players){
+            let date = new Date()
+            let playerInfo = '<div class=\'update\'>'
+            playerInfo += `<p class=\'time\'>UPDATED AT: ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}</p>`
+            for(let i = 0; i < players.length; i++){
+                playerInfo += '<div class=\'data\'>'
+                playerInfo += `<p>POSITION: ${players[i].position}</p>`
+                playerInfo += `<p>NAME: ${players[i].name}</p>`
+                playerInfo += `<p>TEAM: ${players[i].team}</p>`
+                playerInfo += `<p>TILES: [${players[i].tiles}]</p>`
+                playerInfo += `<p>TURN: ${players[i].isTurn}</p>`
+                playerInfo += '</div>'
+            }
+
+             $('#players-area').append(playerInfo)
+            
+            let navInfo = ''
+            $('#overall-info').empty();
+            for(let i = 0; i < players.length; i++){
+                navInfo += `<p>POSITION ${i}: ${players[i].name}</p>`
+            }
+            $('#overall-info').append(navInfo)
+
+            let objDiv = document.getElementById("players-area");
+            objDiv.scrollTop = objDiv.scrollHeight;
+        }
+
+        function updateScores(r){
+            let date = new Date()
+            let scoreInfo = '<div class=\'update\'>'
+            scoreInfo += `<p class=\'time\'>UPDATED AT: ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}</p>`
+            scoreInfo += '<div class=\'data\'>'
+            scoreInfo += `<p>YELLOW SCORE: ${r.yellow}</p>`
+            scoreInfo += `<p>GREEN SCORE: ${r.green}</p>`
+            for(let i = 0; i < r.players.length; i++){
+                scoreInfo += '<p>---------------------------------------------</p>'
+                scoreInfo += `<p>NAME: ${r.players[i].name}</p>`
+                scoreInfo += `<p>SCORE: ${r.players[i].score}</p>`
+            }
+            scoreInfo += '</div>'
+            $('#scores-area').append(scoreInfo)
+
+            let objDiv = document.getElementById("scores-area");
+            objDiv.scrollTop = objDiv.scrollHeight;
+        }
+
+        let socket = io('localhost:3000');
+
+        socket.on('whoAreYou', () => {
+            socket.emit('whoAreYou', {isSF: true})
+        })
+
+        socket.on('updateState', r => {
+            console.log(r)
+            updateBoard(r.board)
+            updatePlayers(r.players)
+            updateScores(r)
+        })
+
+        socket.on('gameEvent', r => {
+            let date = new Date()
+            let gameEvent = '<div class=\'update\'>'
+            gameEvent += `<p class=\'time\'>UPDATED AT: ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}</p>`
+            gameEvent += '<div class=\'data\'>'
+            gameEvent += `<p>${r.action.toUpperCase()}</p>`
+            gameEvent += '</div>'
+            $('#event-area').append(gameEvent)
+
+            let objDiv = document.getElementById("event-area");
+            objDiv.scrollTop = objDiv.scrollHeight;
+        })
+    
+    </script>
+
+    <link rel="stylesheet" href="/static/css/bootstrap-4.0.0.min.css"></script>
+    <link rel="stylesheet" href="/static/css/admin.css">
+</body>
+</html>
