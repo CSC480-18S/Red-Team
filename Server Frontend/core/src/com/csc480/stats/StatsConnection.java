@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.ConnectException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -37,6 +38,10 @@ public class StatsConnection {
             final URLConnection connection = new URL(BASEURL + "teams/" + query).openConnection();
             Scanner scanner = new Scanner(connection.getInputStream());
             return Optional.of(scanner.useDelimiter("\\A").next());
+        } catch (ConnectException ce) {
+            System.out.println("The server backend isn't running, please start it along with the database server" +
+                    " if it isn't running already.");
+            return Optional.empty();
         } catch (IOException e) {
             e.printStackTrace();
             return Optional.empty();
