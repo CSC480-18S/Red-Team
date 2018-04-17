@@ -46,7 +46,7 @@ class FrontendManager {
    */
   sendEvent(event, data) {
     if (this._socketId !== null) {
-      console.log(`DEBUG: SENDING SERVER FRONTEND ${event.toUpperCase()} EVENT`.debug)
+      dg(`sending server frontend ${event} event`, 'debug')
       switch (event) {
         case 'connectAI':
           this._socket.emit(event, {
