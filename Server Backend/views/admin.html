@@ -10,19 +10,13 @@
 
     <main id="main-area">
         <nav id="nav-area">
-            <h2>Admin Area</h2>
+            <h2><i class="fas fa-lock"></i> Admin Area</h2>
+            <h4 id="updatedAt"></h4>
             <div id="overall-info"></div>
         </nav>
-        <div id="players-title" class="title">
-            <h1>Players</h1>
+        <div id="board-title" class="title">
+            <h1>Board</h1>
         </div>
-        <section id="players-area" class="area">
-        </section>
-        <div id="scores-title" class="title">
-            <h1>Scores</h1>
-        </div>
-        <section id="scores-area" class="area">
-        </section>
         <section id="board-area" class="area">
             <table id="board" class="table"></table>
         </section>
@@ -38,7 +32,7 @@
     <script type="text/javascript" src="/static/js/bootstrap-4.0.0.min.js"></script>
     <script type="text/javascript" src="/static/js/socketio-2.0.3.min.js"></script>
 
-    <script>
+    <script type="text/javascript">
         $('#board').append('<th></th>')
         for(let i = 0; i < 11; i++){
             $('#board').append(`<th>${i}</th>`)
@@ -52,6 +46,25 @@
             row += '</tr>'
             $('#board').append(row)
         }
+    </script>
+
+    <script type="text/javascript">
+        let date = new Date()
+
+        $('#updatedAt').empty().append(`<i class="fas fa-clock"></i> UPDATED AT: ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`)
+
+        let playerInfo = ''
+        for(let i = 0; i < 4; i++){
+            playerInfo += '<div class=\'data\'>'
+            playerInfo += `<p><i class="fas fa-map-marker"></i> POSITION: ${i}</p>`
+            playerInfo += `<p><i class="fas fa-hand-paper"></i> TILES:</p>`
+            playerInfo += `<p><i class="fas fa-user"></i> NAME:</p>`
+            playerInfo += `<p><i class="fas fa-users"></i> TEAM:</p>`
+            playerInfo += `<p><i class="fas fa-arrow-right"></i> TURN:</p>`
+            playerInfo += '</div>'
+        }
+
+        $('#overall-info').append(playerInfo)
     </script>
 
     <script type="text/javascript">
@@ -72,50 +85,24 @@
             }
         }
 
-        function updatePlayers(players){
+        function updatePlayerInfo(players){
             let date = new Date()
-            let playerInfo = '<div class=\'update\'>'
-            playerInfo += `<p class=\'time\'>UPDATED AT: ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}</p>`
+
+            $('#updatedAt').empty().append(`<i class="fas fa-clock"></i> UPDATED AT: ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`)
+            
+            let playerInfo = ''
             for(let i = 0; i < players.length; i++){
                 playerInfo += '<div class=\'data\'>'
-                playerInfo += `<p>POSITION: ${players[i].position}</p>`
-                playerInfo += `<p>NAME: ${players[i].name}</p>`
-                playerInfo += `<p>TEAM: ${players[i].team}</p>`
-                playerInfo += `<p>TILES: [${players[i].tiles}]</p>`
-                playerInfo += `<p>TURN: ${players[i].isTurn}</p>`
+                playerInfo += `<p><i class="fas fa-map-marker"></i> POSITION: ${players[i].position}</p>`
+                playerInfo += `<p><i class="fas fa-hand-paper"></i> TILES: [${players[i].tiles}]</p>`
+                playerInfo += `<p><i class="fas fa-user"></i> NAME: ${players[i].name === null ? '' : players[i].name}</p>`
+                playerInfo += `<p><i class="fas fa-users"></i> TEAM: ${players[i].team === null ? '' : players[i].team}</p>`
+                playerInfo += `<p><i class="fas fa-arrow-right"></i> TURN: ${players[i].isTurn === null ? '' : players[i].isTurn}</p>`
                 playerInfo += '</div>'
             }
 
-             $('#players-area').append(playerInfo)
-            
-            let navInfo = ''
-            $('#overall-info').empty();
-            for(let i = 0; i < players.length; i++){
-                navInfo += `<p>POSITION ${i}: ${players[i].name} TILES: [${players[i].tiles}]</p>`
-            }
-            $('#overall-info').append(navInfo)
+             $('#overall-info').empty().append(playerInfo)
 
-            let objDiv = document.getElementById("players-area");
-            objDiv.scrollTop = objDiv.scrollHeight;
-        }
-
-        function updateScores(r){
-            let date = new Date()
-            let scoreInfo = '<div class=\'update\'>'
-            scoreInfo += `<p class=\'time\'>UPDATED AT: ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}</p>`
-            scoreInfo += '<div class=\'data\'>'
-            scoreInfo += `<p>YELLOW SCORE: ${r.yellow}</p>`
-            scoreInfo += `<p>GREEN SCORE: ${r.green}</p>`
-            for(let i = 0; i < r.players.length; i++){
-                scoreInfo += '<p>---------------------------------------------</p>'
-                scoreInfo += `<p>NAME: ${r.players[i].name}</p>`
-                scoreInfo += `<p>SCORE: ${r.players[i].score}</p>`
-            }
-            scoreInfo += '</div>'
-            $('#scores-area').append(scoreInfo)
-
-            let objDiv = document.getElementById("scores-area");
-            objDiv.scrollTop = objDiv.scrollHeight;
         }
 
         let socket = io('localhost:3000');
@@ -125,18 +112,16 @@
         })
 
         socket.on('updateState', r => {
-            console.log(r)
             updateBoard(r.board)
-            updatePlayers(r.players)
-            updateScores(r)
+            updatePlayerInfo(r.players)
         })
 
         socket.on('gameEvent', r => {
             let date = new Date()
             let gameEvent = '<div class=\'update\'>'
-            gameEvent += `<p class=\'time\'>UPDATED AT: ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}</p>`
+            gameEvent += `<p class=\'time\'><i class="fas fa-clock"></i> TIME: ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}</p>`
             gameEvent += '<div class=\'data\'>'
-            gameEvent += `<p>${r.action.toUpperCase()}</p>`
+            gameEvent += `<p><i class="fas fa-exclamation-triangle"></i> ${r.action.toUpperCase()}</p>`
             gameEvent += '</div>'
             $('#event-area').append(gameEvent)
 
@@ -148,5 +133,6 @@
 
     <link rel="stylesheet" href="/static/css/bootstrap-4.0.0.min.css"></script>
     <link rel="stylesheet" href="/static/css/admin.css">
+    <link rel="stylesheet" href="/static/css/fontawesome-5.0.1.0.min.css">
 </body>
 </html>

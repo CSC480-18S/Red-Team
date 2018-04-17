@@ -23,23 +23,18 @@
      display: grid;
      margin: auto;
      grid-template-areas: "nav-area nav-area nav-area"
-                          "players-title board-area event-title"
-                          "players-area board-area event-area"
-                          "scores-title board-area event-area"
-                          "scores-area board-area event-area";
-    grid-template-rows: auto auto 1fr auto 1fr;
+                          "board-title board-title event-title"
+                          "board-area board-area event-area"
+                          "board-area board-area event-area";
+    grid-template-rows: auto auto 1fr 1fr;
  }
 
- #players-title {
-     grid-area: players-title;
+ #board-title {
+     grid-area: board-title;
  }
 
  #event-title {
      grid-area: event-title;
- }
-
- #scores-title {
-     grid-area: scores-title;
  }
 
  .title {
@@ -49,10 +44,14 @@
      }
  }
 
+ .area {
+     border: 1px solid black;
+ }
+
  #nav-area{
-     grid-area: nav-area;
-     background: lightgreen;
-     color: white;
+    grid-area: nav-area;
+    background: lightcoral;
+    color: white;
     text-align: center;
 
      h2 {
@@ -64,16 +63,28 @@
          flex-direction: row;
          justify-content: space-around;
      }
- }
 
- #players-area{
-     grid-area: players-area;
-     overflow-y: scroll;
- }
+     .data{
+        text-align: left;
+        padding-left: 10px;
+        border: 5px solid black;
+        width: 100%;
+        
+        p {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            font-size: 14px;
 
- #scores-area{
-     grid-area: scores-area;
-     overflow-y: scroll;
+            &:first-child{
+                font-size: 24px;
+            }
+
+            &:nth-child(2){
+                font-weight: bold;
+                color: black;
+            }
+        }
+    }
  }
 
  #board-area{

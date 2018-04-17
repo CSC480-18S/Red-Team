@@ -258,6 +258,7 @@ module.exports = (io) => {
 
     gameOver() {
       dg('all players have swapped tiles, game over', 'info')
+      this.emitGameEvent('game over!')
       for (let manager of this._playerManagers) {
         if (manager.id !== null) {
           manager.isTurn = false
@@ -294,16 +295,29 @@ module.exports = (io) => {
       })
 
       let timeUntil = 5
+      // TODO: See if this can be moved to game event? @Landon
+      // let timer = setInterval(() => {
+      //   if (timeUntil !== 0) {
+      //     dg(`${timeUntil}`, 'debug')
+      //     io.emit('newGameCountdown', {
+      //       timer: timeUntil
+      //     })
+      //     timeUntil--
+      //   } else {
+      //     clearInterval(timer)
+      //     dg('new game started!', 'info')
+      //     this.startNewGame()
+      //   }
+      // }, 1000)
+
       let timer = setInterval(() => {
         if (timeUntil !== 0) {
           dg(`${timeUntil}`, 'debug')
-          io.emit('newGameCountdown', {
-            timer: timeUntil
-          })
+          this.emitGameEvent(`New game starts in ${timeUntil}`)
           timeUntil--
         } else {
           clearInterval(timer)
-          dg('new game started', 'info')
+          dg('new game started!', 'info')
           this.startNewGame()
         }
       }, 1000)
