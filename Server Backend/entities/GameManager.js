@@ -106,11 +106,12 @@ module.exports = (io) => {
      * @param {Object} socket - socket object
      */
     addClientToManager(name, team, isAI, socket) {
+      let teams = ['Green', 'Yellow']
       let n = isAI === true ? 'AI' : 'CLIENT'
       console.log('DEBUG: FINDING MANAGER TO ADD TO')
       for (let manager of this._playerManagers) {
         if (manager.id === null) {
-          manager.createHandshakeWithClient(`${n}_${manager.position}`, team, isAI, socket)
+          manager.createHandshakeWithClient(`${n}_${manager.position}`, teams[Math.floor(Math.random() * teams.length)], isAI, socket)
           this.emitGameEvent(`${manager.name} entered the game.`)
           this.updateFrontendData()
           if (isAI) {
@@ -123,20 +124,24 @@ module.exports = (io) => {
         }
       }
 
-      for (let manager of this._playerManagers) {
-        if (this._frontendManager !== null && manager.isAI) {
-          console.log(`INFO: REMOVING AI ${manager.position}`)
-          for (let frontend of this._frontendManagers) {
-            frontend.sendEvent('removeAI', manager.position)
+      if (!isAI) {
+        for (let manager of this._playerManagers) {
+          if (this._frontendManager !== null && manager.isAI) {
+            let position = manager.position
+            dg(`removing ai ${position}`, 'debug   ')
+            manager.removeInformation()
+            for (let frontend of this._frontendManagers) {
+              frontend.sendEvent('removeAI', position)
+            }
+            manager.createHandshakeWithClient(`${n}_${manager.position}`, teams[Math.floor(Math.random() * teams.length)], isAI, socket)
+            this.emitGameEvent(`${manager.name} entered the game.`)
+            this.updateFrontendData()
+            dg(`client added to --> player manager ${manager.position}`, 'debug')
+            return
           }
-          manager.removeInformation()
-          manager.createHandshakeWithClient(`${n}_${manager.position}`, team, isAI, socket)
-          this.emitGameEvent(`${manager.name} entered the game.`)
-          this.updateFrontendData()
-          dg(`client added to --> player manager ${manager.position}`, 'debug')
-          return
         }
       }
+
       dg('there are already max players connected', 'error')
       socket.emit('errorMessage', {
         error: 'There are already 4 players connected to the game.'
@@ -296,23 +301,12 @@ module.exports = (io) => {
 
       let timeUntil = 5
       // TODO: See if this can be moved to game event? @Landon
-      // let timer = setInterval(() => {
-      //   if (timeUntil !== 0) {
-      //     dg(`${timeUntil}`, 'debug')
-      //     io.emit('newGameCountdown', {
-      //       timer: timeUntil
-      //     })
-      //     timeUntil--
-      //   } else {
-      //     clearInterval(timer)
-      //     dg('new game started!', 'info')
-      //     this.startNewGame()
-      //   }
-      // }, 1000)
-
       let timer = setInterval(() => {
         if (timeUntil !== 0) {
           dg(`${timeUntil}`, 'debug')
+          io.emit('newGameCountdown', {
+            timer: timeUntil
+          })
           this.emitGameEvent(`New game starts in ${timeUntil}`)
           timeUntil--
         } else {
