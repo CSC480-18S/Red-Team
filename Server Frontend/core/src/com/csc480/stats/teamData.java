@@ -11,9 +11,9 @@ import java.util.ArrayList;
 public class TeamData {
     private String name;
     private String totalScore;
-    private ArrayList<String> highestValueWords; //array
+    private ArrayList<String> highestValueWords;
     private String longestWord;
-    private ArrayList<String> frequentlyPlayedWords; //array
+    private ArrayList<String> frequentlyPlayedWords;
     private String dirtyCount;
     private String specialCount;
     //typo is on purpose to replicate the DB typo
