@@ -7,10 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import lombok.Getter;
-
 @Entity
-@Getter
 public class PlayedWord {
 	
 	@Id
@@ -29,11 +26,31 @@ public class PlayedWord {
 	protected PlayedWord() {}
 
 	public PlayedWord(String word, int value, boolean dirty, boolean special, Player player) {
-		super();
 		this.word = word;
 		this.value = value;
 		this.dirty = dirty;
 		this.special = special;
 		this.player = player;
 	}
+
+	public String getWord() {
+		return word;
+	}
+
+	public int getValue() {
+		return value;
+	}
+
+	public boolean isDirty() {
+		return dirty;
+	}
+
+	public boolean isSpecial() {
+		return special;
+	}
+
+	public Player getPlayer() {
+		return player;
+	}
+	
 }

@@ -10,11 +10,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PostLoad;
-
-import lombok.Getter;
+import javax.persistence.Transient;
 
 @Entity
-@Getter
 public class Player {
 
 	@Id
@@ -31,6 +29,7 @@ public class Player {
 	@OneToMany(mappedBy="player")
 	private List<PlayedWord> playedWords;
 	
+	@Transient
 	private int score;
 	
 	protected Player() {}
@@ -51,4 +50,24 @@ public class Player {
 		this.score = score;
 	}
 
+	public String getUsername() {
+		return username;
+	}
+
+	public String getMacAddr() {
+		return macAddr;
+	}
+
+	public Team getTeam() {
+		return team;
+	}
+
+	public List<PlayedWord> getPlayedWords() {
+		return playedWords;
+	}
+
+	public int getScore() {
+		return score;
+	}
+	
 }

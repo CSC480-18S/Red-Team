@@ -15,10 +15,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.PostLoad;
 import javax.persistence.Transient;
 
-import lombok.Getter;
-
 @Entity
-@Getter
 public class Team {
 
 	@Id
@@ -128,4 +125,49 @@ public class Team {
 		setDirtyCount();
 		setSpecialCount();
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public List<Player> getPlayers() {
+		return players;
+	}
+
+	public int getTotalScore() {
+		return totalScore;
+	}
+
+	public List<PlayedWord> getHighestValueWords() {
+		return highestValueWords;
+	}
+
+	public PlayedWord getLongestWord() {
+		return longestWord;
+	}
+
+	public List<WordFrequency> getFrequentlyPlayedWords() {
+		return frequentlyPlayedWords;
+	}
+
+	public int getDirtyCount() {
+		return dirtyCount;
+	}
+
+	public int getSpecialCount() {
+		return specialCount;
+	}
+
+	public int getHigestSingleGameScore() {
+		return higestSingleGameScore;
+	}
+
+	public int getWinCount() {
+		return winCount;
+	}
+
+	public int getLoseCount() {
+		return loseCount;
+	}
+	
 }
