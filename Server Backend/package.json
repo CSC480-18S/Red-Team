@@ -20,6 +20,7 @@
     "cookie-parser": "^1.4.3",
     "ejs": "^2.5.7",
     "express": "^4.16.2",
+    "express-session": "^1.15.6",
     "jsonwebtoken": "^8.1.1",
     "lodash": "^4.17.5",
     "node-arp": "^1.0.6",

@@ -6,7 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Oswebble | Login</title>
 </head>
-<body>
+<body onunload="">
+    <% if (error) { %>
+    <div class="alert alert-danger" id="alert-area" role="alert">
+        <%= error %>
+    </div>
+    <% } %>
     <main id="main-area">
         <section id="login-area">
             <div id="login" class="<%= user.team %>">
@@ -41,6 +46,11 @@
     <script type="text/javascript" src="/static/js/socketio-2.0.3.min.js"></script>
 
     <script type="text/javascript">
+        $(window).bind("pageshow", function(event) {
+            if (event.originalEvent.persisted) {
+                window.location.reload(); 
+            }
+        });
         let socket = io()
 
         socket.on('whoAreYou', () => {
@@ -59,6 +69,16 @@
 
     <script type="text/javascript">
         $('#copyright').append(`Copyright © ${new Date().getFullYear()}. SUNY Oswego. All Rights Reserved.`);
+    </script>
+
+    <script type="text/javascript">
+        $("#play-button").on('click', function(){
+            window.location = "http://localhost:3000/game";    
+        });
+    </script>
+
+    <script type="text/javascript">
+    
     </script>
 
     <link rel="stylesheet" href="/static/css/bootstrap-4.0.0.min.css"></script>
