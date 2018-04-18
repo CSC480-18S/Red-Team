@@ -8,8 +8,7 @@
     "test": "node tests/setup.js",
     "cover": "nyc npm run test",
     "report": "nyc --reporter=lcov npm run test",
-    "lint": "eslint **/*.js --ignore-pattern node_modules/; exit 0",
-    "codecov": "nyc npm test && nyc report --reporter=text-lcov > coverage.lcov && codecov"
+    "lint": "eslint **/*.js --ignore-pattern node_modules/; exit 0"
   },
   "author": "CSC 480-18S",
   "license": "MIT",
@@ -24,7 +23,6 @@
     "jsonwebtoken": "^8.1.1",
     "lodash": "^4.17.5",
     "node-arp": "^1.0.6",
-    "shortid": "^2.2.8",
     "socket.io": "^2.0.4"
   },
   "devDependencies": {
