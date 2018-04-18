@@ -1,5 +1,5 @@
 'use strict'
-const dg = require('../helpers/Debug')
+const dg = require('../helpers/Debug')(true)
 
 class FrontendManager {
   constructor(socket) {

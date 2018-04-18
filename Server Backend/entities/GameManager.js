@@ -7,10 +7,9 @@ const Gameboard = require('./Gameboard')
 const sc = require('../helpers/ScoreCalculator')
 const rh = require('../helpers/ResponseHandler')
 const ex = require('../helpers/Extractor')
-const dg = require('../helpers/Debug')
+const dg = require('../helpers/Debug')(true)
 const PlayerManager = require('./PlayerManager')
 const FrontendManager = require('./FrontendManager')
-require('../helpers/Debug')
 
 module.exports = (io) => {
   class GameManager {

@@ -4,7 +4,7 @@
  * Imports files
  */
 const ld = require('../helpers/LetterDistributor')
-const dg = require('../helpers/Debug')
+const dg = require('../helpers/Debug')(true)
 
 class PlayerManager {
   constructor(position, gameManager) {
