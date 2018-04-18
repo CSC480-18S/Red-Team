@@ -3,7 +3,7 @@
  * Imports files
  */
 const _ = require('lodash')
-const dg = require('../helpers/Debug')
+const dg = require('../helpers/Debug')(true)
 
 function extractLetters(newBoard, currentBoard, player) {
   const letters = []

@@ -13,6 +13,8 @@ matrix:
       cache:
         directories:
           - Server\ Backend/node_modules
+      script:
+        - npm run test
 
     - language: java
       jdk: oraclejdk8

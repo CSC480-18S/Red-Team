@@ -84,7 +84,7 @@ public class TestingInputProcessor implements InputProcessor {
         }
         else if(character == '4'){
             //System.out.println("logging");
-            GameManager.getInstance().LogEvent("goose");
+            GameManager.getInstance().BonusEvent("oswego bonus word has been played");
         }
         else if(character == '\'') {
             System.out.println("entering");

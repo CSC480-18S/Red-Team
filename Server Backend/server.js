@@ -23,8 +23,8 @@ const statsRoute = require('./routes/stats-route')
 const usersRoute = require('./routes/users-route')
 
 /* eslint no-new:0 */
-const ServerManager = require('./entities/ServerManager')(socket)
-new ServerManager()
+const GameManager = require('./entities/GameManager')(socket)
+new GameManager()
 
 /**
  * Imports Override.js

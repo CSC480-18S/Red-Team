@@ -242,8 +242,8 @@ public class GameManager {
                     JSONObject data = (JSONObject) args[0];
                     System.out.println("data: "+data.toString());
                     JSONArray board = data.getJSONArray("board");
-                    System.out.println("BACKEND BOARD STATE: "+board.toString());
-                    System.out.println("PARSED BACKEND BOARD STATE: "+unJSONifyBackendBoard(board));
+//                    System.out.println("BACKEND BOARD STATE: "+board.toString());
+//                    System.out.println("PARSED BACKEND BOARD STATE: "+unJSONifyBackendBoard(board));
                     //find the board/user state differences
                     wordHasBeenPlayed(unJSONifyBackendBoard(board));
                     //hard update the game and user states
@@ -260,8 +260,13 @@ public class GameManager {
                 System.out.println("frontend got gameEvent");
                 try {
                     JSONObject data = (JSONObject) args[0];
+                    boolean isBonus = false;
                     String action = data.getString("action");
+                    if(data.get("bonus") != JSONObject.NULL)
+                        isBonus = data.getBoolean("bonus");
                     //System.out.println(action);
+                    if(isBonus)
+                        BonusEvent(action);
                     LogEvent(action);
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
@@ -280,6 +285,7 @@ public class GameManager {
                     for(int i = 0; i < players.length(); i++){
                         JSONObject player  = (JSONObject)players.get(i);
                         int index = player.getInt("position");
+                        boolean isAI = player.getBoolean("isAI");
                         try {
                             if(player.get("score") != JSONObject.NULL)
                                 thePlayers[index].score = player.getInt("score");
@@ -295,6 +301,16 @@ public class GameManager {
                                 thePlayers[index].team = player.getString("team");
                             else
                                 thePlayers[index].team = "";
+
+                            if(player.get("tiles") != JSONObject.NULL){
+                                JSONArray hand = player.getJSONArray("tiles");
+                                for(int h = 0; h < hand.length(); h++){
+                                    if(isAI)
+                                        thePlayers[index].tiles[h] = hand.getString(h).toLowerCase().charAt(0);
+                                    else
+                                        thePlayers[index].tiles[h] = '_';
+                                }
+                            }
 
                             thePlayers[index].turn = player.getBoolean("isTurn");
                             System.out.println("updating player @ index " + index);
@@ -376,8 +392,17 @@ public class GameManager {
             public void call(Object... args) {
                 System.out.println("newGame");
                 theGame.theGameScreen.gameOverActor.setVisible(false);
-                //todo hard reset board
-                //todo Hit /game/usersInGame and hard reset players
+            }
+        }).on("newGameCountdown", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                System.out.println("ferver frontend got newGameCountdown");
+                JSONObject data = (JSONObject) args[0];
+                int t = 20;
+                if(data.get("time") != JSONObject.NULL)
+                    t = data.getInt("time");
+                theGame.theGameScreen.gameOverActor.updateTime(t);
+//                theGame.theGameScreen.gameOverActor.setVisible(false);
             }
         });
     }
@@ -484,7 +509,7 @@ public class GameManager {
      */
     public void hardUpdateBoardState(TileData[][] serverBoard){
         theBoard.the_game_board = serverBoard;
-        System.out.println("SERVER FRONTEND STATE UPDATED/////////////////////////////////////////////////////////////////////////////");
+//        System.out.println("SERVER FRONTEND STATE UPDATED/////////////////////////////////////////////////////////////////////////////");
     }
 
     public void wordHasBeenPlayed(TileData[][] backendBoardState){
@@ -576,6 +601,10 @@ public class GameManager {
             eventBacklog.add(eventName);
         }
 
+    }
+
+    public void BonusEvent(String eventName){
+        theGame.theGameScreen.infoPanel.ShowBonus(eventName);
     }
 
     /**

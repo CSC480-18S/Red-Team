@@ -15,6 +15,7 @@ public class GameOverActor extends Group {
     private List<String> players;
     private Image backGround;
     private Table theTabel;
+    private Label timeUntilNextGame;
 
     public GameOverActor(){
         super();
@@ -38,6 +39,12 @@ public class GameOverActor extends Group {
 //        eventLog.setWidth(GameScreen.GUI_UNIT_SIZE*10);
         theTabel.add(players).padLeft(30f).expandX().fillX().maxWidth(1000f).center();
         theTabel.row();
+        Label timeUntilNextGameLabel = new Label("Time until next game: ",TextureManager.getInstance().ui,"default");
+        Table timeTable = new Table();
+        timeTable.add(timeUntilNextGameLabel);
+        timeUntilNextGame = new Label("30 seconds",TextureManager.getInstance().ui,"default");
+        timeTable.add(timeUntilNextGame);
+        theTabel.add(timeTable);
 
         addActor(theTabel);
 
@@ -47,10 +54,14 @@ public class GameOverActor extends Group {
 
     public void update(String winnerMessage, Array<String> playersScore, String winningTeam){
         //todo set the back ground texture based on team
-
         this.winnerMessage.setText(winnerMessage);
         this.players.setItems(playersScore);
         this.players.setSelectedIndex(-1);
-
+    }
+    public void updateTime(int timeInSec){
+        if(timeInSec > 1)
+            timeUntilNextGame.setText(timeInSec+ " seconds");
+        else
+            timeUntilNextGame.setText(timeInSec+ " second");
     }
 }

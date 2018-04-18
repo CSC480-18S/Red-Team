@@ -115,13 +115,13 @@ public class HandActor extends Group {
     public void setPlayer(Player newPlayer){
         associatedPlayer = newPlayer;
         name.setText(associatedPlayer.name);
-        if(associatedPlayer.team.toLowerCase().compareTo("Y") == 0){
+        if(associatedPlayer.team.toLowerCase().compareTo("yellow") == 0){
             turn.setDrawable(new TextureRegionDrawable(new TextureRegion(TextureManager.getInstance().goldBar)));
         } else {
             turn.setDrawable(new TextureRegionDrawable(new TextureRegion(TextureManager.getInstance().greenBar)));
         }
         updateState();
-        //updateState();
+        updateState();
     }
 
     /**
