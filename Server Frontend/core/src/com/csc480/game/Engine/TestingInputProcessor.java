@@ -1,12 +1,16 @@
 package com.csc480.game.Engine;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.csc480.game.Engine.Model.AI;
 import com.csc480.game.Engine.Model.Placement;
 import com.csc480.game.Engine.Model.PlayIdea;
+import com.csc480.game.Engine.Model.Player;
+import com.csc480.game.GUI.GameScreen;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.json.JSONArray;
@@ -57,16 +61,30 @@ public class TestingInputProcessor implements InputProcessor {
             GameManager.getInstance().placementsUnderConsideration.clear();
         }
         else if(character == '1'){
-            System.out.println("logging");
-            GameManager.getInstance().LogEvent("event"+c++);
+            System.out.println("testing player UI");
+            GameManager.getInstance().thePlayers[2].name = "I WORK";
+            GameManager.getInstance().theGame.theGameScreen.top.setPlayer(GameManager.getInstance().thePlayers[2]);
+            GameManager.getInstance().theGame.theGameScreen.top.updateState();
         }
         else if(character == '2'){
             //System.out.println("logging");
             GameManager.getInstance().PrintBoardState();
         }
         else if(character == '3'){
+            Array<String> playersScores = new Array<String>();
+            playersScores.add("name scored X points!");
+            playersScores.add("name scored X points!");
+            playersScores.add("name scored X points!");
+            playersScores.add("name scored X points!");
+
+            String winner = "No one";
+                winner = "Congratulations, No One!!!";
+            String winningTeam = "Green";
+            GameManager.getInstance().theGame.theGameScreen.gameOverActor.update(winner,playersScores,winningTeam);
+        }
+        else if(character == '4'){
             //System.out.println("logging");
-            GameManager.getInstance().updatePlayers(GameManager.getInstance().theAIs);
+            GameManager.getInstance().BonusEvent("oswego bonus word has been played");
         }
         else if(character == '\'') {
             System.out.println("entering");
@@ -102,7 +120,7 @@ public class TestingInputProcessor implements InputProcessor {
             GameManager.getInstance().updatePlayers(GameManager.getInstance().theAIs);
             System.out.println("Finding all AI plays for tiles");
             Long startTime = System.nanoTime();
-            GameManager.getInstance().theAIs[0].TESTFindPlays(GameManager.getInstance().theBoard);
+            GameManager.getInstance().theAIs[0].FindPlays(GameManager.getInstance().theBoard);
             System.out.println("finding all possible AI plays took nanos: "+(System.nanoTime()-startTime));
             PlayIdea bestPlay = GameManager.getInstance().theAIs[0].PlayBestWord();
             while(bestPlay != null && !GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay.placements)){

@@ -36,7 +36,7 @@ public class WordVerification {
             Long startTime = System.nanoTime();
             //System.out.println("Starting Creating HashSet");
             file = new File(Gdx.files.internal("words.txt").path());
-            //file = new File("C:\\Users\\chris\\Desktop\\Red-Team\\Server Frontend\\core\\assets\\words.txt");
+            //file = new File("C:\\Users\\James\\Documents\\GitHub\\Red-Team\\Server Frontend\\core\\assets\\words.txt");
             inFileScanner = new Scanner(file);
             int c = 0;
             while (inFileScanner.hasNext()){
@@ -50,6 +50,21 @@ public class WordVerification {
 
     }
 
+    /**
+     * WARNING: the results are not filtered out with regardes to tiles in adjacent rows/cols additional verification is needed
+     * This function generates all words that the player could play.
+     * Based on the state it parses through the list of known words and pulls words that could
+     *  be played with tiles from the row/col and the hand. That list is then run through a regex to ensure it is a valid
+     *  fit for that row/col.
+     *  For each valid result, it generates the placements that would be required to make the play there
+     *
+     * @param hand the player hand
+     * @param constraints a row/col of the board state
+     * @param index the starting index to try and play off of
+     * @param root the tile being played off of
+     * @param horrizontal if the parsing is horizontal
+     * @return
+     */
     public ArrayList<PlayIdea> TESTgetWordsFromHand(String hand, char[] constraints, int index, TileData root, boolean horrizontal){
         ////////////
         String TESTPRINTconstraints = "";
@@ -96,6 +111,7 @@ public class WordVerification {
                     }
                 }
             }
+            //if there is nothing on the board then what is in the hand is valid
             return possiblePlays;
         }
         for(String e: validWords){

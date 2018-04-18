@@ -1,14 +1,18 @@
 package com.csc480.game.GUI.Actors;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csc480.game.Engine.Model.AI;
 import com.csc480.game.Engine.Model.Placement;
 import com.csc480.game.Engine.Model.Player;
@@ -24,27 +28,46 @@ import java.util.ArrayList;
 public class HandActor extends Group {
     private boolean flip = false;
     ArrayList<TileActor> myHand;
-    Image rack;
+    //Image rack;
     Label name;
+    Label yourTurn;
+    Image turn;
     Player associatedPlayer;
 
     public HandActor(boolean flipTiles){
         super();
         myHand = new ArrayList<TileActor>();
         flip = flipTiles;
+        turn = new Image(TextureManager.getInstance().greenBar);
+        if(flip)
+            turn.setPosition(0,GameScreen.GUI_UNIT_SIZE);
+        turn.setScale(.0575f,.1f);
+        addActor(turn);
         //This could easily be put into an if statement to change the loaded image based on user color
-        //SHOULD MAKE A FUNCTION THAT MANAGES THIS TEXTURE IN THE TEXTURE MANAGER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        rack = new Image(TextureManager.getInstance().rack);
+        //GameScreen.GUI_UNIT_SIZE/2)+count*GameScreen.GUI_UNIT_SIZE, GameScreen.GUI_UNIT_SIZE/2
+        //rack = new Image(TextureManager.getInstance().rack);
+        //build the slots
+        for(int i = 0; i < 7; i++){
+            Image temp = new Image(TextureManager.getInstance().getSlotTexture());
+            temp.setPosition((GameScreen.GUI_UNIT_SIZE/2)+i*GameScreen.GUI_UNIT_SIZE, GameScreen.GUI_UNIT_SIZE/2);
+            temp.setScale((GameScreen.GUI_UNIT_SIZE/GameScreen.TILE_PIXEL_SIZE)/4);
+            addActor(temp);
+        }
+
+        yourTurn = new Label("Its Your Turn",TextureManager.getInstance().ui,"default");
+        yourTurn.setPosition(GameScreen.GUI_UNIT_SIZE*2,0);
+        yourTurn.setVisible(false);
         name = new Label("default",TextureManager.getInstance().ui,"default");
         name.setName("name");
         name.setPosition(GameScreen.GUI_UNIT_SIZE/2,0);
-        rack.setScale(.2f);
+        //rack.setScale(.2f);
         associatedPlayer = new Player();
-        this.addActor(rack);
+        //this.addActor(rack);
         this.addActor(name);
         addTile(new TileActor('A'));
         addTile(new TileActor('B'));
         addTile(new TileActor('C'));
+
     }
 
     public Player getPlayer(){
@@ -55,13 +78,10 @@ public class HandActor extends Group {
      * @param a
      */
     public void addTile(TileActor a){
-        if(flip) {
-            //todo flip the texture of the tile
-        }
-
-        super.addActor(a);
-        a.setPosition((GameScreen.GUI_UNIT_SIZE/2)+myHand.size()*GameScreen.GUI_UNIT_SIZE, GameScreen.GUI_UNIT_SIZE/2);
-        myHand.add(a);
+            super.addActor(a);
+            a.scaleBy(-.005f);
+            a.setPosition(((GameScreen.GUI_UNIT_SIZE/2)+myHand.size()*GameScreen.GUI_UNIT_SIZE)+GameScreen.GUI_UNIT_SIZE*.032f, GameScreen.GUI_UNIT_SIZE/2+GameScreen.GUI_UNIT_SIZE*.1f);//GameScreen.GUI_UNIT_SIZE/2);
+            myHand.add(a);
     }
 
     /**
@@ -78,7 +98,7 @@ public class HandActor extends Group {
             for(Actor child : this.getChildren()){
                 if(child instanceof TileActor){
                     MoveToAction mta = new MoveToAction();
-                    mta.setPosition((GameScreen.GUI_UNIT_SIZE/2)+count*GameScreen.GUI_UNIT_SIZE, GameScreen.GUI_UNIT_SIZE/2);
+                    mta.setPosition(((GameScreen.GUI_UNIT_SIZE/2)+count*GameScreen.GUI_UNIT_SIZE)+GameScreen.GUI_UNIT_SIZE*.032f, GameScreen.GUI_UNIT_SIZE/2+GameScreen.GUI_UNIT_SIZE*.1f);
                     mta.setDuration(1f);
                     child.addAction(mta);
                     count++;
@@ -95,12 +115,10 @@ public class HandActor extends Group {
     public void setPlayer(Player newPlayer){
         associatedPlayer = newPlayer;
         name.setText(associatedPlayer.name);
-        if(associatedPlayer.team.toLowerCase().compareTo("gold") == 0){
-            //todo get these assets
-            //rack.setDrawable(new SpriteDrawable(new Sprite(TextureManager.getInstance().tilesAtlas.findRegion("goldRack"))));
-
+        if(associatedPlayer.team.toLowerCase().compareTo("yellow") == 0){
+            turn.setDrawable(new TextureRegionDrawable(new TextureRegion(TextureManager.getInstance().goldBar)));
         } else {
-            //rack.setDrawable(new SpriteDrawable(new Sprite(TextureManager.getInstance().tilesAtlas.findRegion("greenRack"))));
+            turn.setDrawable(new TextureRegionDrawable(new TextureRegion(TextureManager.getInstance().greenBar)));
         }
         updateState();
         updateState();
@@ -110,11 +128,20 @@ public class HandActor extends Group {
      * Will sync the tiles display with the GameState
      */
     public void updateState(){
+        if(associatedPlayer != null) {
+            if (associatedPlayer.turn)
+                turn.setVisible(true);
+            else
+                turn.setVisible(false);
+        }else turn.setVisible(false);
         ArrayList<Character> whatsInHand = new ArrayList<Character>();
-        System.out.println("associa player hand size of "+associatedPlayer.tiles.length);
+        //System.out.println("associa player hand size of "+associatedPlayer.tiles.length);
         for(int i = 0; i < associatedPlayer.tiles.length; i++) {
             if(associatedPlayer.tiles[i] != 0)
-                whatsInHand.add(new Character(associatedPlayer.tiles[i]));
+                if(associatedPlayer.isAI)
+                    whatsInHand.add(new Character(associatedPlayer.tiles[i]));
+                else
+                    whatsInHand.add(new Character('_'));
         }
         //remove tiles that arent here
         for(int i = 0; i < this.getChildren().size;i++){
@@ -134,6 +161,8 @@ public class HandActor extends Group {
         for(Character c: whatsInHand){
             this.addTile(new TileActor(c.charValue()));
         }
+        name.setText(associatedPlayer.name);
+        //name.act(0);
     }
 
 

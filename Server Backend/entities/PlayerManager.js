@@ -1,18 +1,30 @@
 'use strict'
 
+/**
+ * Imports files
+ */
+const ld = require('../helpers/LetterDistributor')
+const dg = require('../helpers/Debug')(true)
+
 class PlayerManager {
-  constructor(position, name, team, ai, socket, gameManager, serverManager) {
-    this._name = name
-    this._team = team
-    this._isAI = ai
-    this._socket = socket
+  constructor(position, gameManager) {
+    this._name = null
+    this._team = null
+    this._isAI = null
+    this._socket = null
+    this._socketId = null
     this._position = position
     this._tiles = []
     this._isTurn = false
     this._score = 0
     this._gameManager = gameManager
-    this._serverManger = serverManager
-    this.listenForPlayerEvents()
+  }
+
+  /**
+   * Tile setter
+   */
+  set tiles(tiles) {
+    this._tiles = tiles
   }
 
   /**
@@ -72,87 +84,157 @@ class PlayerManager {
   }
 
   /**
+   * Socket id getter
+   */
+  get id() {
+    return this._socketId
+  }
+
+  /**
    * Score getter
    */
   get score() {
     return this._score
   }
 
-  /**
-   * Listens for events that come from the client
-   */
-  listenForPlayerEvents() {
-    this._socket.on('playWord', board => {
-      console.log(`Client ${this.position} sent playWord`)
-      this._gameManager.play(board, this)
-      this._serverManger.changeTurn(this.position)
-      /** TODO: Take board given, then cross check it with current board
-       * to pluck out played letters and cross check with tiles in hand
-       * to make sure what they sent us is real data and not fake data
-       */
-    })
-
-    this._socket.on('disconnect', () => {
-      this._serverManger.removePlayer(this)
-    })
+  init() {
+    this.addToHand()
   }
 
   /**
-   * Sent to the user in the event of an invalid play
-   * @param {Object} invalid - hold error information about play
+   * Listens for events coming from cient
    */
-  emitInvalidPlay(invalid) {
-    this._socket.emit('play', invalid)
+  listenForEvents() {
+    if (this._socketId !== null) {
+      this._socket.on('playWord', newBoard => {
+        dg(`${this.name} attempting to make play...`, 'debug')
+        this._gameManager.play(newBoard, this)
+      })
+
+      this._socket.on('swap', () => {
+        dg(`player ${this.name} has swapped tiles`, 'info')
+        this._gameManager.swapMade(this)
+      })
+    }
+  }
+
+  sendEvent(event, data) {
+    switch (event) {
+      case 'play':
+        this.socket.emit(event, data)
+        break
+      case 'dataUpdate':
+        this.socket.emit(event, {
+          name: this.name,
+          position: this.position,
+          tiles: this.tiles,
+          isTurn: this.isTurn,
+          score: this.score
+        })
+        break
+      case 'boardUpdate':
+        this.socket.emit(event, {
+          board: this._gameManager.board.sendableBoard()
+        })
+    }
   }
 
   /**
-   * Emits to the player if it is their turn
-   * @param {String} playerName - player name
+   * Creates an object that is sent over an event
    */
-  emitWhosTurn(playerName) {
-    this._socket.emit('newTurn', {
+  sendableData() {
+    return {
+      name: this._name,
+      isAI: this._isAI,
+      position: this._position,
       isTurn: this._isTurn,
-      whosTurn: playerName
-    })
+      tiles: this._tiles,
+      score: this._score,
+      team: this._team
+    }
   }
 
   /**
-   * Adds details when this position was already occupied by another player controller
-   * @param {Array} tiles - array of tiles
-   * @param {Boolean} isTurn - turn
-   * @param {Number} score - score
+   * When a client connects, their information is injected into the manager
+   * @param {String} name - name of player
+   * @param {String} team - team player is on
+   * @param {Boolean} isAI - AI or not
+   * @param {Object} socket - socket object
    */
-  addPositionDetails(tiles, isTurn, score) {
-    this._tiles = tiles
-    this._isTurn = isTurn
-    this._score = score
+  createHandshakeWithClient(name, team, isAI, socket) {
+    this._name = name
+    this._team = team
+    this._isAI = isAI
+    this._socket = socket
+    this._socketId = socket.id
+    this.sendEvent('dataUpdate')
+    this.sendEvent('boardUpdate')
+    this.listenForEvents()
   }
 
   /**
-   * Adds tiles to the titles array
-   * @param {Array} tiles - array of tiles to add to the existing tiles
+   * Once a play is made, the player's hand is updated
+   * @param {Array} tilesUsed - tiles that were used in a play
    */
-  addTiles(tiles) {
-    this._tiles.push(...tiles)
+  updateHand(tilesUsed) {
+    this.removeTiles(tilesUsed)
+    this.addToHand()
   }
 
   /**
-   * Removes tiles from array
+   * Puts new tiles into the player's hand
+   */
+  addToHand() {
+    let newLetters = []
+    let lettersToGenerate = 7 - this._tiles.length
+
+    // generate the new letters
+    for (let a = 0; a < lettersToGenerate; a++) {
+      let index = Math.floor(Math.random() * ld.totalLetters)
+
+      for (let i = 0; i < ld.intervals.length; i++) {
+        if (index <= ld.intervals[i]) {
+          newLetters.push(ld.letters[i])
+          break
+        }
+      }
+    }
+
+    this._tiles.push(...newLetters)
+  }
+
+  /**
+   * Removes information
+   */
+  removeInformation() {
+    dg(`${this.name} disconnected from player manager ${this.position}`, 'debug')
+    this._name = null
+    this._team = null
+    this._isAI = null
+    this._socket = null
+    this._socketId = null
+  }
+
+  /**
+   * Removes tiles from hand
    * @param {Array} tiles - array of tiles to remove
    */
-  removeTiles(tiles) {
-    let newTiles = []
+  removeTiles(tilesToBeRemoved) {
+    let currentHand = this._tiles
 
-    this._tiles.forEach(t => {
-      let i = tiles.indexOf(t)
-      if (i === -1) { // if t does not exist in the tiles array
-        newTiles.push(t) // push to new array (letters that aren't being removed)
-      } else { // if t is in the tiles array, remove it from the tiles array so multiple of the same letter is not removed
-        tiles.splice(i, 1)
+    for (let t = tilesToBeRemoved.length - 1; t >= 0; t--) {
+      let tile = tilesToBeRemoved[t]
+      for (let i = currentHand.length - 1; i >= 0; i--) {
+        let letter = currentHand[i]
+        if (tile === letter) {
+          currentHand.splice(i, 1)
+          tilesToBeRemoved.splice(t, 1)
+          break
+        }
       }
-    })
+    }
 
-    this._tiles = newTiles
+    this._tiles = currentHand
   }
 
   /**

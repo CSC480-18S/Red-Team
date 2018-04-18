@@ -18,14 +18,9 @@ const socket = require('./helpers/Socket')(server)
 /**
  * Imports the routes to be used
  */
-const indexRoute = require('./routes/index-route')
-const gameRoute = require('./routes/game-route')
+const mainRoute = require('./routes/main-route')(socket)
 const statsRoute = require('./routes/stats-route')
 const usersRoute = require('./routes/users-route')
-
-/* eslint no-new:0 */
-const ServerManager = require('./entities/ServerManager')(socket)
-new ServerManager()
 
 /**
  * Imports Override.js
@@ -36,6 +31,11 @@ const override = require('./helpers/Override')
  * Port the server listens on
  */
 const port = 3000
+
+/**
+ * TODO: Enable this when nginx is put in front @Landon
+ */
+// app.set('trust proxy', true)
 
 /**
  * Set the headers the server accepts
@@ -71,16 +71,28 @@ app.use(bodyParser.urlencoded({ extended: false }))
 /**
  * Sets the JSON spacing for JSON data that is sent back to the user
  */
-app.set('json spaces', 2)
+app.set('json spaces', 4)
 
 /**
  * Setting the routes to be used
  */
-app.use('/', indexRoute)
+app.use('/', mainRoute)
 app.use('/api', [statsRoute, usersRoute])
-app.use('/api/game/', gameRoute)
 
-app.use('/static', express.static(path.join(__dirname, '/static')))
+/**
+ * TODO: Figure out authentication on the routes @Landon
+ */
+function isLoggedIn(req, res, next) {
+  let allow = true
+
+  if (allow) {
+    next()
+  } else {
+    res.status(400).json({ code: 'A1', title: 'Auth error', desc: 'Not authorized.' })
+  }
+}
+
+app.use('/static', isLoggedIn, express.static(path.join(__dirname, '/static')))
 
 /**
  * Called when the server is ready and it listens on the specified port

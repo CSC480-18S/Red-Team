@@ -15,43 +15,14 @@ class Gameboard {
     this._board = new Array(this._size)
     this._initialized = false
     this._firstPlay = true
-    this._error = 0
     this.init()
   }
 
   /**
-   * Sets the board
+   * Board setter
    */
   set board(board) {
     this._board = board
-  }
-
-  /**
-   * Sets initialized
-   */
-  set initialized(initialized) {
-    this._initialized = initialized
-  }
-
-  /**
-   * Sets first play
-   */
-  set firstPlay(firstPlay) {
-    this._firstPlay = firstPlay
-  }
-
-  /**
-   * Sets error
-   */
-  set error(error) {
-    this._error = error
-  }
-
-  /**
-   * Size getter
-   */
-  get size() {
-    return this._size
   }
 
   /**
@@ -59,27 +30,6 @@ class Gameboard {
    */
   get board() {
     return this._board
-  }
-
-  /**
-   * Initialized getter
-   */
-  get initialized() {
-    return this._initialized
-  }
-
-  /**
-   * First play getter
-   */
-  get firstPlay() {
-    return this._firstPlay
-  }
-
-  /**
-   * Error getter
-   */
-  get error() {
-    return this._error
   }
 
   /**
@@ -91,11 +41,22 @@ class Gameboard {
       return true
     }
 
-    for (let i = 0; i < this.board.length; i++) {
-      this.board[i] = new Array(this._size)
+    for (let i = 0; i < this._board.length; i++) {
+      this._board[i] = new Array(this._size)
 
-      for (let j = 0; j < this.board[0].length; j++) {
-        this.board[i][j] = new Tile(j, i, '1')
+      for (let j = 0; j < this._board[0].length; j++) {
+        let tile = '' + i + j
+        switch (tile) {
+          case '00': case '07': case '24': case '37': case '310': case '42': case '68': case '70': case '73': case '86': case '103': case '1010':
+            this._board[i][j] = new Tile(j, i, 'word', 2)
+            break
+          case '03': case '010': case '26': case '30': case '33': case '48': case '62': case '77': case '710': case '84': case '100': case '107':
+            this._board[i][j] = new Tile(j, i, 'letter', 2)
+            break
+          default:
+            this._board[i][j] = new Tile(j, i, null, null)
+            break
+        }
       }
     }
 
@@ -103,11 +64,20 @@ class Gameboard {
   }
 
   /**
-   * This method is only for a demo to replace the board
-   * @param {Array} board - board
+   * Creates a board of just characters to be sent to the clients
    */
-  replaceBoard(board) {
-    this.board = board
+  sendableBoard() {
+    let board = new Array(this._size)
+
+    for (let i = 0; i < this._board.length; i++) {
+      board[i] = new Array(this._size)
+
+      for (let j = 0; j < this._board[0].length; j++) {
+        board[i][j] = this._board[i][j].letter
+      }
+    }
+
+    return board
   }
 
   /**
@@ -115,24 +85,25 @@ class Gameboard {
    * @param {Array} words - array of words to place
    */
   placeWords(words, user) {
-    this.error = 0
-    const tempBoard = _.cloneDeep(this.board)
+    const tempBoard = _.cloneDeep(this._board)
 
     /**
      * For word placement validation
      */
     let validWordPlacement = false
+    let invalidWord = null
+    let firstPlayBypass = false
     for (let w of words) {
       let word = this.createWordObject(w)
+      let wordActual = word.word
 
       for (let i = word.sX; i <= word.eX; i++) {
         for (let j = word.sY; j <= word.eY; j++) {
-        /**
+          /**
          * Check to see if the word was somehow placed out of bounds
          */
           if (tempBoard[j][i] === undefined) {
-            this.error = 2
-            return word.word
+            return this.validatorDispatcher(2, wordActual)
           }
           let l = tempBoard[j][i].letter
           let wordLetter = w.h ? word.word[i - word.sX].toUpperCase() : word.word[j - word.sY].toUpperCase()
@@ -141,8 +112,7 @@ class Gameboard {
          * Validate if the letter placed can be placed there
          */
           if (!this.validatePosition(l, wordLetter)) {
-            this.error = 3
-            return word.word
+            return this.validatorDispatcher(3, wordActual)
           }
 
           /**
@@ -159,20 +129,38 @@ class Gameboard {
       /**
        * Check to see if center tile was played over on the first play
        */
-      if (this.firstPlay) {
+      if (this._firstPlay) {
         if (!this.validateCenterTile(tempBoard)) {
-          return word.word
+          return this.validatorDispatcher(4, wordActual)
         }
+        firstPlayBypass = true
         continue
       }
 
       if (!validWordPlacement) {
-        this.error = 5
-        return word.word
+        invalidWord = wordActual
       }
     }
+    /**
+     * Make sure that the entire play has valid placement
+     */
+    if (!firstPlayBypass && !validWordPlacement) {
+      return this.validatorDispatcher(5, invalidWord)
+    }
+    this._board = tempBoard
+    return this.validatorDispatcher(0, words)
+  }
 
-    this.board = tempBoard
+  /**
+   * Dispatches error codes and words from the validatior
+   * @param {Number} e - error code
+   * @param {String/Array} w - word(s)
+   */
+  validatorDispatcher(e, w) {
+    return {
+      error: e,
+      data: w
+    }
   }
 
   /**
@@ -202,16 +190,15 @@ class Gameboard {
   }
 
   /**
-   * Validates whetehr the first played word was played over the center tile
+   * Validates whether the first played word was played over the center tile
    * @param {Array} tempBoard - temp board
    */
   validateCenterTile(tempBoard) {
-    const c = Math.floor(this.size / 2)
+    const c = Math.floor(this._size / 2)
     if (!tempBoard[c][c].letterPlaced) {
-      this.error = 4
       return false
     } else {
-      this.firstPlay = false
+      this._firstPlay = false
       return true
     }
   }
@@ -229,16 +216,6 @@ class Gameboard {
     }
 
     return false
-  }
-
-  /**
-   * Pulls information about a sepcific tile
-   * X and Y need to be reversed because of the way 2D arrays are created
-   * @param {Number} x - x coordinate
-   * @param {Number} y - y coordinate
-   */
-  tileInformation(x, y) {
-    return this.board[y][x]
   }
 }
 

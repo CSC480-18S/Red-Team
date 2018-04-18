@@ -14,28 +14,20 @@ matrix:
         directories:
           - Server\ Backend/node_modules
       script:
-        - npm run codecov
+        - npm run test
 
     - language: java
       jdk: oraclejdk8
       before_script:
         - cd Database/Dictionary
-        - mvn -N io.takari:maven:wrapper
-        - ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
       cache:
         directories:
         - $HOME/.m2
-      after_success:
-        - bash <(curl -s https://codecov.io/bash)
-
+        
     - language: java
       jdk: oraclejdk8
       before_script:
         - cd Database/GameDB
-        - mvn -N io.takari:maven:wrapper
-        - ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
       cache:
         directories:
         - $HOME/.m2
-      after_success:
-        - bash <(curl -s https://codecov.io/bash)
