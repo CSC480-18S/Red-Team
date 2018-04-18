@@ -121,7 +121,7 @@ public class HandActor extends Group {
             turn.setDrawable(new TextureRegionDrawable(new TextureRegion(TextureManager.getInstance().greenBar)));
         }
         updateState();
-        //updateState();
+        updateState();
     }
 
     /**

@@ -242,8 +242,8 @@ public class GameManager {
                     JSONObject data = (JSONObject) args[0];
                     System.out.println("data: "+data.toString());
                     JSONArray board = data.getJSONArray("board");
-                    System.out.println("BACKEND BOARD STATE: "+board.toString());
-                    System.out.println("PARSED BACKEND BOARD STATE: "+unJSONifyBackendBoard(board));
+//                    System.out.println("BACKEND BOARD STATE: "+board.toString());
+//                    System.out.println("PARSED BACKEND BOARD STATE: "+unJSONifyBackendBoard(board));
                     //find the board/user state differences
                     wordHasBeenPlayed(unJSONifyBackendBoard(board));
                     //hard update the game and user states
@@ -260,12 +260,14 @@ public class GameManager {
                 System.out.println("frontend got gameEvent");
                 try {
                     JSONObject data = (JSONObject) args[0];
+                    boolean isBonus = false;
                     String action = data.getString("action");
-                    boolean isBonus = data.getBoolean("bonus");
+                    if(data.get("bonus") != JSONObject.NULL)
+                        isBonus = data.getBoolean("bonus");
                     //System.out.println(action);
                     if(isBonus)
                         BonusEvent(action);
-                        LogEvent(action);
+                    LogEvent(action);
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
                 }catch(JSONException e){
@@ -507,7 +509,7 @@ public class GameManager {
      */
     public void hardUpdateBoardState(TileData[][] serverBoard){
         theBoard.the_game_board = serverBoard;
-        System.out.println("SERVER FRONTEND STATE UPDATED/////////////////////////////////////////////////////////////////////////////");
+//        System.out.println("SERVER FRONTEND STATE UPDATED/////////////////////////////////////////////////////////////////////////////");
     }
 
     public void wordHasBeenPlayed(TileData[][] backendBoardState){

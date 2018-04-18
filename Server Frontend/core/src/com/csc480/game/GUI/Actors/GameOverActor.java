@@ -42,7 +42,7 @@ public class GameOverActor extends Group {
         Label timeUntilNextGameLabel = new Label("Time until next game: ",TextureManager.getInstance().ui,"default");
         Table timeTable = new Table();
         timeTable.add(timeUntilNextGameLabel);
-        timeUntilNextGame = new Label("Infinity",TextureManager.getInstance().ui,"default");
+        timeUntilNextGame = new Label("30 seconds",TextureManager.getInstance().ui,"default");
         timeTable.add(timeUntilNextGame);
         theTabel.add(timeTable);
 

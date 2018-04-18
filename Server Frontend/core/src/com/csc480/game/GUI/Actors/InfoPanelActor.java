@@ -60,14 +60,14 @@ public class InfoPanelActor extends Group{
         myLayout.row();
 
 
-        green.setValue(250f);//todo remove this//////////////////////////////////////////
+//        green.setValue(250f);//todo remove this//////////////////////////////////////////
 
         gold = new ProgressBar(0f,250f,1f,false,TextureManager.getInstance().ui, "GoldProgress");
         gold.getStyle().background.setMinHeight(10f);
         gold.getStyle().knobBefore.setMinHeight(10f);
         myLayout.add(gold).fillX().padBottom(10);
         myLayout.row();
-        gold.setValue(50f);//todo remove this////////////////////////////////////////////
+//        gold.setValue(50f);//todo remove this////////////////////////////////////////////
 //
 
 
@@ -75,26 +75,26 @@ public class InfoPanelActor extends Group{
         //sublayout.setDebug(true);
         p0Name = new Label("player0", TextureManager.getInstance().ui, "default");
         p0Score = new Label("0", TextureManager.getInstance().ui, "default");
-        sublayout.add(p0Name).padLeft(10f).padTop(5f).left().expandX().minWidth(150f);
-        sublayout.add(p0Score).padRight(10f).left();
+        sublayout.add(p0Name).padLeft(10f).padTop(5f).left().expandX().minWidth(150f).padBottom(10f);
+        sublayout.add(p0Score).padRight(10f).left().padTop(5f).padBottom(10);
         sublayout.row();
 
         p1Name = new Label("player1", TextureManager.getInstance().ui, "default");
         p1Score = new Label("10", TextureManager.getInstance().ui, "default");
-        sublayout.add(p1Name).padLeft(10f).left().expandX().minWidth(150f);
-        sublayout.add(p1Score).padRight(10f).left();
+        sublayout.add(p1Name).padLeft(10f).left().expandX().minWidth(150f).padBottom(10f);
+        sublayout.add(p1Score).padRight(10f).left().padBottom(10);
         sublayout.row();
 
         p2Name = new Label("player2", TextureManager.getInstance().ui, "default");
         p2Score = new Label("100", TextureManager.getInstance().ui, "default");
-        sublayout.add(p2Name).padLeft(10f).left().expandX().minWidth(150f);
-        sublayout.add(p2Score).padRight(10f).left();
+        sublayout.add(p2Name).padLeft(10f).left().expandX().minWidth(150f).padBottom(10f);
+        sublayout.add(p2Score).padRight(10f).left().padBottom(10);
         sublayout.row();
 
         p3Name = new Label("player3333", TextureManager.getInstance().ui, "default");
         p3Score = new Label("1000", TextureManager.getInstance().ui, "default");
-        sublayout.add(p3Name).padLeft(10f).left().expandX().minWidth(150f);
-        sublayout.add(p3Score).padRight(10f).padBottom(5f).left();
+        sublayout.add(p3Name).padLeft(10f).left().expandX().minWidth(150f).padBottom(10f);
+        sublayout.add(p3Score).padRight(10f).padBottom(10f).left();
         myLayout.add(sublayout);
         myLayout.row();
 
@@ -107,7 +107,7 @@ public class InfoPanelActor extends Group{
         myLayout.add(eventLog).fillX().padLeft(10f).padRight(10f).padBottom(10f).maxWidth(200f);
 
         addActor(myLayout);
-        setDebug(true,true);
+//        setDebug(true,true);
 
     }
 
