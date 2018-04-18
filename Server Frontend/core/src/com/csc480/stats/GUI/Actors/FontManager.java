@@ -21,11 +21,11 @@ public class FontManager {
     private FontManager(){
 
         //-----Title Font size
-        cumulative = new Skin(Gdx.files.internal("skin/exempleSkin.json"));
+        cumulative = new Skin(Gdx.files.internal("oldSkin/exempleSkin.json"));
         cumulative.getFont("font").setUseIntegerPositions(false);
         cumulative.getFont("font").getData().setScale(.4f,.4f);
 
-        title = new Skin(Gdx.files.internal("skin/exempleSkin.json"));
+        title = new Skin(Gdx.files.internal("oldSkin/exempleSkin.json"));
         title.getFont("font").setUseIntegerPositions(false);
         title.getFont("font").getData().setScale(.6f,.6f);
 

@@ -8,13 +8,13 @@ package com.csc480.stats;
 
 public class JsonResponse {
     private Metadata meta;
-    private teamData data;
+    private TeamData data;
 
-    public teamData getData() {
+    public TeamData getData() {
         return data;
     }
 
-    public void setData(teamData data) {
+    public void setData(TeamData data) {
         this.data = data;
     }
 

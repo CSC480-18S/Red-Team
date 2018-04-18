@@ -21,7 +21,7 @@ public class StatsTables extends Group {
 
     public StatsTables() {
         super();
-        skin = new Skin(Gdx.files.internal("skin/exempleSkin.json"));
+        skin = new Skin(Gdx.files.internal("oldSkin/exempleSkin.json"));
         hud = new Hud();
 
 

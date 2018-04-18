@@ -1,21 +1,23 @@
 package com.csc480.stats;
 
+import java.util.ArrayList;
+
 /**
  * This class exists so GSON can parse the JSON from database
  * representing the team stats and populate the
  * appropriate fields in the GUI
  */
 
-public class teamData {
+public class TeamData {
     private String name;
-    private String topValueWord;
-    private String highestValue;
+    private String totalScore;
+    private ArrayList<String> highestValueWords; //array
     private String longestWord;
+    private ArrayList<String> frequentlyPlayedWords; //array
+    private String dirtyCount;
+    private String specialCount;
     //typo is on purpose to replicate the DB typo
     private String higestSingleGameScore;
-    private String freqPlayedWord;
-    private String amountBonusesUsed;
-    private String totalScore;
     private String winCount;
     private String loseCount;
 
@@ -25,22 +27,6 @@ public class teamData {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getTopValueWord() {
-        return topValueWord;
-    }
-
-    public void setTopValueWord(String topValueWord) {
-        this.topValueWord = topValueWord;
-    }
-
-    public String getHighestValue() {
-        return highestValue;
-    }
-
-    public void setHighestValue(String highestValue) {
-        this.highestValue = highestValue;
     }
 
     public String getLongestWord() {
@@ -57,22 +43,6 @@ public class teamData {
 
     public void setHigestSingleGameScore(String higestSingleGameScore) {
         this.higestSingleGameScore = higestSingleGameScore;
-    }
-
-    public String getFreqPlayedWord() {
-        return freqPlayedWord;
-    }
-
-    public void setFreqPlayedWord(String freqPlayedWord) {
-        this.freqPlayedWord = freqPlayedWord;
-    }
-
-    public String getAmountBonusesUsed() {
-        return amountBonusesUsed;
-    }
-
-    public void setAmountBonusesUsed(String amountBonusesUsed) {
-        this.amountBonusesUsed = amountBonusesUsed;
     }
 
     public String getTotalScore() {
@@ -97,5 +67,37 @@ public class teamData {
 
     public void setLoseCount(String loseCount) {
         this.loseCount = loseCount;
+    }
+
+    public String getDirtyCount() {
+        return dirtyCount;
+    }
+
+    public void setDirtyCount(String dirtyCount) {
+        this.dirtyCount = dirtyCount;
+    }
+
+    public String getSpecialCount() {
+        return specialCount;
+    }
+
+    public void setSpecialCount(String specialCount) {
+        this.specialCount = specialCount;
+    }
+
+    public ArrayList<String> getHighestValueWords() {
+        return highestValueWords;
+    }
+
+    public void setHighestValueWords(ArrayList<String> highestValueWords) {
+        this.highestValueWords = highestValueWords;
+    }
+
+    public ArrayList<String> getFrequentlyPlayedWords() {
+        return frequentlyPlayedWords;
+    }
+
+    public void setFrequentlyPlayedWords(ArrayList<String> frequentlyPlayedWords) {
+        this.frequentlyPlayedWords = frequentlyPlayedWords;
     }
 }
