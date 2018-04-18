@@ -11,6 +11,11 @@ html, body {
 * {
   font-family: "bs", sans-serif; }
 
+#alert-area{
+    margin: 0;
+    text-align: center;
+}
+
 #main-area {
   height: 100%;
   width: 100%;

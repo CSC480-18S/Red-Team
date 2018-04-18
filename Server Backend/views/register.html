@@ -7,6 +7,11 @@
     <title>Oswebble | Login</title>
 </head>
 <body>
+    <% if (error) { %>
+    <div class="alert alert-danger" id="alert-area" role="alert">
+        <%= error %>
+    </div>
+    <% } %>
     <main id="main-area">
         <section id="register-area">
             <div id="register">
@@ -50,6 +55,12 @@
     <script type="text/javascript" src="/static/js/bootstrap-4.0.0.min.js"></script>
 
     <script type="text/javascript">
+        $(window).bind("pageshow", function(event) {
+            if (event.originalEvent.persisted) {
+                window.location.reload(); 
+            }
+        });
+
         $('#copyright').append(`Copyright © ${new Date().getFullYear()}. SUNY Oswego. All Rights Reserved.`);
     </script>
 
