@@ -20,8 +20,7 @@ module.exports = (io) => {
       this._greenScore = 0
       this._yellowScore = 0
       this._swaps = 0
-      this._players = 0
-      this._ai = 0
+      this._currentPlayers = 0
       this.init()
     }
 
@@ -30,6 +29,13 @@ module.exports = (io) => {
      */
     get board() {
       return this._gameBoard
+    }
+
+    /**
+     * Current client amount getters
+     */
+    get currentPlayers() {
+      return this._currentPlayers
     }
 
     init() {
@@ -87,16 +93,26 @@ module.exports = (io) => {
     determineClientType(socket, response) {
       if (response.isAI) {
         this.addClientToManager('ai_test', 'Green', true, socket)
-        // this.updateConnectionCounts('a', 1)
         dg('ai connected', 'info')
       } else if (response.isSF) {
         this.createFrontendManager(socket)
         dg('a server frontend connected', 'info')
       } else if (response.isClient) {
         this.addClientToManager('client_test', 'Yellow', false, socket)
-        // this.updateConnectionCounts('p', 1)
         dg('client connected', 'info')
+      } else if (response.isQueued) {
+        this.emitCurrentPlayerCount()
+        dg('queued player connected', 'info')
       }
+    }
+
+    /**
+     * Sends out the current players in the game
+     */
+    emitCurrentPlayerCount() {
+      io.emit('currentPlayerCount', {
+        amount: this._currentPlayers
+      })
     }
 
     /**
@@ -119,6 +135,8 @@ module.exports = (io) => {
             dg(`ai added to --> player manager ${manager.position}`, 'debug')
           } else {
             dg(`client added to --> player manager ${manager.position}`, 'debug')
+            this._currentPlayers++
+            this.emitCurrentPlayerCount()
           }
 
           return
@@ -138,6 +156,8 @@ module.exports = (io) => {
             this.emitGameEvent(`${manager.name} entered the game.`)
             this.updateFrontendData()
             dg(`client added to --> player manager ${manager.position}`, 'debug')
+            this._currentPlayers++
+            this.emitCurrentPlayerCount()
             return
           }
         }
@@ -154,10 +174,14 @@ module.exports = (io) => {
      * @param {String} socketId - id of socket
      */
     findClientThatLeft(id) {
-      console.log('DEBUG: FINDING CLIENT TO REMOVE')
+      dg('finding client to remove', 'debug')
       for (let manager of this._playerManagers) {
         if (manager.id === id) {
           this.emitGameEvent(`${manager.name} left the game.`)
+          if (!manager.isAI) {
+            this._currentPlayers--
+            this.emitCurrentPlayerCount()
+          }
           for (let frontend of this._frontendManagers) {
             if (!manager.isAI) {
               frontend.sendEvent('connectAI', manager.position)
@@ -176,27 +200,6 @@ module.exports = (io) => {
           return
         }
       }
-    }
-
-    /**
-     * Adds or subtracts player and ai and sends it out to clients
-     * @param {String} type - p for player or a for ai
-     * @param {Number} amount - +1 or -1 based
-     */
-    updateConnectionCounts(type, amount) {
-      switch (type) {
-        case 'p':
-          this._players += amount
-          break
-        case 'a':
-          this._ai += amount
-          break
-      }
-
-      io.emit('connections', {
-        players: this._players,
-        ai: this._ai
-      })
     }
 
     /**

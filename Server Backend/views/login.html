@@ -9,28 +9,28 @@
 <body>
     <main id="main-area">
         <section id="login-area">
-            <div id="login">
+            <div id="login" class="<%= user.team %>">
                 <div id="logo-area">
                     <img id="logo" src="/static/imgs/logo.png" alt="Oswebble">
-                    <h2>Welcome!</h2>
+                    <h2>Welcome <%= user.username %>!</h2>
                 </div>
                 <div id="button-area">
-                        <button type="button" class="btn btn-lg btn-block">Play!</button>
-                        <h4>Current Players in game:</h4>
+                        <button type="button" id="play-button" class="btn btn-lg btn-block
+                        <% if (user.team === 'Yellow') { %>
+                        btn-success    
+                        <% } else {%> btn-warning <% } %>"></button>
                 </div>
                 <div id="status-area">
                     <div class="stats">
-                        <h4><i class="fas fa-user"></i> Players</h4>
-                        <h1 id="players"></h1>
-                    </div>
-                    <div class="stats">
-                        <h4><i class="fas fa-gamepad"></i> AI</h4>
-                        <h1 id="ai"></h1>
+                        <h4>Current Players in game:</h4>
+                        <h1 id="currentPlayerCount">0</h1>
                     </div>
                 </div>
             </div>
         </section>
-        <footer id="footer">
+        <footer id="footer" class="<% if (user.team === 'Yellow') { %>
+                Green    
+                <% } else {%> Yellow <% } %>">
                 <div id="copyright"></div>
         </footer>
     </main>
@@ -43,9 +43,17 @@
     <script type="text/javascript">
         let socket = io()
 
-        socket.on('connections', response => {
-            $('#players').text(response.players)
-            $('#ai').text(response.ai)
+        socket.on('whoAreYou', () => {
+            socket.emit('whoAreYou', {isQueued: true})
+        })
+
+        socket.on('currentPlayerCount', response => {
+            $('#currentPlayerCount').empty().text(response.amount)
+            if(response.amount >= 4){
+                $('#play-button').addClass('btn-danger').prop('disabled', true).empty().append('<i class="fas fa-times"></i> Max Players');
+            } else {
+                $('#play-button').removeClass('btn-danger').prop('disabled', false).empty().append('Play!');
+            }
         })
     </script>
 

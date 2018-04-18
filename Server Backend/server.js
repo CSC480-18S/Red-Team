@@ -18,13 +18,9 @@ const socket = require('./helpers/Socket')(server)
 /**
  * Imports the routes to be used
  */
-const mainRoute = require('./routes/main-route')
+const mainRoute = require('./routes/main-route')(socket)
 const statsRoute = require('./routes/stats-route')
 const usersRoute = require('./routes/users-route')
-
-/* eslint no-new:0 */
-const GameManager = require('./entities/GameManager')(socket)
-new GameManager()
 
 /**
  * Imports Override.js
