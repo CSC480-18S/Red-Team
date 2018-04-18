@@ -34,7 +34,7 @@ var vm = new Vue({
 
     // place tile
     onClickSwap: swap,
-    onClickPlace: null,
+    onClickPlace: grey,
     onClickShuffle: shuffle
   }
 

@@ -89,6 +89,10 @@ socket.on('play', response => {
       this.data.tilesOnBoardValueAndPosition.pop()
       square.removeChild(square.firstChild)
     }
+      this.data.selectedTileId = ''
+      for (var i = 0; i < tileSlotNumber; i++) {
+          this.data.tileSlots[i].tile.highlightedColor = '#000000'
+      }
 
     this.data.currentPlayTileAmount = 0
   }
@@ -408,6 +412,17 @@ var swap = function() {
     this.tileSlots[3].tile.letter, this.tileSlots[4].tile.letter, this.tileSlots[5].tile.letter, this.tileSlots[6].tile.letter])
 }
 
+var grey = function() {
+    // change color of tiles on board
+    for (var i = 0; i < this.currentRoundtileIdsOnBoard.length; i++) {
+        var tile = document.getElementById(this.currentRoundtileIdsOnBoard[i])
+        tile.children[0].setAttribute('fill', 'rgb(212,212,212)') 
+        tile.children[1].setAttribute('fill', '#000000')
+        tile.children[2].setAttribute('fill', '#000000')
+   }
+   this.currentRoundtileIdsOnBoard = []
+   this.selectedTileId = ''
+}
 // var refillSlots = function() {
 //   for (var i = 0; i < tileSlotNumber; i++) {
 //     if (!this.tileSlots[i].hasTile) {
