@@ -13,6 +13,8 @@ public class StatsViewer extends Game {
        if (stats.GoldStats().isPresent()) {
            //if present, unwrap the optional and get the specific attribute
            System.out.println(stats.GoldStats().get().getData().getName());
+           System.out.println(stats.GoldStats().get().getData().getTotalScore());
+           System.out.println(stats.GoldStats().get().getData().getHighestValueWords());
        } else {
            //otherwise the JSON was empty, most likely meaning the backend wasn't running
            System.out.println("Server isn't running, please start the server and try again.");

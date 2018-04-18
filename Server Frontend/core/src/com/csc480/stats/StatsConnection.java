@@ -55,7 +55,7 @@ public class StatsConnection {
      * create an object that is used to separate the individual attributes
      * into variables that can be called on when updating the GUI
      *
-     * @return       A JsonResponse object that contains a teamData object, which contains
+     * @return       A JsonResponse object that contains a TeamData object, which contains
      * the individual team stat values
      */
 
@@ -80,7 +80,7 @@ public class StatsConnection {
      * create an object that is used to separate the individual attributes
      * into variables that can be called on when updating the GUI
      *
-     * @return       A JsonResponse object that contains a teamData object, which contains
+     * @return       A JsonResponse object that contains a TeamData object, which contains
      * the individual team stat values
      */
 

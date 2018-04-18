@@ -11,11 +11,11 @@ public class Hud {
 
     StatsConnection stats = new StatsConnection();
 
-    String spacer = "                           ";
+    String spacer = "                           "; //this shit is hilarious
 
-    private Integer Greenscore = 123456789;
+    private Integer Greenscore = Integer.valueOf(stats.GreenStats().get().getData().getTotalScore());
 
-    private Integer Goldscore = 2345;
+    private Integer Goldscore = Integer.valueOf(stats.GoldStats().get().getData().getTotalScore());
 
 
 ///////////////////////////////////////////GREEN TEAM////////////////////////////////////////////////////////////
@@ -105,13 +105,13 @@ public class Hud {
     */
 
     //Dummy Values
-    private String G_LWPosition1 = "Philanthropy";
+    private String G_LWPosition1 = stats.GreenStats().get().getData().getLongestWord();
     private int G_LWP1 = 7;
     Label G_LWOne = new Label( String.format("%.15s",G_LWPosition1) + String.format("%10d pts",G_LWP1),TextureManager.getInstance().ui);
 
 
     //-----------------------Bonuses Used-------------------------------
-    private int G_BUP1 = 14;
+    private int G_BUP1 = Integer.parseInt(stats.GreenStats().get().getData().getSpecialCount());
 
     Label G_BUWords = new Label("Bonuses Used: "+ String.format("%10d",G_BUP1) ,TextureManager.getInstance().ui);
 
@@ -131,7 +131,7 @@ public class Hud {
 
 
     //-----------------------Dirty Word Attempts & Average Score -------------------------------
-    private int G_WAP1 = 997;
+    private int G_WAP1 = Integer.parseInt(stats.GreenStats().get().getData().getDirtyCount());
     private int G_ASP1 = 7;
 
     Label G_WAWords = new Label("Bad Word Attempts:"+ String.format("%10d",G_WAP1) ,TextureManager.getInstance().ui);
@@ -228,13 +228,13 @@ public class Hud {
 
     //-----------------------Longest Word-------------------------------
     Label Y_LWWords = new Label("Longest Word: " ,TextureManager.getInstance().ui);
-    private String Y_LWPosition1 = "Philanthropy";
+    private String Y_LWPosition1 = stats.GoldStats().get().getData().getLongestWord();
     private int Y_LWP1 = 7;
     Label Y_LWOne = new Label( String.format("%.15s",Y_LWPosition1) + String.format("%10d pts",Y_LWP1),TextureManager.getInstance().ui);
 
 
     //-----------------------Bonuses Used-------------------------------
-    private int Y_BUP1 = 14;
+    private int Y_BUP1 = Integer.parseInt(stats.GoldStats().get().getData().getSpecialCount());
 
     Label Y_BUWords = new Label("Bonuses Used: "+ String.format("%10d",Y_BUP1) ,TextureManager.getInstance().ui);
 
@@ -254,7 +254,7 @@ public class Hud {
 
 
     //-----------------------Dirty Word Attempts & Average Score -------------------------------
-    private int Y_WAP1 = 998;
+    private int Y_WAP1 = Integer.parseInt(stats.GoldStats().get().getData().getDirtyCount());
     private int Y_ASP1 = 7;
 
     Label Y_WAWords = new Label("Bad Word Attempts:"+ String.format("%10d",Y_WAP1) ,TextureManager.getInstance().ui);
