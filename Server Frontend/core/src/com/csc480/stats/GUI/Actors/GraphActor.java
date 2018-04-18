@@ -1,4 +1,4 @@
-package stats.GUI.Actors;
+package com.csc480.stats.GUI.Actors;
 
 import com.badlogic.gdx.scenes.scene2d.Group;
 

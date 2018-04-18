@@ -4,7 +4,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.csc480.game.Engine.GameManager;
 import com.csc480.game.GameAdapter;
-import stats.StatsAdapter;
+import com.csc480.stats.StatsAdapter;
 
 
 

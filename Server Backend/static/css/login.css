@@ -33,7 +33,6 @@ html, body {
   #login-area #login {
     -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3), inset 0 -3px 3px rgba(0, 0, 0, 0.1);
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3), inset 0 -3px 3px rgba(0, 0, 0, 0.1);
-    background: #FFCC33;
     border-radius: 20px;
     height: 50%;
     width: 20%;
@@ -55,37 +54,34 @@ html, body {
       #login-area #login #button-area .btn {
         margin: auto;
         width: 90%;
-        background: rgba(18, 178, 74, 0.7);
-        border-color: rgba(18, 178, 74, 0.7);
         margin-bottom: 10px;
         color: white; }
-        #login-area #login #button-area .btn:hover {
-          background: #12b24a;
-          border-color: #12b24a; }
     #login-area #login #status-area {
       width: 90%;
       grid-area: status;
-      display: grid;
-      grid-template-areas: ". .";
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: auto;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-pack: center;
+          -ms-flex-pack: center;
+              justify-content: center;
+      -webkit-box-align: center;
+          -ms-flex-align: center;
+              align-items: center;
       text-align: center; }
-      #login-area #login #status-area .stats {
-        display: -webkit-box;
-        display: -ms-flexbox;
-        display: flex;
-        -webkit-box-orient: vertical;
-        -webkit-box-direction: normal;
-            -ms-flex-direction: column;
-                flex-direction: column;
-        -webkit-box-pack: space-evenly;
-            -ms-flex-pack: space-evenly;
-                justify-content: space-evenly; }
+
+.Yellow {
+  background: #FFCC33 !important;
+  color: black !important; }
+
+.Green {
+  background: #28a745 !important;
+  color: white !important; }
 
 #footer {
   text-align: center;
   grid-area: footer;
-  background: #12b24a;
+  background: #28a745;
   color: white;
   padding: 5px; }
 

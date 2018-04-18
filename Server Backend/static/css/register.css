@@ -33,7 +33,7 @@ html, body {
   #register-area #register {
     -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3), inset 0 -3px 3px rgba(0, 0, 0, 0.1);
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3), inset 0 -3px 3px rgba(0, 0, 0, 0.1);
-    background: #FFCC33;
+    background: lightgray;
     border-radius: 20px;
     height: 50%;
     width: 20%;
@@ -56,21 +56,14 @@ html, body {
         width: 90%; }
         #register-area #register #form-area #form #username {
           margin-bottom: 10px; }
-        #register-area #register #form-area #form .btn {
-          margin: auto;
-          margin-top: 10px;
-          background: rgba(18, 178, 74, 0.7);
-          border-color: rgba(18, 178, 74, 0.7);
-          color: white; }
-          #register-area #register #form-area #form .btn:hover {
-            background: #12b24a;
-            border-color: #12b24a; }
 
 #footer {
   text-align: center;
+  -webkit-box-shadow: 0px -2px 5px 0px rgba(0, 0, 0, 0.3);
+          box-shadow: 0px -2px 5px 0px rgba(0, 0, 0, 0.3);
   grid-area: footer;
-  background: #12b24a;
-  color: white;
+  background: lightgray;
+  color: black;
   padding: 5px; }
 
 @media screen and (max-width: 568px) {

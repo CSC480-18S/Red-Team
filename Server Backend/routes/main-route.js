@@ -3,27 +3,50 @@
  */
 const express = require('express')
 const router = express.Router()
+const mg = require('../helpers/MacGrabber')
 
-/**
- * The actual game area
- */
-router.get('/game', function(req, res, next) {
-  res.render('gameboard')
-})
+module.exports = (socket) => {
+/* eslint no-new:0 */
+  const GameManager = require('../entities/GameManager')(socket)
+  new GameManager()
 
-router.get('/login', function(req, res, next) {
-  res.render('login')
-})
+  let users = []
 
-router.get('/register', function(req, res, next) {
-  res.render('register')
-})
+  router.get('/', function(req, res, next) {
+    let ip = req.ip
+    ip = ip.split(':')[3]
+    for (let i = 0; i < users.length; i++) {
+      if (users[i].mac === mg(ip)) {
+        res.render('login', {user: users[i]})
+        return
+      }
+    }
 
-router.get('/admin', function(req, res, next) {
-  res.render('admin')
-})
+    res.render('register')
+  })
 
-/**
- * Exports this file so it can be used by other files.  Keep this at the bottom.
- */
-module.exports = router
+  router.get('/admin', function(req, res, next) {
+    res.render('admin')
+  })
+
+  router.get('/game', function(req, res, next) {
+    res.render('gameboard')
+  })
+
+  router.post('/register', function(req, res, next) {
+    console.log(req.body)
+    let ip = req.ip
+    ip = ip.split(':')[3]
+    let user = {
+      username: req.body.username.trim(),
+      team: req.body.team.trim(),
+      mac: mg(ip)
+    }
+
+    users.push(user)
+
+    res.redirect('/')
+  })
+
+  return router
+}

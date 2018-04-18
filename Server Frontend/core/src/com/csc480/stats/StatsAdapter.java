@@ -1,4 +1,4 @@
-package stats;
+package com.csc480.stats;
 
 import com.badlogic.gdx.ApplicationAdapter;
 

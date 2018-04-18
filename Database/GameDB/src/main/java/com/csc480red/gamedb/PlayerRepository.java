@@ -10,4 +10,3 @@ public interface PlayerRepository extends JpaRepository<Player, Long>{
 	List<Player> findByUsername(@Param("username") String username);
 	
 }
-
