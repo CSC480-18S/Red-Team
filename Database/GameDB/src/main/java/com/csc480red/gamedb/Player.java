@@ -1,11 +1,16 @@
 package com.csc480red.gamedb;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.PostLoad;
+import javax.persistence.Transient;
 
 @Entity
 public class Player {
@@ -15,137 +20,54 @@ public class Player {
 	private Long id;
 	
 	private String username;
-	private String shortId;
+	private String macAddr;
 	
 	@ManyToOne
 	@JoinColumn(name="team_id")
 	private Team team;
 	
-	private String topValueWord;
-	private int highestValue;
-	private String longestWord;
-	private int highestSingleGameScore;
-	private String freqPlayedWord;
-	private int amountBonusesUsed;
-	private int totalScore;
+	@OneToMany(mappedBy="player")
+	private List<PlayedWord> playedWords;
+	
+	@Transient
+	private int score;
 	
 	protected Player() {}
 
-	/**
-	 *
-	 * @param username - username
-	 * @param shortId - shortID
-	 * @param team - team
-	 * @param topValueWord - highest valued word
-	 * @param highestValue - highest word score
-	 * @param longestWord - longest word
-	 * @param highestSingleGameScore - single game high score
-	 * @param freqPlayedWord - most frequently played word
-	 * @param amountBonusesUsed - amount of bonuses the player has used
-	 * @param totalScore - total score across all games played
-	 */
-	public Player(String username, String shortId, Team team, String topValueWord, int highestValue,
-				  String longestWord, int highestSingleGameScore, String freqPlayedWord, int amountBonusesUsed,
-				  int totalScore) {
+	public Player(String username, String macAddr, Team team) {
 		super();
 		this.username = username;
-		this.shortId = shortId;
+		this.macAddr = macAddr;
 		this.team = team;
-		this.topValueWord = topValueWord;
-		this.highestValue = highestValue;
-		this.longestWord = longestWord;
-		this.highestSingleGameScore = highestSingleGameScore;
-		this.freqPlayedWord = freqPlayedWord;
-		this.amountBonusesUsed = amountBonusesUsed;
-		this.totalScore = totalScore;
 	}
 
-	/**
-	 *
-	 * @return ID
-	 */
-	public Long getId() {
-		return id;
+	@PostLoad
+	public void setScore() {
+		int score = 0;
+		for(PlayedWord word : playedWords) {
+			score += word.getValue();
+		}
+		this.score = score;
 	}
 
-	/**
-	 *
-	 * @return username
-	 */
 	public String getUsername() {
 		return username;
 	}
 
-	/**
-	 *
-	 * @return shortID
-	 */
-	public String getShortId() {
-		return shortId;
+	public String getMacAddr() {
+		return macAddr;
 	}
 
-	/**
-	 *
-	 * @return team
-	 */
-	public com.csc480red.gamedb.Team getTeam() {
+	public Team getTeam() {
 		return team;
 	}
 
-	/**
-	 *
-	 * @return highest valued word
-	 */
-	public String getTopValueWord() {
-		return topValueWord;
+	public List<PlayedWord> getPlayedWords() {
+		return playedWords;
 	}
 
-	/**
-	 *
-	 * @return highest value word score
-	 */
-	public int getHighestValue() {
-		return highestValue;
+	public int getScore() {
+		return score;
 	}
-
-	/**
-	 *
-	 * @return longest word
-	 */
-	public String getLongestWord() {
-		return longestWord;
-	}
-
-	/**
-	 *
-	 * @return highest single game score
-	 */
-	public int getHighestSingleGameScore() {
-		return highestSingleGameScore;
-	}
-
-	/**
-	 *
-	 * @return most frequently played word
-	 */
-	public String getFreqPlayedWord() {
-		return freqPlayedWord;
-	}
-
-	/**
-	 *
-	 * @return total amount of bonuses played
-	 */
-	public int getAmountBonusesUsed() {
-		return amountBonusesUsed;
-	}
-
-	/**
-	 *
-	 * @return total score across all games
-	 */
-	public int getTotalScore() {
-		return totalScore;
-	}
-
+	
 }

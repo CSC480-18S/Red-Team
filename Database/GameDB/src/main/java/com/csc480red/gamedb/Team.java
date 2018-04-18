@@ -1,12 +1,19 @@
 package com.csc480red.gamedb;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PostLoad;
+import javax.persistence.Transient;
 
 @Entity
 public class Team {
@@ -16,129 +23,149 @@ public class Team {
 	private Long id;
 	
 	private String name;
-	private String topValueWord;
-	private int highestValue;
-	private String longestWord;
-	private int higestSingleGameScore;
-	private String freqPlayedWord;
-	private int amountBonusesUsed;
-	private int totalScore;
-	private int winCount;
-	private int loseCount;
 	
 	@OneToMany(mappedBy="team")
 	private List<Player> players;
 	
+	@Transient
+	private int totalScore;
+	@Transient
+	@OneToMany
+	private List<PlayedWord> highestValueWords;
+	@Transient
+	@OneToOne
+	private PlayedWord longestWord;
+	@Transient
+	@OneToMany
+	private List<WordFrequency> frequentlyPlayedWords;
+	@Transient
+	private int dirtyCount;
+	@Transient
+	private int specialCount;
+	private int higestSingleGameScore;
+	private int winCount;
+	private int loseCount;
+	
+	
+	
 	protected Team() {}
 
-	/**
-	 *
-	 * @param name - name
-	 * @param topValueWord - highest score word
-	 * @param highestValue - highest word score
-	 * @param longestWord - longest word
-	 * @param highestSingleGameScore - highest single game score
-	 * @param freqPlayedWord - most frequently played word
-	 * @param amountBonusesUsed - total amount of bonuses used
-	 * @param totalScore - total score
-	 * @param winCount - win count
-	 * @param loseCount - lose count
-	 */
-	public Team(String name, String topValueWord, int highestValue, String longestWord, int highestSingleGameScore,
-			String freqPlayedWord, int amountBonusesUsed, int totalScore, int winCount, int loseCount) {
+	public Team(String name) {
 		super();
 		this.name = name;
-		this.topValueWord = topValueWord;
-		this.highestValue = highestValue;
-		this.longestWord = longestWord;
-		this.higestSingleGameScore = highestSingleGameScore;
-		this.freqPlayedWord = freqPlayedWord;
-		this.amountBonusesUsed = amountBonusesUsed;
+	}
+	
+	public void setTotalScore() {
+		int totalScore = 0;
+		for(Player player : players)
+			totalScore += player.getScore();
 		this.totalScore = totalScore;
-		this.winCount = winCount;
-		this.loseCount = loseCount;
+	}
+	
+	public void setLongestWord() {
+		PlayedWord longestWord = null;
+		for(Player player : players)
+			for(PlayedWord playedWord : player.getPlayedWords())
+				if(longestWord == null || playedWord.getWord().length() > longestWord.getWord().length())
+					longestWord = playedWord;
+		this.longestWord = longestWord;
+	}
+	
+	public void setHighestValueWords() {
+		List<PlayedWord> allPlayedWords = new ArrayList<>();
+		for(Player player : players)
+			for(PlayedWord playedWord : player.getPlayedWords())
+				allPlayedWords.add(playedWord);
+		Collections.sort(allPlayedWords, (word1, word2) -> word2.getValue() - word1.getValue());
+		highestValueWords = allPlayedWords.subList(0, allPlayedWords.size() > 5 ? 5 : allPlayedWords.size());
+	}
+	
+	public void setFrequentlyPlayedWords() {
+		Map<String, Integer> wordFrequencies = new HashMap<>();
+		for(Player player : players) {
+			for(PlayedWord playedWord : player.getPlayedWords()) {
+				if(wordFrequencies.containsKey(playedWord.getWord()))
+					wordFrequencies.put(playedWord.getWord(), wordFrequencies.get(playedWord.getWord()) + 1);
+				else
+					wordFrequencies.put(playedWord.getWord(), 1);
+			}
+		}
+		List<String> words = new ArrayList<>(wordFrequencies.keySet());
+		Collections.sort(words, (word1, word2) -> wordFrequencies.get(word2) - wordFrequencies.get(word1));
+		List<WordFrequency> highestWordFrequencies = new ArrayList<>();
+		for(int i = 0; i < (words.size() > 3 ? 3 : words.size()); i++)
+			highestWordFrequencies.add(new WordFrequency(words.get(i), wordFrequencies.get(words.get(i))));
+		frequentlyPlayedWords = highestWordFrequencies;
+	}
+	
+	public void setDirtyCount() {
+		int dirtyCount = 0;
+		for(Player player : players)
+			for(PlayedWord playedWord : player.getPlayedWords())
+				if(playedWord.isDirty())
+					dirtyCount++;
+		this.dirtyCount = dirtyCount;
+	}
+	
+	public void setSpecialCount() {
+		int specialCount = 0;
+		for(Player player : players)
+			for(PlayedWord playedWord : player.getPlayedWords())
+				if(playedWord.isSpecial())
+					specialCount++;
+		this.specialCount = specialCount;
+	}
+	
+	@PostLoad
+	public void setTransientFields() {
+		setTotalScore();
+		setLongestWord();
+		setHighestValueWords();
+		setFrequentlyPlayedWords();
+		setDirtyCount();
+		setSpecialCount();
 	}
 
-	/**
-	 *
-	 * @return id
-	 */
-	public Long getId() {
-		return id;
-	}
-
-	/**
-	 *
-	 * @return name
-	 */
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 *
-	 * @return highest score word
-	 */
-	public String getTopValueWord() {
-		return topValueWord;
+	public List<Player> getPlayers() {
+		return players;
 	}
 
-	/**
-	 *
-	 * @return highest word score
-	 */
-	public int getHighestValue() {
-		return highestValue;
-	}
-
-	public String getLongestWord() {
-		return longestWord;
-	}
-
-	/**
-	 *
-	 * @return highest single game score
-	 */
-	public int getHigestSingleGameScore() {
-		return higestSingleGameScore;
-	}
-
-	/**
-	 *
-	 * @return most frequently played word
-	 */
-	public String getFreqPlayedWord() {
-		return freqPlayedWord;
-	}
-
-	/**
-	 *
-	 * @return total amount of bonuses used
-	 */
-	public int getAmountBonusesUsed() {
-		return amountBonusesUsed;
-	}
-
-	/**
-	 *
-	 * @return total score
-	 */
 	public int getTotalScore() {
 		return totalScore;
 	}
 
-	/**
-	 *
-	 * @return win count
-	 */
+	public List<PlayedWord> getHighestValueWords() {
+		return highestValueWords;
+	}
+
+	public PlayedWord getLongestWord() {
+		return longestWord;
+	}
+
+	public List<WordFrequency> getFrequentlyPlayedWords() {
+		return frequentlyPlayedWords;
+	}
+
+	public int getDirtyCount() {
+		return dirtyCount;
+	}
+
+	public int getSpecialCount() {
+		return specialCount;
+	}
+
+	public int getHigestSingleGameScore() {
+		return higestSingleGameScore;
+	}
+
 	public int getWinCount() {
 		return winCount;
 	}
 
-	/**
-	 *
-	 * @return lose count
-	 */
 	public int getLoseCount() {
 		return loseCount;
 	}
