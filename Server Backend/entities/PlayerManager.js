@@ -18,7 +18,13 @@ class PlayerManager {
     this._isTurn = false
     this._score = 0
     this._gameManager = gameManager
-    this.init()
+  }
+
+  /**
+   * Tile setter
+   */
+  set tiles(tiles) {
+    this._tiles = tiles
   }
 
   /**

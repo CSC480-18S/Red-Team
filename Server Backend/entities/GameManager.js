@@ -45,7 +45,9 @@ module.exports = (io) => {
     createPlayerManagers() {
       dg(`creating 4 player managers`, 'debug')
       for (let i = 0; i < 4; i++) {
-        this._playerManagers.push(new PlayerManager(i, this))
+        let player = new PlayerManager(i, this)
+        player.init()
+        this._playerManagers.push(player)
         this._playerManagers[0].isTurn = true
       }
       dg('player managers created', 'debug')
