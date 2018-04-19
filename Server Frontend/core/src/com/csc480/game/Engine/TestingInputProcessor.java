@@ -87,7 +87,7 @@ public class TestingInputProcessor implements InputProcessor {
             GameManager.getInstance().BonusEvent("oswego bonus word has been played");
         }
         else if(character == '5'){
-            GameManager.getInstance().theGame.theGameScreen.gameOverActor.update("Some AI prolly", new Array<String>(), "Green");
+            GameManager.getInstance().theGame.theGameScreen.gameOverActor.update("Some AI prolly", new Array<String>(), "yellow");
             GameManager.getInstance().theGame.theGameScreen.gameOverActor.setVisible(true);
         }
         else if(character == '6'){
