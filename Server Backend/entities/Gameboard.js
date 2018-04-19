@@ -51,7 +51,7 @@ class Gameboard {
             this._board[i][j] = new Tile(j, i, 'word', 2)
             break
           case '03': case '010': case '26': case '30': case '33': case '48': case '62': case '77': case '710': case '84': case '100': case '107':
-            this._board[i][j] = new Tile(j, i, 'letter', 2)
+            this._board[i][j] = new Tile(j, i, 'word', 3)
             break
           default:
             this._board[i][j] = new Tile(j, i, null, null)
