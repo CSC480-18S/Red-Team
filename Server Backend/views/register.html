@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Oswebble | Login</title>
 </head>
-<body onload="alertRules()">
+<body>
     <% if (error) { %>
     <div class="alert alert-danger" id="alert-area" role="alert">
         <%= error %>
@@ -57,18 +57,20 @@
     <script type="text/javascript">
         $(window).bind("pageshow", function(event) {
             if (event.originalEvent.persisted) {
-                window.location.reload();
+                window.location.reload(); 
             }
         });
-
-        $('#copyright').append(`Copyright © ${new Date().getFullYear()}. SUNY Oswego. All Rights Reserved.`);
     </script>
 
-    <script>
-      function alertRules() {
-          alert('Oswebble Tips:\n 1. Words may be played left-to-right or top-to-bottom.\n 2. To move a tile onto the board use the click and place method: "Click" the tile from your hand and then select the "Place" on the board you want to put the tile. \n 3. Each player will get three minutes for their turn. \n 4. Players have to exchange a tile or play a word on the board each turn. \n 5. Playing Oswego-themed words like "shineman", "lakers", "oswego", etc. (inlcuding proper nouns) will result in a bonus. \n 6. Playing a word over the "DW" or "TW" tiles will result in a double or triple-word bonus. \n 7. Attempting to play profane words may result in your removal from the game. \n 8. Have Fun!');
-      }
-   </script>
+    <script type="text/javascript">
+        $('document').ready(() => {
+            alert('Oswebble Tips:\n 1. Words may be played left-to-right or top-to-bottom.\n 2. To move a tile onto the board use the click and place method: "Click" the tile from your hand and then select the "Place" on the board you want to put the tile. \n 3. Each player will get three minutes for their turn. \n 4. Players have to exchange a tile or play a word on the board each turn. \n 5. Playing Oswego-themed words like "shineman", "lakers", "oswego", etc. (inlcuding proper nouns) will result in a bonus. \n 6. Playing a word over the "DW" or "TW" tiles will result in a double or triple-word bonus. \n 7. Attempting to play profane words may result in your removal from the game. \n 8. Have Fun!');                          
+        })
+    </script>
+
+    <script type="text/javascript">
+        $('#copyright').append(`Copyright © ${new Date().getFullYear()}. SUNY Oswego. All Rights Reserved.`);
+    </script>
 
     <link rel="stylesheet" href="/static/css/bootstrap-4.0.0.min.css"></script>
     <link rel="stylesheet" href="/static/css/register.css">
