@@ -86,6 +86,13 @@ public class TestingInputProcessor implements InputProcessor {
             //System.out.println("logging");
             GameManager.getInstance().BonusEvent("oswego bonus word has been played");
         }
+        else if(character == '5'){
+            GameManager.getInstance().theGame.theGameScreen.gameOverActor.update("Some AI prolly", new Array<String>(), "yellow");
+            GameManager.getInstance().theGame.theGameScreen.gameOverActor.setVisible(true);
+        }
+        else if(character == '6'){
+            GameManager.getInstance().theGame.theGameScreen.gameOverActor.setVisible(false);
+        }
         else if(character == '\'') {
             System.out.println("entering");
             Long startTime = System.nanoTime();
