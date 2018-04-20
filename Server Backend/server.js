@@ -19,7 +19,6 @@ const socket = require('./helpers/Socket')(server)
  * Imports the routes to be used
  */
 const mainRoute = require('./routes/main-route')(socket)
-const usersRoute = require('./routes/users-route')
 
 /**
  * Imports Override.js
@@ -76,7 +75,6 @@ app.set('json spaces', 4)
  * Setting the routes to be used
  */
 app.use('/', mainRoute)
-app.use('/api', usersRoute)
 
 /**
  * TODO: Figure out authentication on the routes @Landon

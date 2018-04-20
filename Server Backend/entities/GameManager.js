@@ -10,6 +10,8 @@ const ex = require('../helpers/Extractor')
 const dg = require('../helpers/Debug')(true)
 const PlayerManager = require('./PlayerManager')
 const FrontendManager = require('./FrontendManager')
+const mg = require('../helpers/MacGrabber')
+const db = require('../helpers/DB')
 
 module.exports = (io) => {
   class GameManager {
@@ -76,7 +78,16 @@ module.exports = (io) => {
 
         socket.on('whoAreYou', response => {
           dg('asking client who they are', 'debug')
-          this.determineClientType(socket, response)
+          mg(socket.handshake.address, (mac) => {
+            db.checkIfUserExists(mac)
+              .then(r => {
+                let user = {
+                  username: r[0].username,
+                  team: r[0].team === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green'
+                }
+                this.determineClientType(socket, response, user)
+              })
+          })
         })
 
         socket.on('disconnect', () => {
@@ -90,7 +101,7 @@ module.exports = (io) => {
      * @param {Object} socket - socket object
      * @param {Object} response - the type of the player
      */
-    determineClientType(socket, response) {
+    determineClientType(socket, response, user) {
       if (response.isAI) {
         this.addClientToManager('ai_test', 'Green', true, socket)
         dg('ai connected', 'info')
@@ -98,7 +109,8 @@ module.exports = (io) => {
         this.createFrontendManager(socket)
         dg('a server frontend connected', 'info')
       } else if (response.isClient) {
-        this.addClientToManager('client_test', 'Yellow', false, socket)
+        console.log(user)
+        this.addClientToManager(user.username, user.team, true, socket)
         dg('client connected', 'info')
       } else if (response.isQueued) {
         this.emitCurrentPlayerCount()
@@ -123,12 +135,10 @@ module.exports = (io) => {
      * @param {Object} socket - socket object
      */
     addClientToManager(name, team, isAI, socket) {
-      let teams = ['Green', 'Yellow']
-      let n = isAI === true ? 'AI' : 'CLIENT'
       console.log('DEBUG: FINDING MANAGER TO ADD TO')
       for (let manager of this._playerManagers) {
         if (manager.id === null) {
-          manager.createHandshakeWithClient(`${n}_${manager.position}`, teams[Math.floor(Math.random() * teams.length)], isAI, socket)
+          manager.createHandshakeWithClient(name, team, isAI, socket)
           this.emitGameEvent(`${manager.name} entered the game.`)
           this.updateFrontendData()
           if (isAI) {
@@ -152,7 +162,7 @@ module.exports = (io) => {
             for (let frontend of this._frontendManagers) {
               frontend.sendEvent('removeAI', position)
             }
-            manager.createHandshakeWithClient(`${n}_${manager.position}`, teams[Math.floor(Math.random() * teams.length)], isAI, socket)
+            manager.createHandshakeWithClient(name, team, isAI, socket)
             this.emitGameEvent(`${manager.name} entered the game.`)
             this.updateFrontendData()
             dg(`client added to --> player manager ${manager.position}`, 'debug')
