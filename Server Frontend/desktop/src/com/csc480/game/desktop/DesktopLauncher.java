@@ -23,6 +23,8 @@ public class DesktopLauncher {
 					runStatsFlag = true;
 				if (arg[i].compareTo("-ai") == 0)
 					GameManager.produceAI = true;
+				if (arg[i].compareTo("-debug") == 0)
+					GameManager.debug = true;
 			}
 		}
 		if(runStatsFlag)

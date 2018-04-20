@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RotateByAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.csc480.game.Engine.GameManager;
@@ -27,6 +28,7 @@ import com.csc480.game.OswebbleGame;
  *  so that the screen can change screens if need be
  */
 public class GameScreen implements Screen {
+    public static int NUM_GAMES_SINCE_START = 0;
     public static final float TILE_PIXEL_SIZE = 512f;
     public static final float GUI_UNIT_SIZE = 20f;
     public static final int BOARD_SIZE = 11;
@@ -37,6 +39,7 @@ public class GameScreen implements Screen {
     public InfoPanelActor infoPanel;
     public BonusActor oswego;
     public GameOverActor gameOverActor;
+    public Label debug;
     float unitScale = 1/TILE_PIXEL_SIZE;
 
     //Scene2D stuff and Actors we need to keep references to
@@ -221,6 +224,14 @@ public class GameScreen implements Screen {
         gameOverActor.setVisible(false);
         stage.addActor(gameOverActor);
 
+        debug = new Label("", TextureManager.getInstance().ui);
+        debug.setPosition(0,20f);
+        stage.addActor(debug);
+
+        if(GameManager.getInstance().debug){
+            stage.setDebugAll(true);
+            stage.setDebugInvisible(false);
+        }
 
     }
 }
