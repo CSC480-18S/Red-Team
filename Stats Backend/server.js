@@ -18,8 +18,7 @@ const socket = require('./helpers/Socket')(server)
 /**
  * Imports the routes to be used
  */
-const mainRoute = require('./routes/main-route')(socket)
-const usersRoute = require('./routes/users-route')
+const statsRoute = require('./routes/stats-route')
 
 /**
  * Imports Override.js
@@ -29,7 +28,7 @@ const override = require('./helpers/Override')
 /**
  * Port the server listens on
  */
-const port = 3000
+const port = 3001
 
 /**
  * TODO: Enable this when nginx is put in front @Landon
@@ -75,23 +74,7 @@ app.set('json spaces', 4)
 /**
  * Setting the routes to be used
  */
-app.use('/', mainRoute)
-app.use('/api', usersRoute)
-
-/**
- * TODO: Figure out authentication on the routes @Landon
- */
-function isLoggedIn(req, res, next) {
-  let allow = true
-
-  if (allow) {
-    next()
-  } else {
-    res.status(400).json({ code: 'A1', title: 'Auth error', desc: 'Not authorized.' })
-  }
-}
-
-app.use('/static', isLoggedIn, express.static(path.join(__dirname, '/static')))
+app.use('/', statsRoute)
 
 /**
  * Called when the server is ready and it listens on the specified port
