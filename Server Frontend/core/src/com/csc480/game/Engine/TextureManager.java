@@ -66,7 +66,14 @@ public class TextureManager {
         public TextureAtlas.AtlasRegion getSlotTexture(){
             return tilesAtlas.findRegion("slot");
         }
-        public void Dispose(){
+        public TextureAtlas.AtlasRegion getGoldWinTexture(){
+        return tilesAtlas.findRegion("goldbanner");
+    }
+        public TextureAtlas.AtlasRegion getGreenWinTexture(){
+        return tilesAtlas.findRegion("greenbanner");
+    }
+
+    public void Dispose(){
             ui.dispose();
             //rack.dispose();
             instance = null;
