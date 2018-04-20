@@ -5,7 +5,7 @@ const arp = require('node-arp')
 function mac(ip, callback) {
   ip = getIP(ip)
   arp.getMAC(ip, function(err, mac) {
-    if (! err) {
+    if (!err) {
       callback(mac)
     } else {
       callback(1)
