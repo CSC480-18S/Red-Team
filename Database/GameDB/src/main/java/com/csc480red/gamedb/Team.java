@@ -40,11 +40,12 @@ public class Team {
 	private List<WordFrequency> frequentlyPlayedSpecialWords;
 	private int dirtyCount;
 	private int specialCount;
-	private int higestSingleGameScore;
+	@OneToMany(mappedBy="team")
+	private List<GameResult> gameResults;
+	@OneToMany
+	private List<GameResult> highestGameScores;
 	private int winCount;
 	private int loseCount;
-	
-	
 	
 	protected Team() {}
 
@@ -140,7 +141,7 @@ public class Team {
 		this.specialCount = specialCount;
 	}
 	
-	public void setTransientFields() {
+	public void setWordFields() {
 		setTotalScore();
 		setTopPlayers();
 		setLongestWord();
@@ -149,6 +150,34 @@ public class Team {
 		setFrequentlyPlayedSpecialWords();
 		setDirtyCount();
 		setSpecialCount();
+	}
+	
+	public void setWinCount() {
+		int winCount = 0;
+		for(GameResult result : gameResults)
+			if(result.isWin())
+				winCount++;
+		this.winCount = winCount;
+	}
+	
+	public void setLoseCount() {
+		int loseCount = 0;
+		for(GameResult result : gameResults)
+			if(result.isLose())
+				loseCount++;
+		this.loseCount = loseCount;
+	}
+	
+	public void setHighestGameScores() {
+		List<GameResult> highestGameScores = new ArrayList<>(gameResults);
+		Collections.sort(highestGameScores, (result1, result2) -> result2.getScore() - result1.getScore());
+		this.highestGameScores = highestGameScores.subList(0, highestGameScores.size() > 5? 5: highestGameScores.size());
+	}
+	
+	public void setResultFields() {
+		setWinCount();
+		setLoseCount();
+		setHighestGameScores();
 	}
 
 	public String getName() {
@@ -190,9 +219,13 @@ public class Team {
 	public int getSpecialCount() {
 		return specialCount;
 	}
+	
+	public List<GameResult> getGameResults() {
+		return gameResults;
+	}
 
-	public int getHigestSingleGameScore() {
-		return higestSingleGameScore;
+	public List<GameResult> getHighestGameScores() {
+		return highestGameScores;
 	}
 
 	public int getWinCount() {

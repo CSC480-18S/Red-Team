@@ -59,7 +59,7 @@ public class PlayedWord {
 	@PostUpdate
 	public void modifyPlayerAndTeam() {
 		player.setScore();
-		player.getTeam().setTransientFields();
+		player.getTeam().setWordFields();
 	}
 	
 }
