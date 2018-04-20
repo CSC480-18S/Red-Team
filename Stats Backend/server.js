@@ -13,8 +13,6 @@ const app = express()
 
 const server = http.createServer(app)
 
-const socket = require('./helpers/Socket')(server)
-
 /**
  * Imports the routes to be used
  */
