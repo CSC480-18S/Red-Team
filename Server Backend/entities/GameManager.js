@@ -234,7 +234,7 @@ module.exports = (io) => {
     updateClientData() {
       for (let manager of this._playerManagers) {
         if (manager.id !== null) {
-		  manager.sendEvent('boardUpdate')	
+          manager.sendEvent('boardUpdate')
           manager.sendEvent('dataUpdate')
         }
       }
