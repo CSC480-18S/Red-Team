@@ -22,6 +22,7 @@ import java.util.Collection;
  * The Class that will hold all the game state and route Events to the GUI, SocketManager, and AI
  */
 public class GameManager {
+    public static boolean debug = false;
     public static boolean produceAI = false;
     private static GameManager instance;
     public OswebbleGame theGame;
@@ -150,6 +151,8 @@ public class GameManager {
             public void call(Object... args) {
                 LogEvent("disconnection");
                 System.out.println("attempting reconnection:");
+                if(debug)
+                    theGame.theGameScreen.debug.setText("Got disconnect. Game num: "+(theGame.theGameScreen.NUM_GAMES_SINCE_START));
                 ReConnectSocket();
 
             }
@@ -190,6 +193,8 @@ public class GameManager {
                     theAIs[position] = null;
                     thePlayers[position] = new Player();
 
+                    if(debug)
+                        theGame.theGameScreen.debug.setText("Got removeAI. Game num: "+(theGame.theGameScreen.NUM_GAMES_SINCE_START));
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
                 }catch(JSONException e){
@@ -227,6 +232,8 @@ public class GameManager {
                             break;
                     }
                     thePlayers[position] = theAIs[(position)];
+                    if(debug)
+                        theGame.theGameScreen.debug.setText("Got connectAI. Game num: "+(theGame.theGameScreen.NUM_GAMES_SINCE_START));
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
                 }catch(JSONException e){
@@ -248,6 +255,8 @@ public class GameManager {
                     wordHasBeenPlayed(unJSONifyBackendBoard(board));
                     //hard update the game and user states
                     hardUpdateBoardState(unJSONifyBackendBoard(board));
+                    if(debug)
+                        theGame.theGameScreen.debug.setText("Got boardUpdate. Game num: "+(theGame.theGameScreen.NUM_GAMES_SINCE_START));
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
                 }catch(JSONException e){
@@ -268,6 +277,8 @@ public class GameManager {
                     if(isBonus)
                         BonusEvent(action);
                     LogEvent(action);
+                    if(debug)
+                        theGame.theGameScreen.debug.setText("Got gameEvent. Game num: "+(theGame.theGameScreen.NUM_GAMES_SINCE_START));
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
                 }catch(JSONException e){
@@ -347,6 +358,8 @@ public class GameManager {
                             theGame.theGameScreen.UpdateInfoPanel();
                         }
                     }
+                    if(debug)
+                        theGame.theGameScreen.debug.setText("Got updateState. Game num: "+(theGame.theGameScreen.NUM_GAMES_SINCE_START));
 
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
@@ -381,6 +394,8 @@ public class GameManager {
                     //todo call @GUI stuff
                     theGame.theGameScreen.gameOverActor.update(winner, playersScores, winningTeam);
                     theGame.theGameScreen.gameOverActor.setVisible(true);
+                    if(debug)
+                        theGame.theGameScreen.debug.setText("Got gameOverEvent. Game num: "+(theGame.theGameScreen.NUM_GAMES_SINCE_START));
                 }catch(ArrayIndexOutOfBoundsException e){
                     e.printStackTrace();
                 }catch(JSONException e){
@@ -392,6 +407,8 @@ public class GameManager {
             public void call(Object... args) {
                 System.out.println("newGame");
                 theGame.theGameScreen.gameOverActor.setVisible(false);
+                if(debug)
+                    theGame.theGameScreen.debug.setText("Game num: "+(theGame.theGameScreen.NUM_GAMES_SINCE_START++));
             }
         }).on("newGameCountdown", new Emitter.Listener() {
             @Override

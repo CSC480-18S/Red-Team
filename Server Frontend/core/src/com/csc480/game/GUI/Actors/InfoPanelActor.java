@@ -104,7 +104,7 @@ public class InfoPanelActor extends Group{
         eventLog = new List<String>(TextureManager.getInstance().ui, "default");
         eventLog.setPosition(GameScreen.GUI_UNIT_SIZE, GameScreen.GUI_UNIT_SIZE*5);
         eventLog.setWidth(GameScreen.GUI_UNIT_SIZE*10);
-        myLayout.add(eventLog).fillX().padLeft(10f).padRight(10f).padBottom(10f).maxWidth(200f);
+        myLayout.add(eventLog).fillX().padLeft(10f).padRight(10f).padBottom(10f).maxWidth(200f).minHeight(300f);
 
         addActor(myLayout);
 //        setDebug(true,true);
