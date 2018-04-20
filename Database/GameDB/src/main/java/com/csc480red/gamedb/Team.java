@@ -17,23 +17,31 @@ import javax.persistence.OneToOne;
 @Entity
 public class Team {
 
+	/*
+	*@Id indicates the required '_id' field
+	*@GeneratedValue marks the field is automatically generated
+	*/
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
 	private String name;
 	
+	//@OneToMany indicates relation one to many relation to player (many players on a team)
 	@OneToMany(mappedBy="team")
 	private List<Player> players;
 	
 	private int totalScore;
 	
+	//relation to top players: One to many
 	@OneToMany
 	private List<Player> topPlayers;
+	//relation to highest word values and longest word: One to many (many words tracked on a team)
 	@OneToMany
 	private List<PlayedWord> highestValueWords;
 	@OneToOne
 	private PlayedWord longestWord;
+	//ElementCollection declared (A team has seperate tables for frequently played words and frequently played special words)
 	@ElementCollection
 	private List<WordFrequency> frequentlyPlayedWords;
 	@ElementCollection
@@ -140,6 +148,9 @@ public class Team {
 		this.specialCount = specialCount;
 	}
 	
+	/*
+	*Method for setting all stat fields, calls all setters.
+	*/
 	public void setTransientFields() {
 		setTotalScore();
 		setTopPlayers();

@@ -12,6 +12,10 @@ import javax.persistence.PostUpdate;
 @Entity
 public class PlayedWord {
 	
+	/*
+	*@Id indicates the required '_id' field
+	*@GeneratedValue marks the field is automatically generated
+	*/
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
@@ -21,6 +25,8 @@ public class PlayedWord {
 	private boolean dirty;
 	private boolean special;
 	
+	//@ManyToOne indicates the many to one relation to players (many played words by a player)
+	//@JoinColumn indicates that the specified entity is the owner of the relation (player has many played words)
 	@ManyToOne
 	@JoinColumn(name="player_id")
 	private Player player;
@@ -55,6 +61,8 @@ public class PlayedWord {
 		return player;
 	}
 	
+	//@PostPersist indicates a method that makes persisting data
+	//@PostUpdate is called after the data is updated
 	@PostPersist
 	@PostUpdate
 	public void modifyPlayerAndTeam() {
