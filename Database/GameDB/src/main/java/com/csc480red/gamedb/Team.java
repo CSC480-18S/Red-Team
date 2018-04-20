@@ -6,14 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.PostLoad;
-import javax.persistence.Transient;
 
 @Entity
 public class Team {
@@ -27,20 +26,19 @@ public class Team {
 	@OneToMany(mappedBy="team")
 	private List<Player> players;
 	
-	@Transient
 	private int totalScore;
-	@Transient
+	
+	@OneToMany
+	private List<Player> topPlayers;
 	@OneToMany
 	private List<PlayedWord> highestValueWords;
-	@Transient
 	@OneToOne
 	private PlayedWord longestWord;
-	@Transient
-	@OneToMany
+	@ElementCollection
 	private List<WordFrequency> frequentlyPlayedWords;
-	@Transient
+	@ElementCollection
+	private List<WordFrequency> frequentlyPlayedSpecialWords;
 	private int dirtyCount;
-	@Transient
 	private int specialCount;
 	private int higestSingleGameScore;
 	private int winCount;
@@ -60,6 +58,12 @@ public class Team {
 		for(Player player : players)
 			totalScore += player.getScore();
 		this.totalScore = totalScore;
+	}
+	
+	public void setTopPlayers() {
+		List<Player> topPlayers = new ArrayList<>(players);
+		Collections.sort(topPlayers, (player1, player2) -> player2.getScore() - player1.getScore());
+		this.topPlayers = topPlayers.subList(0, topPlayers.size() > 3 ? 3 : topPlayers.size());
 	}
 	
 	public void setLongestWord() {
@@ -98,6 +102,26 @@ public class Team {
 		frequentlyPlayedWords = highestWordFrequencies;
 	}
 	
+	public void setFrequentlyPlayedSpecialWords() {
+		Map<String, Integer> wordFrequencies = new HashMap<>();
+		for(Player player : players) {
+			for(PlayedWord playedWord : player.getPlayedWords()) {
+				if(playedWord.isSpecial()) {
+					if(wordFrequencies.containsKey(playedWord.getWord()))
+						wordFrequencies.put(playedWord.getWord(), wordFrequencies.get(playedWord.getWord()) + 1);
+					else
+						wordFrequencies.put(playedWord.getWord(), 1);
+				}
+			}
+		}
+		List<String> words = new ArrayList<>(wordFrequencies.keySet());
+		Collections.sort(words, (word1, word2) -> wordFrequencies.get(word2) - wordFrequencies.get(word1));
+		List<WordFrequency> highestWordFrequencies = new ArrayList<>();
+		for(int i = 0; i < (words.size() > 3 ? 3 : words.size()); i++)
+			highestWordFrequencies.add(new WordFrequency(words.get(i), wordFrequencies.get(words.get(i))));
+		frequentlyPlayedSpecialWords = highestWordFrequencies;
+	}
+	
 	public void setDirtyCount() {
 		int dirtyCount = 0;
 		for(Player player : players)
@@ -116,12 +140,13 @@ public class Team {
 		this.specialCount = specialCount;
 	}
 	
-	@PostLoad
 	public void setTransientFields() {
 		setTotalScore();
+		setTopPlayers();
 		setLongestWord();
 		setHighestValueWords();
 		setFrequentlyPlayedWords();
+		setFrequentlyPlayedSpecialWords();
 		setDirtyCount();
 		setSpecialCount();
 	}
@@ -137,6 +162,10 @@ public class Team {
 	public int getTotalScore() {
 		return totalScore;
 	}
+	
+	public List<Player> getTopPlayers() {
+		return topPlayers;
+	}
 
 	public List<PlayedWord> getHighestValueWords() {
 		return highestValueWords;
@@ -145,11 +174,15 @@ public class Team {
 	public PlayedWord getLongestWord() {
 		return longestWord;
 	}
-
+	
 	public List<WordFrequency> getFrequentlyPlayedWords() {
 		return frequentlyPlayedWords;
 	}
-
+	
+	public List<WordFrequency> getFrequentlySpecialPlayedWords() {
+		return frequentlyPlayedSpecialWords;
+	}
+	
 	public int getDirtyCount() {
 		return dirtyCount;
 	}

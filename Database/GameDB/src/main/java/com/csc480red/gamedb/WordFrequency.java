@@ -1,9 +1,14 @@
 package com.csc480red.gamedb;
 
+import javax.persistence.Embeddable;
+
+@Embeddable
 public class WordFrequency {
 	
-	private final String word;
-	private final int frequency;
+	private String word;
+	private int frequency;
+	
+	public WordFrequency() {}
 	
 	public WordFrequency(String word, int frequency) {
 		super();

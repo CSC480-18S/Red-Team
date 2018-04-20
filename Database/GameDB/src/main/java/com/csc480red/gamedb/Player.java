@@ -9,8 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.PostLoad;
-import javax.persistence.Transient;
 
 @Entity
 public class Player {
@@ -29,7 +27,6 @@ public class Player {
 	@OneToMany(mappedBy="player")
 	private List<PlayedWord> playedWords;
 	
-	@Transient
 	private int score;
 	
 	protected Player() {}
@@ -39,13 +36,14 @@ public class Player {
 		this.username = username;
 		this.macAddr = macAddr;
 		this.team = team;
+		this.score = 0;
 	}
 
-	@PostLoad
 	public void setScore() {
 		int score = 0;
 		for(PlayedWord word : playedWords) {
-			score += word.getValue();
+			if(!word.isDirty())
+				score += word.getValue();
 		}
 		this.score = score;
 	}

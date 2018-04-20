@@ -6,6 +6,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PostPersist;
+import javax.persistence.PostUpdate;
 
 @Entity
 public class PlayedWord {
@@ -51,6 +53,13 @@ public class PlayedWord {
 
 	public Player getPlayer() {
 		return player;
+	}
+	
+	@PostPersist
+	@PostUpdate
+	public void modifyPlayerAndTeam() {
+		player.setScore();
+		player.getTeam().setTransientFields();
 	}
 	
 }
