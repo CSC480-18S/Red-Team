@@ -1,7 +1,13 @@
+@font-face {
+    font-family: 'bs';
+    src: url("/static/webfonts/b-sans.otf") format("openType"); 
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: "bs", sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -35,8 +41,6 @@ svg {
     height: 2.7em; 
     */
     display: block;
-    
-    font-family: 'Press Start 2P', sans-serif;
 }
 
 /*
@@ -120,7 +124,6 @@ td {
 }
 button {
     font-size: 0.8rem;
-    font-family: 'Press Start 2P', sans-serif;
     display: block;
     margin: 0 auto;
     padding: 0.5rem;
@@ -177,14 +180,9 @@ button {
     margin-top: 20px;
 }
 
-.gameEvent, .username {
-    font-family: 'Aldrich', sans-serif;
-}
-
 #square-0-0 {
     background: rgb(242,195,50);
 }
-
 
 .bg-yellow { background: yellow; }
 .bg-green { background: green; }
