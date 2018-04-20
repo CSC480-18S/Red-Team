@@ -364,20 +364,21 @@ var putTileInSquare = function(squareId) {
       var selectedTileCopy = document.getElementById(this.selectedTileCopyId)
       this.tilesOnBoardValueAndPosition.pop()
       this.currentTileCount--
+        
       if (!selectedSquare.hasChildNodes()) {
-        if (selectedTileCopy.children[0].getAttribute('fill') !== '#D3D3D3') {
-          selectedSquare.appendChild(selectedTileCopy)
-
-          for (var i = 0; i < this.squares.length; i++) {
-            if (squareId === this.squares[i].id) {
-              this.currentPlayTileAmount++
-              this.tilesOnBoardValueAndPosition.push({tileLetter: document.getElementById(this.selectedTileId).children[1].innerHTML,
-                xAxis: this.squares[i].xAxis,
-                yAxis: this.squares[i].yAxis
-              })
-            }
-          }
-        }
+//        if (selectedTileCopy.children[0].getAttribute('fill') !== '#D3D3D3') {
+//          selectedSquare.appendChild(selectedTileCopy)
+//
+//          for (var i = 0; i < this.squares.length; i++) {
+//            if (squareId === this.squares[i].id) {
+//              this.currentPlayTileAmount++
+//              this.tilesOnBoardValueAndPosition.push({tileLetter: document.getElementById(this.selectedTileId).children[1].innerHTML,
+//                xAxis: this.squares[i].xAxis,
+//                yAxis: this.squares[i].yAxis
+//              })
+//            }
+//          }
+//        }
       } else {
         var childTile = selectedSquare.children[0]
         // only current round tiles can be put back
