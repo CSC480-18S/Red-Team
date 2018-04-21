@@ -8,7 +8,10 @@ const session = require('express-session')
 
 let ses = session({
   name: 'login-session',
-  secret: 'testlol'
+  secret: 'testlol',
+  proxy: true,
+  resave: true,
+  saveUninitialized: true
 })
 
 module.exports = (socket) => {
