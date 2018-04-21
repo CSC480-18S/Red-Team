@@ -86,7 +86,7 @@ socket.on('play', response => {
     for (let i = 0; i < this.data.currentPlayTileAmount; i++) {
       var t = this.data.tilesOnBoardValueAndPosition[this.data.tilesOnBoardValueAndPosition.length - 1]
       //console.log(t)
-        
+
         if (t != undefined) {
             var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
             this.data.tilesOnBoardValueAndPosition.pop()
@@ -229,10 +229,10 @@ function generateTiles(tilesToGenerate) {
         for (var i = 0; i < tilesToGenerate.length; i++) {
             var letter = tilesToGenerate[i]
             var tileValue = this.tileValue(letter)
-            
+
             console.log(letter + " " + firstTimeGeneratedTiles[i])
             console.log(letter === firstTimeGeneratedTiles[i]);
-            
+
             tileSlots.push({
                 id: 'slot' + i,
                 hasTile: true,
@@ -247,11 +247,11 @@ function generateTiles(tilesToGenerate) {
             })
             currentTileCount++;
         }
-    } 
-    
+    }
+
     return tileSlots
 }
-  
+
 function tileValue(tile) {
   switch (tile) {
     case 'A': case 'E': case 'I': case 'O':
@@ -354,7 +354,7 @@ var selectAndDeselectTile = function(tileId) {
     }
   }
 }
- 
+
 // when clicking a square on the game board
 var putTileInSquare = function(squareId) {
     //console.log("putTileInSquare() called");
@@ -363,7 +363,7 @@ var putTileInSquare = function(squareId) {
   if (this.selectedTileId !== '') {
     // get the square
     var selectedSquare = document.getElementById(squareId)
-    // copy 
+    // copy
     console.log("putTileInSquare() - selectedTileCopyId: " + this.selectedTileCopyId);
     if (this.selectedTileCopyId === '' && selectedSquare.children.length === 0) {
       // get the tile
@@ -393,7 +393,7 @@ var putTileInSquare = function(squareId) {
           })
         }
       }
-        
+
       // add tile id in the current round
       //this.currentRoundtileIdsOnBoard.push(this.selectedTileCopyId)
         this.currentRoundtileIdsOnBoard.push(cln.id)
@@ -404,7 +404,7 @@ var putTileInSquare = function(squareId) {
 
       if (!selectedSquare.hasChildNodes()) {
 //        if (selectedTileCopy.children[0].getAttribute('fill') !== '#D3D3D3') {
-//          selectedSquare.appendChild(selectedTileCopy)            
+//          selectedSquare.appendChild(selectedTileCopy)
 //          for (var i = 0; i < this.squares.length; i++) {
 //            if (squareId === this.squares[i].id) {
 //              this.currentPlayTileAmount++
@@ -446,6 +446,24 @@ var putTileInSquare = function(squareId) {
 }
 
 var swap = function() {
+    for (let i = 0; i < this.currentPlayTileAmount; i++) {
+      var t = this.tilesOnBoardValueAndPosition[this.tilesOnBoardValueAndPosition.length - 1]
+      var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
+      this.tilesOnBoardValueAndPosition.pop()
+      square.removeChild(square.firstChild)
+    }
+      this.selectedTileId = ''
+      for (var i = 0; i < tileSlotNumber; i++) {
+          this.tileSlots[i].tile.highlightedColor = '#000000'
+      }
+
+    this.currentPlayTileAmount = 0
+
+  for (let i = 0; i < this.tileSlots.length; i++) {
+    this.tileSlots[i].hasTile = true
+    this.tileSlots[i].tile.visibility = 'visible'
+  }
+
   socket.emit('swap', [this.tileSlots[0].tile.letter, this.tileSlots[1].tile.letter, this.tileSlots[2].tile.letter,
     this.tileSlots[3].tile.letter, this.tileSlots[4].tile.letter, this.tileSlots[5].tile.letter, this.tileSlots[6].tile.letter])
 }
@@ -454,7 +472,7 @@ var grey = function() {
     // change color of tiles on board
     for (var i = 0; i < this.currentRoundtileIdsOnBoard.length; i++) {
         var tile = document.getElementById(this.currentRoundtileIdsOnBoard[i])
-        tile.children[0].setAttribute('fill', 'rgb(212,212,212)') 
+        tile.children[0].setAttribute('fill', 'rgb(212,212,212)')
         tile.children[1].setAttribute('fill', '#000000')
         tile.children[2].setAttribute('fill', '#000000')
    }
