@@ -23,6 +23,7 @@ module.exports = (io) => {
       this._yellowScore = 0
       this._swaps = 0
       this._currentPlayers = 0
+	  this._macs = []
       this.init()
     }
 
@@ -79,8 +80,17 @@ module.exports = (io) => {
         socket.on('whoAreYou', response => {
           dg('asking client who they are', 'debug')
           mg(socket.handshake.address, (mac) => {
+			for (let i = 0; i < this._macs.length; i++) {
+			  if (this._macs[i] == mac) {
+				  return
+			  }
+		    }
+			
             db.checkIfUserExists(mac)
               .then(r => {
+                socket.mac = mac
+                this._macs.push(mac)
+				
                 let user = {
                   username: r.username,
                   team: r.team === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green'
@@ -91,6 +101,13 @@ module.exports = (io) => {
         })
 
         socket.on('disconnect', () => {
+          for (let i = 0; i < this._macs.length; i++) {
+			  if (this._macs[i] == socket.mac) {
+				  this._macs.splice(i, 1)
+				  break
+			  }
+		  }
+		  
           this.findClientThatLeft(socket.id)
         })
       })
