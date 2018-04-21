@@ -3,9 +3,10 @@ var column = 11
 var tileSlotNumber = 7
 
 var currentTileCount = tileSlotNumber + 1
+var firstTimeGeneratedTiles = [];
 
 // sockets
-let socket = io.connect('')
+let socket = io.connect('127.0.0.1:3000')
 socket.on('connect', () => {
   console.log(socket.id)
 })
@@ -84,10 +85,13 @@ socket.on('play', response => {
   if (response.invalid) {
     for (let i = 0; i < this.data.currentPlayTileAmount; i++) {
       var t = this.data.tilesOnBoardValueAndPosition[this.data.tilesOnBoardValueAndPosition.length - 1]
-      console.log(t)
-      var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
-      this.data.tilesOnBoardValueAndPosition.pop()
-      square.removeChild(square.firstChild)
+      //console.log(t)
+        
+        if (t != undefined) {
+            var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
+            this.data.tilesOnBoardValueAndPosition.pop()
+            square.removeChild(square.firstChild)
+        }
     }
       this.data.selectedTileId = ''
       for (var i = 0; i < tileSlotNumber; i++) {
@@ -202,26 +206,52 @@ function generateSquares() {
 
 // initialize slots and inside tiles
 function generateTiles(tilesToGenerate) {
-  var tileSlots = []
-  for (var i = 0; i < tilesToGenerate.length; i++) {
-    var letter = tilesToGenerate[i]
-    var tileValue = this.tileValue(letter)
-    tileSlots.push({
-      id: 'slot' + i,
-      hasTile: true,
-      tile: {
-        id: ('tile' + i),
-        letter: letter,
-        value: tileValue,
-        highlightedColor: undefined,
-        visibility: 'visible',
-        disabled: false
-      }
-    })
-  }
-  return tileSlots
+    var tileSlots = []
+    if (firstTimeGeneratedTiles.length === 0) {
+        for (var i = 0; i < tilesToGenerate.length; i++) {
+            var letter = tilesToGenerate[i]
+            var tileValue = this.tileValue(letter)
+            tileSlots.push({
+                id: 'slot' + i,
+                hasTile: true,
+                tile: {
+                    id: ('tile' + i),
+                    letter: letter,
+                    value: tileValue,
+                    highlightedColor: undefined,
+                    visibility: 'visible',
+                    disabled: false
+                }
+            })
+            firstTimeGeneratedTiles.push(letter);
+        }
+    } else {
+        for (var i = 0; i < tilesToGenerate.length; i++) {
+            var letter = tilesToGenerate[i]
+            var tileValue = this.tileValue(letter)
+            
+            console.log(letter + " " + firstTimeGeneratedTiles[i])
+            console.log(letter === firstTimeGeneratedTiles[i]);
+            
+            tileSlots.push({
+                id: 'slot' + i,
+                hasTile: true,
+                tile: {
+                    id: ('tile' + currentTileCount),
+                    letter: letter,
+                    value: tileValue,
+                    highlightedColor: undefined,
+                    visibility: 'visible',
+                    disabled: false
+                }
+            })
+            currentTileCount++;
+        }
+    } 
+    
+    return tileSlots
 }
-
+  
 function tileValue(tile) {
   switch (tile) {
     case 'A': case 'E': case 'I': case 'O':
@@ -319,18 +349,22 @@ var selectAndDeselectTile = function(tileId) {
       this.tilesOnBoard.push({tileId: tileId, parentId: parentId})
       // print out selected tile letter in console
       this.selectedTileCopyId = ''
+    } else if (wrapper.className === 'wrapper-board'){
+        this.selectedTileCopyId = ''
     }
   }
 }
-
+ 
 // when clicking a square on the game board
 var putTileInSquare = function(squareId) {
+    //console.log("putTileInSquare() called");
   var square = document.getElementById(squareId)
   // if a tile in a slot has been clicked
   if (this.selectedTileId !== '') {
     // get the square
     var selectedSquare = document.getElementById(squareId)
-    // copy
+    // copy 
+    console.log("putTileInSquare() - selectedTileCopyId: " + this.selectedTileCopyId);
     if (this.selectedTileCopyId === '' && selectedSquare.children.length === 0) {
       // get the tile
       var selectedTile = document.getElementById(this.selectedTileId)
@@ -339,6 +373,7 @@ var putTileInSquare = function(squareId) {
       // put the clone tile on the game board
       selectedSquare.appendChild(cln)
       //
+        console.log("cln.id: " + cln.id);
       this.selectedTileCopyId = cln.id
       // update slot information
       for (var i = 0; i < tileSlotNumber; i++) {
@@ -358,17 +393,18 @@ var putTileInSquare = function(squareId) {
           })
         }
       }
-      // add tile id in the current round
-      this.currentRoundtileIdsOnBoard.push(this.selectedTileCopyId)
-    } else { // move around or distroy
-      var selectedTileCopy = document.getElementById(this.selectedTileCopyId)
-      this.tilesOnBoardValueAndPosition.pop()
-      this.currentTileCount--
         
+      // add tile id in the current round
+      //this.currentRoundtileIdsOnBoard.push(this.selectedTileCopyId)
+        this.currentRoundtileIdsOnBoard.push(cln.id)
+    } else { // move around or distroy
+      //var selectedTileCopy = document.getElementById(this.selectedTileCopyId)
+      //this.tilesOnBoardValueAndPosition.pop()
+      //this.currentTileCount--
+
       if (!selectedSquare.hasChildNodes()) {
 //        if (selectedTileCopy.children[0].getAttribute('fill') !== '#D3D3D3') {
-//          selectedSquare.appendChild(selectedTileCopy)
-//
+//          selectedSquare.appendChild(selectedTileCopy)            
 //          for (var i = 0; i < this.squares.length; i++) {
 //            if (squareId === this.squares[i].id) {
 //              this.currentPlayTileAmount++
@@ -385,6 +421,7 @@ var putTileInSquare = function(squareId) {
         if (childTile.children[0].getAttribute('fill') !== '#D3D3D3') {
           // selectedSquare.removeChild(selectedTileCopy);
           selectedSquare.removeChild(childTile)
+            this.selectedTileCopyId = ''
           // update slot information
           for (var i = 0; i < tileSlotNumber; i++) {
             if (childTile.id === this.tileSlots[i].tile.id) {
@@ -404,7 +441,7 @@ var putTileInSquare = function(squareId) {
       }
     }
     // record the square position
-    this.selectedSquareId = selectedSquare.id
+    //this.selectedSquareId = selectedSquare.id
   }
 }
 
@@ -423,6 +460,7 @@ var grey = function() {
    }
    this.currentRoundtileIdsOnBoard = []
    this.selectedTileId = ''
+    this.selectedTileCopyId = ''
 }
 // var refillSlots = function() {
 //   for (var i = 0; i < tileSlotNumber; i++) {
