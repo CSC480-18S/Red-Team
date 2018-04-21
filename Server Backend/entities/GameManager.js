@@ -234,6 +234,7 @@ module.exports = (io) => {
     updateClientData() {
       for (let manager of this._playerManagers) {
         if (manager.id !== null) {
+		  manager.sendEvent('boardUpdate')	
           manager.sendEvent('dataUpdate')
         }
       }
@@ -271,8 +272,8 @@ module.exports = (io) => {
       }
       dg(`it is now player ${position}'s turn`, 'debug')
 
-      this.updateClientData()
       this.updateFrontendData()
+	  this.updateClientData()
     }
 
     gameOver() {
