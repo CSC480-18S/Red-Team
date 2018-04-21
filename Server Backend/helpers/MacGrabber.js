@@ -14,7 +14,7 @@ function mac(ip, callback) {
 }
 
 function getIP(ip) {
-  return ip.split(':')[2]
+  return ip.split(':')[3]
 }
 
 module.exports = mac
