@@ -82,8 +82,8 @@ module.exports = (io) => {
             db.checkIfUserExists(mac)
               .then(r => {
                 let user = {
-                  username: r[0].username,
-                  team: r[0].team === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green'
+                  username: r.username,
+                  team: r.team === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green'
                 }
                 this.determineClientType(socket, response, user)
               })
