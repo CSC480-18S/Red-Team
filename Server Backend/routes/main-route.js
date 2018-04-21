@@ -9,7 +9,10 @@ const db = require('../helpers/DB')
 
 let ses = session({
   name: 'login-session',
-  secret: 'testlol'
+  secret: 'testlol',
+  proxy: true,
+  resave: true,
+  saveUninitialized: true
 })
 
 module.exports = (socket) => {
