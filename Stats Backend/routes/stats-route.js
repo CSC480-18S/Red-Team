@@ -43,8 +43,7 @@ router.get('/players/:player', function(req, res, next) {
 function returnTeam(res, path) {
   /* Request team from database */
   axios.get(path).then((response) => {
-    /* get returned team array */
-    // console.log(response.data + '\n')
+    /* Get returned team array */
     const teams = response.data._embedded.teams
 
     /* if the array is empty (if there is no such team) send empty JSON
@@ -68,7 +67,7 @@ function returnTeam(res, path) {
 function returnPlayer(res, path) {
   /* Request player from database */
   axios.get(path).then((response) => {
-    /* get returned player array */
+    /* Get returned player array */
     const players = response.data._embedded.players
 
     /* if the array is empty (if there is no such player) send empty JSON

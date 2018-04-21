@@ -12,7 +12,11 @@ import javax.persistence.OneToMany;
 
 @Entity
 public class Player {
-
+	
+	/*
+	*@Id indicates the required '_id' field
+	*@GeneratedValue marks the field is automatically generated
+	*/
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
@@ -20,10 +24,13 @@ public class Player {
 	private String username;
 	private String macAddr;
 	
+	//@ManyToOne indicates the many to one relation to team (many players on a team)
+	//@JoinColumn indicates that the specified entity is the owner of the relation (team has many players)
 	@ManyToOne
 	@JoinColumn(name="team_id")
 	private Team team;
 	
+	//@OneToMany indicates relation one to many relation to playedWords (Player has many played words)
 	@OneToMany(mappedBy="player")
 	private List<PlayedWord> playedWords;
 	
