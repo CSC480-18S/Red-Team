@@ -8,7 +8,7 @@ public class WordFrequency {
 	private String word;
 	private int frequency;
 	
-	public WordFrequency() {}
+	protected WordFrequency() {}
 	
 	public WordFrequency(String word, int frequency) {
 		super();
