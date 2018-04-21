@@ -3,10 +3,10 @@ var column = 11
 var tileSlotNumber = 7
 
 var currentTileCount = tileSlotNumber + 1
-var lastTimeGeneratedTiles = [];
+var firstTimeGeneratedTiles = [];
 
 // sockets
-let socket = io.connect('')
+let socket = io.connect('127.0.0.1:3000')
 socket.on('connect', () => {
   console.log(socket.id)
 })
@@ -207,7 +207,7 @@ function generateSquares() {
 // initialize slots and inside tiles
 function generateTiles(tilesToGenerate) {
     var tileSlots = []
-    if (lastTimeGeneratedTiles.length === 0) {
+    if (firstTimeGeneratedTiles.length === 0) {
         for (var i = 0; i < tilesToGenerate.length; i++) {
             var letter = tilesToGenerate[i]
             var tileValue = this.tileValue(letter)
@@ -223,41 +223,29 @@ function generateTiles(tilesToGenerate) {
                     disabled: false
                 }
             })
-            lastTimeGeneratedTiles.push(letter);
+            firstTimeGeneratedTiles.push(letter);
         }
     } else {
         for (var i = 0; i < tilesToGenerate.length; i++) {
             var letter = tilesToGenerate[i]
             var tileValue = this.tileValue(letter)
-            if (this.data.tileSlots[i].tile.letter === lastTimeGeneratedTiles[i]) {
-                tileSlots.push({
-                    id: 'slot' + i,
-                    hasTile: true,
-                    tile: {
-                        id: ('tile' + i),
-                        letter: letter,
-                        value: tileValue,
-                        highlightedColor: undefined,
-                        visibility: 'visible',
-                        disabled: false
-                    }
-                })
-            } else {
-                tileSlots.push({
-                    id: 'slot' + i,
-                    hasTile: true,
-                    tile: {
-                        id: ('tile' + currentTileCount),
-                        letter: letter,
-                        value: tileValue,
-                        highlightedColor: undefined,
-                        visibility: 'visible',
-                        disabled: false
-                    }
-                })
-                currentTileCount++;
-            }
-            lastTimeGeneratedTiles.push(letter);
+            
+            console.log(letter + " " + firstTimeGeneratedTiles[i])
+            console.log(letter === firstTimeGeneratedTiles[i]);
+            
+            tileSlots.push({
+                id: 'slot' + i,
+                hasTile: true,
+                tile: {
+                    id: ('tile' + currentTileCount),
+                    letter: letter,
+                    value: tileValue,
+                    highlightedColor: undefined,
+                    visibility: 'visible',
+                    disabled: false
+                }
+            })
+            currentTileCount++;
         }
     } 
     
@@ -376,7 +364,7 @@ var putTileInSquare = function(squareId) {
     // get the square
     var selectedSquare = document.getElementById(squareId)
     // copy 
-    //console.log("putTileInSquare - selectedTileCopyId: " + this.selectedTileCopyId);
+    console.log("putTileInSquare() - selectedTileCopyId: " + this.selectedTileCopyId);
     if (this.selectedTileCopyId === '' && selectedSquare.children.length === 0) {
       // get the tile
       var selectedTile = document.getElementById(this.selectedTileId)
@@ -385,7 +373,7 @@ var putTileInSquare = function(squareId) {
       // put the clone tile on the game board
       selectedSquare.appendChild(cln)
       //
-        //console.log("cln.id: " + cln.id);
+        console.log("cln.id: " + cln.id);
       this.selectedTileCopyId = cln.id
       // update slot information
       for (var i = 0; i < tileSlotNumber; i++) {
