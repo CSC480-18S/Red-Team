@@ -25,7 +25,6 @@ module.exports = (socket) => {
       db.checkIfUserExists(mac)
         .then(r => {
           if (!db.pruneResults(r)) {
-            console.log(r.username)
             req.session.user = {
               username: r.username,
               team: r.team === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green',
