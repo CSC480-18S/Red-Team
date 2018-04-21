@@ -1,6 +1,7 @@
 'use strict'
 
 const axios = require('axios')
+const _ = require('lodash')
 
 /**
  * Helper function for checking
@@ -13,7 +14,7 @@ function checkIfUserExists(mac) {
   return axios.get('http://localhost:8091/players/search/findByMacAddr?mac=' + mac, {
   })
     .then(function(response) {
-      return response.data._embedded.players
+      return response.data
     })
     .catch(function(e) {
       console.log(e)
@@ -21,7 +22,7 @@ function checkIfUserExists(mac) {
 }
 
 function pruneResults(res) {
-  return res.length >= 1
+  return _.isEmpty(res)
 }
 
 /**
