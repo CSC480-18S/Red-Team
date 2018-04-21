@@ -11,8 +11,8 @@ let ses = session({
   name: 'login-session',
   secret: 'testlol',
   proxy: true,
-  resave: true,
-  saveUninitialized: true
+  resave: false,
+  saveUninitialized: false
 })
 
 module.exports = (socket) => {
