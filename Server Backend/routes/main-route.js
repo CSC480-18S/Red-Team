@@ -21,11 +21,12 @@ module.exports = (socket) => {
     mg(req.ip, (mac) => {
       db.checkIfUserExists(mac)
         .then(r => {
-          if (db.pruneResults(r)) {
+          if (!db.pruneResults(r)) {
+            console.log(r.username)
             req.session.user = {
-              username: r[0].username,
-              team: r[0].team === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green',
-              mac: r[0].macAddr
+              username: r.username,
+              team: r.team === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green',
+              mac: r.macAddr
             }
             req.session.check = true
             res.render('login', {user: req.session.user, error: req.session.error})
