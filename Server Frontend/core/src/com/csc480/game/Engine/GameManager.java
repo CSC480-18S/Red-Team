@@ -642,8 +642,8 @@ public class GameManager {
      * @param p
      * @return 2D json array of the board state with the play idea added onto it
      */
-    public JSONArray JSONifyPlayIdea(PlayIdea p){
-        Board temp = GameManager.getInstance().theBoard.getCopy();
+    public static JSONArray JSONifyPlayIdea(PlayIdea p, Board refBoard){
+        Board temp = refBoard.getCopy();
         temp.addWord(p.placements);
         JSONArray parentJsonArray = new JSONArray();
         // loop through your elements

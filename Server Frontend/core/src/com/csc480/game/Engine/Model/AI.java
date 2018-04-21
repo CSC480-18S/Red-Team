@@ -22,6 +22,7 @@ public class AI extends Player {
     private static boolean greenTeam = true;
     public PriorityQueue myCache;
     public Socket mySocket;
+    volatile Board myBoard;
     volatile boolean startIndex = true;
 
     /**
@@ -43,6 +44,7 @@ public class AI extends Player {
             greenTeam = !greenTeam;
         }
         myCache = new PriorityQueue(200);
+        myBoard = new Board(11);
         connectSocket();
     }
 
@@ -51,7 +53,6 @@ public class AI extends Player {
      */
     public void update(){
         System.out.println("AI: " + this.name + "     CURRENT STATE: " + this.state);
-        synchronized (GameManager.getInstance().theBoard.the_game_board) {
             switch (state) {
                 case 0://waiting
                     break;
@@ -59,18 +60,18 @@ public class AI extends Player {
                     //PlayIdea play;
                     PlayIdea bestPlay = PlayBestWord();
                     System.out.println(this.name + " Pre loop");
-                    while (bestPlay != null && !GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay.placements)) {
+                    while (bestPlay != null && !myBoard.verifyWordPlacement(bestPlay.placements)) {
                         bestPlay = PlayBestWord();
                         if (bestPlay == null) break;
                     }
                     System.out.println(this.name + " post loop");
-                    if (bestPlay != null && bestPlay.myWord != null && GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay.placements)) {
+                    if (bestPlay != null && bestPlay.myWord != null && myBoard.verifyWordPlacement(bestPlay.placements)) {
                         //System.out.println("The AI found made a decent play");
                         System.out.println(this.name + " trying to play: "+bestPlay.myWord + "  while in state " + this.state);
-                        System.out.println(this.name + " JSONIFIED DATA TO BE SET: "+GameManager.getInstance().JSONifyPlayIdea(bestPlay));
-                        mySocket.emit("playWord", GameManager.getInstance().JSONifyPlayIdea(bestPlay));
+                        System.out.println(this.name + " JSONIFIED DATA TO BE SET: "+GameManager.JSONifyPlayIdea(bestPlay, myBoard));
+                        mySocket.emit("playWord", GameManager.JSONifyPlayIdea(bestPlay, myBoard));
                         this.state = 2;
-                        //GameManager.getInstance().theBoard.addWord(bestPlay.placements);
+                        //myBoard.addWord(bestPlay.placements);
                         GameManager.getInstance().placementsUnderConsideration.clear();
                         //remove tiles from hand
                         removeTilesFromHand(bestPlay);
@@ -82,10 +83,10 @@ public class AI extends Player {
                         System.out.println("THIS AI JUST SENT A DUMMY PLAY");
                         myCache.Clear();
                         if(startIndex) {
-                            FindPlays(GameManager.getInstance().theBoard);
+                            FindPlays(myBoard);
                         }
                         else{
-                            FindPlayInverted(GameManager.getInstance().theBoard);
+                            FindPlayInverted(myBoard);
                         }
                         JSONArray toSwap = new JSONArray();
                         for(int i = 0; i < tiles.length; i++){
@@ -99,33 +100,6 @@ public class AI extends Player {
                         //update();
                     }
             }
-        }
-            /*
-                    System.out.println("my casheCount=" + myCache.count);
-                    int breakCounter = 0;
-                    do {
-                        if (myCache.count <= 0) {
-                            TESTFindPlays(GameManager.getInstance().theBoard);
-                            play = PlayBestWord();
-                        } else {
-                            play = PlayBestWord();
-                        }
-                        breakCounter++;
-                    } while (play == null && breakCounter < 10);
-                    if (play != null) {
-                        System.out.println("emmiting playWord");
-                        mySocket.emit("playWord", GameManager.getInstance().JSONifyPlayIdea(play));
-                        GameManager.getInstance().theBoard.addWord(play.placements);
-                        state = 2;
-                    } else {
-                        tiles = GameManager.getInstance().getNewHand();
-                        myCache.Clear();
-                    }
-                    break;
-                case 2://waitforVerification
-                    break;
-            }
-        }*/
         return;
     }
 
@@ -270,18 +244,19 @@ public class AI extends Player {
                         //System.out.println(myTurn);
                         if (myTurn) {
                             long startTime = System.currentTimeMillis();
+
+//                            tiles = GameManager.getInstance().getNewHand();
+                            myCache.Clear();
+                            if(startIndex) {
+                                FindPlays(myBoard);
+                            }
+                            else{
+                                FindPlayInverted(myBoard);
+                            }
                             while(System.currentTimeMillis() - startTime < 6000){
                                 if(System.currentTimeMillis() - startTime % 100 == 0) {
                                     System.out.println(System.currentTimeMillis());
                                 }
-                            }
-//                            tiles = GameManager.getInstance().getNewHand();
-                            myCache.Clear();
-                            if(startIndex) {
-                                FindPlays(GameManager.getInstance().theBoard);
-                            }
-                            else{
-                                FindPlayInverted(GameManager.getInstance().theBoard);
                             }
                             state = 1;
 //                            tiles = GameManager.getInstance().getNewHand();
@@ -298,6 +273,26 @@ public class AI extends Player {
                     } catch (ArrayIndexOutOfBoundsException e) {
                         e.printStackTrace();
                     } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).on("boardUpdate", new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+//                LogEvent("boardUpdate");
+                    System.out.println(name+" got boardUpdate");
+                    try {
+                        JSONObject data = (JSONObject) args[0];
+                        System.out.println("data: "+data.toString());
+                        JSONArray board = data.getJSONArray("board");
+//                    System.out.println("BACKEND BOARD STATE: "+board.toString());
+//                    System.out.println("PARSED BACKEND BOARD STATE: "+unJSONifyBackendBoard(board));
+                        //find the board/user state differences
+                        myBoard.the_game_board = GameManager.getInstance().unJSONifyBackendBoard(board);
+                        //hard update the game and user states
+                    }catch(ArrayIndexOutOfBoundsException e){
+                        e.printStackTrace();
+                    }catch(JSONException e){
                         e.printStackTrace();
                     }
                 }
