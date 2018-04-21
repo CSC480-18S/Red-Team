@@ -1,28 +1,20 @@
 'use strict'
 
-const arp = require('arpjs')
+const arp = require('node-arp')
 
 function mac(ip, callback) {
-  arp.table((error, table) => {
-    if (!error) {
-      extractMac(table, getIP(ip), callback)
+  ip = getIP(ip)
+  arp.getMAC(ip, function(err, mac) {
+    if (! err) {
+      callback(mac)
+    } else {
+      callback(1)
     }
   })
 }
 
-function extractMac(table, ip, callback) {
-  for (let t of table) {
-    if (t.ip === ip) {
-      callback(t.mac)
-      return
-    }
-  }
-  let res = 1
-  callback(res)
-}
-
 function getIP(ip) {
-  return ip.split(':')[3]
+  return ip.split(':')[2]
 }
 
 module.exports = mac
