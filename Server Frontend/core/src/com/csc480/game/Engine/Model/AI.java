@@ -347,54 +347,60 @@ public class AI extends Player {
         System.out.println("Starting at bottom left corner");
         //AI ALGORITHM HERE
         boolean hasFoundASinglePlayableTile = false;
+        long startTime = System.currentTimeMillis();
         for(int i = 0; i < boardState.the_game_board.length; i ++){
             for(int j = 0; j < boardState.the_game_board[0].length; j++){
-                if(boardState.the_game_board[i][j] != null){
-                    //System.out.println("Thinking at "+i+", "+j);
-                    hasFoundASinglePlayableTile = true;
-                    //parse horiz
-                    char[] horConstr = new char[11];
-                    for(int h = 0; h < boardState.the_game_board.length; h++){
-                        if(boardState.the_game_board[h][j] != null)
-                            horConstr[h] = boardState.the_game_board[h][j].letter;
-                    }
-                    //get all possible plays with current tiles and boardstate
-                    //System.out.println("getting all possible plays horrizontally");
-                    ArrayList<PlayIdea> possiblePlays = WordVerification.getInstance()
-                            .TESTgetWordsFromHand(new String(tiles), horConstr, i, boardState.the_game_board[i][j], true);
+                if(boardState.the_game_board[i][j] != null) {
+                    if (System.currentTimeMillis() - startTime < 10000) {
+                        //System.out.println("Thinking at "+i+", "+j);
+                        hasFoundASinglePlayableTile = true;
+                        //parse horiz
+                        char[] horConstr = new char[11];
+                        for (int h = 0; h < boardState.the_game_board.length; h++) {
+                            if (boardState.the_game_board[h][j] != null)
+                                horConstr[h] = boardState.the_game_board[h][j].letter;
+                        }
+                        //get all possible plays with current tiles and boardstate
+                        //System.out.println("getting all possible plays horrizontally");
+                        ArrayList<PlayIdea> possiblePlays = WordVerification.getInstance()
+                                .TESTgetWordsFromHand(new String(tiles), horConstr, i, boardState.the_game_board[i][j], true);
 
 
-                    //verify they dont fuck with tiles around where theyd be played
-                    for(int p = 0; p < possiblePlays.size(); p++){
-                        if(possiblePlays.get(p).placements.size() > 0)
-                        if( boardState.verifyWordPlacement(possiblePlays.get(p).placements)){
-                            //update that shit
-                            myCache.Push(possiblePlays.get(p));
-                            GameManager.getInstance().placementsUnderConsideration = possiblePlays.get(p).placements;
+                        //verify they dont fuck with tiles around where theyd be played
+                        for (int p = 0; p < possiblePlays.size(); p++) {
+                            if (possiblePlays.get(p).placements.size() > 0)
+                                if (boardState.verifyWordPlacement(possiblePlays.get(p).placements)) {
+                                    //update that shit
+                                    myCache.Push(possiblePlays.get(p));
+                                    GameManager.getInstance().placementsUnderConsideration = possiblePlays.get(p).placements;
 //NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                }
+                        }
+                        //parse vert
+                        char[] vertConstr = new char[11];
+                        //for(int v = boardState.the_game_board.length-1; v >= 0; v--){
+                        for (int v = 0; v < boardState.the_game_board.length; v++) {
+                            if (boardState.the_game_board[i][v] != null)
+                                vertConstr[10 - v] = boardState.the_game_board[i][v].letter;
+                        }
+                        //get all possible plays with current tiles and boardstate
+                        //System.out.println("getting all possible plays vertically!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                        ArrayList<PlayIdea> possiblePlaysVert = WordVerification.getInstance()
+                                .TESTgetWordsFromHand(new String(tiles), vertConstr, j, boardState.the_game_board[i][j], false);
+
+                        //verify they dont fuck with tiles around where theyd be played
+                        for (int p = 0; p < possiblePlaysVert.size(); p++) {
+                            if (possiblePlaysVert.get(p).placements.size() > 0)
+                                if (boardState.verifyWordPlacement(possiblePlaysVert.get(p).placements)) {
+                                    //update that shit
+                                    myCache.Push(possiblePlaysVert.get(p));
+                                    GameManager.getInstance().placementsUnderConsideration = possiblePlaysVert.get(p).placements;
+//NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                }
                         }
                     }
-                    //parse vert
-                    char[] vertConstr = new char[11];
-                    //for(int v = boardState.the_game_board.length-1; v >= 0; v--){
-                    for(int v = 0; v < boardState.the_game_board.length; v++){
-                        if(boardState.the_game_board[i][v] != null)
-                            vertConstr[10-v] = boardState.the_game_board[i][v].letter;
-                    }
-                    //get all possible plays with current tiles and boardstate
-                    //System.out.println("getting all possible plays vertically!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    ArrayList<PlayIdea> possiblePlaysVert = WordVerification.getInstance()
-                            .TESTgetWordsFromHand(new String(tiles), vertConstr, j, boardState.the_game_board[i][j], false);
-
-                    //verify they dont fuck with tiles around where theyd be played
-                    for(int p = 0; p < possiblePlaysVert.size(); p++){
-                        if(possiblePlaysVert.get(p).placements.size() > 0)
-                        if( boardState.verifyWordPlacement(possiblePlaysVert.get(p).placements)){
-                            //update that shit
-                            myCache.Push(possiblePlaysVert.get(p));
-                            GameManager.getInstance().placementsUnderConsideration = possiblePlaysVert.get(p).placements;
-//NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
-                        }
+                    else{
+                        return;
                     }
                 }
             }
@@ -423,54 +429,60 @@ public class AI extends Player {
         System.out.println("Starting at top right corner");
         //AI ALGORITHM HERE
         boolean hasFoundASinglePlayableTile = false;
+        long startTime = System.currentTimeMillis();
         for(int i = boardState.the_game_board.length - 1; i >= 0; i --){
             for(int j = boardState.the_game_board[0].length - 1 ; j >= 0; j--){
-                if(boardState.the_game_board[i][j] != null){
-                    //System.out.println("Thinking at "+i+", "+j);
-                    hasFoundASinglePlayableTile = true;
-                    //parse horiz
-                    char[] horConstr = new char[11];
-                    for(int h = 0; h < boardState.the_game_board.length; h++){
-                        if(boardState.the_game_board[h][j] != null)
-                            horConstr[h] = boardState.the_game_board[h][j].letter;
-                    }
-                    //get all possible plays with current tiles and boardstate
-                    //System.out.println("getting all possible plays horrizontally");
-                    ArrayList<PlayIdea> possiblePlays = WordVerification.getInstance()
-                            .TESTgetWordsFromHand(new String(tiles), horConstr, i, boardState.the_game_board[i][j], true);
+                if(boardState.the_game_board[i][j] != null) {
+                    if(System.currentTimeMillis() - startTime < 10000) {
+                        //System.out.println("Thinking at "+i+", "+j);
+                        hasFoundASinglePlayableTile = true;
+                        //parse horiz
+                        char[] horConstr = new char[11];
+                        for (int h = 0; h < boardState.the_game_board.length; h++) {
+                            if (boardState.the_game_board[h][j] != null)
+                                horConstr[h] = boardState.the_game_board[h][j].letter;
+                        }
+                        //get all possible plays with current tiles and boardstate
+                        //System.out.println("getting all possible plays horrizontally");
+                        ArrayList<PlayIdea> possiblePlays = WordVerification.getInstance()
+                                .TESTgetWordsFromHand(new String(tiles), horConstr, i, boardState.the_game_board[i][j], true);
 
 
-                    //verify they dont fuck with tiles around where theyd be played
-                    for(int p = 0; p < possiblePlays.size(); p++){
-                        if(possiblePlays.get(p).placements.size() > 0)
-                            if( boardState.verifyWordPlacement(possiblePlays.get(p).placements)){
-                                //update that shit
-                                myCache.Push(possiblePlays.get(p));
-                                GameManager.getInstance().placementsUnderConsideration = possiblePlays.get(p).placements;
+                        //verify they dont fuck with tiles around where theyd be played
+                        for (int p = 0; p < possiblePlays.size(); p++) {
+                            if (possiblePlays.get(p).placements.size() > 0)
+                                if (boardState.verifyWordPlacement(possiblePlays.get(p).placements)) {
+                                    //update that shit
+                                    myCache.Push(possiblePlays.get(p));
+                                    GameManager.getInstance().placementsUnderConsideration = possiblePlays.get(p).placements;
 //NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
-                            }
-                    }
-                    //parse vert
-                    char[] vertConstr = new char[11];
-                    //for(int v = boardState.the_game_board.length-1; v >= 0; v--){
-                    for(int v = 0; v < boardState.the_game_board.length; v++){
-                        if(boardState.the_game_board[i][v] != null)
-                            vertConstr[10-v] = boardState.the_game_board[i][v].letter;
-                    }
-                    //get all possible plays with current tiles and boardstate
-                    //System.out.println("getting all possible plays vertically!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    ArrayList<PlayIdea> possiblePlaysVert = WordVerification.getInstance()
-                            .TESTgetWordsFromHand(new String(tiles), vertConstr, j, boardState.the_game_board[i][j], false);
+                                }
+                        }
+                        //parse vert
+                        char[] vertConstr = new char[11];
+                        //for(int v = boardState.the_game_board.length-1; v >= 0; v--){
+                        for (int v = 0; v < boardState.the_game_board.length; v++) {
+                            if (boardState.the_game_board[i][v] != null)
+                                vertConstr[10 - v] = boardState.the_game_board[i][v].letter;
+                        }
+                        //get all possible plays with current tiles and boardstate
+                        //System.out.println("getting all possible plays vertically!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                        ArrayList<PlayIdea> possiblePlaysVert = WordVerification.getInstance()
+                                .TESTgetWordsFromHand(new String(tiles), vertConstr, j, boardState.the_game_board[i][j], false);
 
-                    //verify they dont fuck with tiles around where theyd be played
-                    for(int p = 0; p < possiblePlaysVert.size(); p++){
-                        if(possiblePlaysVert.get(p).placements.size() > 0)
-                            if( boardState.verifyWordPlacement(possiblePlaysVert.get(p).placements)){
-                                //update that shit
-                                myCache.Push(possiblePlaysVert.get(p));
-                                GameManager.getInstance().placementsUnderConsideration = possiblePlaysVert.get(p).placements;
+                        //verify they dont fuck with tiles around where theyd be played
+                        for (int p = 0; p < possiblePlaysVert.size(); p++) {
+                            if (possiblePlaysVert.get(p).placements.size() > 0)
+                                if (boardState.verifyWordPlacement(possiblePlaysVert.get(p).placements)) {
+                                    //update that shit
+                                    myCache.Push(possiblePlaysVert.get(p));
+                                    GameManager.getInstance().placementsUnderConsideration = possiblePlaysVert.get(p).placements;
 //NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
-                            }
+                                }
+                        }
+                    }
+                    else{
+                        return;
                     }
                 }
             }
