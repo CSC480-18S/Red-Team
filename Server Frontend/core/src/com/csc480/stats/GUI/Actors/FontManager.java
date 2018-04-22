@@ -8,6 +8,8 @@ public class FontManager {
 
     public Skin cumulative;
     public Skin title;
+    public Skin normal;
+    public Skin tvalue;
 
 
     public static FontManager getInstance(){
@@ -21,13 +23,29 @@ public class FontManager {
     private FontManager(){
 
         //-----Title Font size
-        cumulative = new Skin(Gdx.files.internal("oldSkin/exempleSkin.json"));
-        cumulative.getFont("font").setUseIntegerPositions(false);
-        cumulative.getFont("font").getData().setScale(.4f,.4f);
+        title = new Skin(Gdx.files.internal("skin/OsweebleSkinFinal.json"));
+        title.getFont("BloggerSans").setUseIntegerPositions(false);
+        title.getFont("BloggerSans").getData().setScale(.4f,.4f);
 
-        title = new Skin(Gdx.files.internal("oldSkin/exempleSkin.json"));
-        title.getFont("font").setUseIntegerPositions(false);
-        title.getFont("font").getData().setScale(.6f,.6f);
+
+        //-----Cumulative Font size
+        cumulative = new Skin(Gdx.files.internal("skin/OsweebleSkinFinal.json"));
+        cumulative.getFont("BloggerSansBold").setUseIntegerPositions(false);
+        cumulative.getFont("BloggerSansBold").getData().setScale(.5f,.5f);
+
+        //-----Head Font size
+        normal = new Skin(Gdx.files.internal("skin/OsweebleSkinFinal.json"));
+        normal.getFont("BloggerSansBold").setUseIntegerPositions(false);
+        normal.getFont("BloggerSansBold").getData().setScale(.3f,.3f);
+
+        //-----Head Font size
+        tvalue = new Skin(Gdx.files.internal("skin/OsweebleSkinFinal.json"));
+        tvalue.getFont("BloggerSansBold").setUseIntegerPositions(false);
+        tvalue.getFont("BloggerSansBold").getData().setScale(.4f,.4f);
+
+
+
+
 
     }
 
