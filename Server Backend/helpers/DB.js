@@ -1,8 +1,15 @@
 'use strict'
 
 const axios = require('axios')
-const _ = require('lodash')
 const rm = require('./RedundancyManager')
+
+const DICTIONARY_CHECK = 'http://localhost:8090/dictionary/validate?words='
+const FIND_BY_MAC = 'http://localhost:8091/players/search/findByMacAddr?mac='
+const PLAYERS = 'http://localhost:8091/players/'
+const PLAYED_WORDS = 'http://localhost:8091/playedWords'
+
+const GOLD = 'http://localhost:8091/teams/1'
+const GREEN = 'http://localhost:8091/teams/2'
 
 /**
  * Helper function for checking
@@ -12,7 +19,7 @@ const rm = require('./RedundancyManager')
  * @param {String} mac - mac
  */
 function checkIfUserExists(mac) {
-  return axios.get('http://localhost:8091/players/search/findByMacAddr?mac=' + mac, {
+  return axios.get(FIND_BY_MAC + mac, {
   })
     .then(function(response) {
       return response.data
@@ -23,7 +30,17 @@ function checkIfUserExists(mac) {
 }
 
 function pruneResults(res) {
-  return _.isEmpty(res)
+  return res == undefined
+}
+
+function dictionaryCheck(search) {
+  return axios.get(DICTIONARY_CHECK + search)
+    .then(r => {
+      return r.data
+    })
+    .catch(e => {
+      console.log(e)
+    })
 }
 
 /**
@@ -32,51 +49,19 @@ function pruneResults(res) {
  * @param {String} team - team
  */
 function addUser(username, team, mac) {
-  let address = 'http://localhost:8091/players/'
   let data = {
     username: username,
-    team: team === 'Gold' ? 'http://localhost:8091/teams/1' : 'http://localhost:8091/teams/2',
+    team: team === 'Gold' ? GOLD : GREEN,
     macAddr: mac
   }
-  
-  return axios.post(address, data)
+
+  return axios.post(PLAYERS, data)
     .then(function(response) {
       return true
     })
     .catch(function(e) {
-      rm.saveForLater(address, data)
+      rm.saveForLater(PLAYERS, data)
       return false
-    })
-}
-
-/**
- * Helper function for getting
- * a user's URL in order to
- * update their total score
- * @param {String} username - username
- */
-function getUserURL(mac) {
-  checkIfUserExists(mac).then(response => {
-    return response.data._embedded.players[0]._links.self.href
-  })
-    .catch(function(e) {
-      throw e
-    })
-}
-
-/**
- * Helper function for getting the
- * team URL to be called
- * @param {String} username - username
- */
-function getTeamLink(username) {
-  return axios.get('players/search/findByUsername?username=' + username, {
-  })
-    .then(function(response) {
-      return response.data._embedded.players[0]._links.team.href
-    })
-    .catch(function(e) {
-      throw e
     })
 }
 
@@ -84,7 +69,7 @@ function getTeamLink(username) {
  * Gets all users in the DB
  */
 function getAllUsers() {
-  axios.get('players', {
+  return axios.get(PLAYERS, {
   })
     .then(function(response) {
       return response.data._embedded.players
@@ -94,44 +79,36 @@ function getAllUsers() {
     })
 }
 
-// function updatePlayerScore(){
-//     /**
-//  * Route that updates a user's score
-//  */
-// router.patch('/updateScore', function(req, res, next) {
-//     /**
-//        * The player score to be updated
-//        */
-//     const user = req.body.username
-//     const totalScore = req.body.totalScore
-
-//     /**
-//        * Update score on the database
-//        */
-//     getUserURL(user, res).then(response => {
-//       const userUrl = new URL(response)
-//       const path = userUrl.pathname.substr(1)
-//       axios.patch(path, {
-//         totalScore: totalScore
-//       })
-//         .then(function(response) {
-//           res.status(200).json({code: 'U2', title: 'Score updated', desc: 'Total score updated'})
-//         })
-//         .catch(function(e) {
-//           res.status(400).json({code: 'U4', title: 'Server error', desc: 'Something went wrong'})
-//         })
-//     })
-//       .catch(function(e) {
-//         res.status(300).json({code: 'U3', title: 'User error', desc: 'User was not found'})
-//       })
-//   })
-// }
+/**
+ * Updates a player's score based on the play they just made
+ * @param {Object} player - player object
+ * @param {Object} score - score object
+ */
+function updatePlayerScore(player, words) {
+  if (words.length > 0) {
+    if (!player.isAI) {
+      axios.post(PLAYED_WORDS, {
+        word: words[0].word,
+        value: words[0].score,
+        dirty: false,
+        special: false,
+        player: player.link
+      }).then(r => {
+        words.splice(0, 1)
+        this.updatePlayerScore(player, words)
+      })
+        .catch(e => {
+          rm.saveForLater(PLAYERS, words)
+        })
+    }
+  }
+}
 
 module.exports = {
   checkIfUserExists,
+  dictionaryCheck,
   addUser,
-  getUserURL,
-  getTeamLink,
   getAllUsers,
-  pruneResults
+  pruneResults,
+  updatePlayerScore
 }

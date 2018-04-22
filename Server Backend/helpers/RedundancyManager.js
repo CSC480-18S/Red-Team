@@ -15,7 +15,7 @@ function saveForLater(url, data) {
     url: url,
     data: data
   })
-  
+
   writeFile()
 }
 
@@ -24,7 +24,7 @@ function saveForLater(url, data) {
  */
 function init() {
   fs.exists(logsDir, function(exists) {
-    if (! exists) {
+    if (!exists) {
       fs.mkdir(logsDir, function(err) {
         if (err) {
           console.log('Error while making dir, ', err)
@@ -32,7 +32,7 @@ function init() {
       })
     }
   })
-  
+
   fs.readFile(logFile, (err, data) => {
     if (err) {
       console.log('Error while reading file')
@@ -48,19 +48,19 @@ function init() {
  */
 function resend() {
   let changes = false
-  
+
   for (let i = 0; i < savedData.length; i++) {
     axios.post(savedData[i].url, savedData[i].data)
-    .then(function(response) {
-      savedData.splice(i, 1)
-      i--
-      changes = true
-    })
-    .catch(function(e) {
+      .then(function(response) {
+        savedData.splice(i, 1)
+        i--
+        changes = true
+      })
+      .catch(function(e) {
       // failed, do nothing
-    })
+      })
   }
-  
+
   if (changes) {
     writeFile()
   }

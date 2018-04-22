@@ -2,14 +2,13 @@
 /**
  * Imports files
  */
-const axios = require('axios')
 const Gameboard = require('./Gameboard')
+const PlayerManager = require('./PlayerManager')
+const FrontendManager = require('./FrontendManager')
 const sc = require('../helpers/ScoreCalculator')
 const rh = require('../helpers/ResponseHandler')
 const ex = require('../helpers/Extractor')
 const dg = require('../helpers/Debug')(true)
-const PlayerManager = require('./PlayerManager')
-const FrontendManager = require('./FrontendManager')
 const mg = require('../helpers/MacGrabber')
 const db = require('../helpers/DB')
 
@@ -23,7 +22,7 @@ module.exports = (io) => {
       this._yellowScore = 0
       this._swaps = 0
       this._currentPlayers = 0
-	  this._macs = []
+      this._macs = []
       this.init()
     }
 
@@ -79,35 +78,17 @@ module.exports = (io) => {
 
         socket.on('whoAreYou', response => {
           dg('asking client who they are', 'debug')
-          mg(socket.handshake.address, (mac) => {
-			for (let i = 0; i < this._macs.length; i++) {
-			  if (this._macs[i] == mac) {
-				  return
-			  }
-		    }
-			
-            db.checkIfUserExists(mac)
-              .then(r => {
-                socket.mac = mac
-                this._macs.push(mac)
-				
-                let user = {
-                  username: r.username,
-                  team: r.team === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green'
-                }
-                this.determineClientType(socket, response, user)
-              })
-          })
+          this.determineClientType(socket, response)
         })
 
         socket.on('disconnect', () => {
           for (let i = 0; i < this._macs.length; i++) {
-			  if (this._macs[i] == socket.mac) {
-				  this._macs.splice(i, 1)
-				  break
-			  }
-		  }
-		  
+            if (this._macs[i] === socket.mac) {
+              this._macs.splice(i, 1)
+              break
+            }
+          }
+
           this.findClientThatLeft(socket.id)
         })
       })
@@ -118,20 +99,67 @@ module.exports = (io) => {
      * @param {Object} socket - socket object
      * @param {Object} response - the type of the player
      */
-    determineClientType(socket, response, user) {
+    determineClientType(socket, response) {
       if (response.isAI) {
-        this.addClientToManager('ai_test', 'Green', true, socket)
+        this.addClientToManager('ai_test', 'Green', null, true, socket)
         dg('ai connected', 'info')
       } else if (response.isSF) {
         this.createFrontendManager(socket)
         dg('a server frontend connected', 'info')
       } else if (response.isClient) {
-        console.log(user)
-        this.addClientToManager(user.username, user.team, true, socket)
+        mg(socket.handshake.address, (mac) => {
+          if (this.checkIfPlayingAlready(socket, mac)) {
+            return
+          }
+          this.checkUserInDatabase(socket, mac)
+        })
+
         dg('client connected', 'info')
       } else if (response.isQueued) {
         this.emitCurrentPlayerCount()
         dg('queued player connected', 'info')
+      }
+    }
+
+    /**
+     * Checks to see if the user actually exists in the DB
+     * @param {Object} socket - socket object
+     * @param {String} mac - mac address
+     */
+    checkUserInDatabase(socket, mac) {
+      db.checkIfUserExists(mac)
+        .then(r => {
+          if (!db.pruneResults(r)) {
+            socket.mac = mac
+            this._macs.push(mac)
+
+            let user = {
+              username: r.username,
+              team: r.team === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green',
+              link: r._links.self.href
+            }
+
+            this.addClientToManager(user.username, user.team, user.link, false, socket)
+          } else {
+            this.emitError(socket, 'Please login/register first.')
+          }
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    }
+
+    /**
+     * Checks to see if the user is playing in more than one instance on their device
+     * @param {Object} socket - socket object
+     * @param {String} mac - mac address
+     */
+    checkIfPlayingAlready(socket, mac) {
+      for (let i = 0; i < this._macs.length; i++) {
+        if (this._macs[i] === mac) {
+          this.emitError(socket, 'You can only have one game instance running.')
+          return true
+        }
       }
     }
 
@@ -148,14 +176,15 @@ module.exports = (io) => {
      * Adds a client to a PlayerManager that does not have any data inside of it
      * @param {String} name - name of player
      * @param {String} team - team player is on
+     * @param {String} link - link to player in DB
      * @param {Boolean} isAI - AI or not
      * @param {Object} socket - socket object
      */
-    addClientToManager(name, team, isAI, socket) {
+    addClientToManager(name, team, link, isAI, socket) {
       console.log('DEBUG: FINDING MANAGER TO ADD TO')
       for (let manager of this._playerManagers) {
         if (manager.id === null) {
-          manager.createHandshakeWithClient(name, team, isAI, socket)
+          manager.createHandshakeWithClient(name, team, link, isAI, socket)
           this.emitGameEvent(`${manager.name} entered the game.`)
           this.updateFrontendData()
           if (isAI) {
@@ -170,6 +199,21 @@ module.exports = (io) => {
         }
       }
 
+      if (!this.attemptAIRemoval(name, team, link, isAI, socket)) {
+        dg('there are already max players connected', 'error')
+        this.emitError(socket, 'There are already 4 players connected to the game.')
+      }
+    }
+
+    /**
+     * Attempts to remove an AI if they are in the game
+     * @param {String} name - name of player
+     * @param {String} team - team player is on
+     * @param {String} link - link to player in DB
+     * @param {Boolean} isAI - AI or not
+     * @param {Object} socket - socket object
+     */
+    attemptAIRemoval(name, team, link, isAI, socket) {
       if (!isAI) {
         for (let manager of this._playerManagers) {
           if (this._frontendManager !== null && manager.isAI) {
@@ -179,20 +223,27 @@ module.exports = (io) => {
             for (let frontend of this._frontendManagers) {
               frontend.sendEvent('removeAI', position)
             }
-            manager.createHandshakeWithClient(name, team, isAI, socket)
+            manager.createHandshakeWithClient(name, team, link, isAI, socket)
             this.emitGameEvent(`${manager.name} entered the game.`)
             this.updateFrontendData()
             dg(`client added to --> player manager ${manager.position}`, 'debug')
             this._currentPlayers++
             this.emitCurrentPlayerCount()
-            return
+            return true
           }
         }
       }
+      return false
+    }
 
-      dg('there are already max players connected', 'error')
+    /**
+     * Sends an error event to a client
+     * @param {Object} socket - socket object
+     * @param {String} error - message
+     */
+    emitError(socket, error) {
       socket.emit('errorMessage', {
-        error: 'There are already 4 players connected to the game.'
+        error: error
       })
     }
 
@@ -290,7 +341,7 @@ module.exports = (io) => {
       dg(`it is now player ${position}'s turn`, 'debug')
 
       this.updateFrontendData()
-	  this.updateClientData()
+      this.updateClientData()
     }
 
     gameOver() {
@@ -403,10 +454,9 @@ module.exports = (io) => {
       const search = words.map(s => s.word).join(',')
 
       dg('checking words against database', 'debug')
-      return axios.get('http://localhost:8090/dictionary/validate?words=' + search)
-        .then(res => {
-          return this.pruneResults(res.data)
-        })
+      return db.dictionaryCheck(search).then(r => {
+        return this.pruneResults(r)
+      })
     }
 
     /**
@@ -452,7 +502,11 @@ module.exports = (io) => {
     calculateScore(player, words) {
       let score = sc(words, this._gameBoard.board)
 
-      this.addScore(player, score)
+      if (!player.isAI) {
+        db.updatePlayerScore(player, score.words)
+      }
+
+      this.addScore(player, score.totalScore)
       this.updateTurn(player, false)
       return score
     }

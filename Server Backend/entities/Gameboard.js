@@ -1,6 +1,6 @@
 'use strict'
 /**
- * Imports lodash and axios
+ * Imports lodash
  */
 const _ = require('lodash')
 

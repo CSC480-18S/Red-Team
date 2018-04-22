@@ -12,6 +12,15 @@ const rm = require('./helpers/RedundancyManager')
  */
 const app = express()
 
+const xSession = require('express-session')
+
+let session = xSession({
+  secret: 'bobistheman',
+  proxy: true,
+  resave: false,
+  saveUninitialized: false
+})
+
 const server = http.createServer(app)
 
 const socket = require('./helpers/Socket')(server)
@@ -80,22 +89,9 @@ app.set('json spaces', 4)
 /**
  * Setting the routes to be used
  */
-app.use('/', mainRoute)
+app.use('/', session, mainRoute)
 
-/**
- * TODO: Figure out authentication on the routes @Landon
- */
-function isLoggedIn(req, res, next) {
-  let allow = true
-
-  if (allow) {
-    next()
-  } else {
-    res.status(400).json({ code: 'A1', title: 'Auth error', desc: 'Not authorized.' })
-  }
-}
-
-app.use('/static', isLoggedIn, express.static(path.join(__dirname, '/static')))
+app.use('/static', express.static(path.join(__dirname, '/static')))
 
 /**
  * Called when the server is ready and it listens on the specified port
