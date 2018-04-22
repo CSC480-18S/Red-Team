@@ -53,7 +53,7 @@ module.exports = (data, player, gm) => {
   dg('sending out word played event', 'debug')
   gm.boardUpdate()
   dg('sending out game event event', 'debug')
-  let action = `${player.name} played ${data.data.map(w => w.word)} for ${score} points`
+  let action = `${player.name} played ${data.data.map(w => w.word)} for ${score.totalScore} points`
   dg(action, 'info')
   // TODO: Need to flag whether or not this is a bonus play or not @Landon
   gm.emitGameEvent(action, false)
