@@ -1,4 +1,4 @@
-package com.csc480.stats;
+package com.csc480.stats.jsonObjects;
 
 /**
  * This class exists solely so GSON can correctly
@@ -6,15 +6,15 @@ package com.csc480.stats;
  * the team stats
  */
 
-public class JsonResponse {
+public class JsonResponse5 {
     private Metadata meta;
-    private TeamData data;
+    private Word data;
 
-    public TeamData getData() {
+    public Word getData() {
         return data;
     }
 
-    public void setData(TeamData data) {
+    public void setData(Word data) {
         this.data = data;
     }
 
