@@ -14,6 +14,10 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: normal;
 }
 
+body {
+    background-color: #a8a5a3
+}
+
 table {
     border: 1px solid black;
     margin: 1em auto;
@@ -111,14 +115,18 @@ td {
 }
 
 #btnSwap {
+    background-color: #e2caba; /*#e2caba #6FA6F4 #EFBB96*/ 
     grid-column: 1 / 2;
     grid-row: 1 / 2; 
+    
 }
 #btnPlace {
+    background-color: #33bc2f;
     grid-column: 2 / 3;
     grid-row: 1 / 2;  
 }
 #btnShuffle {
+    background-color: #e2caba;
     grid-column: 3 / 4;
     grid-row: 1 / 2; 
 }
