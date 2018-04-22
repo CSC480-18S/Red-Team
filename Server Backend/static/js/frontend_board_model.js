@@ -6,7 +6,7 @@ var currentTileCount = tileSlotNumber + 1
 var firstTimeGeneratedTiles = [];
 
 // sockets
-let socket = io.connect('127.0.0.1:3000')
+let socket = io.connect('')
 socket.on('connect', () => {
   console.log(socket.id)
 })
