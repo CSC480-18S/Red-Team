@@ -18,7 +18,7 @@ import java.util.Scanner;
  */
 
 public class StatsConnection {
-    private static final String BASEURL = "http://localhost:3000/api/";
+    private static final String BASEURL = "http://localhost:3001/";
     private static final String CHARSET = "UTF-8";
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 

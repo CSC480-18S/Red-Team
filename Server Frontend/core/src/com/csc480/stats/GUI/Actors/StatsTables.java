@@ -21,7 +21,7 @@ public class StatsTables extends Group {
 
     public StatsTables() {
         super();
-        skin = new Skin(Gdx.files.internal("skin/OsweebleSkinFinal.json"));
+        skin = new Skin(Gdx.files.internal("oldSkin/exempleSkin.json"));
         hud = new Hud();
 
 
@@ -109,7 +109,7 @@ public class StatsTables extends Group {
 
         //Bonuses Used-------------------
         Table innerLLL3 = new Table();
-        innerLLL3.add(hud.G_BUWords).top().padLeft(38);
+        innerLLL3.add(hud.G_BUWords).top().padLeft(10);
 
         innerLeft3.add(innerLLL2).padLeft(10);
         innerLeft3.add(innerLLL3).padLeft(45);
@@ -129,13 +129,11 @@ public class StatsTables extends Group {
         innerLx4_2.add(hud.G_TPThree).left();
 
 
-        //Bad Words Attempted & Average Score------------
+        //Dirty Words Attempted & Average Score------------
         Table innerLx4_3 = new Table();
-        //innerLx4_3.add(hud.G_WAWords).top().padTop(20).padLeft(65).padBottom(20);
-        innerLx4_3.add(hud.G_WAWords).top().padTop(20).padLeft(53).padBottom(20);
+        innerLx4_3.add(hud.G_WAWords).top().padTop(20).padLeft(65).padBottom(20);
         innerLx4_3.row();
-        //innerLx4_3.add(hud.G_ASWords).padLeft(55);
-        innerLx4_3.add(hud.G_ASWords).padLeft(35);
+        innerLx4_3.add(hud.G_ASWords).padLeft(55);
 
 
 
@@ -149,7 +147,7 @@ public class StatsTables extends Group {
         //----------LEFT TABLE------------------
         Table first_table = new Table();
 
-        first_table.row();
+        first_table.row();//.width(265).padRight(30);
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -226,8 +224,8 @@ public class StatsTables extends Group {
         innerRight2.add(innerRR2).padLeft(15).padTop(5);
         innerRight2.add(innerRR3).padLeft(35).padTop(5);
 
-//debug
-       // first_table.setDebug(true);
+
+        //first_table.setDebug(true);
 
         //Longest Word-------------------
         Table innerRight3 = new Table();
@@ -241,7 +239,7 @@ public class StatsTables extends Group {
 
         //Bonuses Used-------------------
         Table innerRRR3 = new Table();
-        innerRRR3.add(hud.Y_BUWords).top().padLeft(45);
+        innerRRR3.add(hud.Y_BUWords).top().padLeft(10);
 
         innerRight3.add(innerRRR2).padLeft(15);
         innerRight3.add(innerRRR3).padLeft(40);
@@ -264,9 +262,9 @@ public class StatsTables extends Group {
 
         //Dirty Words Attempted & Average Score------------
         Table innerRx4_3 = new Table();
-        innerRx4_3.add(hud.Y_WAWords).top().padTop(20).padLeft(53).padBottom(25);
+        innerRx4_3.add(hud.Y_WAWords).top().padTop(20).padLeft(50).padBottom(25);
         innerRx4_3.row();
-        innerRx4_3.add(hud.Y_ASWords).padLeft(35);
+        innerRx4_3.add(hud.Y_ASWords).padLeft(55);
 
 
         innerRight4.add(innerRx4_2).padLeft(10);
@@ -306,9 +304,7 @@ public class StatsTables extends Group {
         table.setFillParent(true);
         table.setBackground(new TextureRegionDrawable(
                // new TextureRegion(new Texture(Gdx.files.internal("StatsAssets/statsBackground.png")))));
-                //new TextureRegion(new Texture(Gdx.files.internal("Background.jpg")))));
-                new TextureRegion(new Texture(Gdx.files.internal("skin/BorderedRectangle.png")))));
-//debug
+                new TextureRegion(new Texture(Gdx.files.internal("Background.jpg")))));
         //table.setDebug(true);
 
         //The Green/Gold Team labels----------------
@@ -328,7 +324,7 @@ public class StatsTables extends Group {
 
         //THE TABLES FOR FREQUENTLY PLAYED AND OSWEGO-THEMED WORDS
         table.add(innerLeft2.top()).top().left().padLeft(30);
-        table.add(innerRight2.top()).top().left().padBottom(10);
+        table.add(innerRight2.top()).top().left().padBottom(30);
         table.row();
 
         //THE TABLES FOR LONGEST WORDS AND BONUSES USED
@@ -338,7 +334,7 @@ public class StatsTables extends Group {
 
         //THE TABLES FOR TOP PLAYERS, DIRTY WORDS ATTEMPTED & AVERAGE SCORE
         table.add(innerLeft4.top()).top().left().padLeft(30);
-        table.add(innerRight4.top()).top().left().padBottom(1);
+        table.add(innerRight4.top()).top().left().padBottom(20);
         table.row();
 
         //THE T TEST
