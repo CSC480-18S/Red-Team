@@ -5,6 +5,7 @@ const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
 const http = require('http')
+const rm = require('./helpers/RedundancyManager')
 
 /**
  * Set to a variable, instead of typing this out everytime
@@ -102,3 +103,5 @@ app.use('/static', isLoggedIn, express.static(path.join(__dirname, '/static')))
 server.listen(port, function() {
   console.log('Server started on port ' + port)
 })
+
+rm.init()

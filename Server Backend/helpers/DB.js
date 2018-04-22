@@ -2,6 +2,7 @@
 
 const axios = require('axios')
 const _ = require('lodash')
+const rm = require('./RedundancyManager')
 
 /**
  * Helper function for checking
@@ -31,16 +32,19 @@ function pruneResults(res) {
  * @param {String} team - team
  */
 function addUser(username, team, mac) {
-  return axios.post('http://localhost:8091/players/', {
+  let address = 'http://localhost:8091/players/'
+  let data = {
     username: username,
     team: team === 'Gold' ? 'http://localhost:8091/teams/1' : 'http://localhost:8091/teams/2',
     macAddr: mac
-  })
+  }
+  
+  return axios.post(address, data)
     .then(function(response) {
       return true
     })
     .catch(function(e) {
-      console.log(e)
+      rm.saveForLater(address, data)
       return false
     })
 }
