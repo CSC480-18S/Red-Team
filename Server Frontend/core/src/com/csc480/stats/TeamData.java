@@ -11,15 +11,12 @@ import java.util.ArrayList;
 public class TeamData {
     private String name;
     private String totalScore;
-    private ArrayList<String> highestValueWords;
-    private String longestWord;
     private ArrayList<String> frequentlyPlayedWords;
     private String dirtyCount;
     private String specialCount;
-    //typo is on purpose to replicate the DB typo
-    private String higestSingleGameScore;
     private String winCount;
     private String loseCount;
+    private ArrayList<String> frequentlySpecialPlayedWords;
 
     public String getName() {
         return name;
@@ -27,22 +24,6 @@ public class TeamData {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getLongestWord() {
-        return longestWord;
-    }
-
-    public void setLongestWord(String longestWord) {
-        this.longestWord = longestWord;
-    }
-
-    public String getHigestSingleGameScore() {
-        return higestSingleGameScore;
-    }
-
-    public void setHigestSingleGameScore(String higestSingleGameScore) {
-        this.higestSingleGameScore = higestSingleGameScore;
     }
 
     public String getTotalScore() {
@@ -85,14 +66,6 @@ public class TeamData {
         this.specialCount = specialCount;
     }
 
-    public ArrayList<String> getHighestValueWords() {
-        return highestValueWords;
-    }
-
-    public void setHighestValueWords(ArrayList<String> highestValueWords) {
-        this.highestValueWords = highestValueWords;
-    }
-
     public ArrayList<String> getFrequentlyPlayedWords() {
         return frequentlyPlayedWords;
     }
@@ -100,4 +73,13 @@ public class TeamData {
     public void setFrequentlyPlayedWords(ArrayList<String> frequentlyPlayedWords) {
         this.frequentlyPlayedWords = frequentlyPlayedWords;
     }
+
+    public ArrayList<String> getFrequentlySpecialPlayedWords() {
+        return frequentlySpecialPlayedWords;
+    }
+
+    public void setFrequentlySpecialPlayedWords(ArrayList<String> frequentlySpecialPlayedWords) {
+        this.frequentlySpecialPlayedWords = frequentlySpecialPlayedWords;
+    }
+
 }

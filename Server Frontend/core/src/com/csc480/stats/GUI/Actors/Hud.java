@@ -105,7 +105,7 @@ public class Hud {
     */
 
     //Dummy Values
-    private String G_LWPosition1 = stats.GreenStats().get().getData().getLongestWord();
+    private String G_LWPosition1 = "deeeeerp";
     private int G_LWP1 = 7;
     Label G_LWOne = new Label( String.format("%.15s",G_LWPosition1) + String.format("%10d pts",G_LWP1),TextureManager.getInstance().ui);
 
@@ -228,7 +228,7 @@ public class Hud {
 
     //-----------------------Longest Word-------------------------------
     Label Y_LWWords = new Label("Longest Word: " ,TextureManager.getInstance().ui);
-    private String Y_LWPosition1 = stats.GoldStats().get().getData().getLongestWord();
+    private String Y_LWPosition1 = "deeeeeerp";
     private int Y_LWP1 = 7;
     Label Y_LWOne = new Label( String.format("%.15s",Y_LWPosition1) + String.format("%10d pts",Y_LWP1),TextureManager.getInstance().ui);
 
