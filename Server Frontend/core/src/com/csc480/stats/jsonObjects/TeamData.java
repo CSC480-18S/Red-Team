@@ -1,4 +1,4 @@
-package com.csc480.stats;
+package com.csc480.stats.jsonObjects;
 
 import java.util.ArrayList;
 
@@ -11,12 +11,12 @@ import java.util.ArrayList;
 public class TeamData {
     private String name;
     private String totalScore;
-    private ArrayList<String> frequentlyPlayedWords;
+    private ArrayList<WordData> frequentlyPlayedWords;
     private String dirtyCount;
     private String specialCount;
     private String winCount;
     private String loseCount;
-    private ArrayList<String> frequentlySpecialPlayedWords;
+    private ArrayList<WordData> frequentlySpecialPlayedWords;
 
     public String getName() {
         return name;
@@ -66,19 +66,19 @@ public class TeamData {
         this.specialCount = specialCount;
     }
 
-    public ArrayList<String> getFrequentlyPlayedWords() {
+    public ArrayList<WordData> getFrequentlyPlayedWords() {
         return frequentlyPlayedWords;
     }
 
-    public void setFrequentlyPlayedWords(ArrayList<String> frequentlyPlayedWords) {
+    public void setFrequentlyPlayedWords(ArrayList<WordData> frequentlyPlayedWords) {
         this.frequentlyPlayedWords = frequentlyPlayedWords;
     }
 
-    public ArrayList<String> getFrequentlySpecialPlayedWords() {
+    public ArrayList<WordData> getFrequentlySpecialPlayedWords() {
         return frequentlySpecialPlayedWords;
     }
 
-    public void setFrequentlySpecialPlayedWords(ArrayList<String> frequentlySpecialPlayedWords) {
+    public void setFrequentlySpecialPlayedWords(ArrayList<WordData> frequentlySpecialPlayedWords) {
         this.frequentlySpecialPlayedWords = frequentlySpecialPlayedWords;
     }
 

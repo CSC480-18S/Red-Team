@@ -1,5 +1,6 @@
 package com.csc480.stats;
 
+import com.csc480.stats.jsonObjects.JsonResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

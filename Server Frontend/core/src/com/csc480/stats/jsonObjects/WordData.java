@@ -1,4 +1,4 @@
-package com.csc480.stats;
+package com.csc480.stats.jsonObjects;
 
 /**
  * This class exists so GSON can parse the JSON from database
