@@ -10,8 +10,11 @@ import java.net.ConnectException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 
 /**
  * This class creates a connection object used to query the
@@ -542,6 +545,52 @@ public class StatsConnection {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return Optional.empty();
+        }
+    }
+
+    public double calcTTest(){
+
+        if (!GreenGameScores().isPresent() || !GoldGameScores().isPresent()) {
+            return 0;
+        }
+        ArrayList<Score> green = GreenGameScores().get().getData().get_embedded().getGameResults();
+        ArrayList<Score> gold = GoldGameScores().get().getData().get_embedded().getGameResults();
+        //check if the scores are empty
+        if(green.size() > 0 & gold.size() > 0) {
+
+            //arrays that hold the scores in their int form
+            int[] greenArray = new int[green.size()];
+            int[] goldArray = new int[gold.size()];
+
+            //convert the scores from Strings to Integers
+            for(int i = 0; i < green.size(); i++){
+                greenArray[i] = Integer.parseInt(green.get(i).getScore());
+            }
+
+            for(int i = 0; i < gold.size(); i++){
+                goldArray[i] = Integer.parseInt(gold.get(i).getScore());
+            }
+
+            //get the total differences between each score and square them and stuff 'em in an array
+            double[] arrayDifferenceSquared = new double[green.size()];
+            for(int i = 0; i < green.size(); i ++){
+                arrayDifferenceSquared[i] = Math.pow((greenArray[i] - goldArray[i]), 2);
+            }
+
+
+            //sum of the total differences between each score
+            double sumOfDifference = Math.abs(IntStream.of(greenArray).sum() - IntStream.of(goldArray).sum());
+
+            //sum of the differences squared
+            double differenceSquared = DoubleStream.of(arrayDifferenceSquared).sum();
+
+            //return the t test calculation
+            return (sumOfDifference)/(Math.sqrt(((greenArray.length* differenceSquared) - Math.pow(sumOfDifference, 2)) / ((double)greenArray.length - 1)));
+
+
+        } else{
+            //return 0 if empty
+            return 0;
         }
     }
 }
