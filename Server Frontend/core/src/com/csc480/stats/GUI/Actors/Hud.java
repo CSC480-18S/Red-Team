@@ -36,9 +36,9 @@ public class Hud {
 
     //Dummy Values
 
-     public String G_HWPosition1;
+    public String G_HWPosition1;
     public String setG_HWPosition1(String G_HWPosition1){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(0).getWord().length() != 0){
+        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() >=1){
             G_HWPosition1 = stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(0).getWord();
         }else {
             G_HWPosition1 = "nada1";
@@ -47,8 +47,8 @@ public class Hud {
     }
     private String G_HWPosition2;
     public String setG_HWPosition2(String G_HWPosition2){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(1).getWord().length() != 0){
-            G_HWPosition2 = stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(0).getWord();
+        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() >=2){
+            G_HWPosition2 = stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(1).getWord();
         }else {
             G_HWPosition2 = "nada2";
         }
@@ -56,8 +56,8 @@ public class Hud {
     }
     private String G_HWPosition3;
     public String setG_HWPosition3(String G_HWPosition3){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(1).getWord().length() != 0){
-            G_HWPosition3 = stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(0).getWord();
+        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() >=3){
+            G_HWPosition3 = stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(2).getWord();
         }else {
             G_HWPosition3 = "nada3";
         }
@@ -65,8 +65,8 @@ public class Hud {
     }
     private String G_HWPosition4;
     public String setG_HWPosition4(String G_HWPosition4){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(1).getWord().length() != 0){
-            G_HWPosition4 = stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(0).getWord();
+        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() >=4){
+            G_HWPosition4 = stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(3).getWord();
         }else {
             G_HWPosition4 = "nada4";
         }
@@ -74,8 +74,8 @@ public class Hud {
     }
     private String G_HWPosition5;
     public String setG_HWPosition5(String G_HWPosition5){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(1).getWord().length() != 0){
-            G_HWPosition5 = stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(0).getWord();
+        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() >=5){
+            G_HWPosition5 = stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(4).getWord();
         }else {
             G_HWPosition5 = "nada5";
         }
@@ -86,7 +86,7 @@ public class Hud {
 
     private String G_HWP1;
     public String setG_HWP1(String G_HWP1){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(0).getValue().length() != 0){
+        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() >= 1){
             G_HWP1 = stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(0).getValue();
         }else {
             G_HWP1 = "00";
@@ -95,7 +95,7 @@ public class Hud {
     }
     private String G_HWP2;
     public String setG_HWP2(String G_HWP2){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(1).getValue().length() != 0){
+        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() >= 2){
             G_HWP2 = stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(1).getValue();
         }else {
             G_HWP2 = "01";
@@ -104,7 +104,7 @@ public class Hud {
     }
     private String G_HWP3;
     public String setG_HWP3(String G_HWP3){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(2).getValue().length() != 0){
+        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() >= 3){
             G_HWP3 = stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(2).getValue();
         }else {
             G_HWP3 = "02";
@@ -113,7 +113,7 @@ public class Hud {
     }
     private String G_HWP4;
     public String setG_HWP4(String G_HWP4){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(3).getValue().length() != 0){
+        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() >= 4){
             G_HWP4 = stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(3).getValue();
         }else {
             G_HWP4 = "03";
@@ -122,7 +122,8 @@ public class Hud {
     }
     private String G_HWP5;
     public String setG_HWP5(String G_HWP5){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(4).getValue().length() != 0){
+        // if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(4).getValue().length() != 0){
+        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() >= 5){
             G_HWP5 = stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(4).getValue();
         }else {
             G_HWP5 = "04";
@@ -143,7 +144,7 @@ public class Hud {
     //Dummy Values
     private String G_HgP1;
     public String setG_HgP1(String G_HgP1){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenHighestGameScores().get().getData().get_embedded().getGameResults().get(0).getScore().length() != 0){
+        if(stats.GreenHighestGameScores().get().getData().get_embedded().getGameResults().size() >=1){
             G_HgP1 = stats.GreenHighestGameScores().get().getData().get_embedded().getGameResults().get(0).getScore();
         }else {
             G_HgP1 = "00";
@@ -152,7 +153,7 @@ public class Hud {
     }
     private String G_HgP2;
     public String setG_HgP2(String G_HgP2){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenHighestGameScores().get().getData().get_embedded().getGameResults().get(1).getScore().length() != 0){
+        if(stats.GreenHighestGameScores().get().getData().get_embedded().getGameResults().size() >=2){
             G_HgP2 = stats.GreenHighestGameScores().get().getData().get_embedded().getGameResults().get(1).getScore();
         }else {
             G_HgP2 = "01";
@@ -161,7 +162,7 @@ public class Hud {
     }
     private String G_HgP3;
     public String setG_HgP3(String G_HgP3){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenHighestGameScores().get().getData().get_embedded().getGameResults().get(2).getScore().length() != 0){
+        if(stats.GreenHighestGameScores().get().getData().get_embedded().getGameResults().size() >=3){
             G_HgP3 = stats.GreenHighestGameScores().get().getData().get_embedded().getGameResults().get(2).getScore();
         }else {
             G_HgP3 = "02";
@@ -170,7 +171,7 @@ public class Hud {
     }
     private String G_HgP4;
     public String setG_HgP4(String G_HgP4){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenHighestGameScores().get().getData().get_embedded().getGameResults().get(3).getScore().length() != 0){
+        if(stats.GreenHighestGameScores().get().getData().get_embedded().getGameResults().size() >=4){
             G_HgP4 = stats.GreenHighestGameScores().get().getData().get_embedded().getGameResults().get(3).getScore();
         }else {
             G_HgP4 = "03";
@@ -179,7 +180,7 @@ public class Hud {
     }
     private String G_HgP5;
     public String setG_HgP5(String G_HgP5){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenHighestGameScores().get().getData().get_embedded().getGameResults().get(3).getScore().length() != 0){
+        if(stats.GreenHighestGameScores().get().getData().get_embedded().getGameResults().size() >=5){
             G_HgP5 = stats.GreenHighestGameScores().get().getData().get_embedded().getGameResults().get(4).getScore();
         }else {
             G_HgP5 = "03";
@@ -202,7 +203,7 @@ public class Hud {
 
     private String G_FPPosition1;
     public String setG_FPPosition1(String G_FPPosition1){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenStats().get().getData().getFrequentlyPlayedWords().get(0).getWord().length() != 0){
+        if(stats.GreenStats().get().getData().getFrequentlyPlayedWords().size() >=1){
             G_FPPosition1 =stats.GreenStats().get().getData().getFrequentlyPlayedWords().get(0).getWord();
         }else {
             G_FPPosition1 = "nada1";
@@ -211,7 +212,7 @@ public class Hud {
     }
     private String G_FPPosition2;
     public String setG_FPPosition2(String G_FPPosition2){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenStats().get().getData().getFrequentlyPlayedWords().get(1).getWord().length() != 0){
+        if(stats.GreenStats().get().getData().getFrequentlyPlayedWords().size() >=2){
             G_FPPosition2 = stats.GreenStats().get().getData().getFrequentlyPlayedWords().get(1).getWord();
         }else {
             G_FPPosition2 = "nada2";
@@ -220,7 +221,7 @@ public class Hud {
     }
     private String G_FPPosition3 = "Friday";
     public String setG_FPPosition3(String G_FPPosition3){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenStats().get().getData().getFrequentlyPlayedWords().get(2).getWord().length() != 0){
+        if(stats.GreenStats().get().getData().getFrequentlyPlayedWords().size() >=3){
             G_FPPosition3 = stats.GreenStats().get().getData().getFrequentlyPlayedWords().get(2).getWord();
         }else {
             G_FPPosition3 = "nada3";
@@ -233,8 +234,8 @@ public class Hud {
 
     private String G_FPP1;
     public String setG_FPP1(String G_FPP1){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenStats().get().getData().getFrequentlyPlayedWords().get(0).getFrequency().length() != 0){
-            G_FPP1 = stats.GreenStats().get().getData().getFrequentlyPlayedWords().get(1).getFrequency();
+        if(stats.GreenStats().get().getData().getFrequentlyPlayedWords().size() >=1){
+            G_FPP1 = stats.GreenStats().get().getData().getFrequentlyPlayedWords().get(0).getFrequency();
         }else {
             G_FPP1 = "00";
         }
@@ -242,7 +243,7 @@ public class Hud {
     }
     private String G_FPP2;
     public String setG_FPP2(String G_FPP2){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenStats().get().getData().getFrequentlyPlayedWords().get(1).getFrequency().length() != 0){
+        if(stats.GreenStats().get().getData().getFrequentlyPlayedWords().size() >=2){
             G_FPP2 = stats.GreenStats().get().getData().getFrequentlyPlayedWords().get(1).getFrequency();
         }else {
             G_FPP2 = "01";
@@ -251,7 +252,7 @@ public class Hud {
     }
     private String G_FPP3;
     public String setG_FPP3(String G_FPP3){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenStats().get().getData().getFrequentlyPlayedWords().get(2).getFrequency().length() != 0){
+        if(stats.GreenStats().get().getData().getFrequentlyPlayedWords().size() >=3){
             G_FPP3 = stats.GreenStats().get().getData().getFrequentlyPlayedWords().get(2).getFrequency();
         }else {
             G_FPP3 = "02";
@@ -270,7 +271,7 @@ public class Hud {
 
     private String G_FOPosition1;
     public String setG_FOPosition1(String G_FOPosition1){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenStats().get().getData().getFrequentlySpecialPlayedWords().get(0).getWord().length() != 0){
+        if(stats.GreenStats().get().getData().getFrequentlySpecialPlayedWords().size() >=1){
             G_FOPosition1 = stats.GreenStats().get().getData().getFrequentlySpecialPlayedWords().get(0).getWord();
         }else {
             G_FOPosition1 = "nada0";
@@ -279,7 +280,7 @@ public class Hud {
     }
     private String G_FOPosition2;
     public String setG_FOPosition2(String G_FOPosition2){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenStats().get().getData().getFrequentlySpecialPlayedWords().get(1).getWord().length() != 0){
+        if(stats.GreenStats().get().getData().getFrequentlySpecialPlayedWords().size() >=2){
             G_FOPosition2 = stats.GreenStats().get().getData().getFrequentlySpecialPlayedWords().get(1).getWord();
         }else {
             G_FOPosition2 = "nada1";
@@ -289,7 +290,7 @@ public class Hud {
 
     private String G_FOPosition3;
     public String setG_FOPosition3(String G_FOPosition3){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenStats().get().getData().getFrequentlySpecialPlayedWords().get(2).getWord().length() != 0){
+        if(stats.GreenStats().get().getData().getFrequentlySpecialPlayedWords().size() >=3){
             G_FOPosition3 = stats.GreenStats().get().getData().getFrequentlySpecialPlayedWords().get(2).getWord();
         }else {
             G_FOPosition3 = "nada2";
@@ -300,7 +301,7 @@ public class Hud {
 
     private String G_FOP1;
     public String setG_FOP1(String G_FOP1){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenStats().get().getData().getFrequentlySpecialPlayedWords().get(0).getFrequency().length() != 0){
+        if(stats.GreenStats().get().getData().getFrequentlySpecialPlayedWords().size() >=1){
             G_FOP1 = stats.GreenStats().get().getData().getFrequentlySpecialPlayedWords().get(0).getFrequency();
         }else {
             G_FOP1 = "00";
@@ -309,7 +310,7 @@ public class Hud {
     }
     private String G_FOP2;
     public String setG_FOP2(String G_FOP2){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenStats().get().getData().getFrequentlySpecialPlayedWords().get(1).getFrequency().length() != 0){
+        if(stats.GreenStats().get().getData().getFrequentlySpecialPlayedWords().size() >=2){
             G_FOP2 = stats.GreenStats().get().getData().getFrequentlySpecialPlayedWords().get(1).getFrequency();
         }else {
             G_FOP2 = "01";
@@ -318,8 +319,8 @@ public class Hud {
     }
     private String G_FOP3;
     public String setG_FOP3(String G_FOP3){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenStats().get().getData().getFrequentlySpecialPlayedWords().get(1).getFrequency().length() != 0){
-            G_FOP3 = stats.GreenStats().get().getData().getFrequentlySpecialPlayedWords().get(1).getFrequency();
+        if(stats.GreenStats().get().getData().getFrequentlySpecialPlayedWords().size() >=3){
+            G_FOP3 = stats.GreenStats().get().getData().getFrequentlySpecialPlayedWords().get(2).getFrequency();
         }else {
             G_FOP3 = "01";
         }
@@ -377,7 +378,7 @@ public class Hud {
 
     private String G_TPPosition1;
     public String setG_TPPosition1(String G_TPPosition1){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenTopPlayers().get().getData().get_embedded().getPlayers().get(0).getUsername().length() != 0){
+        if(stats.GreenTopPlayers().get().getData().get_embedded().getPlayers().size() >=1){
             G_TPPosition1 = stats.GreenTopPlayers().get().getData().get_embedded().getPlayers().get(0).getUsername();
         }else {
             G_TPPosition1 = "nada0";
@@ -386,7 +387,7 @@ public class Hud {
     }
     private String G_TPPosition2 ;
     public String setG_TPPosition2(String G_TPPosition2){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenTopPlayers().get().getData().get_embedded().getPlayers().get(1).getUsername().length() != 0){
+        if(stats.GreenTopPlayers().get().getData().get_embedded().getPlayers().size() >=2){
             G_TPPosition2 = stats.GreenTopPlayers().get().getData().get_embedded().getPlayers().get(1).getUsername();
         }else {
             G_TPPosition2 = "nada1";
@@ -395,7 +396,7 @@ public class Hud {
     }
     private String G_TPPosition3 = "AndI";
     public String setG_TPPosition3(String G_TPPosition3){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenTopPlayers().get().getData().get_embedded().getPlayers().get(2).getUsername().length() != 0){
+        if(stats.GreenTopPlayers().get().getData().get_embedded().getPlayers().size() >=3){
             G_TPPosition3 = stats.GreenTopPlayers().get().getData().get_embedded().getPlayers().get(2).getUsername();
         }else {
             G_TPPosition3 = "nada2";
@@ -406,7 +407,7 @@ public class Hud {
 
     private String G_TPP1;
     public String setG_TPP1(String G_TPP1){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenTopPlayers().get().getData().get_embedded().getPlayers().get(0).getScore().length() != 0){
+        if(stats.GreenTopPlayers().get().getData().get_embedded().getPlayers().size() >=1){
             G_TPP1 = stats.GreenTopPlayers().get().getData().get_embedded().getPlayers().get(0).getScore();
         }else {
             G_TPP1 = "00";
@@ -415,7 +416,7 @@ public class Hud {
     }
     private String G_TPP2;
     public String setG_TPP2(String G_TPP2){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenTopPlayers().get().getData().get_embedded().getPlayers().get(1).getScore().length() != 0){
+        if(stats.GreenTopPlayers().get().getData().get_embedded().getPlayers().size() >=2){
             G_TPP2 = stats.GreenTopPlayers().get().getData().get_embedded().getPlayers().get(1).getScore();
         }else {
             G_TPP2 = "01";
@@ -424,7 +425,7 @@ public class Hud {
     }
     private String G_TPP3;
     public String setG_TPP3(String G_TPP3){
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenTopPlayers().get().getData().get_embedded().getPlayers().get(2).getScore().length() != 0){
+        if(stats.GreenTopPlayers().get().getData().get_embedded().getPlayers().size() >=3){
             G_TPP3 = stats.GreenTopPlayers().get().getData().get_embedded().getPlayers().get(2).getScore();
         }else {
             G_TPP3 = "02";
@@ -482,7 +483,7 @@ public class Hud {
 
     public String Y_HWPosition1;
     public String setY_HWPosition1(String Y_HWPosition1){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(0).getWord().length() != 0){
+        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() >=1){
             Y_HWPosition1 = stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(0).getWord();
         }else {
             Y_HWPosition1 = "nada1";
@@ -491,8 +492,8 @@ public class Hud {
     }
     private String Y_HWPosition2;
     public String setY_HWPosition2(String Y_HWPosition2){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(1).getWord().length() != 0){
-            Y_HWPosition2 = stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(0).getWord();
+        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() >=2){
+            Y_HWPosition2 = stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(1).getWord();
         }else {
             Y_HWPosition2 = "nada2";
         }
@@ -500,8 +501,8 @@ public class Hud {
     }
     private String Y_HWPosition3;
     public String setY_HWPosition3(String Y_HWPosition3){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(1).getWord().length() != 0){
-            Y_HWPosition3 = stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(0).getWord();
+        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() >=3){
+            Y_HWPosition3 = stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(2).getWord();
         }else {
             Y_HWPosition3 = "nada3";
         }
@@ -509,8 +510,8 @@ public class Hud {
     }
     private String Y_HWPosition4;
     public String setY_HWPosition4(String Y_HWPosition4){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(1).getWord().length() != 0){
-            Y_HWPosition4 = stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(0).getWord();
+        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() >=4){
+            Y_HWPosition4 = stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(3).getWord();
         }else {
             Y_HWPosition4 = "nada4";
         }
@@ -518,8 +519,8 @@ public class Hud {
     }
     private String Y_HWPosition5;
     public String setY_HWPosition5(String Y_HWPosition5){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(1).getWord().length() != 0){
-            Y_HWPosition5 = stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(0).getWord();
+        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() >=5){
+            Y_HWPosition5 = stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(4).getWord();
         }else {
             Y_HWPosition5 = "nada5";
         }
@@ -530,7 +531,7 @@ public class Hud {
 
     private String Y_HWP1;
     public String setY_HWP1(String Y_HWP1){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(0).getValue().length() != 0){
+        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() >= 1){
             Y_HWP1 = stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(0).getValue();
         }else {
             Y_HWP1 = "00";
@@ -539,7 +540,7 @@ public class Hud {
     }
     private String Y_HWP2;
     public String setY_HWP2(String Y_HWP2){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(1).getValue().length() != 0){
+        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() >= 2){
             Y_HWP2 = stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(1).getValue();
         }else {
             Y_HWP2 = "01";
@@ -548,7 +549,7 @@ public class Hud {
     }
     private String Y_HWP3;
     public String setY_HWP3(String Y_HWP3){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(2).getValue().length() != 0){
+        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() >= 3){
             Y_HWP3 = stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(2).getValue();
         }else {
             Y_HWP3 = "02";
@@ -557,7 +558,7 @@ public class Hud {
     }
     private String Y_HWP4;
     public String setY_HWP4(String Y_HWP4){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(3).getValue().length() != 0){
+        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() >= 4){
             Y_HWP4 = stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(3).getValue();
         }else {
             Y_HWP4 = "03";
@@ -566,7 +567,8 @@ public class Hud {
     }
     private String Y_HWP5;
     public String setY_HWP5(String Y_HWP5){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(4).getValue().length() != 0){
+        // if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(4).getValue().length() != 0){
+        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() >= 5){
             Y_HWP5 = stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().get(4).getValue();
         }else {
             Y_HWP5 = "04";
@@ -587,7 +589,7 @@ public class Hud {
     //Dummy Values
     private String Y_HgP1;
     public String setY_HgP1(String Y_HgP1){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldHighestGameScores().get().getData().get_embedded().getGameResults().get(0).getScore().length() != 0){
+        if(stats.GoldHighestGameScores().get().getData().get_embedded().getGameResults().size() >=1){
             Y_HgP1 = stats.GoldHighestGameScores().get().getData().get_embedded().getGameResults().get(0).getScore();
         }else {
             Y_HgP1 = "00";
@@ -596,7 +598,7 @@ public class Hud {
     }
     private String Y_HgP2;
     public String setY_HgP2(String Y_HgP2){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldHighestGameScores().get().getData().get_embedded().getGameResults().get(1).getScore().length() != 0){
+        if(stats.GoldHighestGameScores().get().getData().get_embedded().getGameResults().size() >=2){
             Y_HgP2 = stats.GoldHighestGameScores().get().getData().get_embedded().getGameResults().get(1).getScore();
         }else {
             Y_HgP2 = "01";
@@ -605,7 +607,7 @@ public class Hud {
     }
     private String Y_HgP3;
     public String setY_HgP3(String Y_HgP3){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldHighestGameScores().get().getData().get_embedded().getGameResults().get(2).getScore().length() != 0){
+        if(stats.GoldHighestGameScores().get().getData().get_embedded().getGameResults().size() >=3){
             Y_HgP3 = stats.GoldHighestGameScores().get().getData().get_embedded().getGameResults().get(2).getScore();
         }else {
             Y_HgP3 = "02";
@@ -614,7 +616,7 @@ public class Hud {
     }
     private String Y_HgP4;
     public String setY_HgP4(String Y_HgP4){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldHighestGameScores().get().getData().get_embedded().getGameResults().get(3).getScore().length() != 0){
+        if(stats.GoldHighestGameScores().get().getData().get_embedded().getGameResults().size() >=4){
             Y_HgP4 = stats.GoldHighestGameScores().get().getData().get_embedded().getGameResults().get(3).getScore();
         }else {
             Y_HgP4 = "03";
@@ -623,7 +625,7 @@ public class Hud {
     }
     private String Y_HgP5;
     public String setY_HgP5(String Y_HgP5){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldHighestGameScores().get().getData().get_embedded().getGameResults().get(3).getScore().length() != 0){
+        if(stats.GoldHighestGameScores().get().getData().get_embedded().getGameResults().size() >=5){
             Y_HgP5 = stats.GoldHighestGameScores().get().getData().get_embedded().getGameResults().get(4).getScore();
         }else {
             Y_HgP5 = "03";
@@ -646,7 +648,7 @@ public class Hud {
 
     private String Y_FPPosition1;
     public String setY_FPPosition1(String Y_FPPosition1){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldStats().get().getData().getFrequentlyPlayedWords().get(0).getWord().length() != 0){
+        if(stats.GoldStats().get().getData().getFrequentlyPlayedWords().size() >=1){
             Y_FPPosition1 =stats.GoldStats().get().getData().getFrequentlyPlayedWords().get(0).getWord();
         }else {
             Y_FPPosition1 = "nada1";
@@ -655,7 +657,7 @@ public class Hud {
     }
     private String Y_FPPosition2;
     public String setY_FPPosition2(String Y_FPPosition2){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldStats().get().getData().getFrequentlyPlayedWords().get(1).getWord().length() != 0){
+        if(stats.GoldStats().get().getData().getFrequentlyPlayedWords().size() >=2){
             Y_FPPosition2 = stats.GoldStats().get().getData().getFrequentlyPlayedWords().get(1).getWord();
         }else {
             Y_FPPosition2 = "nada2";
@@ -664,7 +666,7 @@ public class Hud {
     }
     private String Y_FPPosition3 = "Friday";
     public String setY_FPPosition3(String Y_FPPosition3){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldStats().get().getData().getFrequentlyPlayedWords().get(2).getWord().length() != 0){
+        if(stats.GoldStats().get().getData().getFrequentlyPlayedWords().size() >=3){
             Y_FPPosition3 = stats.GoldStats().get().getData().getFrequentlyPlayedWords().get(2).getWord();
         }else {
             Y_FPPosition3 = "nada3";
@@ -677,8 +679,8 @@ public class Hud {
 
     private String Y_FPP1;
     public String setY_FPP1(String Y_FPP1){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldStats().get().getData().getFrequentlyPlayedWords().get(0).getFrequency().length() != 0){
-            Y_FPP1 = stats.GoldStats().get().getData().getFrequentlyPlayedWords().get(1).getFrequency();
+        if(stats.GoldStats().get().getData().getFrequentlyPlayedWords().size() >=1){
+            Y_FPP1 = stats.GoldStats().get().getData().getFrequentlyPlayedWords().get(0).getFrequency();
         }else {
             Y_FPP1 = "00";
         }
@@ -686,7 +688,7 @@ public class Hud {
     }
     private String Y_FPP2;
     public String setY_FPP2(String Y_FPP2){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldStats().get().getData().getFrequentlyPlayedWords().get(1).getFrequency().length() != 0){
+        if(stats.GoldStats().get().getData().getFrequentlyPlayedWords().size() >=2){
             Y_FPP2 = stats.GoldStats().get().getData().getFrequentlyPlayedWords().get(1).getFrequency();
         }else {
             Y_FPP2 = "01";
@@ -695,7 +697,7 @@ public class Hud {
     }
     private String Y_FPP3;
     public String setY_FPP3(String Y_FPP3){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldStats().get().getData().getFrequentlyPlayedWords().get(2).getFrequency().length() != 0){
+        if(stats.GoldStats().get().getData().getFrequentlyPlayedWords().size() >=3){
             Y_FPP3 = stats.GoldStats().get().getData().getFrequentlyPlayedWords().get(2).getFrequency();
         }else {
             Y_FPP3 = "02";
@@ -714,7 +716,7 @@ public class Hud {
 
     private String Y_FOPosition1;
     public String setY_FOPosition1(String Y_FOPosition1){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldStats().get().getData().getFrequentlySpecialPlayedWords().get(0).getWord().length() != 0){
+        if(stats.GoldStats().get().getData().getFrequentlySpecialPlayedWords().size() >=1){
             Y_FOPosition1 = stats.GoldStats().get().getData().getFrequentlySpecialPlayedWords().get(0).getWord();
         }else {
             Y_FOPosition1 = "nada0";
@@ -723,7 +725,7 @@ public class Hud {
     }
     private String Y_FOPosition2;
     public String setY_FOPosition2(String Y_FOPosition2){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldStats().get().getData().getFrequentlySpecialPlayedWords().get(1).getWord().length() != 0){
+        if(stats.GoldStats().get().getData().getFrequentlySpecialPlayedWords().size() >=2){
             Y_FOPosition2 = stats.GoldStats().get().getData().getFrequentlySpecialPlayedWords().get(1).getWord();
         }else {
             Y_FOPosition2 = "nada1";
@@ -733,7 +735,7 @@ public class Hud {
 
     private String Y_FOPosition3;
     public String setY_FOPosition3(String Y_FOPosition3){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldStats().get().getData().getFrequentlySpecialPlayedWords().get(2).getWord().length() != 0){
+        if(stats.GoldStats().get().getData().getFrequentlySpecialPlayedWords().size() >=3){
             Y_FOPosition3 = stats.GoldStats().get().getData().getFrequentlySpecialPlayedWords().get(2).getWord();
         }else {
             Y_FOPosition3 = "nada2";
@@ -744,7 +746,7 @@ public class Hud {
 
     private String Y_FOP1;
     public String setY_FOP1(String Y_FOP1){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldStats().get().getData().getFrequentlySpecialPlayedWords().get(0).getFrequency().length() != 0){
+        if(stats.GoldStats().get().getData().getFrequentlySpecialPlayedWords().size() >=1){
             Y_FOP1 = stats.GoldStats().get().getData().getFrequentlySpecialPlayedWords().get(0).getFrequency();
         }else {
             Y_FOP1 = "00";
@@ -753,7 +755,7 @@ public class Hud {
     }
     private String Y_FOP2;
     public String setY_FOP2(String Y_FOP2){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldStats().get().getData().getFrequentlySpecialPlayedWords().get(1).getFrequency().length() != 0){
+        if(stats.GoldStats().get().getData().getFrequentlySpecialPlayedWords().size() >=2){
             Y_FOP2 = stats.GoldStats().get().getData().getFrequentlySpecialPlayedWords().get(1).getFrequency();
         }else {
             Y_FOP2 = "01";
@@ -762,8 +764,8 @@ public class Hud {
     }
     private String Y_FOP3;
     public String setY_FOP3(String Y_FOP3){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldStats().get().getData().getFrequentlySpecialPlayedWords().get(1).getFrequency().length() != 0){
-            Y_FOP3 = stats.GoldStats().get().getData().getFrequentlySpecialPlayedWords().get(1).getFrequency();
+        if(stats.GoldStats().get().getData().getFrequentlySpecialPlayedWords().size() >=3){
+            Y_FOP3 = stats.GoldStats().get().getData().getFrequentlySpecialPlayedWords().get(2).getFrequency();
         }else {
             Y_FOP3 = "01";
         }
@@ -821,7 +823,7 @@ public class Hud {
 
     private String Y_TPPosition1;
     public String setY_TPPosition1(String Y_TPPosition1){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldTopPlayers().get().getData().get_embedded().getPlayers().get(0).getUsername().length() != 0){
+        if(stats.GoldTopPlayers().get().getData().get_embedded().getPlayers().size() >=1){
             Y_TPPosition1 = stats.GoldTopPlayers().get().getData().get_embedded().getPlayers().get(0).getUsername();
         }else {
             Y_TPPosition1 = "nada0";
@@ -830,7 +832,7 @@ public class Hud {
     }
     private String Y_TPPosition2 ;
     public String setY_TPPosition2(String Y_TPPosition2){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldTopPlayers().get().getData().get_embedded().getPlayers().get(1).getUsername().length() != 0){
+        if(stats.GoldTopPlayers().get().getData().get_embedded().getPlayers().size() >=2){
             Y_TPPosition2 = stats.GoldTopPlayers().get().getData().get_embedded().getPlayers().get(1).getUsername();
         }else {
             Y_TPPosition2 = "nada1";
@@ -839,7 +841,7 @@ public class Hud {
     }
     private String Y_TPPosition3 = "AndI";
     public String setY_TPPosition3(String Y_TPPosition3){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldTopPlayers().get().getData().get_embedded().getPlayers().get(2).getUsername().length() != 0){
+        if(stats.GoldTopPlayers().get().getData().get_embedded().getPlayers().size() >=3){
             Y_TPPosition3 = stats.GoldTopPlayers().get().getData().get_embedded().getPlayers().get(2).getUsername();
         }else {
             Y_TPPosition3 = "nada2";
@@ -850,7 +852,7 @@ public class Hud {
 
     private String Y_TPP1;
     public String setY_TPP1(String Y_TPP1){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldTopPlayers().get().getData().get_embedded().getPlayers().get(0).getScore().length() != 0){
+        if(stats.GoldTopPlayers().get().getData().get_embedded().getPlayers().size() >=1){
             Y_TPP1 = stats.GoldTopPlayers().get().getData().get_embedded().getPlayers().get(0).getScore();
         }else {
             Y_TPP1 = "00";
@@ -859,7 +861,7 @@ public class Hud {
     }
     private String Y_TPP2;
     public String setY_TPP2(String Y_TPP2){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldTopPlayers().get().getData().get_embedded().getPlayers().get(1).getScore().length() != 0){
+        if(stats.GoldTopPlayers().get().getData().get_embedded().getPlayers().size() >=2){
             Y_TPP2 = stats.GoldTopPlayers().get().getData().get_embedded().getPlayers().get(1).getScore();
         }else {
             Y_TPP2 = "01";
@@ -868,7 +870,7 @@ public class Hud {
     }
     private String Y_TPP3;
     public String setY_TPP3(String Y_TPP3){
-        if(stats.GoldHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldTopPlayers().get().getData().get_embedded().getPlayers().get(2).getScore().length() != 0){
+        if(stats.GoldTopPlayers().get().getData().get_embedded().getPlayers().size() >=3){
             Y_TPP3 = stats.GoldTopPlayers().get().getData().get_embedded().getPlayers().get(2).getScore();
         }else {
             Y_TPP3 = "02";
@@ -903,6 +905,6 @@ public class Hud {
     Label T_answer = new Label( String.format("%10s",T_value),FontManager.getInstance().tvalue);
 
 
-   
+
 }
 
