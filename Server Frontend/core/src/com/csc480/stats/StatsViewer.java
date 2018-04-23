@@ -24,6 +24,7 @@ public class StatsViewer extends Game {
            System.out.println(stats.GoldPlayers().get().getData().get_embedded().getPlayers().get(0).getUsername());
            System.out.println(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().get(0).getWord());
            System.out.println(stats.GoldLongestWord().get().getData().getWord());
+           System.out.println("T-test: " + stats.calcTTest());
        } else {
            //otherwise the JSON was empty, most likely meaning the backend wasn't running
            System.out.println("Server isn't running, please start the server and try again.");
