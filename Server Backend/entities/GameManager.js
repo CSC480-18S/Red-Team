@@ -12,6 +12,8 @@ const dg = require('../helpers/Debug')(true)
 const mg = require('../helpers/MacGrabber')
 const db = require('../helpers/DB')
 
+let timer
+
 module.exports = (io) => {
   class GameManager {
     constructor() {
@@ -342,12 +344,20 @@ module.exports = (io) => {
         this._swaps = 0
       }
       dg(`it is now player ${position}'s turn`, 'debug')
+      clearInterval(timer)
       this.updateFrontendData()
       this.updateClientData()
+      this.timer()
+    }
+
+    /**
+     * Timer for a player's turn
+     */
+    timer() {
       for (let manager of this._playerManagers) {
         if (manager.id !== null && manager.isTurn) {
           let time = 45
-          let timer = setInterval(() => {
+          timer = setInterval(() => {
             if (time >= 0) {
               if (manager.id !== null) {
                 manager.sendEvent('turnCountdown', time)
