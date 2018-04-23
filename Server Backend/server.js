@@ -5,7 +5,7 @@ const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
 const http = require('http')
-const rm = require('./helpers/RedundancyManager')
+const RedundancyManager = require('./helpers/RedundancyManager')
 
 /**
  * Set to a variable, instead of typing this out everytime
@@ -100,4 +100,10 @@ server.listen(port, function() {
   console.log('Server started on port ' + port)
 })
 
-rm.init()
+const rm = new RedundancyManager()
+setTimeout(function() {
+  rm.loadLog()
+}, 1000)
+setTimeout(function() {
+  rm.resend()
+}, 2000)
