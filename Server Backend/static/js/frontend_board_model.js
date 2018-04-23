@@ -25,10 +25,14 @@ socket.on('gameOver', response => {
   alert(`${JSON.stringify(response, null, 4)}`)
 })
 
+socket.on('turnCountdown', response => {
+  this.data.playTime = response.time
+})
+
 socket.on('boardUpdate', response => {
-this.data.goldScore = response.yellow
-this.data.greenScore = response.green
-    
+  this.data.goldScore = response.yellow
+  this.data.greenScore = response.green
+
   this.data.currentPlayTileAmount = 0
   for (i = 0; i < row; i++) {
     for (j = 0; j < column; j++) {
@@ -122,8 +126,24 @@ socket.on('gameEvent', response => {
 })
 
 socket.on('dataUpdate', response => {
-this.data.isTurn = response.isTurn    
-    
+  this.data.playTime = '\u221e'
+  this.data.isTurn = response.isTurn
+  this.data.score = response.score
+
+  let time
+  if (this.data.isTurn) {
+    time = setInterval(() => {
+      if (this.data.playTime % 2 === 0) {
+        this.data.colored = true
+      } else {
+        this.data.colored = false
+      }
+    }, 500)
+  } else {
+    clearInterval(time)
+    this.data.colored = false
+  }
+
   console.log('received dataUpdate event: ')
   console.log(response)
   this.data.username = response.name
@@ -134,7 +154,7 @@ this.data.isTurn = response.isTurn
   // var isTurn = true;
   // if (isTurn === false) {
   if (response.isTurn === false) {
-      this.data.isMyTurn = "Wait for your turn..."
+    this.data.isMyTurn = 'Wait for your turn...'
     document.getElementById('btnSwap').disabled = true
     document.getElementById('btnPlace').disabled = true
     document.getElementById('btnShuffle').disabled = true
@@ -142,7 +162,7 @@ this.data.isTurn = response.isTurn
       this.data.tileSlots[i].tile.disabled = true
     }
   } else {
-      this.data.isMyTurn = "It's your turn!"
+    this.data.isMyTurn = "It's your turn!"
     document.getElementById('btnSwap').disabled = false
     document.getElementById('btnPlace').disabled = false
     document.getElementById('btnShuffle').disabled = false
@@ -169,9 +189,12 @@ var data = {
   username: '',
   greenScore: 0,
   goldScore: 0,
-  isTurn: false,
-  isMyTurn: '' 
   // backgcoresroundColor: ["rgb(171,171,171)", "orange", "green"]
+  playTime: '\u221e',
+  isTurn: false,
+  score: 0,
+  colored: false
+  // backgroundColor: ["rgb(171,171,171)", "orange", "green"]
 }
 
 function generateTableRows() {
