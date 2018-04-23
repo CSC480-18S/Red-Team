@@ -57,6 +57,7 @@ class PlayerManager {
   }
 
   /**
+   *
    * Turn getter
    */
   get isTurn() {
@@ -151,6 +152,12 @@ class PlayerManager {
           yellow: data.yellow,
           green: data.green
         })
+        break
+      case 'turnCountdown':
+        this.socket.emit(event, {
+          time: data
+        })
+        break
     }
   }
 

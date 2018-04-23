@@ -310,7 +310,7 @@ module.exports = (io) => {
 
     swapMade(manager) {
       this._swaps++
-      if (this._swaps === 4) {
+      if (this.checkGameOver()) {
         this.gameOver()
         return
       }
@@ -339,9 +339,41 @@ module.exports = (io) => {
         this._swaps = 0
       }
       dg(`it is now player ${position}'s turn`, 'debug')
-
       this.updateFrontendData()
       this.updateClientData()
+      for (let manager of this._playerManagers) {
+        if (manager.id !== null && manager.isTurn) {
+          let time = 45
+          let timer = setInterval(() => {
+            if (time >= 0) {
+              if (manager.id !== null) {
+                manager.sendEvent('turnCountdown', time)
+                time--
+              } else {
+                clearInterval(timer)
+              }
+            } else {
+              clearInterval(timer)
+              dg(`${manager.name}'s time has expired`, 'info')
+              this.emitGameEvent(`${manager.name}'s time has expired`)
+              this._swaps++
+              if (this.checkGameOver()) {
+                this.gameOver()
+                return
+              }
+              this.updateTurn(manager, true)
+            }
+          }, 1000)
+        }
+        break
+      }
+    }
+
+    /**
+     * Checks to see if the game is over
+     */
+    checkGameOver() {
+      return this._swaps === 4
     }
 
     gameOver() {
