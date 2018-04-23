@@ -30,7 +30,7 @@ function checkIfUserExists(mac) {
 }
 
 function pruneResults(res) {
-  return res == undefined
+  return res === undefined
 }
 
 function dictionaryCheck(search) {

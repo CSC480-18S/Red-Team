@@ -14,8 +14,8 @@ function log(data) {
   let date = new Date() + ''
   let dateString = date.split(' GMT')[0]
   let totalString = dateString + ': ' + data + '\n'
-  
-  fs.appendFile(logPath, totalString, function (err) {
+
+  fs.appendFile(logPath, totalString, function(err) {
     if (err) {
       console.log('Error while logging:', err)
     }

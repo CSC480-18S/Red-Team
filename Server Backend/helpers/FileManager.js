@@ -3,7 +3,6 @@ const fs = require('fs')
 const logger = require('./Logger')
 
 class FileManager {
-  
   /**
    * @param dir path to save directory (ex. "./dir1/dir2")
    * @param filename name of save file (ex. "savefile.txt")
@@ -13,11 +12,11 @@ class FileManager {
     this._filename = filename
     this._path = dir + '/' + filename
     this._data = null
-    
-    fs.exists(dir, function(exists) {
-      if (!exists) {
-        fs.mkdir(dir, function(err) {
-          if (err) {
+
+    fs.access(dir, function(err) {
+      if (!err) {
+        fs.mkdir(dir, function(err2) {
+          if (err2) {
             logger('Error while making dir, ', err)
           } else {
             logger('Created log dir')
@@ -28,7 +27,7 @@ class FileManager {
       }
     })
   }
-  
+
   /**
    * Writes data to the save file.
    * @param data data to write to save file
@@ -40,19 +39,19 @@ class FileManager {
       }
     })
   }
-  
+
   /**
    * Appends data to the save file.
    * @param data data to append to save file
    */
   appendFile(data) {
-    fs.appendFile(this._path, data, function (err) {
+    fs.appendFile(this._path, data, function(err) {
       if (err) {
         logger('Error while writing file, ', err)
       }
     })
   }
-  
+
   /**
    * Reads data from the save file into local data.
    * Use data getter to retrieve.
@@ -66,7 +65,7 @@ class FileManager {
       }
     })
   }
-  
+
   get data() {
     return this._data
   }
