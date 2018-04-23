@@ -5,6 +5,7 @@ const rm = require('./RedundancyManager')
 
 const DICTIONARY_CHECK = 'http://localhost:8090/dictionary/validate?words='
 const FIND_BY_MAC = 'http://localhost:8091/players/search/findByMacAddr?mac='
+const FIND_BY_USERNAME = 'http://localhost:8091/players/search/findByUsername?username='
 const PLAYERS = 'http://localhost:8091/players/'
 const PLAYED_WORDS = 'http://localhost:8091/playedWords'
 
@@ -22,24 +23,27 @@ function checkIfUserExists(mac) {
   return axios.get(FIND_BY_MAC + mac, {
   })
     .then(function(response) {
-      return response.data
-    })
-    .catch(function(e) {
-      console.log(e)
+      return response.data._embedded.players
     })
 }
 
-function pruneResults(res) {
-  return res === undefined
+function checkIfUserNameExists(username) {
+  console.log('HSDJDKDJLJDSSKLD: ' + FIND_BY_USERNAME + username)
+  return axios.get(FIND_BY_USERNAME + username, {
+  })
+    .then(function(response) {
+      return response.data._embedded.players
+    })
+}
+
+function pruneResults(data) {
+  return data.length === 1
 }
 
 function dictionaryCheck(search) {
   return axios.get(DICTIONARY_CHECK + search)
     .then(r => {
       return r.data
-    })
-    .catch(e => {
-      console.log(e)
     })
 }
 
@@ -74,9 +78,6 @@ function getAllUsers() {
     .then(function(response) {
       return response.data._embedded.players
     })
-    .catch(e => {
-      console.log(e)
-    })
 }
 
 /**
@@ -106,6 +107,7 @@ function updatePlayerScore(player, words) {
 
 module.exports = {
   checkIfUserExists,
+  checkIfUserNameExists,
   dictionaryCheck,
   addUser,
   getAllUsers,

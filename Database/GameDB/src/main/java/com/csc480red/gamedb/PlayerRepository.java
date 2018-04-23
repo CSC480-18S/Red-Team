@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface PlayerRepository extends JpaRepository<Player, Long> {
 	
-	Player findByMacAddr(@Param("mac") String macAddr);
+	List<Player> findByUsername(@Param("username") String username);
+	List<Player> findByMacAddr(@Param("mac") String macAddr);
 	
 }

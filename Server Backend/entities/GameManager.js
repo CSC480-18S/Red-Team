@@ -129,14 +129,14 @@ module.exports = (io) => {
     checkUserInDatabase(socket, mac) {
       db.checkIfUserExists(mac)
         .then(r => {
-          if (!db.pruneResults(r)) {
+          if (db.pruneResults(r)) {
             socket.mac = mac
             this._macs.push(mac)
 
             let user = {
-              username: r.username,
-              team: r.team === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green',
-              link: r._links.self.href
+              username: r[0].username,
+              team: r[0].team === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green',
+              link: r[0]._links.self.href
             }
 
             this.addClientToManager(user.username, user.team, user.link, false, socket)

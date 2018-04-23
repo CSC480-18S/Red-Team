@@ -100,10 +100,10 @@ server.listen(port, function() {
   console.log('Server started on port ' + port)
 })
 
-const rm = new RedundancyManager()
-setTimeout(function() {
-  rm.loadLog()
-}, 1000)
-setTimeout(function() {
-  rm.resend()
-}, 2000)
+// const rm = new RedundancyManager()
+// setTimeout(function() {
+//   rm.loadLog()
+// }, 1000)
+// setTimeout(function() {
+//   rm.resend()
+// }, 2000)

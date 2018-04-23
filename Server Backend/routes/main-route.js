@@ -34,12 +34,19 @@ module.exports = (socket) => {
 
   function addUser(req, res, user) {
     mg(req.ip, (mac) => {
-      console.log(mac)
       user.mac = mac
-      db.addUser(user.username, user.team, user.mac).then(t => {
-        req.session.user = user
-        req.session.error = undefined
-        res.redirect('/')
+      console.log(user)
+      db.checkIfUserNameExists(user.username).then(r => {
+        if (db.pruneResults(r)) {
+          req.session.error = 'Username is already taken'
+          res.redirect('/')
+        } else {
+          db.addUser(user.username, user.team, user.mac).then(t => {
+            req.session.user = user
+            req.session.error = undefined
+            res.redirect('/')
+          })
+        }
       })
     })
   }
@@ -48,10 +55,10 @@ module.exports = (socket) => {
     mg(req.ip, (mac) => {
       db.checkIfUserExists(mac)
         .then(r => {
-          if (!db.pruneResults(r)) {
+          if (db.pruneResults(r)) {
             req.session.user = {
-              username: r.username,
-              team: r.team === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green'
+              username: r[0].username,
+              team: r[0].team === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green'
             }
             req.session.check = true
             res.render('login', {user: req.session.user, error: req.session.error})
