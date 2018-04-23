@@ -1,5 +1,4 @@
 'use strict'
-const fs = require('fs')
 const axios = require('axios')
 const FileManager = require('./FileManager')
 
@@ -38,6 +37,8 @@ class RedundancyManager {
    * Attempts to resend the saved data.
    */
   resend() {
+    logger('Attempting resends (RedundancyManager)')
+    
     let changes = false
 
     for (let i = 0; i < this._savedData.length; i++) {

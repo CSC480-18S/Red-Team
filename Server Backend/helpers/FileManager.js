@@ -1,5 +1,6 @@
 'use strict'
 const fs = require('fs')
+const logger = require('./Logger')
 
 class FileManager {
   
@@ -17,37 +18,49 @@ class FileManager {
       if (!exists) {
         fs.mkdir(dir, function(err) {
           if (err) {
-            console.log('Error while making dir, ', err)
+            logger('Error while making dir, ', err)
+          } else {
+            logger('Created log dir')
           }
         })
+      } else {
+        logger('Dir already exists')
       }
     })
   }
   
   /**
-   * Writes the data to the save file.
+   * Writes data to the save file.
    * @param data data to write to save file
-   * @return true if save was successful, false otherwise
    */
   writeFile(data) {
     fs.writeFile(this._path, data, function(err) {
       if (err) {
-        console.log('Error while writing file, ', err)
-        return false
-      } else {
-        return true
+        logger('Error while writing file, ', err)
       }
     })
   }
-
+  
   /**
-   * Reads data from the save file.
-   * @return data loaded, or null if there was an error
+   * Appends data to the save file.
+   * @param data data to append to save file
+   */
+  appendFile(data) {
+    fs.appendFile(this._path, data, function (err) {
+      if (err) {
+        logger('Error while writing file, ', err)
+      }
+    })
+  }
+  
+  /**
+   * Reads data from the save file into local data.
+   * Use data getter to retrieve.
    */
   readFile() {
     fs.readFile(this._path, (err, readData) => {
       if (err) {
-        console.log('Error while reading file')
+        logger('Error while reading file')
       } else {
         this._data = readData
       }
