@@ -4,6 +4,7 @@
  * Imports files
  */
 const dg = require('./Debug')
+const db = require('./DB')
 
 /**
  * Handles responses going out to users
@@ -42,10 +43,14 @@ module.exports = (data, player, gm) => {
     default:
       result.invalid = false
   }
+  if (data.error === 6) {
+    db.updatePlayerDirty(player, data.data)
+  }
   if (result.invalid) {
     result['reason'] = reason.toUpperCase()
     result['data'] = data.data
     player.sendEvent('play', result)
+    player.sendEvent('gameEvent', reason)
     return false
   }
   let score = gm.calculateScore(player, data.data)

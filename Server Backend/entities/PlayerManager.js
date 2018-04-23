@@ -140,9 +140,16 @@ class PlayerManager {
           score: this.score
         })
         break
+      case 'gameEvent':
+        this.socket.emit(event, {
+          action: data
+        })
+        break
       case 'boardUpdate':
         this.socket.emit(event, {
-          board: this._gameManager.board.sendableBoard()
+          board: this._gameManager.board.sendableBoard(),
+          yellow: data.yellow,
+          green: data.green
         })
     }
   }
@@ -170,14 +177,14 @@ class PlayerManager {
    * @param {Boolean} isAI - AI or not
    * @param {Object} socket - socket object
    */
-  createHandshakeWithClient(name, team, link, isAI, socket) {
+  createHandshakeWithClient(name, team, link, isAI, socket, data) {
     this._name = name
     this._team = team
     this._link = link
     this._isAI = isAI
     this._socket = socket
     this._socketId = socket.id
-    this.sendEvent('boardUpdate')
+    this.sendEvent('boardUpdate', data)
     this.sendEvent('dataUpdate')
     this.listenForEvents()
   }

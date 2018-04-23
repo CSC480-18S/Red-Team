@@ -184,7 +184,7 @@ module.exports = (io) => {
       console.log('DEBUG: FINDING MANAGER TO ADD TO')
       for (let manager of this._playerManagers) {
         if (manager.id === null) {
-          manager.createHandshakeWithClient(name, team, link, isAI, socket)
+          manager.createHandshakeWithClient(name, team, link, isAI, socket, {yellow: this._yellowScore, green: this._greenScore})
           this.emitGameEvent(`${manager.name} entered the game.`)
           this.updateFrontendData()
           if (isAI) {
@@ -223,7 +223,7 @@ module.exports = (io) => {
             for (let frontend of this._frontendManagers) {
               frontend.sendEvent('removeAI', position)
             }
-            manager.createHandshakeWithClient(name, team, link, isAI, socket)
+            manager.createHandshakeWithClient(name, team, link, isAI, socket, {yellow: this._yellowScore, green: this._greenScore})
             this.emitGameEvent(`${manager.name} entered the game.`)
             this.updateFrontendData()
             dg(`client added to --> player manager ${manager.position}`, 'debug')
@@ -302,7 +302,7 @@ module.exports = (io) => {
     updateClientData() {
       for (let manager of this._playerManagers) {
         if (manager.id !== null) {
-          manager.sendEvent('boardUpdate')
+          manager.sendEvent('boardUpdate', {yellow: this._yellowScore, green: this._greenScore})
           manager.sendEvent('dataUpdate')
         }
       }
@@ -503,7 +503,7 @@ module.exports = (io) => {
       let score = sc(words, this._gameBoard.board)
 
       if (!player.isAI) {
-        db.updatePlayerScore(player, score.words)
+        db.updatePlayer(player, score.words)
       }
 
       this.addScore(player, score.totalScore)

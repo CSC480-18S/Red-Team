@@ -92,27 +92,66 @@ function getAllUsers() {
 /**
  * Updates a player's score based on the play they just made
  * @param {Object} player - player object
- * @param {Object} score - score object
+ * @param {Array} words - words array
  */
-function updatePlayerScore(player, words) {
+function updatePlayer(player, words) {
   if (words.length > 0) {
-    if (!player.isAI) {
-      axios.post(PLAYED_WORDS, {
-        word: words[0].word,
-        value: words[0].score,
-        dirty: false,
-        special: false,
-        player: player.link
-      }).then(r => {
-        words.splice(0, 1)
-        this.updatePlayerScore(player, words)
+    axios.post(PLAYED_WORDS, {
+      word: words[0].word,
+      value: words[0].score,
+      dirty: false,
+      special: false,
+      player: player.link
+    }).then(r => {
+      words.splice(0, 1)
+      this.updatePlayer(player, words)
+    })
+      .catch(e => {
+        console.log(e)
+        rm.saveForLater(PLAYERS, words)
       })
-        .catch(e => {
-          rm.saveForLater(PLAYERS, words)
-        })
-    }
   }
 }
+
+/**
+ * Updates a player's dirty word count
+ * @param {Object} player - player object
+ * @param {String} word - dirty word
+ */
+function updatePlayerDirty(player, word) {
+  let play = {
+    word: word,
+    value: 0,
+    dirty: true,
+    special: false,
+    player: player.link
+  }
+  axios.post(PLAYED_WORDS, play)
+    .catch(e => {
+      rm.saveForLater(PLAYERS, play)
+    })
+}
+
+// TODO: Add later @Landon
+/**
+ * Updates a player's special word count
+ * @param {Object} player - player object
+ * @param {String} word - special word
+ */
+// function updatePlayerDirty(player, words) {
+//   if (!player.isAI) {
+//     axios.post(PLAYED_WORDS, {
+//       word: words,
+//       value: words,
+//       dirty: false,
+//       special: true,
+//       player: player.link
+//     })
+//       .catch(e => {
+//         rm.saveForLater(PLAYERS, words)
+//       })
+//   }
+// }
 
 /**
  * Checks to see if the teams were instantiated on the DB, and if not, make requests to make them
@@ -155,6 +194,10 @@ function getTeamURL(mac) {
     })
 }
 
+function updateWin() {
+
+}
+
 module.exports = {
   checkIfUserExists,
   checkIfUserNameExists,
@@ -162,7 +205,8 @@ module.exports = {
   addUser,
   getAllUsers,
   pruneResults,
-  updatePlayerScore,
+  updatePlayer,
+  updatePlayerDirty,
   checkForTeams,
   getTeamURL
 }

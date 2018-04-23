@@ -93,3 +93,8 @@ html, body {
   #login-area #login {
     height: 90%;
     width: 90%; } }
+
+@media screen and (max-width: 1000px) and (min-width: 568px) {
+  #login-area #login {
+    height: 50%;
+    width: 50%; } }

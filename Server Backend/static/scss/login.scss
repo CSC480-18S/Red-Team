@@ -81,7 +81,7 @@ html,body {
     }
 }
 
-.Yellow{
+.Gold{
     background: #FFCC33 !important;
     color: black !important;
 }
@@ -107,3 +107,12 @@ html,body {
         }
     }
 }
+
+@media screen and (max-width: 1000px) and (min-width: 568px) {
+    #login-area{
+         #login {
+             height: 50%;
+             width: 50%;
+         }
+     }
+ }
