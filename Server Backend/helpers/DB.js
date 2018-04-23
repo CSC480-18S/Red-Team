@@ -14,11 +14,8 @@ const GOLD = 'http://localhost:8091/teams/1'
 const GREEN = 'http://localhost:8091/teams/2'
 
 /**
- * Helper function for checking
- * whether a username is already
- * taken in the DB
- *
- * @param {String} mac - mac
+ * Search DB for user by mac address
+ * @param {String} mac - mac address
  */
 function checkIfUserExists(mac) {
   return axios.get(FIND_BY_MAC + mac, {
@@ -28,6 +25,10 @@ function checkIfUserExists(mac) {
     })
 }
 
+/**
+ * Search DB for user by username
+ * @param {String} username - username
+ */
 function checkIfUserNameExists(username) {
   return axios.get(FIND_BY_USERNAME + username, {
   })
@@ -36,10 +37,18 @@ function checkIfUserNameExists(username) {
     })
 }
 
+/**
+ * Check if array of users is equal to 1
+ * @param {Array} data - array of users
+ */
 function pruneResults(data) {
   return data.length === 1
 }
 
+/**
+ * Checks the dictionary DB to see if a word is in it
+ * @param {String} search - words
+ */
 function dictionaryCheck(search) {
   return axios.get(DICTIONARY_CHECK + search)
     .then(r => {
@@ -105,6 +114,9 @@ function updatePlayerScore(player, words) {
   }
 }
 
+/**
+ * Checks to see if the teams were instantiated on the DB, and if not, make requests to make them
+ */
 function checkForTeams() {
   axios.get(TEAMS)
     .then(r => {
@@ -127,6 +139,22 @@ function checkForTeams() {
     })
 }
 
+/**
+ * Gets the player's team based on their mac address
+ * @param {String} mac - mac address
+ */
+function getTeamURL(mac) {
+  return axios.get(FIND_BY_MAC + mac, {
+  })
+    .then(function(response) {
+      return axios.get(response.data._embedded.players[0]._links.team.href, {
+      })
+        .then(function(response) {
+          return response.data._links.team.href
+        })
+    })
+}
+
 module.exports = {
   checkIfUserExists,
   checkIfUserNameExists,
@@ -135,5 +163,6 @@ module.exports = {
   getAllUsers,
   pruneResults,
   updatePlayerScore,
-  checkForTeams
+  checkForTeams,
+  getTeamURL
 }

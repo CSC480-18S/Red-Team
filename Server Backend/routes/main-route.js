@@ -56,12 +56,16 @@ module.exports = (socket) => {
       db.checkIfUserExists(mac)
         .then(r => {
           if (db.pruneResults(r)) {
-            req.session.user = {
-              username: r[0].username,
-              team: r[0].team === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green'
-            }
-            req.session.check = true
-            res.render('login', {user: req.session.user, error: req.session.error})
+            db.getTeamURL(mac)
+              .then(r2 => {
+                req.session.user = {
+                  username: r[0].username,
+                  team: r2 === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green'
+                }
+                req.session.check = true
+                console.log(req.session.user)
+                res.render('login', {user: req.session.user, error: req.session.error})
+              })
           } else {
             res.render('register', {error: req.session.error})
           }
