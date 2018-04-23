@@ -356,11 +356,10 @@ module.exports = (io) => {
     timer() {
       for (let manager of this._playerManagers) {
         if (manager.id !== null && manager.isTurn) {
-          let time = 45
+          let time = 60
           timer = setInterval(() => {
             if (time >= 0) {
               if (manager.id !== null) {
-                manager.sendEvent('turnCountdown', time)
                 time--
               } else {
                 clearInterval(timer)

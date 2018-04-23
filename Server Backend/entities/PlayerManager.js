@@ -153,11 +153,6 @@ class PlayerManager {
           green: data.green
         })
         break
-      case 'turnCountdown':
-        this.socket.emit(event, {
-          time: data
-        })
-        break
     }
   }
 

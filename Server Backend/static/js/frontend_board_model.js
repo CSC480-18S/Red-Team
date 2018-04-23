@@ -25,10 +25,6 @@ socket.on('gameOver', response => {
   alert(`${JSON.stringify(response, null, 4)}`)
 })
 
-socket.on('turnCountdown', response => {
-  this.data.playTime = response.time
-})
-
 socket.on('boardUpdate', response => {
   this.data.goldScore = response.yellow
   this.data.greenScore = response.green
@@ -126,19 +122,21 @@ socket.on('gameEvent', response => {
 })
 
 socket.on('dataUpdate', response => {
-  this.data.playTime = '\u221e'
   this.data.isTurn = response.isTurn
   this.data.score = response.score
+  this.data.playTime = 60
 
   let time
   if (this.data.isTurn) {
+    clearInterval(time)
     time = setInterval(() => {
+      this.data.playTime--
       if (this.data.playTime % 2 === 0) {
         this.data.colored = true
       } else {
         this.data.colored = false
       }
-    }, 500)
+    }, 1000)
   } else {
     clearInterval(time)
     this.data.colored = false
@@ -190,7 +188,7 @@ var data = {
   greenScore: 0,
   goldScore: 0,
   // backgcoresroundColor: ["rgb(171,171,171)", "orange", "green"]
-  playTime: '\u221e',
+  playTime: 60,
   isTurn: false,
   score: 0,
   colored: false
