@@ -16,12 +16,12 @@
         <section id="login-area">
             <div id="login" class="<%= user.team %>">
                 <div id="logo-area">
-                    <img id="logo" src="/static/imgs/logo.png" alt="Oswebble">
+                    <img id="logo" src="/static/imgs/logo-min.png" alt="Oswebble">
                     <h2>Welcome <%= user.username %>!</h2>
                 </div>
                 <div id="button-area">
                         <button type="button" id="play-button" class="btn btn-lg btn-block
-                        <% if (user.team === 'Yellow') { %>
+                        <% if (user.team === 'Gold') { %>
                         btn-success    
                         <% } else {%> btn-warning <% } %>"></button>
                 </div>
@@ -33,9 +33,9 @@
                 </div>
             </div>
         </section>
-        <footer id="footer" class="<% if (user.team === 'Yellow') { %>
+        <footer id="footer" class="<% if (user.team === 'Gold') { %>
                 Green    
-                <% } else {%> Yellow <% } %>">
+                <% } else {%> Gold <% } %>">
                 <div id="copyright"></div>
         </footer>
     </main>
@@ -73,7 +73,7 @@
 
     <script type="text/javascript">
         $("#play-button").on('click', function(){
-            window.location = "http://localhost:3000/game";    
+            window.location = "/game";    
         });
     </script>
 

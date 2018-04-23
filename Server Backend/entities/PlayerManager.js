@@ -11,6 +11,7 @@ class PlayerManager {
     this._name = null
     this._team = null
     this._isAI = null
+    this._link = null
     this._socket = null
     this._socketId = null
     this._position = position
@@ -56,6 +57,7 @@ class PlayerManager {
   }
 
   /**
+   *
    * Turn getter
    */
   get isTurn() {
@@ -74,6 +76,13 @@ class PlayerManager {
    */
   get isAI() {
     return this._isAI
+  }
+
+  /**
+   * Link getter
+   */
+  get link() {
+    return this._link
   }
 
   /**
@@ -132,10 +141,18 @@ class PlayerManager {
           score: this.score
         })
         break
+      case 'gameEvent':
+        this.socket.emit(event, {
+          action: data
+        })
+        break
       case 'boardUpdate':
         this.socket.emit(event, {
-          board: this._gameManager.board.sendableBoard()
+          board: this._gameManager.board.sendableBoard(),
+          yellow: data.yellow,
+          green: data.green
         })
+        break
     }
   }
 
@@ -158,16 +175,18 @@ class PlayerManager {
    * When a client connects, their information is injected into the manager
    * @param {String} name - name of player
    * @param {String} team - team player is on
+   * @param {String} link = player link in db
    * @param {Boolean} isAI - AI or not
    * @param {Object} socket - socket object
    */
-  createHandshakeWithClient(name, team, isAI, socket) {
+  createHandshakeWithClient(name, team, link, isAI, socket, data) {
     this._name = name
     this._team = team
+    this._link = link
     this._isAI = isAI
     this._socket = socket
     this._socketId = socket.id
-	this.sendEvent('boardUpdate')
+    this.sendEvent('boardUpdate', data)
     this.sendEvent('dataUpdate')
     this.listenForEvents()
   }
@@ -210,6 +229,7 @@ class PlayerManager {
     dg(`${this.name} disconnected from player manager ${this.position}`, 'debug')
     this._name = null
     this._team = null
+    this._link = null
     this._isAI = null
     this._socket = null
     this._socketId = null

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css?family=Aldrich|Press+Start+2P" rel="stylesheet">
 
-    <title></title>
+    <title>Oswebble | Game</title>
 </head>
     
 <body>
@@ -13,30 +13,19 @@
 
         <div id="usernameArea">
             <h4 class="username">You are {{username}}</h4>
+            <h4 class="username">Score: {{score}}</h4>
+            <h4 v-if="isTurn" class="username">Play Time: {{playTime}}</h4>
+            <div id="teamScores">
+                <h4 class="username">Green:</h4>
+                <h4 class="username">{{greenScore}}</h4>
+                <h4 class="username">{{goldScore}}</h4>
+                <h4 class="username">:Gold</h4>
+            </div>
         </div>
 
-        <div id="textBox">
+        <div id="textBox" :style="[colored ? {background: 'lightcoral'} : {background: 'none'}]">
             <p class="gameEvent"><b>Game Event</b></p>
             <p class="gameEvent" id="actualEvent"></p>
-        </div>
-        
-       <div id="teamScoreText">
-            <div class = "wrapper-team-scores">
-                <div class="green-team-label">
-                    <b>Green:</b>
-                </div>
-                <div class="green-team-scores">
-                    <div class="boardUpdate" id="greenScore">{{greenScore}}
-                    </div>
-                </div>
-                <div class="gold-team-scores">
-                    <div class="boardUpdate" id="goldScore">{{goldScore}}
-                    </div>
-                </div>
-                <div class="gold-team-label">
-                    <b>:Gold</b>
-                </div>
-            </div>
         </div>
         
         <div class="wrapper-board">
@@ -61,13 +50,6 @@
             <button id="btnSwap" class="btnCust" @click="onClickSwap"><img src="/static/imgs/exchange.png"><br>EXCHANGE</button>
             <button id="btnPlace" class="btnCust" @click="onClickPlace" onclick="emitBoard()"><img src="/static/imgs/done.svg"><br>DONE</button>
             <button id="btnShuffle" class="btnCust" @click="onClickShuffle"><img src="/static/imgs/shuffle.png"><br>SHUFFLE</button>
-        </div>
-        
-        <div id="turnNotif">
-        <div class="wrapper-turn-notifier">
-            <div class="dataUpdate" id="isMyTurn">{{isMyTurn}}
-            </div>
-        </div>
         </div>
         
     </div>

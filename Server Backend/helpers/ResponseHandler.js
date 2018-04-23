@@ -4,6 +4,7 @@
  * Imports files
  */
 const dg = require('./Debug')
+const db = require('./DB')
 
 /**
  * Handles responses going out to users
@@ -42,10 +43,14 @@ module.exports = (data, player, gm) => {
     default:
       result.invalid = false
   }
+  if (data.error === 6) {
+    db.updatePlayerDirty(player, data.data)
+  }
   if (result.invalid) {
     result['reason'] = reason.toUpperCase()
     result['data'] = data.data
     player.sendEvent('play', result)
+    player.sendEvent('gameEvent', reason)
     return false
   }
   let score = gm.calculateScore(player, data.data)
@@ -53,7 +58,7 @@ module.exports = (data, player, gm) => {
   dg('sending out word played event', 'debug')
   gm.boardUpdate()
   dg('sending out game event event', 'debug')
-  let action = `${player.name} played ${data.data.map(w => w.word)} for ${score} points`
+  let action = `${player.name} played ${data.data.map(w => w.word)} for ${score.totalScore} points`
   dg(action, 'info')
   // TODO: Need to flag whether or not this is a bonus play or not @Landon
   gm.emitGameEvent(action, false)
