@@ -9,6 +9,7 @@ const FIND_BY_USERNAME = 'http://localhost:8091/players/search/findByUsername?us
 const PLAYERS = 'http://localhost:8091/players/'
 const TEAMS = 'http://localhost:8091/teams/'
 const PLAYED_WORDS = 'http://localhost:8091/playedWords'
+const END_GAME = 'http://localhost:8091/gameResults'
 
 const GOLD = 'http://localhost:8091/teams/1'
 const GREEN = 'http://localhost:8091/teams/2'
@@ -194,8 +195,23 @@ function getTeamURL(mac) {
     })
 }
 
-function updateWin() {
-
+/**
+ * At the end of the game, the team overall stats are updated
+ * @param {String} team - team name
+ * @param {Number} score - score
+ * @param {Boolean} win - win
+ */
+function updateWin(team, score, win) {
+  let data = {
+    team: team === 'Gold' ? GOLD : GREEN,
+    score: score,
+    win: win,
+    lose: !win
+  }
+  axios.post(END_GAME, data)
+    .catch(e => {
+      rm.saveForLater(END_GAME)
+    })
 }
 
 module.exports = {
@@ -208,5 +224,6 @@ module.exports = {
   updatePlayer,
   updatePlayerDirty,
   checkForTeams,
-  getTeamURL
+  getTeamURL,
+  updateWin
 }

@@ -19,7 +19,7 @@ module.exports = (io) => {
       this._playerManagers = []
       this._frontendManagers = []
       this._greenScore = 0
-      this._yellowScore = 0
+      this._goldScore = 0
       this._swaps = 0
       this._currentPlayers = 0
       this._macs = []
@@ -133,13 +133,16 @@ module.exports = (io) => {
             socket.mac = mac
             this._macs.push(mac)
 
-            let user = {
-              username: r[0].username,
-              team: r[0].team === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green',
-              link: r[0]._links.self.href
-            }
+            db.getTeamURL(mac)
+              .then(r2 => {
+                let user = {
+                  username: r[0].username,
+                  team: r2 === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green',
+                  link: r[0]._links.self.href
+                }
 
-            this.addClientToManager(user.username, user.team, user.link, false, socket)
+                this.addClientToManager(user.username, user.team, user.link, false, socket)
+              })
           } else {
             this.emitError(socket, 'Please login/register first.')
           }
@@ -184,7 +187,7 @@ module.exports = (io) => {
       console.log('DEBUG: FINDING MANAGER TO ADD TO')
       for (let manager of this._playerManagers) {
         if (manager.id === null) {
-          manager.createHandshakeWithClient(name, team, link, isAI, socket, {yellow: this._yellowScore, green: this._greenScore})
+          manager.createHandshakeWithClient(name, team, link, isAI, socket, {yellow: this._goldScore, green: this._greenScore})
           this.emitGameEvent(`${manager.name} entered the game.`)
           this.updateFrontendData()
           if (isAI) {
@@ -223,7 +226,7 @@ module.exports = (io) => {
             for (let frontend of this._frontendManagers) {
               frontend.sendEvent('removeAI', position)
             }
-            manager.createHandshakeWithClient(name, team, link, isAI, socket, {yellow: this._yellowScore, green: this._greenScore})
+            manager.createHandshakeWithClient(name, team, link, isAI, socket, {yellow: this._goldScore, green: this._greenScore})
             this.emitGameEvent(`${manager.name} entered the game.`)
             this.updateFrontendData()
             dg(`client added to --> player manager ${manager.position}`, 'debug')
@@ -287,7 +290,7 @@ module.exports = (io) => {
       let data = {
         board: this._gameBoard.sendableBoard(),
         players: this._playerManagers,
-        yellow: this._yellowScore,
+        yellow: this._goldScore,
         green: this._greenScore
       }
 
@@ -302,7 +305,7 @@ module.exports = (io) => {
     updateClientData() {
       for (let manager of this._playerManagers) {
         if (manager.id !== null) {
-          manager.sendEvent('boardUpdate', {yellow: this._yellowScore, green: this._greenScore})
+          manager.sendEvent('boardUpdate', {yellow: this._goldScore, green: this._greenScore})
           manager.sendEvent('dataUpdate')
         }
       }
@@ -404,14 +407,14 @@ module.exports = (io) => {
           finalScores.push(data)
         }
       }
+      let goldWin = this._goldScore > this._greenScore
+      db.updateWin('Gold', this._goldScore, goldWin)
+      db.updateWin('Green', this._greenScore, !goldWin)
+
       io.emit('gameOver', {
         scores: finalScores,
         winner: winner === null ? 'No one!' : winner,
-        winningTeam: this._yellowScore > this._greenScore ? 'Yellow' : 'Green'
-        // winningTeam: {
-        //   team: this._yellowScore > this._greenScore ? 'Yellow' : 'Green',
-        //   score: this._yellowScore > this._greenScore ? this._yellowScore : this._greenScore
-        // }
+        winningTeam: goldWin ? 'Gold' : 'Green'
       })
 
       let timeUntil = 5
@@ -438,7 +441,7 @@ module.exports = (io) => {
     boardUpdate() {
       io.emit('boardUpdate', {
         board: this._gameBoard.sendableBoard(),
-        yellow: this._yellowScore,
+        yellow: this._goldScore,
         green: this._greenScore
       })
     }
@@ -556,8 +559,8 @@ module.exports = (io) => {
         case 'Green':
           this._greenScore += score
           break
-        case 'Yellow':
-          this._yellowScore += score
+        case 'Gold':
+          this._goldScore += score
           break
       }
     }
@@ -589,7 +592,7 @@ module.exports = (io) => {
    */
     resetPlayers() {
       this._greenScore = 0
-      this._yellowScore = 0
+      this._goldScore = 0
 
       this._playerManagers.map(p => {
         p.resetScore()
