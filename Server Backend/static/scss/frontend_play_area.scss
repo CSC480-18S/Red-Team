@@ -112,45 +112,23 @@
     border-color: black;
     */
   }
-  
-  .wrapper-team-scores {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-gap: 0.1rem;
-    width: 315px;
-    margin-left: 95px;
-    display: grid;
-    align-self: center;
-  }
-  
-  .green-team-label {
-    font-size: 25px;
-    color: rgb(24, 180, 76);
-    grid-column: 1;
-    grid-row: 1;
-  }
-  
-  .gold-team-label {
-    font-size: 25px;
-    color: rgb(242, 195, 50);
-    grid-column: 5;
-    grid-row: 1;
-  }
-  
-  .green-team-scores {
-    font-size: 25px;
-    color: black;
-    grid-column: 2;
-    grid-row: 1;
-    text-align: left;
-  }
-  
-  .gold-team-scores {
-    font-size: 25px;
-    color: black;
-    grid-column: 4;
-    grid-row: 1;
-    text-align: right;
+
+  #teamScores {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+
+    h4{
+      font-weight: bold;
+      font-size: 24px;
+      &:nth-child(-n + 2){
+        color: green;
+      }
+
+      &:nth-child(n + 3){
+        color: rgb(242, 195, 50);
+      }
+    }
   }
   
   .wrapper-buttons {
