@@ -26,6 +26,9 @@ socket.on('gameOver', response => {
 })
 
 socket.on('boardUpdate', response => {
+this.data.goldScore = response.yellow
+this.data.greenScore = response.green
+    
   this.data.currentPlayTileAmount = 0
   for (i = 0; i < row; i++) {
     for (j = 0; j < column; j++) {
@@ -119,6 +122,8 @@ socket.on('gameEvent', response => {
 })
 
 socket.on('dataUpdate', response => {
+this.data.isTurn = response.isTurn    
+    
   console.log('received dataUpdate event: ')
   console.log(response)
   this.data.username = response.name
@@ -129,6 +134,7 @@ socket.on('dataUpdate', response => {
   // var isTurn = true;
   // if (isTurn === false) {
   if (response.isTurn === false) {
+      this.data.isMyTurn = "Wait for your turn..."
     document.getElementById('btnSwap').disabled = true
     document.getElementById('btnPlace').disabled = true
     document.getElementById('btnShuffle').disabled = true
@@ -136,6 +142,7 @@ socket.on('dataUpdate', response => {
       this.data.tileSlots[i].tile.disabled = true
     }
   } else {
+      this.data.isMyTurn = "It's your turn!"
     document.getElementById('btnSwap').disabled = false
     document.getElementById('btnPlace').disabled = false
     document.getElementById('btnShuffle').disabled = false
@@ -159,8 +166,12 @@ var data = {
   currentRoundtileIdsOnBoard: [],
   tilesOnBoardValueAndPosition: [],
   currentPlayTileAmount: 0,
-  username: ''
-  // backgroundColor: ["rgb(171,171,171)", "orange", "green"]
+  username: '',
+  greenScore: 0,
+  goldScore: 0,
+  isTurn: false,
+  isMyTurn: '' 
+  // backgcoresroundColor: ["rgb(171,171,171)", "orange", "green"]
 }
 
 function generateTableRows() {

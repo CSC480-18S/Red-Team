@@ -7,7 +7,7 @@
 
     <title></title>
 </head>
-
+    
 <body>
     <div id="root">
 
@@ -20,12 +20,31 @@
             <p class="gameEvent" id="actualEvent"></p>
         </div>
         
-        <div class="wrapper-board">
-            <div class="row-style" v-for="row in rows">
-                <div class="col-style" v-for="square in squares" v-if="square.xAxis === row" :id="square.id" :style="{background: square.squareBackgroundColor}" @click="onClickSquare(square.id)"></div>
+       <div id="teamScoreText">
+            <div class = "wrapper-team-scores">
+                <div class="green-team-label">
+                    <b>Green:</b>
+                </div>
+                <div class="green-team-scores">
+                    <div class="boardUpdate" id="greenScore">{{greenScore}}
+                    </div>
+                </div>
+                <div class="gold-team-scores">
+                    <div class="boardUpdate" id="goldScore">{{goldScore}}
+                    </div>
+                </div>
+                <div class="gold-team-label">
+                    <b>:Gold</b>
+                </div>
             </div>
         </div>
-
+        
+        <div class="wrapper-board">
+            <div class="row-style" v-for="row in rows">
+                <div class="col-style" v-for="square in squares" v-if="square.xAxis === row" :id="square.id" :style="{background: square.squareBackgroundColor}"@click="onClickSquare(square.id)"></div>
+            </div>
+        </div>
+        
         <div class="wrapper-slots">
             <div class="row-style">
                 <div class="slot-style" v-for="tileSlot in tileSlots" :id="tileSlot.id">
@@ -39,11 +58,18 @@
         </div>
 
         <div class="wrapper-buttons">
-            <button id="btnSwap" @click="onClickSwap"><img src="/static/imgs/exchange.png"><br>EXCHANGE</button>
-            <button id="btnPlace" @click="onClickPlace" onclick="emitBoard()"><img src="/static/imgs/done.svg"><br>DONE</button>
-            <button id="btnShuffle" @click="onClickShuffle"><img src="/static/imgs/shuffle.png"><br>SHUFFLE</button>
+            <button id="btnSwap" class="btnCust" @click="onClickSwap"><img src="/static/imgs/exchange.png"><br>EXCHANGE</button>
+            <button id="btnPlace" class="btnCust" @click="onClickPlace" onclick="emitBoard()"><img src="/static/imgs/done.svg"><br>DONE</button>
+            <button id="btnShuffle" class="btnCust" @click="onClickShuffle"><img src="/static/imgs/shuffle.png"><br>SHUFFLE</button>
         </div>
-
+        
+        <div id="turnNotif">
+        <div class="wrapper-turn-notifier">
+            <div class="dataUpdate" id="isMyTurn">{{isMyTurn}}
+            </div>
+        </div>
+        </div>
+        
     </div>
 
     <script type="text/javascript" src="/static/js/vuejs-2.5.16.min.js"></script>
