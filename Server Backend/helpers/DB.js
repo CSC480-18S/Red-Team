@@ -7,6 +7,7 @@ const DICTIONARY_CHECK = 'http://localhost:8090/dictionary/validate?words='
 const FIND_BY_MAC = 'http://localhost:8091/players/search/findByMacAddr?mac='
 const FIND_BY_USERNAME = 'http://localhost:8091/players/search/findByUsername?username='
 const PLAYERS = 'http://localhost:8091/players/'
+const TEAMS = 'http://localhost:8091/teams/'
 const PLAYED_WORDS = 'http://localhost:8091/playedWords'
 
 const GOLD = 'http://localhost:8091/teams/1'
@@ -28,7 +29,6 @@ function checkIfUserExists(mac) {
 }
 
 function checkIfUserNameExists(username) {
-  console.log('HSDJDKDJLJDSSKLD: ' + FIND_BY_USERNAME + username)
   return axios.get(FIND_BY_USERNAME + username, {
   })
     .then(function(response) {
@@ -105,6 +105,28 @@ function updatePlayerScore(player, words) {
   }
 }
 
+function checkForTeams() {
+  axios.get(TEAMS)
+    .then(r => {
+      if (r.data._embedded.teams.length < 2) {
+        axios.post(TEAMS, {
+          name: 'Gold'
+        }).then(r => {
+          axios.post(TEAMS, {
+            name: 'Green'
+          })
+        })
+          .catch(e => {
+            rm.saveForLater(TEAMS, {name: 'Green'})
+          })
+      }
+    })
+    .catch(e => {
+      rm.saveForLater(TEAMS, {name: 'Gold'})
+      rm.saveForLater(TEAMS, {name: 'Green'})
+    })
+}
+
 module.exports = {
   checkIfUserExists,
   checkIfUserNameExists,
@@ -112,5 +134,6 @@ module.exports = {
   addUser,
   getAllUsers,
   pruneResults,
-  updatePlayerScore
+  updatePlayerScore,
+  checkForTeams
 }

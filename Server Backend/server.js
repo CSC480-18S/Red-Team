@@ -6,6 +6,7 @@ const path = require('path')
 const bodyParser = require('body-parser')
 const http = require('http')
 const RedundancyManager = require('./helpers/RedundancyManager')
+const db = require('./helpers/DB')
 
 /**
  * Set to a variable, instead of typing this out everytime
@@ -99,6 +100,8 @@ app.use('/static', express.static(path.join(__dirname, '/static')))
 server.listen(port, function() {
   console.log('Server started on port ' + port)
 })
+
+db.checkForTeams()
 
 // const rm = new RedundancyManager()
 // setTimeout(function() {
