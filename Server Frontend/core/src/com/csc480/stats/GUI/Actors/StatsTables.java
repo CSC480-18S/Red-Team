@@ -2,32 +2,27 @@ package com.csc480.stats.GUI.Actors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.csc480.game.Engine.TestingInputProcessor;
 import com.csc480.game.GUI.GameScreen;
 
 public class StatsTables extends Group {
 
-    private Hud hud;
-    private Skin skin;
+    Hud hud = new Hud();
+   // Skin skin= new Skin(Gdx.files.internal("skin/OsweebleSkinFinal.json"));
 
 
     public StatsTables() {
         super();
-        skin = new Skin(Gdx.files.internal("skin/OsweebleSkinFinal.json"));
-        hud = new Hud();
+    }
 
 
+    public void TableLayout (){
 
-
-///////////////////////////////////////////GREEN TEAM////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////GREEN TEAM////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //Highest Word Score Table----------------
         Table innerLeft = new Table();
@@ -131,10 +126,8 @@ public class StatsTables extends Group {
 
         //Bad Words Attempted & Average Score------------
         Table innerLx4_3 = new Table();
-        //innerLx4_3.add(hud.G_WAWords).top().padTop(20).padLeft(65).padBottom(20);
         innerLx4_3.add(hud.G_WAWords).top().padTop(20).padLeft(53).padBottom(20);
         innerLx4_3.row();
-        //innerLx4_3.add(hud.G_ASWords).padLeft(55);
         innerLx4_3.add(hud.G_ASWords).padLeft(35);
 
 
@@ -152,7 +145,7 @@ public class StatsTables extends Group {
         first_table.row();
 
 
-////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////GREEN TEAM END/////////////////////////////////////////////////////
 
 
 ///////////////////////////////////////////GOLD TEAM////////////////////////////////////////////////////////////
@@ -279,16 +272,13 @@ public class StatsTables extends Group {
 
         //-----------RIGHT TABLE---------------
         Table second_table = new Table();
-        // second_table.row().width(265).padRight(30);
-        //second_table.add(hud.T_answer);
-        // second_table.row().width(265).padRight(30);
-        //second_table.add(hud.RowOneScore).padLeft(1);
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////GOLD TEAM END////////////////////////////////////////////////////////
 
+        //debug
         //second_table.setDebug(true);
 
 
@@ -305,8 +295,6 @@ public class StatsTables extends Group {
         table.defaults().pad(2F);
         table.setFillParent(true);
         table.setBackground(new TextureRegionDrawable(
-                // new TextureRegion(new Texture(Gdx.files.internal("StatsAssets/statsBackground.png")))));
-                //new TextureRegion(new Texture(Gdx.files.internal("Background.jpg")))));
                 new TextureRegion(new Texture(Gdx.files.internal("skin/BorderedRectangle.png")))));
 //debug
         //table.setDebug(true);
@@ -354,9 +342,7 @@ public class StatsTables extends Group {
 
 
         super.addActor(table);
-
     }
-
 
 }
 

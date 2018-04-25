@@ -50,6 +50,7 @@ public class StatsScreen implements Screen {
         //sprite.setSize(,Gdx.graphics.getHeight());
 
         StatsTables table  = new StatsTables();
+        table.TableLayout();
         //table.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         table.setWidth(GameScreen.GUI_UNIT_SIZE * 37);
         table.setHeight(GameScreen.GUI_UNIT_SIZE * 37 *aspectRatio);
