@@ -25,6 +25,10 @@ public class TeamTest {
   @Autowired
   PlayerRepository players;
 
+  /**
+   * adds a Green and Gold team to the Team Repository
+   * adds a player to the Player Repository
+   */
   @Before
   public void setup() {
     Team gold = new Team("Gold");
