@@ -20,9 +20,6 @@ public class PlayerTest {
   private TestEntityManager entityManager;
 
   @Autowired
-  private TeamRepository teams;
-
-  @Autowired
   PlayerRepository players;
 
   @Before
