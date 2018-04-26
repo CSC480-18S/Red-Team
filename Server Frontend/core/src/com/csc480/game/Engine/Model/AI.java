@@ -253,11 +253,12 @@ public class AI extends Player {
                             else{
                                 FindPlayInverted(myBoard);
                             }
-                            while(System.currentTimeMillis() - startTime < 6000){
-                                if(System.currentTimeMillis() - startTime % 100 == 0) {
-                                    System.out.println(System.currentTimeMillis());
+                            if(!GameManager.debug)
+                                while(System.currentTimeMillis() - startTime < 6000){
+                                    if(System.currentTimeMillis() - startTime % 100 == 0) {
+                                        System.out.println(System.currentTimeMillis());
+                                    }
                                 }
-                            }
                             state = 1;
 //                            tiles = GameManager.getInstance().getNewHand();
                             try {

@@ -4,130 +4,32 @@ size: 4096,4096
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-A
+board
   rotate: false
-  xy: 3470, 3446
-  size: 513, 572
-  orig: 513, 572
+  xy: 2, 204
+  size: 3750, 3750
+  orig: 3750, 3750
   offset: 0, 0
   index: -1
-B
+goldBar
   rotate: false
-  xy: 3470, 2872
-  size: 513, 572
-  orig: 513, 572
+  xy: 2, 2
+  size: 2752, 200
+  orig: 2752, 200
   offset: 0, 0
   index: -1
-C
+~GoldBlank
   rotate: false
-  xy: 3460, 2298
-  size: 513, 572
-  orig: 513, 572
+  xy: 3754, 3698
+  size: 256, 256
+  orig: 256, 256
   offset: 0, 0
   index: -1
-D
+~GreenBlank
   rotate: false
-  xy: 1919, 913
-  size: 513, 572
-  orig: 513, 572
-  offset: 0, 0
-  index: -1
-E
-  rotate: false
-  xy: 1919, 339
-  size: 513, 572
-  orig: 513, 572
-  offset: 0, 0
-  index: -1
-F
-  rotate: false
-  xy: 2434, 913
-  size: 513, 572
-  orig: 513, 572
-  offset: 0, 0
-  index: -1
-G
-  rotate: false
-  xy: 2434, 339
-  size: 513, 572
-  orig: 513, 572
-  offset: 0, 0
-  index: -1
-H
-  rotate: false
-  xy: 3460, 1724
-  size: 513, 572
-  orig: 513, 572
-  offset: 0, 0
-  index: -1
-I
-  rotate: false
-  xy: 2949, 913
-  size: 513, 572
-  orig: 513, 572
-  offset: 0, 0
-  index: -1
-J
-  rotate: false
-  xy: 2949, 339
-  size: 513, 572
-  orig: 513, 572
-  offset: 0, 0
-  index: -1
-K
-  rotate: false
-  xy: 3464, 1150
-  size: 513, 572
-  orig: 513, 572
-  offset: 0, 0
-  index: -1
-L
-  rotate: false
-  xy: 3464, 576
-  size: 513, 572
-  orig: 513, 572
-  offset: 0, 0
-  index: -1
-M
-  rotate: false
-  xy: 3464, 2
-  size: 513, 572
-  orig: 513, 572
-  offset: 0, 0
-  index: -1
-goldbanner
-  rotate: false
-  xy: 2088, 1994
-  size: 1370, 1003
-  orig: 1370, 1003
-  offset: 0, 0
-  index: -1
-greenbanner
-  rotate: false
-  xy: 2088, 2999
-  size: 1380, 1019
-  orig: 1380, 1019
-  offset: 0, 0
-  index: -1
-oswego
-  rotate: false
-  xy: 2088, 1487
-  size: 1079, 505
-  orig: 1079, 505
-  offset: 0, 0
-  index: -1
-slot
-  rotate: false
-  xy: 2, 17
-  size: 1915, 1915
-  orig: 1915, 1915
-  offset: 0, 0
-  index: -1
-~Dark
-  rotate: false
-  xy: 2, 1934
-  size: 2084, 2084
-  orig: 2084, 2084
+  xy: 3754, 3440
+  size: 256, 256
+  orig: 256, 256
   offset: 0, 0
   index: -1
 
@@ -136,155 +38,275 @@ size: 4096,4096
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+A
+  rotate: false
+  xy: 1384, 2812
+  size: 513, 572
+  orig: 513, 572
+  offset: 0, 0
+  index: -1
+B
+  rotate: false
+  xy: 1899, 2812
+  size: 513, 572
+  orig: 513, 572
+  offset: 0, 0
+  index: -1
+Background
+  rotate: false
+  xy: 2740, 2554
+  size: 1232, 1528
+  orig: 1232, 1528
+  offset: 0, 0
+  index: -1
+C
+  rotate: false
+  xy: 1374, 2238
+  size: 513, 572
+  orig: 513, 572
+  offset: 0, 0
+  index: -1
+D
+  rotate: false
+  xy: 1889, 2238
+  size: 513, 572
+  orig: 513, 572
+  offset: 0, 0
+  index: -1
+E
+  rotate: false
+  xy: 2404, 1980
+  size: 513, 572
+  orig: 513, 572
+  offset: 0, 0
+  index: -1
+F
+  rotate: false
+  xy: 1374, 1664
+  size: 513, 572
+  orig: 513, 572
+  offset: 0, 0
+  index: -1
+G
+  rotate: false
+  xy: 1889, 1664
+  size: 513, 572
+  orig: 513, 572
+  offset: 0, 0
+  index: -1
+H
+  rotate: false
+  xy: 2919, 1980
+  size: 513, 572
+  orig: 513, 572
+  offset: 0, 0
+  index: -1
+I
+  rotate: false
+  xy: 3434, 1980
+  size: 513, 572
+  orig: 513, 572
+  offset: 0, 0
+  index: -1
+J
+  rotate: false
+  xy: 2, 1293
+  size: 513, 572
+  orig: 513, 572
+  offset: 0, 0
+  index: -1
+K
+  rotate: false
+  xy: 517, 1293
+  size: 513, 572
+  orig: 513, 572
+  offset: 0, 0
+  index: -1
+L
+  rotate: false
+  xy: 2, 719
+  size: 513, 572
+  orig: 513, 572
+  offset: 0, 0
+  index: -1
+M
+  rotate: false
+  xy: 2, 145
+  size: 513, 572
+  orig: 513, 572
+  offset: 0, 0
+  index: -1
 N
   rotate: false
-  xy: 2, 1150
+  xy: 517, 719
   size: 513, 572
   orig: 513, 572
   offset: 0, 0
   index: -1
 O
   rotate: false
-  xy: 2088, 3236
+  xy: 517, 145
   size: 513, 572
   orig: 513, 572
   offset: 0, 0
   index: -1
 P
   rotate: false
-  xy: 2, 576
+  xy: 1032, 1090
   size: 513, 572
   orig: 513, 572
   offset: 0, 0
   index: -1
 Q
   rotate: false
-  xy: 517, 1150
+  xy: 1032, 516
   size: 513, 572
   orig: 513, 572
   offset: 0, 0
   index: -1
 R
   rotate: false
-  xy: 2088, 2662
+  xy: 1547, 1090
   size: 513, 572
   orig: 513, 572
   offset: 0, 0
   index: -1
 S
   rotate: false
-  xy: 2603, 3236
+  xy: 1547, 516
   size: 513, 572
   orig: 513, 572
   offset: 0, 0
   index: -1
 T
   rotate: false
-  xy: 2, 2
+  xy: 2062, 1090
   size: 513, 572
   orig: 513, 572
   offset: 0, 0
   index: -1
 U
   rotate: false
-  xy: 517, 576
+  xy: 2062, 516
   size: 513, 572
   orig: 513, 572
   offset: 0, 0
   index: -1
 V
   rotate: false
-  xy: 1032, 1150
+  xy: 3031, 1406
   size: 513, 572
   orig: 513, 572
   offset: 0, 0
   index: -1
 W
   rotate: false
-  xy: 2088, 2088
+  xy: 3546, 1406
   size: 513, 572
   orig: 513, 572
   offset: 0, 0
   index: -1
 X
   rotate: false
-  xy: 2603, 2662
+  xy: 2577, 832
   size: 513, 572
   orig: 513, 572
   offset: 0, 0
   index: -1
 Y
   rotate: false
-  xy: 3118, 3236
+  xy: 3031, 258
   size: 513, 572
   orig: 513, 572
   offset: 0, 0
   index: -1
 Z
   rotate: false
-  xy: 517, 2
+  xy: 3092, 832
   size: 513, 572
   orig: 513, 572
   offset: 0, 0
   index: -1
 _Blank
   rotate: false
-  xy: 1032, 576
+  xy: 3546, 258
   size: 513, 572
   orig: 513, 572
   offset: 0, 0
   index: -1
-_Invis
+goldbanner
   rotate: false
-  xy: 1547, 1150
-  size: 513, 572
-  orig: 513, 572
+  xy: 2, 1867
+  size: 1370, 1003
+  orig: 1370, 1003
+  offset: 0, 0
+  index: -1
+greenBar
+  rotate: false
+  xy: 2, 3893
+  size: 2736, 189
+  orig: 2736, 189
+  offset: 0, 0
+  index: -1
+greenbanner
+  rotate: false
+  xy: 2, 2872
+  size: 1380, 1019
+  orig: 1380, 1019
+  offset: 0, 0
+  index: -1
+oswego
+  rotate: false
+  xy: 1384, 3386
+  size: 1079, 505
+  orig: 1079, 505
+  offset: 0, 0
+  index: -1
+slot
+  rotate: false
+  xy: 1032, 2
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
+~Dark
+  rotate: false
+  xy: 1546, 2
+  size: 512, 512
+  orig: 512, 512
   offset: 0, 0
   index: -1
 ~Empty
   rotate: false
-  xy: 2, 1724
-  size: 2084, 2084
-  orig: 2084, 2084
+  xy: 2060, 2
+  size: 512, 512
+  orig: 512, 512
   offset: 0, 0
   index: -1
 ~Gold
   rotate: false
-  xy: 3118, 2742
+  xy: 3607, 912
   size: 454, 492
   orig: 454, 492
   offset: 0, 0
   index: -1
 ~Green
   rotate: false
-  xy: 2603, 2168
+  xy: 2574, 22
   size: 455, 492
   orig: 455, 492
   offset: 0, 0
   index: -1
 
 tilesAtlas3.png
-size: 4096,4096
+size: 1024,1024
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-~GoldBlank
+_Invis
   rotate: false
   xy: 2, 2
-  size: 2084, 2084
-  orig: 2084, 2084
-  offset: 0, 0
-  index: -1
-
-tilesAtlas4.png
-size: 4096,4096
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
-~GreenBlank
-  rotate: false
-  xy: 2, 2
-  size: 2084, 2084
-  orig: 2084, 2084
+  size: 513, 572
+  orig: 513, 572
   offset: 0, 0
   index: -1

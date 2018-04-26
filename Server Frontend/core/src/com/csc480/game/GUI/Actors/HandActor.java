@@ -50,7 +50,7 @@ public class HandActor extends Group {
         for(int i = 0; i < 7; i++){
             Image temp = new Image(TextureManager.getInstance().getSlotTexture());
             temp.setPosition((GameScreen.GUI_UNIT_SIZE/2)+i*GameScreen.GUI_UNIT_SIZE, GameScreen.GUI_UNIT_SIZE/2);
-            temp.setScale((GameScreen.GUI_UNIT_SIZE/GameScreen.TILE_PIXEL_SIZE)/4);
+            temp.setScale((GameScreen.GUI_UNIT_SIZE/GameScreen.TILE_PIXEL_SIZE));
             addActor(temp);
         }
 
