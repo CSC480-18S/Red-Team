@@ -102,21 +102,7 @@ public class TestingInputProcessor implements InputProcessor {
                 GameManager.getInstance().theBoard.addWord(GameManager.getInstance().placementsUnderConsideration);
             GameManager.getInstance().placementsUnderConsideration.clear();
         }
-        else if(character == '\\'){
-            System.out.println("Finding all words for queue");
-            Long startTime = System.nanoTime();
-            String hand = "";
-            for(Placement p : GameManager.getInstance().placementsUnderConsideration){
-                hand+= p.letter;
-            }
-            char[] constraints = new char[hand.length()];
-            Arrays.fill(constraints,(char)0);
-            ArrayList<String> results = WordVerification.getInstance().getWordsFromHand(hand,constraints, 5);
-            System.out.println("finding all possible words took nanos: "+(System.nanoTime()-startTime));
-            for (String s : results)
-                System.out.println(s);
-
-        }else if(character == ']'){
+        else if(character == ']'){
             System.out.println("AI TEST YOUR THING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             for(int i = 0; i < testHandQueue.length; i++){
                 if(testHandQueue[i] != 0) {

@@ -180,7 +180,8 @@ public class WordVerification {
                                 }
                                 //System.out.println("Adding to possible plays from Word Verification:" + PrintPlay(play));
                                 PlayIdea p = new PlayIdea(e,play,(byte) play.size());
-                                possiblePlays.add(p);
+                                if(VerifyNotCheating(p,hand,constraints))
+                                    possiblePlays.add(p);
                             }else {
                                 //System.out.println("handle the first play case");
                                 //if (root.letter == 0)
@@ -196,7 +197,8 @@ public class WordVerification {
                                 //play.add(new Placement(e.charAt(playRoot),(int)root.my_position.y,(int)root.my_position.y));
                                 //System.out.println("Adding to possible plays from Word Verification:" + PrintPlay(play));
                                 PlayIdea p = new PlayIdea(e,play,(byte)play.size());
-                                possiblePlays.add(p);
+                                if(VerifyNotCheating(p,hand,constraints))
+                                    possiblePlays.add(p);
                             }
                         }
                     }catch (PatternSyntaxException exp){
@@ -213,37 +215,29 @@ public class WordVerification {
 
     }
 
-    public ArrayList<String> getWordsFromHand(String hand, char[] constraints, int index){
-        String handAndReleventBoardTiles = hand;
-        //generate the regex template for the current tile.
-        String regex = genRegex(constraints, index);
-        for(int i = 0; i < constraints.length; i++)
-            if(constraints[i] != 0)
-                handAndReleventBoardTiles += constraints[i];
-        ArrayList<String> possibleWords = new ArrayList<String>();
-        for(String e: validWords){
-            String temp = handAndReleventBoardTiles;
-            boolean isGoodFlag = true;
-            if(e.length() <= constraints.length){
-                for(int i = 0; i < e.length(); i++){
-                    if(temp.contains(e.charAt(i)+"")){
-                        temp = temp.replace(e.charAt(i),'_');
-                    }else {
-                        isGoodFlag = false;
-                        break;
-                    }
-                }
-                if(isGoodFlag){
-                    if(e.matches(regex)) {
-                        possibleWords.add(e);
-                    }
-                }
+    /**
+     * Verify that the play is not pulling tiles off of other places in the constraints to make a word
+     * @param p
+     * @param hand
+     * @param constraints
+     * @return
+     */
+    private boolean VerifyNotCheating(PlayIdea p, String hand, char[] constraints){
+        ArrayList<Placement> testPlacements = (ArrayList<Placement>) p.placements.clone();
+        String testHand = hand+"";
+        char[] testConstraints = constraints.clone();
+        //for every placement ensure its in the hand
+        for (int i = 0; i < p.placements.size(); i++) {
+            if(testHand.contains(p.placements.get(i).letter+"")){
+                testHand.replaceFirst(p.placements.get(i).letter+"","");
+            }else{
+                return false;
             }
         }
-        //System.out.println("Found "+possibleWords.size()+" possible words.");
-        return possibleWords;
-
+        return true;
     }
+
+
     /**
      * This function will verify that a string is a valid word in our data set
      * @param word the string to verify
