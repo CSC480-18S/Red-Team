@@ -58,9 +58,21 @@ module.exports = (data, player, gm) => {
   dg('sending out word played event', 'debug')
   gm.boardUpdate()
   dg('sending out game event event', 'debug')
-  let action = `${player.name} played ${data.data.map(w => w.word)} for ${score.totalScore} points`
+  let words = data.data.map(w => w.word)
+  let action = `${player.name} played ${words} for ${score.totalScore} points`
   dg(action, 'info')
   // TODO: Need to flag whether or not this is a bonus play or not @Landon
-  gm.emitGameEvent(action, false)
-  return true
+  const search = words.map(s => s).join(',')
+  db.dictionaryCheck(search).then(r => {
+    let bonus = false
+    for (let word of r) {
+      if (word.special) {
+        bonus = true
+      }
+    }
+    gm.emitGameEvent(action, bonus)
+    return true
+  }).catch(e => {
+    console.log(e)
+  })
 }
