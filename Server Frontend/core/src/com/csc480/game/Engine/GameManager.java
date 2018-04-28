@@ -63,6 +63,7 @@ public class GameManager {
         eventBacklog = new ArrayList<String>();
         //SocketManager.getInstance().ConnectSocket();
         //SocketManager.getInstance().setUpEvents();
+        WordVerification.getInstance();
         ConnectSocket();
         setUpEvents();
         try {
@@ -296,7 +297,18 @@ public class GameManager {
                     for(int i = 0; i < players.length(); i++){
                         JSONObject player  = (JSONObject)players.get(i);
                         int index = player.getInt("position");
-                        boolean isAI = player.getBoolean("isAI");
+                        boolean isAI;
+                        try {
+                            isAI = player.getBoolean("isAI");
+                        }catch(JSONException e){
+                            //the
+                            isAI = true;
+                            //todo reconnect an AI at that position
+                            theAIs[index].disconnectAI();
+                            theAIs[index] = null;
+                            theAIs[index] = new AI();
+                            thePlayers[index] = theAIs[index];
+                        }
                         try {
                             if(player.get("score") != JSONObject.NULL)
                                 thePlayers[index].score = player.getInt("score");

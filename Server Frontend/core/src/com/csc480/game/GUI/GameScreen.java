@@ -83,11 +83,14 @@ public class GameScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         //Set the entire screen to this color
         Gdx.gl.glClearColor(.666f, .666f, .666f, 1);
+        try{
         //perform the actions of the actors
         stage.act(delta);
         //render the actors
         stage.draw();
-
+        }catch (NullPointerException n){
+            n.printStackTrace();
+        }
     }
 
     @Override

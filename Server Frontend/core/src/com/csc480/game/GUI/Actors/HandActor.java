@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.SnapshotArray;
 import com.csc480.game.Engine.Model.AI;
 import com.csc480.game.Engine.Model.Placement;
 import com.csc480.game.Engine.Model.Player;
@@ -95,7 +96,10 @@ public class HandActor extends Group {
             myHand.remove(a);
             //remove the tiles in the tiles
             int count = 0;
-            for(Actor child : this.getChildren()){
+            //SnapshotArray<Actor> copy = this.getChildren();
+            int initSize = this.getChildren().size;
+            for (int i = 0; i < initSize; i++) {
+                Actor child = this.getChildren().get(i);
                 if(child instanceof TileActor){
                     MoveToAction mta = new MoveToAction();
                     mta.setPosition(((GameScreen.GUI_UNIT_SIZE/2)+count*GameScreen.GUI_UNIT_SIZE)+GameScreen.GUI_UNIT_SIZE*.032f, GameScreen.GUI_UNIT_SIZE/2+GameScreen.GUI_UNIT_SIZE*.1f);
@@ -144,7 +148,8 @@ public class HandActor extends Group {
                     whatsInHand.add(new Character('_'));
         }
         //remove tiles that arent here
-        for(int i = 0; i < this.getChildren().size;i++){
+        int initSize = this.getChildren().size;
+        for(int i = 0; i < initSize;i++){
             Actor child = this.getChildren().get(i);
             if(child instanceof TileActor){
                 Character thisChar = new Character(((TileActor) child).myLetter);
@@ -152,6 +157,7 @@ public class HandActor extends Group {
                     whatsInHand.remove(thisChar);
                 }
                 else {
+                    initSize--;
                     i--;
                     this.removeTile((TileActor) child);
                 }

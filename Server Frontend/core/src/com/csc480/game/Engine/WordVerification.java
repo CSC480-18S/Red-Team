@@ -43,6 +43,7 @@ public class WordVerification {
                 c++;
                 validWords.add(inFileScanner.nextLine());
             }
+            inFileScanner.close();
             //System.out.println("Finished Creating HashSet total num = "+c+", nanos: "+(System.nanoTime()-startTime));
         }catch (FileNotFoundException e){
             System.err.println(e);

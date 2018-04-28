@@ -38,10 +38,8 @@ public class AI extends Player {
         this.name = "AI"+(counter++);
         if(greenTeam){
             this.team = "Green";
-            greenTeam = !greenTeam;
         }else {
             this.team = "Yellow";
-            greenTeam = !greenTeam;
         }
         myCache = new PriorityQueue(200);
         myBoard = new Board(11);
@@ -300,7 +298,8 @@ public class AI extends Player {
             }).on("playWord", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    System.out.println(AI.this.name + " got playWord, but does nothing");
+                    //System.out.println(AI.this.name + " got playWord, but does nothing");
+                    myCache.Clear();
                 }
             }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
                 @Override
