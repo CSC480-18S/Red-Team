@@ -349,8 +349,8 @@ public class Hud {
 
     private String setG_LWPosition1(){
         String G_LWPosition1;
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldLongestWord().get().getData().getWord().length() != 0){
-            G_LWPosition1 = stats.GoldLongestWord().get().getData().getWord();
+        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenLongestWord().get().getData().getWord().length() != 0){
+            G_LWPosition1 = stats.GreenLongestWord().get().getData().getWord();
         }else {
             G_LWPosition1 = "nada0";
         }
@@ -358,8 +358,8 @@ public class Hud {
     }
     private String setG_LWP1(){
         String G_LWP1;
-        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GoldLongestWord().get().getData().getValue().length() != 0){
-            G_LWP1 = stats.GoldLongestWord().get().getData().getValue();
+        if(stats.GreenHighestValueWords().get().getData().get_embedded().getPlayedWords().size() != 0 && stats.GreenLongestWord().get().getData().getValue().length() != 0){
+            G_LWP1 = stats.GreenLongestWord().get().getData().getValue();
         }else {
             G_LWP1 = "0";
         }
