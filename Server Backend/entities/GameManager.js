@@ -190,7 +190,7 @@ module.exports = (io) => {
       for (let manager of this._playerManagers) {
         if (manager.id === null) {
           manager.createHandshakeWithClient(name, team, link, isAI, socket, {yellow: this._goldScore, green: this._greenScore})
-          this.emitGameEvent(`${manager.name} entered the game.`)
+          this.emitGameEvent(`${manager.name} entered the game.`, false)
           this.updateFrontendData()
           if (isAI) {
             dg(`ai added to --> player manager ${manager.position}`, 'debug')
@@ -229,7 +229,7 @@ module.exports = (io) => {
               frontend.sendEvent('removeAI', position)
             }
             manager.createHandshakeWithClient(name, team, link, isAI, socket, {yellow: this._goldScore, green: this._greenScore})
-            this.emitGameEvent(`${manager.name} entered the game.`)
+            this.emitGameEvent(`${manager.name} entered the game.`, false)
             this.updateFrontendData()
             dg(`client added to --> player manager ${manager.position}`, 'debug')
             this._currentPlayers++
@@ -260,7 +260,7 @@ module.exports = (io) => {
       dg('finding client to remove', 'debug')
       for (let manager of this._playerManagers) {
         if (manager.id === id) {
-          this.emitGameEvent(`${manager.name} left the game.`)
+          this.emitGameEvent(`${manager.name} left the game.`, false)
           if (!manager.isAI) {
             this._currentPlayers--
             this.emitCurrentPlayerCount()
@@ -320,9 +320,7 @@ module.exports = (io) => {
         return
       }
       manager.updateHand(manager.tiles)
-      io.emit('gameEvent', {
-        action: `${manager.name} swapped tiles`
-      })
+      this.emitGameEvent(`${manager.name} swapped tiles`, false)
       this.updateTurn(manager, true)
     }
 
@@ -367,7 +365,7 @@ module.exports = (io) => {
             } else {
               clearInterval(timer)
               dg(`${manager.name}'s time has expired`, 'info')
-              this.emitGameEvent(`${manager.name}'s time has expired`)
+              this.emitGameEvent(`${manager.name}'s time has expired`, false)
               this._swaps++
               if (this.checkGameOver()) {
                 this.gameOver()
@@ -390,7 +388,7 @@ module.exports = (io) => {
 
     gameOver() {
       dg('all players have swapped tiles, game over', 'info')
-      this.emitGameEvent('game over!')
+      this.emitGameEvent('game over!', false)
       for (let manager of this._playerManagers) {
         if (manager.id !== null) {
           manager.isTurn = false
@@ -434,7 +432,7 @@ module.exports = (io) => {
           io.emit('newGameCountdown', {
             timer: timeUntil
           })
-          this.emitGameEvent(`New game starts in ${timeUntil}`)
+          this.emitGameEvent(`New game starts in ${timeUntil}`, false)
           timeUntil--
         } else {
           clearInterval(timer)
@@ -583,9 +581,7 @@ module.exports = (io) => {
       io.emit('newGame')
       this.boardUpdate()
       this.updateClientData()
-      io.emit('gameEvent', {
-        action: 'New game started'
-      })
+      this.emitGameEvent('New game started', false)
     }
 
     /**

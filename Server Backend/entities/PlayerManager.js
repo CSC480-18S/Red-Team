@@ -143,7 +143,8 @@ class PlayerManager {
         break
       case 'gameEvent':
         this.socket.emit(event, {
-          action: data
+          action: data,
+          bonus: false
         })
         break
       case 'boardUpdate':
