@@ -108,15 +108,6 @@ public class HandActor extends Group {
                     count++;
                 }
             }
-//            for(Actor child : this.getChildren()){
-//                if(child instanceof TileActor){
-//                    MoveToAction mta = new MoveToAction();
-//                    mta.setPosition(((GameScreen.GUI_UNIT_SIZE/2)+count*GameScreen.GUI_UNIT_SIZE)+GameScreen.GUI_UNIT_SIZE*.032f, GameScreen.GUI_UNIT_SIZE/2+GameScreen.GUI_UNIT_SIZE*.1f);
-//                    mta.setDuration(1f);
-//                    child.addAction(mta);
-//                    count++;
-//                }
-//            }
         }
         return rem;
     }
