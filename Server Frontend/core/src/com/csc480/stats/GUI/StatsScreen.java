@@ -22,6 +22,7 @@ public class StatsScreen implements Screen {
     Stage stage;
     private Viewport view;
     private OrthographicCamera viewCam;
+    //private StatsTables table;
 
 ////////////////////////////////////
     private SpriteBatch batch;
