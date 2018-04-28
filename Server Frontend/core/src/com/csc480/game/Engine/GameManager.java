@@ -181,6 +181,14 @@ public class GameManager {
             @Override
             public void call(Object... args) {
                 System.out.println("reconnect");
+                for(int i = 0; i < 4; i++){
+                    if(produceAI) {
+                        theAIs[i] = new AI();
+                        thePlayers[i] = theAIs[i];
+                    }else {
+                        thePlayers[i] = new Player();
+                    }
+                }
             }
         }).on("removeAI", new Emitter.Listener() {
             @Override
