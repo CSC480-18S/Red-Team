@@ -305,6 +305,7 @@ public class AI extends Player {
         mySocket.disconnect();
     }*/
     public void disconnectAI(){
+        connection.closeConnection(0, "gotDisconnect");
         connection.close();
     }
 
