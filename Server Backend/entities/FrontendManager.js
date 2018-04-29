@@ -2,23 +2,18 @@
 const dg = require('../helpers/Debug')(true)
 
 class FrontendManager {
-  constructor(socket) {
-    this._socket = socket
-    this._socketId = socket.id
+  constructor(socket, number, disconnect) {
+    this.socket = socket
+    this.number = number
+    this.disconnect = disconnect
+    dg(`frontend ${number} added`, 'debug')
+    this.listenForDisconnect()
   }
 
-  get id() {
-    return this._socketId
-  }
-
-  /**
-   * Creates a connection to the frontend
-   * @param {Object} socket - socket object
-   */
-  createHandshakeWithFrontend(socket) {
-    this._socket = socket
-    this._socketId = socket.id
-    this.listenForEvents()
+  listenForDisconnect() {
+    this.socket.on('close', z => {
+      this.disconnect(this.number)
+    })
   }
 
   /**
@@ -27,31 +22,41 @@ class FrontendManager {
    * @param {Object} data - data to be sent
    */
   sendEvent(event, data) {
-    if (this._socketId !== null) {
-      dg(`sending server frontend ${event} event`, 'debug')
-      switch (event) {
-        case 'connectAI':
-          this._socket.emit(event, {
-            position: data
-          })
-          break
-        case 'removeAI':
-          this._socket.emit(event, {
-            position: data
-          })
-          break
-        case 'updateState':
-          this._socket.emit(event, {
-            board: data.board,
-            players: data.players.map(p => {
-              return p.sendableData()
-            }),
-            yellow: data.yellow,
-            green: data.green
-          })
-          break
-      }
+    let eventData = {
+      event: event,
+      data: {}
     }
+
+    switch (event) {
+      case 'connectAI':
+      case 'removeAI':
+        this.eventData.data.position = data
+        break
+      case 'updateState':
+        this.eventData.data = {
+          board: data.board,
+          players: data.players.map(p => {
+            return p.sendableData()
+          }),
+          yellow: data.yellow,
+          green: data.green
+        }
+        break
+    }
+
+    this.socket.send(JSON.stringify(eventData))
+  }
+
+  addAI(position) {
+    this.sendEvent('connectAI', position)
+  }
+
+  removeAI(position) {
+    this.sendEvent('removeAI', position)
+  }
+
+  updateState(data) {
+    this.sendEvent('updateState', data)
   }
 }
 
