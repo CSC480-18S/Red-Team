@@ -161,7 +161,7 @@ public class AI extends Player {
                     JSONObject object = new JSONObject(message);
                     JSONObject data = object.getJSONObject("data");
 
-                    switch(object.getString("event")){
+                    switch(object .getString("event")){
                         case "dataUpdate":
                             System.out.println(AI.this.name + " got dataUpdate");
                             try {
@@ -211,6 +211,7 @@ public class AI extends Player {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            break;
                         case "play":
                             System.out.println(AI.this.name + " got play");
                             try {
@@ -230,6 +231,7 @@ public class AI extends Player {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+                            break;
                         case "boardUpdate":
                             System.out.println(name+" got boardUpdate");
                             try {
@@ -246,8 +248,10 @@ public class AI extends Player {
                             }catch(JSONException e){
                                 e.printStackTrace();
                             }
+                            break;
                         case "playWord":
                             myCache.Clear();
+                            break;
                     }
                 }
 
