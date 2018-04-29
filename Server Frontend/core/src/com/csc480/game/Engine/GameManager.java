@@ -46,6 +46,9 @@ public class GameManager {
     private double reconnectTimer = 2000.0;
     private ArrayList<String> eventBacklog;
 
+    private ArrayList<Integer> connectAIQueue;
+    private ArrayList<Integer> removeAIQueue;
+
 
     /**
      * Access THE instance of the GameManager
@@ -61,6 +64,9 @@ public class GameManager {
      * Private because of singleton nature
      */
     private GameManager(){
+        connectAIQueue = new ArrayList<>();
+        removeAIQueue = new ArrayList<>();
+
         thePlayers = new Player[4];
         theAIs = new AI[4];
         placementsUnderConsideration = new ArrayList<Placement>();
@@ -88,9 +94,22 @@ public class GameManager {
 
     }
     public void Update(){
-        for(AI a: theAIs){
-            a.update();
+        if(connectAIQueue.size() > 0){
+            Integer position = connectAIQueue.remove(0);
+            theAIs[position] = new AI();
+            thePlayers[position] = theAIs[position];
         }
+        if(removeAIQueue.size() > 0){
+            Integer position = removeAIQueue.remove(0);
+            if(theAIs[position] != null)
+                theAIs[position].disconnectAI();
+            theAIs[position] = null;
+            thePlayers[position] = new Player();
+
+        }
+//        for(AI a: theAIs){
+//            a.update();
+//        }
         ApplyEventBackLog();
     }
 
@@ -132,11 +151,7 @@ public class GameManager {
                             try {
                                 //JSONObject data = (JSONObject) args[0];
                                 int position = data.getInt("position");
-                                if(theAIs[position] != null)
-                                    theAIs[position].disconnectAI();
-                                theAIs[position] = null;
-                                thePlayers[position] = new Player();
-
+                                removeAIQueue.add(position);
                                 if(debug)
                                     theGame.theGameScreen.debug.setText("Got removeAI. Game num: "+(theGame.theGameScreen.NUM_GAMES_SINCE_START));
                             }catch(ArrayIndexOutOfBoundsException e){
@@ -152,8 +167,7 @@ public class GameManager {
                                 System.out.println(data.toString());
                                 int position = data.getInt("position");
                                 //reconnect an AI
-                                theAIs[position] = new AI();
-                                thePlayers[position] = theAIs[position];
+                                connectAIQueue.add(position);
                                 switch (position){
                                     case 0:
                                         theGame.theGameScreen.bottom.setPlayer(theAIs[(position)]);
@@ -172,7 +186,6 @@ public class GameManager {
                                         theGame.theGameScreen.left.updateState();
                                         break;
                                 }
-                                thePlayers[position] = theAIs[(position)];
                                 if(debug)
                                     theGame.theGameScreen.debug.setText("Got connectAI. Game num: "+(theGame.theGameScreen.NUM_GAMES_SINCE_START));
                             }catch(ArrayIndexOutOfBoundsException e){
