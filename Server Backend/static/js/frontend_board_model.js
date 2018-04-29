@@ -30,6 +30,9 @@ ws.onopen = () => {
         console.log(mes.data)
         play(mes.data)
         break
+	  case 'playTime':
+		playTime(mes.data)
+		break
       case 'gameEvent':
         console.log('received gameEvent: ')
         console.log(mes.data)
@@ -134,12 +137,26 @@ function play(response) {
     this.data.tileSlots[i].tile.visibility = 'visible'
   }
 }
+//response to playTime socket event
+function playTime(response) {
+	let time
+	time = setInterval(() => {
+		this.data.playTime = response
+		if this.data.playTime % 2 == 0) {
+			this.data.colored = true;
+		}	else {
+			this.data.colored = false
+		}	
+	}, 1000)	
+	
+}	
+
 
 // response to dataUpdate socket event
 function dataUpdate(response) {
   this.data.isTurn = response.isTurn
   this.data.score = response.score
-  this.data.playTime = 60
+  /*this.data.playTime = 60
 
   let time
   if (this.data.isTurn) {
@@ -154,7 +171,7 @@ function dataUpdate(response) {
     }, 1000)
   } else {
     clearInterval(time)
-    this.data.colored = false
+    this.data.colored = false*/
   }
 
   console.log('received dataUpdate event: ')
