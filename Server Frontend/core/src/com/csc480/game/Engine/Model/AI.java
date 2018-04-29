@@ -158,9 +158,10 @@ public class AI extends Player {
 
                 @Override
                 public void onMessage(String message) {
-                    JSONObject data = new JSONObject(message);
+                    JSONObject object = new JSONObject(message);
+                    JSONObject data = object.getJSONObject("data");
 
-                    switch(data.getString("event")){
+                    switch(object.getString("event")){
                         case "dataUpdate":
                             System.out.println(AI.this.name + " got dataUpdate");
                             try {
