@@ -9,7 +9,7 @@ const dg = require('../helpers/Debug')(true)
 const db = require('../helpers/DB')
 
 class GameManager {
-  constructor(dataUpdate, gameEvent, frontendsUpdate) {
+  constructor(dataUpdate, gameEvent, frontendsUpdate, changeTurn) {
     this._gameBoard = new Gameboard()
     this._greenScore = 0
     this._goldScore = 0
@@ -17,6 +17,7 @@ class GameManager {
     this.dataUpdate = dataUpdate
     this.gameEvent = gameEvent
     this.frontendsUpdate = frontendsUpdate
+    this.changeTurn = changeTurn
   }
 
   /**
@@ -35,7 +36,7 @@ class GameManager {
   determineEvent(data, player) {
     switch (data.event) {
       case 'playWord':
-        this.play(data.board, player)
+        this.play(data.data.play, player)
         break
       case 'swap':
         this.swapMade(player)
@@ -54,10 +55,10 @@ class GameManager {
           let boardResponse = null
           if (r.valid === true) {
           // if invalid type of play, gets the word that was invalid, else is undefined
-            boardResponse = this._gameBoard.placeWords(words, player)
+            boardResponse = this._gameBoard.placeWords(words.data, player)
             // if the board has attempted to play a word
             if (boardResponse.valid) {
-              let ls = letters.map(l => l.letter)
+              let ls = letters.data.map(l => l.letter)
               player.updateHand(ls)
             }
             return this.respond(boardResponse.error, boardResponse.data, player)
@@ -100,20 +101,11 @@ class GameManager {
    * Updates who's turn it is
    */
   updateTurn(manager, swapped) {
-    let position = manager.position
-    dg(`it was player ${manager.position}'s turn`, 'debug')
-    manager.isTurn = false
-    do {
-      position++
-      if (position > 3) {
-        position = 0
-      }
-    } while (this._playerManagers[position].id === null)
-    this._playerManagers[position].isTurn = true
+    this.changeTurn(manager.position)
     if (!swapped) {
       this._swaps = 0
     }
-    dg(`it is now player ${position}'s turn`, 'debug')
+    dg(`it is now ${manager.name}'s turn`, 'debug')
     // clearInterval(timer)
     this.frontendsUpdate()
     this.dataUpdate(this.board.sendableBoard())
@@ -244,7 +236,7 @@ class GameManager {
    * @param {Array} words - words to be checked against the DB
    */
   wordValidation(words) {
-    const search = words.map(s => s.word).join(',')
+    const search = words.data.map(s => s.word).join(',')
 
     dg('checking words against database', 'debug')
     return db.dictionaryCheck(search).then(r => {
@@ -384,7 +376,7 @@ class GameManager {
       player.invalidPlay(reason)
       return
     }
-    let score = this.calculateScore(player, data.data)
+    let score = this.calculateScore(player, data)
 
     dg('sending out word played event', 'debug')
     this.dataUpdate(this.board.sendableBoard())
