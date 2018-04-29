@@ -4,19 +4,16 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.csc480.game.Engine.Model.*;
-import com.csc480.game.GUI.GameScreen;
 import com.csc480.game.OswebbleGame;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * The Class that will hold all the game state and route Events to the GUI, SocketManager, and AI
@@ -62,7 +59,6 @@ public class GameManager {
         eventBacklog = new ArrayList<String>();
         WordVerification.getInstance();
         ConnectSocket();
-        connection.connect();
 
         //setUpEvents();
         try {
@@ -361,6 +357,7 @@ public class GameManager {
                     ex.printStackTrace();
                 }
             };
+            connection.connect();
         System.out.println(connection.isOpen() + " @#$!(&!^@*(&#$^*(#&U^!@&^#&*!@^$&*!^#@%&*(!#@^$&*!@^$*&!^%*(&!^$&(*!^@$(!#&(^$*&!@^#&!^@$&*^!&*^$&!*(@^$*&(!^@$&*(");
         System.out.println(connection.isConnecting() + " @#$!(&!^@*(&#$^*(#&U^!@&^#&*!@^$&*!^#@%&*(!#@^$&*!@^$*&!^%*(&!^$&(*!^@$(!#&(^$*&!@^#&!^@$&*^!&*^$&!*(@^$*&(!^@$&*(");
         } catch (URISyntaxException e){

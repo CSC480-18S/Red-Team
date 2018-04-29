@@ -204,7 +204,6 @@ public class AI extends Player {
                                     //not this AI's turn, state to 0
                                     state = 0;
                                 }
-                                System.out.println(name+" got boardUpdate");
                                 try {
                                     System.out.println("data: "+data.toString());
                                     JSONArray board = data.getJSONArray("board");
@@ -229,17 +228,9 @@ public class AI extends Player {
                             //received when an invalid play is sent to the backend
                             System.out.println(AI.this.name + " got play");
                             try {
-                                System.out.println(data.toString());
-                                boolean invalid = data.getBoolean("invalid");
-                                if (invalid) {
-                                    if (state == 2)
-                                        System.out.println(AI.this.name + " State set back to 1");
-                                    state = 1;
-                                } else {
-                                    if (state == 2)
-                                        System.out.println(AI.this.name + " State set to 0");
-                                    state = 0;
-                                }
+                                if (state == 2)
+                                    System.out.println(AI.this.name + " State set back to 1");
+                                state = 1;
                                 update();
                             } catch (Exception e) {
                                 e.printStackTrace();
