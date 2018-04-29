@@ -158,7 +158,7 @@ public class AI extends Player {
 
                 @Override
                 public void onMessage(String message) {
-                    JSONObject data = (JSONObject) JSONObject.stringToValue(message);
+                    JSONObject data = new JSONObject(message);
 
                     switch(data.getString("event")){
                         case "dataUpdate":

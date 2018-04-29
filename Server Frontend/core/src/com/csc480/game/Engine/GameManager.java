@@ -150,7 +150,7 @@ public class GameManager {
 
                 @Override
                 public void onMessage(String message) {
-                    JSONObject data = (JSONObject) JSONObject.stringToValue(message);
+                    JSONObject data = new JSONObject(message);
                     switch (data.getString("event")) {
                         case "removeAI":
                             System.out.println("frontend got removeAI");
