@@ -31,11 +31,18 @@ function extractLetters(newBoard, currentBoard, player) {
 
     if (inHand === -1) {
       dg(`player ${player.name} has cheated`, 'info')
-      return false
+      return {
+        valid: false,
+        error: 7,
+        data: letters[i].letter
+      }
     }
   }
 
-  return letters
+  return {
+    valid: true,
+    data: letters
+  }
 }
 
 function extractWords(letters, newBoard) {
@@ -100,7 +107,10 @@ function extractWords(letters, newBoard) {
     }
   })
 
-  return _.uniqWith(words, _.isEqual)
+  return {
+    valid: true,
+    data: _.uniqWith(words, _.isEqual)
+  }
 }
 
 module.exports = {
