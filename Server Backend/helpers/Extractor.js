@@ -24,8 +24,6 @@ function extractLetters(newBoard, currentBoard, player) {
       }
     }
   }
-  dg('letters extracted', 'debug')
-  dg(JSON.stringify(letters, null, 4), 'data')
   dg('checking against player\'s hand', 'debug')
 
   for (let i = 0; i < letters.length; i++) {
@@ -102,10 +100,7 @@ function extractWords(letters, newBoard) {
     }
   })
 
-  const uniqueWords = _.uniqWith(words, _.isEqual)
-  dg('words extracted', 'debug')
-  dg(JSON.stringify(uniqueWords, null, 4), 'data')
-  return uniqueWords
+  return _.uniqWith(words, _.isEqual)
 }
 
 module.exports = {

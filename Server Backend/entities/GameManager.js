@@ -78,31 +78,11 @@ class GameManager {
       })
   }
 
-  /**
-   * Updates the frontend
-   */
-  updateFrontendData() {
-    let data = {
-      board: this._gameBoard.sendableBoard(),
-      players: this._playerManagers,
-      yellow: this._goldScore,
+  latestData() {
+    return {
+      board: this.board.sendableBoard(),
+      gold: this._goldScore,
       green: this._greenScore
-    }
-
-    for (let frontend of this._frontendManagers) {
-      frontend.sendEvent('updateState', data)
-    }
-  }
-
-  /**
-  * Updates clients' data
-  */
-  updateClientData() {
-    for (let manager of this._playerManagers) {
-      if (manager.id !== null) {
-        manager.sendEvent('boardUpdate', {board: this.board.sendableBoard(), yellow: this._goldScore, green: this._greenScore})
-        manager.sendEvent('dataUpdate')
-      }
     }
   }
 
