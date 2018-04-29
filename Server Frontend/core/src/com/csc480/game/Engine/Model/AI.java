@@ -39,7 +39,7 @@ public class AI extends Player {
         if(greenTeam){
             this.team = "Green";
         }else {
-            this.team = "Yellow";
+            this.team = "Gold";
         }
         myCache = new PriorityQueue(200);
         myBoard = new Board(11);
