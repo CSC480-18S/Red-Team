@@ -9,11 +9,15 @@ import com.csc480.game.OswebbleGame;
 import io.socket.client.IO;
 import io.socket.emitter.Emitter;
 import io.socket.client.Socket;
+import org.java_websocket.WebSocket;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,6 +26,7 @@ import java.util.Collection;
  * The Class that will hold all the game state and route Events to the GUI, SocketManager, and AI
  */
 public class GameManager {
+    WebSocket connection;
     public static boolean debug = false;
     public static boolean produceAI = false;
     private static GameManager instance;
@@ -65,7 +70,7 @@ public class GameManager {
         //SocketManager.getInstance().setUpEvents();
         WordVerification.getInstance();
         ConnectSocket();
-        setUpEvents();
+        //setUpEvents();
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -101,16 +106,272 @@ public class GameManager {
      */
     public void ConnectSocket(){
         try {
-            if(socket != null)
+            /*if(socket != null)
                 socket.disconnect();
             socket = null;
             socket = IO.socket("http://localhost:3000");
-            socket.connect();
+            socket.connect();*/
+            connection = new WebSocketClient(new URI("http://localhost:3000")) {
+                @Override
+                public void onOpen(ServerHandshake handshakedata) {
+                    JSONObject object = new JSONObject();
+                    JSONObject data = new JSONObject();
+                    object.put("type", "whoAreYou");
+                    data.put("isSF", true);
+                    object.put("data", data);
+
+                    this.send(object.toString());
+                }
+
+                @Override
+                public void onMessage(String message) {
+                    JSONObject data = (JSONObject)JSONObject.stringToValue(message);
+                    switch(data.getString("type")){
+                        case "removeAI":
+                            System.out.println("frontend got removeAI");
+                            try {
+                                //JSONObject data = (JSONObject) args[0];
+                                int position = data.getInt("position");
+                                if(theAIs[position] != null)
+                                    theAIs[position].disconnectAI();
+                                theAIs[position] = null;
+                                thePlayers[position] = new Player();
+
+                                if(debug)
+                                    theGame.theGameScreen.debug.setText("Got removeAI. Game num: "+(theGame.theGameScreen.NUM_GAMES_SINCE_START));
+                            }catch(ArrayIndexOutOfBoundsException e){
+                                e.printStackTrace();
+                            }catch(JSONException e){
+                                e.printStackTrace();
+                            }
+                        case "connectAI":
+                            LogEvent("Reconnecting an AI");
+                            System.out.println("connectAI");
+                            try {
+                                //JSONObject data = (JSONObject) args[0];
+                                System.out.println(data.toString());
+                                int position = data.getInt("position");
+                                //reconnect an AI
+                                theAIs[position] = new AI();
+                                thePlayers[position] = theAIs[position];
+                                switch (position){
+                                    case 0:
+                                        theGame.theGameScreen.bottom.setPlayer(theAIs[(position)]);
+                                        theGame.theGameScreen.bottom.updateState();
+                                        break;
+                                    case 1:
+                                        theGame.theGameScreen.right.setPlayer(theAIs[(position)]);
+                                        theGame.theGameScreen.right.updateState();
+                                        break;
+                                    case 2:
+                                        theGame.theGameScreen.top.setPlayer(theAIs[(position)]);
+                                        theGame.theGameScreen.top.updateState();
+                                        break;
+                                    case 3:
+                                        theGame.theGameScreen.left.setPlayer(theAIs[(position)]);
+                                        theGame.theGameScreen.left.updateState();
+                                        break;
+                                }
+                                thePlayers[position] = theAIs[(position)];
+                                if(debug)
+                                    theGame.theGameScreen.debug.setText("Got connectAI. Game num: "+(theGame.theGameScreen.NUM_GAMES_SINCE_START));
+                            }catch(ArrayIndexOutOfBoundsException e){
+                                e.printStackTrace();
+                            }catch(JSONException e){
+                                e.printStackTrace();
+                            }
+                        case "boardUpdate":
+                            System.out.println("frontend got boardUpdate");
+                            try {
+                                //JSONObject data = (JSONObject) args[0];
+                                System.out.println("data: "+data.toString());
+                                JSONArray board = data.getJSONArray("board");
+//                    System.out.println("BACKEND BOARD STATE: "+board.toString());
+//                    System.out.println("PARSED BACKEND BOARD STATE: "+unJSONifyBackendBoard(board));
+                                //find the board/user state differences
+                                wordHasBeenPlayed(unJSONifyBackendBoard(board));
+                                //hard update the game and user states
+                                hardUpdateBoardState(unJSONifyBackendBoard(board));
+                                if(debug)
+                                    theGame.theGameScreen.debug.setText("Got boardUpdate. Game num: "+(theGame.theGameScreen.NUM_GAMES_SINCE_START));
+                            }catch(ArrayIndexOutOfBoundsException e){
+                                e.printStackTrace();
+                            }catch(JSONException e){
+                                e.printStackTrace();
+                            }
+                        case "gameEvent":
+                            System.out.println("frontend got gameEvent");
+                            try {
+                                //JSONObject data = (JSONObject) args[0];
+                                boolean isBonus = false;
+                                String action = data.getString("action");
+                                if(data.get("bonus") != JSONObject.NULL)
+                                    isBonus = data.getBoolean("bonus");
+                                //System.out.println(action);
+                                if(isBonus)
+                                    BonusEvent(action);
+                                LogEvent(action);
+                                if(debug)
+                                    theGame.theGameScreen.debug.setText("Got gameEvent. Game num: "+(theGame.theGameScreen.NUM_GAMES_SINCE_START));
+                            }catch(ArrayIndexOutOfBoundsException e){
+                                e.printStackTrace();
+                            }catch(JSONException e){
+                                e.printStackTrace();
+                            }
+                        case "updateState":
+                            System.out.println("frontend got updateState");
+                            try {
+                                //JSONObject data = (JSONObject) args[0];
+                                System.out.println(data);
+                                JSONArray players = data.getJSONArray("players");
+                                for(int i = 0; i < players.length(); i++){
+                                    JSONObject player  = (JSONObject)players.get(i);
+                                    int index = player.getInt("position");
+                                    boolean isAI;
+                                    try {
+                                        isAI = player.getBoolean("isAI");
+                                    }catch(JSONException e){
+                                        //the
+                                        isAI = true;
+                                        //todo reconnect an AI at that position
+                                        theAIs[index].disconnectAI();
+                                        theAIs[index] = null;
+                                        theAIs[index] = new AI();
+                                        thePlayers[index] = theAIs[index];
+                                    }
+                                    try {
+                                        if(player.get("score") != JSONObject.NULL)
+                                            thePlayers[index].score = player.getInt("score");
+                                        else
+                                            thePlayers[index].score = 0;
+
+                                        if(player.get("name") != JSONObject.NULL)
+                                            thePlayers[index].name = player.getString("name");
+                                        else
+                                            thePlayers[index].name = "";
+
+                                        if(player.get("team") != JSONObject.NULL)
+                                            thePlayers[index].team = player.getString("team");
+                                        else
+                                            thePlayers[index].team = "";
+
+                                        if(player.get("tiles") != JSONObject.NULL){
+                                            JSONArray hand = player.getJSONArray("tiles");
+                                            for(int h = 0; h < hand.length(); h++){
+                                                if(isAI)
+                                                    thePlayers[index].tiles[h] = hand.getString(h).toLowerCase().charAt(0);
+                                                else
+                                                    thePlayers[index].tiles[h] = '_';
+                                            }
+                                        }
+
+                                        thePlayers[index].turn = player.getBoolean("isTurn");
+                                        System.out.println("updating player @ index " + index);
+                                    }catch (JSONException e){
+                                        e.printStackTrace();
+                                    }
+                        /*
+                        JSONArray hand = player.getJSONArray("hand");
+                        for(int j = 0; j < hand.length(); j++){
+                            thePlayers[index].tiles[j] = hand.getString(j).charAt(0);
+                        }
+                        */
+                                }
+                                if(theGame!= null){
+                                    if(theGame.theGameScreen != null) {
+                                        if(theGame.theGameScreen.bottom != null){
+                                            theGame.theGameScreen.bottom.setPlayer(thePlayers[0]);
+                                            theGame.theGameScreen.bottom.updateState();
+                                        }
+                                        if(theGame.theGameScreen.right != null) {
+                                            theGame.theGameScreen.right.setPlayer(thePlayers[1]);
+                                            theGame.theGameScreen.right.updateState();
+                                        }
+                                        if(theGame.theGameScreen.top != null) {
+                                            theGame.theGameScreen.top.setPlayer(thePlayers[2]);
+                                            theGame.theGameScreen.top.updateState();
+                                        }
+
+                                        if(theGame.theGameScreen.left != null) {
+                                            theGame.theGameScreen.left.setPlayer(thePlayers[3]);
+                                            theGame.theGameScreen.left.updateState();
+                                        }
+
+                                        theGame.theGameScreen.UpdateInfoPanel();
+                                    }
+                                }
+                                if(debug)
+                                    theGame.theGameScreen.debug.setText("Got updateState. Game num: "+(theGame.theGameScreen.NUM_GAMES_SINCE_START));
+
+                            }catch(ArrayIndexOutOfBoundsException e){
+                                e.printStackTrace();
+                            }catch(JSONException e){
+                                e.printStackTrace();
+                            }
+                        case "gameOver":
+                            System.out.println("gameOver");
+                            LogEvent("gameOver");
+                            //"score": scores of game "timeout": double
+                            //"gameData": array of all data of the scores and such
+                            try {
+                                //JSONObject data = (JSONObject) args[0];
+                                System.out.println(data.toString());
+                                JSONArray scores = data.getJSONArray("scores");
+                                Array<String> playersScores = new Array<String>();
+                                for(int i = 0; i < scores.length(); i++){
+                                    JSONObject j = (JSONObject) scores.get(i);
+                                    playersScores.add(j.getString("name")+" scored "+j.getInt("score")+ " points!");
+                                }
+
+                                String winner = "Congratulations, Everyone!!!";
+                                if(data.get("winner") != JSONObject.NULL)
+                                    winner = "Congratulations, "+data.getString("winner")+"!!!";
+                                String winningTeam = "No one";
+                                if(data.get("winningTeam") != JSONObject.NULL)
+                                    winningTeam = data.getString("winningTeam");
+
+                                //todo call @GUI stuff
+                                theGame.theGameScreen.gameOverActor.update(winner, playersScores, winningTeam);
+                                theGame.theGameScreen.gameOverActor.setVisible(true);
+                                if(debug)
+                                    theGame.theGameScreen.debug.setText("Got gameOverEvent. Game num: "+(theGame.theGameScreen.NUM_GAMES_SINCE_START));
+                            }catch(ArrayIndexOutOfBoundsException e){
+                                e.printStackTrace();
+                            }catch(JSONException e){
+                                e.printStackTrace();
+                            }
+                        case "newGame":
+                            System.out.println("newGame");
+                            theGame.theGameScreen.gameOverActor.setVisible(false);
+                            if(debug)
+                                theGame.theGameScreen.debug.setText("Game num: "+(theGame.theGameScreen.NUM_GAMES_SINCE_START++));
+                        case "newGameCountdown":
+                            System.out.println("ferver frontend got newGameCountdown");
+                            //JSONObject data = (JSONObject) args[0];
+                            int t = 20;
+                            if(data.get("time") != JSONObject.NULL)
+                                t = data.getInt("time");
+                            theGame.theGameScreen.gameOverActor.updateTime(t);
+                            //                theGame.theGameScreen.gameOverActor.setVisible(false);
+                    }
+                }
+
+                @Override
+                public void onClose(int code, String reason, boolean remote) {
+                    System.out.println("GAMEMANAGER SOCKET CLOSED");
+                    System.out.println("REASON: " + reason + " CODE: " + code + "------------------------------------------------------------------------------------------------");
+                }
+
+                @Override
+                public void onError(Exception ex) {
+                    ex.printStackTrace();
+                }
+            };
         } catch (URISyntaxException e){
             System.err.println(e);
         }
     }
-    public void ReConnectSocket(){
+/*    public void ReConnectSocket(){
         try {
             IO.Options opts = new IO.Options();
             opts.forceNew = true;
@@ -120,11 +381,13 @@ public class GameManager {
         } catch (URISyntaxException e){
             System.err.println(e);
         }
-    }
+    }*/
+
 
     /**
      * Define the actions to be taken when events occur
      */
+    /*
     public void setUpEvents(){
         socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
             @Override
@@ -353,7 +616,7 @@ public class GameManager {
                         for(int j = 0; j < hand.length(); j++){
                             thePlayers[index].tiles[j] = hand.getString(j).charAt(0);
                         }
-                        */
+
                     }
                     if(theGame!= null){
                         if(theGame.theGameScreen != null) {
@@ -442,7 +705,7 @@ public class GameManager {
 //                theGame.theGameScreen.gameOverActor.setVisible(false);
             }
         });
-    }
+    }*/
 
     private TileData[][] parseServerBoard(JSONArray board){
         TileData[][] parsed = new TileData[board.length()][board.length()];
