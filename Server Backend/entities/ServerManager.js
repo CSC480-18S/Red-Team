@@ -36,6 +36,7 @@ module.exports = (webSocket) => {
         })
 
         socket.on('close', z => {
+          // TODO: Fix @Landon
           this.removeFromQueue(socket._socket.remoteAddress)
         })
       })
@@ -157,7 +158,7 @@ module.exports = (webSocket) => {
      */
     injectOldData(pos, p) {
       let old = this.oldPlayerData[pos]
-      p.addPositionDetails(old.tiles, old.isTurn)
+      p.injectOldData(old.tiles, old.isTurn)
       this.oldPlayerData.splice(pos, 1, null)
     }
 
