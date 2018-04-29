@@ -26,7 +26,7 @@ public class AI extends Player {
     private static boolean greenTeam = true;
     public PriorityQueue myCache;
     public Socket mySocket;
-    public WebSocket connection;
+    public WebSocketClient connection;
     volatile Board myBoard;
     volatile boolean startIndex = true;
 
@@ -49,6 +49,7 @@ public class AI extends Player {
         myCache = new PriorityQueue(200);
         myBoard = new Board(11);
         connectSocket();
+        connection.connect();
     }
 
     /**
@@ -166,6 +167,7 @@ public class AI extends Player {
                     object.put("data", data);
 
                     this.send(object.toString());
+                    System.out.println("AI CONNECTION ESTABLISHED: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
                 }
 
                 @Override
