@@ -258,8 +258,13 @@ public class GameManager {
                     JSONObject data = (JSONObject) args[0];
                     System.out.println("data: "+data.toString());
                     JSONArray board = data.getJSONArray("board");
-//                    System.out.println("BACKEND BOARD STATE: "+board.toString());
-//                    System.out.println("PARSED BACKEND BOARD STATE: "+unJSONifyBackendBoard(board));
+                    try{
+                        int greenScore = data.getInt("green");
+                        int yellowScore = data.getInt("gold");
+                    }catch (JSONException e){
+                        System.out.println("ERROR: team names messed up");
+
+                    }
                     //find the board/user state differences
                     wordHasBeenPlayed(unJSONifyBackendBoard(board));
                     //hard update the game and user states
@@ -356,27 +361,8 @@ public class GameManager {
                         */
                     }
                     if(theGame!= null){
-                        if(theGame.theGameScreen != null) {
-                            if(theGame.theGameScreen.bottom != null){
-                                theGame.theGameScreen.bottom.setPlayer(thePlayers[0]);
-                                theGame.theGameScreen.bottom.updateState();
-                            }
-                            if(theGame.theGameScreen.right != null) {
-                                theGame.theGameScreen.right.setPlayer(thePlayers[1]);
-                                theGame.theGameScreen.right.updateState();
-                            }
-                            if(theGame.theGameScreen.top != null) {
-                                theGame.theGameScreen.top.setPlayer(thePlayers[2]);
-                                theGame.theGameScreen.top.updateState();
-                            }
-
-                            if(theGame.theGameScreen.left != null) {
-                                theGame.theGameScreen.left.setPlayer(thePlayers[3]);
-                                theGame.theGameScreen.left.updateState();
-                            }
-
-                            theGame.theGameScreen.UpdateInfoPanel();
-                        }
+                        if(theGame.theGameScreen != null)
+                            theGame.theGameScreen.QueueUpdate();
                     }
                     if(debug)
                         theGame.theGameScreen.debug.setText("Got updateState. Game num: "+(theGame.theGameScreen.NUM_GAMES_SINCE_START));

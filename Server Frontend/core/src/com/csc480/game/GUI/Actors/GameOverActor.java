@@ -62,12 +62,6 @@ public class GameOverActor extends Group {
             theTabel.setBackground(greenbackGround.getDrawable());
         if(winningTeam.toLowerCase().compareTo("gold") == 0)
             theTabel.setBackground(goldbakcGround.getDrawable());
-        if(winningTeam.toLowerCase().compareTo("g") == 0)
-            theTabel.setBackground(greenbackGround.getDrawable());
-        if(winningTeam.toLowerCase().compareTo("y") == 0)
-            theTabel.setBackground(goldbakcGround.getDrawable());
-        if(winningTeam.toLowerCase().compareTo("yellow") == 0)
-            theTabel.setBackground(goldbakcGround.getDrawable());
 
         this.winnerMessage.setText(winnerMessage);
         this.players.setItems(playersScore);
