@@ -143,6 +143,10 @@ module.exports = (webSocket) => {
        */
     createFrontend(socket) {
       let manager = new FrontendManager(socket, this.frontends.length, this.frontendDisconnect.bind(this))
+      // TODO: Update this to work with the latest @Landon
+      let data = this.gameManager.latestData()
+      data.players = this.players
+      manager.updateState(data)
       this.frontends.push(manager)
     }
 
