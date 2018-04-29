@@ -8,10 +8,12 @@ public class GameManagerTest {
 
     @Test
     public void getInstance() {
+
     }
 
     @Test
     public void dispose() {
+
     }
 
     @Test
@@ -20,6 +22,7 @@ public class GameManagerTest {
 
     @Test
     public void connectSocket() {
+
     }
 
     @Test
