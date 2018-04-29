@@ -205,6 +205,21 @@ public class AI extends Player {
                                 else{
                                     state = 0;
                                 }
+                                System.out.println(name+" got boardUpdate");
+                                try {
+                                    //JSONObject data = (JSONObject) args[0];
+                                    System.out.println("data: "+data.toString());
+                                    JSONArray board = data.getJSONArray("board");
+                                    //System.out.println("BACKEND BOARD STATE: "+board.toString());
+                                    //System.out.println("PARSED BACKEND BOARD STATE: "+unJSONifyBackendBoard(board));
+                                    //find the board/user state differences
+                                    myBoard.the_game_board = GameManager.getInstance().unJSONifyBackendBoard(board);
+                                    //hard update the game and user states
+                                }catch(ArrayIndexOutOfBoundsException e){
+                                    e.printStackTrace();
+                                }catch(JSONException e){
+                                    e.printStackTrace();
+                                }
                                 update();
                             } catch (ArrayIndexOutOfBoundsException e) {
                                 e.printStackTrace();
@@ -232,7 +247,7 @@ public class AI extends Player {
                                 e.printStackTrace();
                             }
                             break;
-                        case "boardUpdate":
+                        /*case "boardUpdate":
                             System.out.println(name+" got boardUpdate");
                             try {
                                 //JSONObject data = (JSONObject) args[0];
@@ -248,7 +263,7 @@ public class AI extends Player {
                             }catch(JSONException e){
                                 e.printStackTrace();
                             }
-                            break;
+                            break;*/
                         case "playWord":
                             myCache.Clear();
                             break;
