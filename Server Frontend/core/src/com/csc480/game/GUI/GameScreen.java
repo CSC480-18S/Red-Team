@@ -90,6 +90,7 @@ public class GameScreen implements Screen {
         stage.act(delta);
         //render the actors
         stage.draw();
+        GameManager.getInstance().Update();
         }catch (NullPointerException n){
             n.printStackTrace();
         }
