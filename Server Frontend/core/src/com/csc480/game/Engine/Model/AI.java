@@ -153,18 +153,19 @@ public class AI extends Player {
 
                 @Override
                 public void onMessage(String message) {
+                    System.out.println(AI.this.name+" got message\n"+message);
                     //parse the message to a JSONObject
                     JSONObject object = new JSONObject(message);
                     //put the JSONObject data from the received message in order to find the actual data
                     JSONObject data = object.getJSONObject("data");
 
-                    switch(object .getString("event")){
+                    switch(object.getString("event")){
                         //data update contains the board, if it is this AI's turn, and any new tiles this AI needed
                         case "dataUpdate":
                             System.out.println(AI.this.name + " got dataUpdate");
                             try {
                                 //JSONObject data = (JSONObject) args[0];
-                                System.out.println(data.toString());
+                                //System.out.println(data.toString());
                                 boolean myTurn = data.getBoolean("isTurn");
                                 JSONArray jsonTiles = data.getJSONArray("tiles");
                                 char[] newTiles = new char[jsonTiles.length()];
@@ -205,7 +206,7 @@ public class AI extends Player {
                                     state = 0;
                                 }
                                 try {
-                                    System.out.println("data: "+data.toString());
+                                    //System.out.println("data: "+data.toString());
                                     JSONArray board = data.getJSONArray("board");
                                     //find the board/user state differences
                                     myBoard.the_game_board = GameManager.getInstance().unJSONifyBackendBoard(board);
