@@ -53,6 +53,7 @@ project(":desktop") {
 project(":core") {
     apply plugin: "java"
 
+    sourceSets.test.java.srcDirs = ["/test"]
 
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
@@ -67,6 +68,9 @@ project(":core") {
 
         compile 'com.mashape.unirest:unirest-java:1.4.9'
         compile 'com.google.code.gson:gson:2.2.4'
+
+        testCompile "junit:junit:4.12"
+        testCompile "org.mockito:mockito-core:2.2.7"
 
     }
 }
