@@ -155,6 +155,7 @@ public class GameManager {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            break;
                         case "connectAI":
                             LogEvent("Reconnecting an AI");
                             System.out.println("connectAI");
@@ -189,6 +190,10 @@ public class GameManager {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            break;
+                        case "scoreUpdate":
+                            break;
+
                         case "boardUpdate":
                             System.out.println("frontend got boardUpdate");
                             try {
@@ -208,6 +213,7 @@ public class GameManager {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            break;
                         case "gameEvent":
                             System.out.println("frontend got gameEvent");
                             try {
@@ -227,11 +233,18 @@ public class GameManager {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            break;
                         case "updateState":
                             System.out.println("frontend got updateState");
                             try {
                                 //JSONObject data = (JSONObject) args[0];
                                 System.out.println(data);
+                                JSONArray board = data.getJSONArray("board");
+                                //find the board/user state differences
+                                wordHasBeenPlayed(unJSONifyBackendBoard(board));
+                                //hard update the game and user states
+                                hardUpdateBoardState(unJSONifyBackendBoard(board));
+
                                 JSONArray players = data.getJSONArray("players");
                                 for (int i = 0; i < players.length(); i++) {
                                     JSONObject player = (JSONObject) players.get(i);
@@ -317,6 +330,7 @@ public class GameManager {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            break;
                         case "gameOver":
                             System.out.println("gameOver");
                             LogEvent("gameOver");
@@ -349,11 +363,13 @@ public class GameManager {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            break;
                         case "newGame":
                             System.out.println("newGame");
                             theGame.theGameScreen.gameOverActor.setVisible(false);
                             if (debug)
                                 theGame.theGameScreen.debug.setText("Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START++));
+                            break;
                         case "newGameCountdown":
                             System.out.println("ferver frontend got newGameCountdown");
                             //JSONObject data = (JSONObject) args[0];
@@ -362,6 +378,7 @@ public class GameManager {
                                 t = data.getInt("time");
                             theGame.theGameScreen.gameOverActor.updateTime(t);
                             //                theGame.theGameScreen.gameOverActor.setVisible(false);
+                            break;
                     }
                 }
 
