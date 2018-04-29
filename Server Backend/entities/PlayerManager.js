@@ -5,20 +5,22 @@
  */
 const ld = require('../helpers/LetterDistributor')
 const dg = require('../helpers/Debug')(true)
+const db = require('../helpers/DB')
+const mg = require('../helpers/MacGrabber')
 
 class PlayerManager {
-  constructor(position, gameManager) {
+  constructor(position, socket, isAI, disconnect, gamePlays) {
     this._name = null
     this._team = null
-    this._isAI = null
+    this._isAI = isAI
     this._link = null
-    this._socket = null
-    this._socketId = null
+    this._socket = socket
     this._position = position
     this._tiles = []
     this._isTurn = false
     this._score = 0
-    this._gameManager = gameManager
+    this.disconnect = disconnect
+    this.gamePlays = gamePlays
   }
 
   /**
@@ -29,10 +31,38 @@ class PlayerManager {
   }
 
   /**
+   * Name setter
+   */
+  set name(name) {
+    this._name = name
+  }
+
+  /**
    * Turn setter
    */
   set isTurn(turn) {
     this._isTurn = turn
+  }
+
+  /**
+   * Link setter
+   */
+  set link(link) {
+    this._link = link
+  }
+
+  /**
+   * Team setter
+   */
+  set team(team) {
+    this._team = team
+  }
+
+  /**
+   * Socket setter
+   */
+  set socket(socket) {
+    this._socket = socket
   }
 
   /**
@@ -106,55 +136,148 @@ class PlayerManager {
     return this._score
   }
 
-  init() {
-    this.addToHand()
+  /**
+   * Retrieves the player's information from the DB
+   */
+  retrieveDBInfo() {
+    mg(this.socket._socket.remoteAddress, (mac) => {
+      db.checkIfUserExists(mac)
+        .then(r => {
+          if (db.pruneResults(r)) {
+            db.getTeamURL(mac)
+              .then(r2 => {
+                let user = {
+                  username: r[0].username,
+                  team: r2 === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green',
+                  link: r[0]._links.self.href
+                }
+                this.injectDatabaseData(user.username, user.team, user.link)
+              })
+          } else {
+            // TODO: Tell player that they need to login/register first
+          }
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    })
   }
 
   /**
-   * Listens for events coming from cient
+   * Injects data of old player
+   * @param {Array} tiles - tiles
+   * @param {Boolean} isTurn - turn
    */
-  listenForEvents() {
-    if (this._socketId !== null) {
-      this._socket.on('playWord', newBoard => {
-        dg(`${this.name} attempting to make play...`, 'debug')
-        this._gameManager.play(newBoard, this)
-      })
+  injectOldData(tiles, isTurn) {
+    this.tiles = tiles
+    this.isTurn = isTurn
+  }
 
-      this._socket.on('swap', () => {
-        dg(`player ${this.name} has swapped tiles`, 'info')
-        this._gameManager.swapMade(this)
-      })
+  /**
+   * Injects pulled from the database
+   * @param {String} name - name
+   * @param {team} team - team
+   * @param {URL} link - player DB url
+   */
+  injectDatabaseData(name, team, link) {
+    this.name = name
+    this.team = team
+    this.link = link
+    dg(`${name} connected`, 'debug')
+    this.setUp()
+  }
+
+  setUp() {
+    // TODO: Fix this @Landon
+    // this.sendEvent('boardUpdate', null)
+    this.addToHand()
+    this.sendEvent('dataUpdate')
+    this.listenForIncoming()
+  }
+
+  /**
+   * Listen for incoming events
+   */
+  listenForIncoming() {
+    this.socket.on('close', z => {
+      this.disconnect(this.name, this.position, this.oldDataSave())
+    })
+
+    this.socket.on('message', event => {
+      this.determineEvent(event)
+    })
+  }
+
+  /**
+   * Grabs data to save for new player
+   */
+  oldDataSave() {
+    return {
+      tiles: this.tiles,
+      isTurn: this.isTurn
     }
   }
 
+  /**
+   * Determines the event the player made
+   * @param {String} event - event
+   */
+  determineEvent(event) {
+    let e = JSON.parse(event)
+    switch (e.event) {
+      case 'playWord':
+        dg(`${this.name} made play`, 'debug')
+        this.gamePlays('play', this, e.newBoard)
+        break
+      case 'swap':
+        dg(`${this.name} swapped`, 'info')
+        this.updateHand(this.tiles)
+        this.gamePlays('swap', this)
+        break
+    }
+  }
+
+  /**
+   * Sends event
+   * @param {String} event = event
+   * @param {Object} data - data
+   */
   sendEvent(event, data) {
+    let eventData = {
+      event: event,
+      data: {}
+    }
+
     switch (event) {
       case 'play':
-        this.socket.emit(event, data)
+        eventData.data = data
         break
       case 'dataUpdate':
-        this.socket.emit(event, {
+        eventData.data = {
           name: this.name,
           position: this.position,
           tiles: this.tiles,
           isTurn: this.isTurn,
           score: this.score
-        })
+        }
         break
       case 'gameEvent':
-        this.socket.emit(event, {
+        eventData.data = {
           action: data,
           bonus: false
-        })
+        }
         break
       case 'boardUpdate':
-        this.socket.emit(event, {
-          board: this._gameManager.board.sendableBoard(),
+      // TODO: Check if this can be removed
+        eventData.data = {
+          board: data.board,
           yellow: data.yellow,
           green: data.green
-        })
+        }
         break
     }
+
+    this.socket.send(JSON.stringify(eventData))
   }
 
   /**
@@ -221,19 +344,6 @@ class PlayerManager {
     }
 
     this._tiles.push(...newLetters)
-  }
-
-  /**
-   * Removes information
-   */
-  removeInformation() {
-    dg(`${this.name} disconnected from player manager ${this.position}`, 'debug')
-    this._name = null
-    this._team = null
-    this._link = null
-    this._isAI = null
-    this._socket = null
-    this._socketId = null
   }
 
   /**
