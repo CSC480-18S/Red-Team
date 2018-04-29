@@ -30,16 +30,10 @@ public class GameManager {
     public ArrayList<Placement> placementsUnderConsideration;//ones being considered
     public Player[] thePlayers;
     public AI[] theAIs;
-    public int numPlayers;
-    public int counter = 0;
-    //public int currentPlayerIndex;
     public Board theBoard;
-    public int greenScore;
-    public int goldScore;
-    public boolean gameOver;
-    private double reconnectTimer = 2000.0;
+    public int greenScore = 0;
+    public int goldScore = 0;
     private ArrayList<String> eventBacklog;
-
     private ArrayList<Integer> connectAIQueue;
     private ArrayList<Integer> removeAIQueue;
 
@@ -165,24 +159,24 @@ public class GameManager {
                                 int position = data.getInt("position");
                                 //reconnect an AI
                                 connectAIQueue.add(position);
-                                switch (position) {
-                                    case 0:
-                                        theGame.theGameScreen.bottom.setPlayer(theAIs[(position)]);
-                                        theGame.theGameScreen.bottom.updateState();
-                                        break;
-                                    case 1:
-                                        theGame.theGameScreen.right.setPlayer(theAIs[(position)]);
-                                        theGame.theGameScreen.right.updateState();
-                                        break;
-                                    case 2:
-                                        theGame.theGameScreen.top.setPlayer(theAIs[(position)]);
-                                        theGame.theGameScreen.top.updateState();
-                                        break;
-                                    case 3:
-                                        theGame.theGameScreen.left.setPlayer(theAIs[(position)]);
-                                        theGame.theGameScreen.left.updateState();
-                                        break;
-                                }
+//                                switch (position) {
+//                                    case 0:
+//                                        theGame.theGameScreen.bottom.setPlayer(theAIs[(position)]);
+//                                        theGame.theGameScreen.bottom.updateState();
+//                                        break;
+//                                    case 1:
+//                                        theGame.theGameScreen.right.setPlayer(theAIs[(position)]);
+//                                        theGame.theGameScreen.right.updateState();
+//                                        break;
+//                                    case 2:
+//                                        theGame.theGameScreen.top.setPlayer(theAIs[(position)]);
+//                                        theGame.theGameScreen.top.updateState();
+//                                        break;
+//                                    case 3:
+//                                        theGame.theGameScreen.left.setPlayer(theAIs[(position)]);
+//                                        theGame.theGameScreen.left.updateState();
+//                                        break;
+//                                }
                                 if (debug)
                                     theGame.theGameScreen.debug.setText("Got connectAI. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
                             } catch (ArrayIndexOutOfBoundsException e) {
@@ -192,16 +186,16 @@ public class GameManager {
                             }
                             break;
                         case "scoreUpdate":
+                            greenScore = data.getInt("green");
+                            goldScore = data.getInt("gold");
+
                             break;
 
                         case "boardUpdate":
                             System.out.println("frontend got boardUpdate");
                             try {
-                                //JSONObject data = (JSONObject) args[0];
                                 System.out.println("data: " + data.toString());
                                 JSONArray board = data.getJSONArray("board");
-//                    System.out.println("BACKEND BOARD STATE: "+board.toString());
-//                    System.out.println("PARSED BACKEND BOARD STATE: "+unJSONifyBackendBoard(board));
                                 //find the board/user state differences
                                 wordHasBeenPlayed(unJSONifyBackendBoard(board));
                                 //hard update the game and user states
@@ -217,7 +211,6 @@ public class GameManager {
                         case "gameEvent":
                             System.out.println("frontend got gameEvent");
                             try {
-                                //JSONObject data = (JSONObject) args[0];
                                 boolean isBonus = false;
                                 String action = data.getString("action");
                                 if (data.get("bonus") != JSONObject.NULL)
@@ -237,7 +230,6 @@ public class GameManager {
                         case "updateState":
                             System.out.println("frontend got updateState");
                             try {
-                                //JSONObject data = (JSONObject) args[0];
                                 System.out.println(data);
                                 JSONArray board = data.getJSONArray("board");
                                 //find the board/user state differences
@@ -292,34 +284,10 @@ public class GameManager {
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
-                        /*
-                        JSONArray hand = player.getJSONArray("hand");
-                        for(int j = 0; j < hand.length(); j++){
-                            thePlayers[index].tiles[j] = hand.getString(j).charAt(0);
-                        }
-                        */
                                 }
                                 if (theGame != null) {
                                     if (theGame.theGameScreen != null) {
-                                        if (theGame.theGameScreen.bottom != null) {
-                                            theGame.theGameScreen.bottom.setPlayer(thePlayers[0]);
-                                            theGame.theGameScreen.bottom.updateState();
-                                        }
-                                        if (theGame.theGameScreen.right != null) {
-                                            theGame.theGameScreen.right.setPlayer(thePlayers[1]);
-                                            theGame.theGameScreen.right.updateState();
-                                        }
-                                        if (theGame.theGameScreen.top != null) {
-                                            theGame.theGameScreen.top.setPlayer(thePlayers[2]);
-                                            theGame.theGameScreen.top.updateState();
-                                        }
-
-                                        if (theGame.theGameScreen.left != null) {
-                                            theGame.theGameScreen.left.setPlayer(thePlayers[3]);
-                                            theGame.theGameScreen.left.updateState();
-                                        }
-
-                                        theGame.theGameScreen.UpdateInfoPanel();
+                                        theGame.theGameScreen.QueueUpdatePlayers();
                                     }
                                 }
                                 if (debug)
