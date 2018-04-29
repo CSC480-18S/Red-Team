@@ -40,6 +40,7 @@ public class GameManager {
     private Socket socket;
     private double reconnectTimer = 2000.0;
     private ArrayList<String> eventBacklog;
+    private ArrayList<Integer> connectAIQueue;
 
 
     /**
@@ -58,6 +59,7 @@ public class GameManager {
     private GameManager(){
         thePlayers = new Player[4];
         theAIs = new AI[4];
+        connectAIQueue = new ArrayList<>();
         placementsUnderConsideration = new ArrayList<Placement>();
         theBoard = new Board(OswebbleGame.BOARD_SIZE);
         eventBacklog = new ArrayList<String>();
@@ -83,8 +85,11 @@ public class GameManager {
 
     }
     public void Update(){
-        for(AI a: theAIs){
-            a.update();
+        if(connectAIQueue.size() > 0){
+            Integer position = connectAIQueue.remove(0);
+            theAIs[position] = new AI();
+            thePlayers[position] = theAIs[(position)];
+
         }
         ApplyEventBackLog();
     }
@@ -214,33 +219,14 @@ public class GameManager {
             @Override
             public void call(Object... args) {
                 LogEvent("Reconnecting an AI");
-                System.out.println("connectAI");
+                System.out.println("frontend got connectAI");
                 try {
                     JSONObject data = (JSONObject) args[0];
                     System.out.println(data.toString());
                     int position = data.getInt("position");
                     //reconnect an AI
-                    theAIs[position] = new AI();
-                    thePlayers[position] = theAIs[position];
-                    switch (position){
-                        case 0:
-                            theGame.theGameScreen.bottom.setPlayer(theAIs[(position)]);
-                            theGame.theGameScreen.bottom.updateState();
-                            break;
-                        case 1:
-                            theGame.theGameScreen.right.setPlayer(theAIs[(position)]);
-                            theGame.theGameScreen.right.updateState();
-                            break;
-                        case 2:
-                            theGame.theGameScreen.top.setPlayer(theAIs[(position)]);
-                            theGame.theGameScreen.top.updateState();
-                            break;
-                        case 3:
-                            theGame.theGameScreen.left.setPlayer(theAIs[(position)]);
-                            theGame.theGameScreen.left.updateState();
-                            break;
-                    }
-                    thePlayers[position] = theAIs[(position)];
+                    connectAIQueue.add(position);
+                    //theAIs[position].update();
                     if(debug)
                         theGame.theGameScreen.debug.setText("Got connectAI. Game num: "+(theGame.theGameScreen.NUM_GAMES_SINCE_START));
                 }catch(ArrayIndexOutOfBoundsException e){
@@ -317,10 +303,14 @@ public class GameManager {
                             //the
                             isAI = true;
                             //todo reconnect an AI at that position
-                            theAIs[index].disconnectAI();
-                            theAIs[index] = null;
-                            theAIs[index] = new AI();
-                            thePlayers[index] = theAIs[index];
+                            if(theAIs[index] != null){
+                                theAIs[index].disconnectAI();
+                                theAIs[index] = null;
+                            }
+                            if(produceAI){
+                                theAIs[index] = new AI();
+                                thePlayers[index] = theAIs[index];
+                            }
                         }
                         try {
                             if(player.get("score") != JSONObject.NULL)
@@ -413,8 +403,10 @@ public class GameManager {
             public void call(Object... args) {
                 System.out.println("newGame");
                 theGame.theGameScreen.gameOverActor.setVisible(false);
-                if(debug)
-                    theGame.theGameScreen.debug.setText("Game num: "+(theGame.theGameScreen.NUM_GAMES_SINCE_START++));
+                if(debug) {
+                    theGame.theGameScreen.debug.setText("Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START++));
+                    System.out.println("Game number: " + theGame.theGameScreen.NUM_GAMES_SINCE_START);
+                }
             }
         }).on("newGameCountdown", new Emitter.Listener() {
             @Override

@@ -41,7 +41,7 @@ public class AI extends Player {
         }else {
             this.team = "Gold";
         }
-        myCache = new PriorityQueue(200);
+        myCache = new PriorityQueue(50);
         myBoard = new Board(11);
         connectSocket();
     }
@@ -132,11 +132,25 @@ public class AI extends Player {
      */
     public boolean connectSocket(){
         try{
+            if(mySocket != null)
+                mySocket.disconnect();
+            mySocket = null;
             IO.Options opts = new IO.Options();
             opts.forceNew = true;
             mySocket = IO.socket("http://localhost:3000",opts);
-            mySocket.connect();
+
+            System.out.println("Setting up AI events");
             socketEvents();
+            mySocket.connect();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if(!mySocket.connected()){
+                System.err.println(this.name + "couldnt connect its socket");
+            }
+
             //emit to server that AI has connected.
             //fetch new tiles?
             /*
@@ -152,7 +166,7 @@ public class AI extends Player {
             });*/
         }
         catch (Exception e){
-            System.err.print(e);
+            e.printStackTrace();
         }
         return false;
     }
@@ -301,12 +315,37 @@ public class AI extends Player {
                     //System.out.println(AI.this.name + " got playWord, but does nothing");
                     myCache.Clear();
                 }
+            }).on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    System.out.println(AI.this.name + " got connect");
+                }
             }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
                     System.out.println(AI.this.name + " got disconnect");
                     mySocket.disconnect();
                     mySocket = null;
+                }
+            }).on(Socket.EVENT_RECONNECTING, new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    System.out.println(AI.this.name + "reconnecting");
+                }
+            }).on(Socket.EVENT_RECONNECT_ATTEMPT, new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    System.out.println(AI.this.name + "reconnect attempt");
+                }
+            }).on(Socket.EVENT_RECONNECT_FAILED, new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    System.out.println(AI.this.name + "reconnect failed");
+                }
+            }).on(Socket.EVENT_CONNECT_TIMEOUT, new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    System.out.println(AI.this.name + "connect timeout");
                 }
             }).on(Socket.EVENT_ERROR, new Emitter.Listener() {
                 @Override

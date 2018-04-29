@@ -86,13 +86,16 @@ public class GameScreen implements Screen {
         //Set the entire screen to this color
         Gdx.gl.glClearColor(.666f, .666f, .666f, 1);
         try{
-        //perform the actions of the actors
-        stage.act(delta);
-        //render the actors
-        stage.draw();
+            //perform the actions of the actors
+            stage.act(delta);
+            //render the actors
+            stage.draw();
         }catch (NullPointerException n){
             n.printStackTrace();
+        }catch( StringIndexOutOfBoundsException s){
+            s.printStackTrace();
         }
+        GameManager.getInstance().Update();
         if(doStateUpdate){
             doStateUpdate = false;
                 if(bottom != null){
