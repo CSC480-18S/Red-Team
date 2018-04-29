@@ -1,9 +1,11 @@
 'use strict'
 const axios = require('axios')
-const fs = require('fs')
+const fm = require('./FileManager')
 const logger = require('./Logger')
 
-const logPath = './logs/redundancies.log'
+const LOG_PATH = './logs/redundancies.log'
+
+let redundancies = []
 
 /**
  * Appends data to the redundancy log.
@@ -15,36 +17,48 @@ function saveForLater(url, data) {
     url: url,
     data: data
   }
-  let json = JSON.stringify(obj) + '\n'
+  redundancies.push(obj)
   
-  fs.appendFile(logPath, json, function(err) {
+  let json = JSON.stringify(redundancies)
+  fm.writeFile((err) => {
     if (err) {
-      logger('Error while logging redundancy:', err)
+      logger('Failed to save redundancy [' + url + ', ' + data + ']')
     }
-  })
+  }, LOG_PATH, json)
 }
 
+/**
+ * Attempts to resend saved redundancies to the database.
+ */
 function resend() {
-  logger('Attempting resends (RedundancyManager)')
+  logger('Attempting RM resends')
+  
+  fm.readFile((readData) => {
+    let logJSON = readData
+    redundancies = JSON.parse(logJSON)
+    
+    let changes = false
 
-  let changes = false
+    for (let i = 0; i < redundancies.length; ++i) {
+      let url = redundancies[i].url
+      let data = redundancies[i].data
+      
+      axios.post(url, data)
+        .then(function(response) {
+          redundancies.splice(i, 1)
+          i--
+          changes = true
+        })
+        .catch(function(e) {
+          logger('Failed to resend redundancy [' + url + ', ' + data + ']')
+        })
+    }
 
-  for (let i = 0; i < this._savedData.length; i++) {
-    axios.post(this._savedData[i].url, this._savedData[i].data)
-      .then(function(response) {
-        this._savedData.splice(i, 1)
-        i--
-        changes = true
-      })
-      .catch(function(e) {
-        // failed, do nothing
-      })
-  }
-
-  if (changes) {
-    let json = JSON.stringify(this._savedData)
-    this._fm.writeFile(json)
-  }
+    if (changes) {
+      let json = JSON.stringify(redundancies)
+      fm.writeFile(LOG_PATH, json)
+    }
+  }, LOG_PATH)
 }
 
 /**
