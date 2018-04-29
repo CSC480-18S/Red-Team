@@ -139,7 +139,7 @@ class PlayerManager {
   /**
    * Retrieves the player's information from the DB
    */
-  retrieveDBInfo() {
+  retrieveDBInfo(callback) {
     mg(this.socket._socket.remoteAddress, (mac) => {
       db.checkIfUserExists(mac)
         .then(r => {
@@ -152,6 +152,7 @@ class PlayerManager {
                   link: r[0]._links.self.href
                 }
                 this.injectDatabaseData(user.username, user.team, user.link)
+                callback(this.name)
               })
           } else {
             // TODO: Tell player that they need to login/register first
@@ -184,6 +185,15 @@ class PlayerManager {
     this.team = team
     this.link = link
     dg(`${name} connected`, 'debug')
+    this.setUp()
+  }
+
+  injectAIData(number, callback) {
+    this.name = `AI_${number}`
+    let random = Math.floor(Math.random() * 2)
+    this.team = random === 0 ? 'Gold' : 'Green'
+    dg(`${this.name} connected`, 'debug')
+    callback(this.name)
     this.setUp()
   }
 
@@ -278,6 +288,10 @@ class PlayerManager {
     }
 
     this.socket.send(JSON.stringify(eventData))
+  }
+
+  gameEvent(data) {
+    this.sendEvent('gameEvent', data)
   }
 
   /**
