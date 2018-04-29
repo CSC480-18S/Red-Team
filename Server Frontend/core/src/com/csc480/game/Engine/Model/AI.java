@@ -72,7 +72,14 @@ public class AI extends Player {
                         //System.out.println("The AI found made a decent play");
                         System.out.println(this.name + " trying to play: "+bestPlay.myWord + "  while in state " + this.state);
                         System.out.println(this.name + " JSONIFIED DATA TO BE SET: "+GameManager.JSONifyPlayIdea(bestPlay, myBoard));
-                        mySocket.emit("playWord", GameManager.JSONifyPlayIdea(bestPlay, myBoard));
+                        //mySocket.emit("playWord", GameManager.JSONifyPlayIdea(bestPlay, myBoard));
+                        JSONObject object = new JSONObject();
+                        JSONObject data = new JSONObject();
+                        object.put("event", "playWord");
+                        data.put("play", GameManager.JSONifyPlayIdea(bestPlay, myBoard));
+                        object.put("data", data);
+
+                        this.connection.send(object.toString());
                         this.state = 2;
                         //myBoard.addWord(bestPlay.placements);
                         GameManager.getInstance().placementsUnderConsideration.clear();
@@ -97,7 +104,14 @@ public class AI extends Player {
                                 toSwap.put((tiles[i]+"").toUpperCase());
                             }
                         }
-                        mySocket.emit("swap", toSwap);
+                        //mySocket.emit("swap", toSwap);
+                        JSONObject object = new JSONObject();
+                        JSONObject data = new JSONObject();
+                        object.put("event", "swap");
+                        data.put("tiles", toSwap);
+                        object.put("data", data);
+
+                        this.connection.send(object.toString());
                         this.state = 0;
                         //UPDATE MUST BE CALLED OR ELSE THE AI COMES TO A STANDSTILL IF IT DOES NOT FIND A BEST WORD
                         //update();
@@ -142,13 +156,13 @@ public class AI extends Player {
             mySocket = IO.socket("http://localhost:3000",opts);
             mySocket.connect();
             socketEvents();*/
-            connection = new WebSocketClient(new URI("http://localhost:3000")) {
+            connection = new WebSocketClient(new URI("ws://localhost:3000")) {
                 @Override
                 public void onOpen(ServerHandshake handshakedata) {
                     JSONObject object = new JSONObject();
                     JSONObject data = new JSONObject();
-                    object.put("type", "whoAreYou");
-                    data.put("isAI", true);
+                    object.put("event", "whoAmI");
+                    data.put("client", "AI");
                     object.put("data", data);
 
                     this.send(object.toString());
@@ -158,7 +172,7 @@ public class AI extends Player {
                 public void onMessage(String message) {
                     JSONObject data = (JSONObject) JSONObject.stringToValue(message);
 
-                    switch(data.getString("type")){
+                    switch(data.getString("event")){
                         case "dataUpdate":
                             System.out.println(AI.this.name + " got dataUpdate");
                             try {
@@ -312,7 +326,7 @@ public class AI extends Player {
     /**
      * Creates the Socket Listeners for each event the AI should respond to
      */
-    public void socketEvents(){
+    /*public void socketEvents(){
         //while(mySocket.connected()) {
             mySocket.on("whoAreYou", new Emitter.Listener() {
                 @Override
@@ -441,7 +455,7 @@ public class AI extends Player {
                 }
             });
         //}
-    }
+    }*/
 
     /**
      * This Should be used to actually play a word. If this returns null, call FindPlay() and run this method again.
