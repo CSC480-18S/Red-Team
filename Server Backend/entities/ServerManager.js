@@ -12,7 +12,7 @@ module.exports = (webSocket) => {
     constructor() {
       this.frontends = []
       this.currentlyConnected = 0
-      this.gameManager = new GameManager(webSocket)
+      this.gameManager = new GameManager(this.emitDataUpdate.bind(this), this.emitGameEvent.bind(this), this.updateFrontends.bind(this))
       this.players = new Array(4).fill(null)
       this.oldPlayerData = new Array(4).fill(null)
       this.queue = []
@@ -138,15 +138,20 @@ module.exports = (webSocket) => {
       }
     }
 
+    latestData() {
+      let data = this.gameManager.latestData()
+      data.players = this.players
+
+      return data
+    }
+
     /**
        * Creates only one frontend manager instance
        */
     createFrontend(socket) {
       let manager = new FrontendManager(socket, this.frontends.length, this.frontendDisconnect.bind(this))
       // TODO: Update this to work with the latest @Landon
-      let data = this.gameManager.latestData()
-      data.players = this.players
-      manager.updateState(data)
+      manager.updateState(this.latestData())
       this.frontends.push(manager)
     }
 
@@ -189,6 +194,28 @@ module.exports = (webSocket) => {
         if (queued.ip === ip) {
           this.queue.splice(i, 1)
           return
+        }
+      }
+    }
+
+    updateFrontends() {
+      for (let frontend of this.frontends) {
+        frontend.updateState(this.latestData)
+      }
+    }
+
+    emitGameEvent(action) {
+      for (let player of this.players) {
+        if (player !== null) {
+          player.gameEvent(action)
+        }
+      }
+    }
+
+    emitDataUpdate(board) {
+      for (let player of this.players) {
+        if (player !== null) {
+          player.dataUpdate(board)
         }
       }
     }
