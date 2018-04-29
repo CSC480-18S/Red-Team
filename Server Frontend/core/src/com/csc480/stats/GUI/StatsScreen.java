@@ -71,7 +71,7 @@ public class StatsScreen implements Screen {
         table.TableLayout();
         //table.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         table.setWidth(GameScreen.GUI_UNIT_SIZE * 37);
-        table.setHeight(GameScreen.GUI_UNIT_SIZE * 37 *aspectRatio);
+        table.setHeight(GameScreen.GUI_UNIT_SIZE * 34.5f *aspectRatio);
         //table.setDebug(true);
 
         stage.addActor(table);
