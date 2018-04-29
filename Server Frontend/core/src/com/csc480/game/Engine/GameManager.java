@@ -111,13 +111,13 @@ public class GameManager {
             socket = null;
             socket = IO.socket("http://localhost:3000");
             socket.connect();*/
-            connection = new WebSocketClient(new URI("http://localhost:3000")) {
+            connection = new WebSocketClient(new URI("ws://localhost:3000")) {
                 @Override
                 public void onOpen(ServerHandshake handshakedata) {
                     JSONObject object = new JSONObject();
                     JSONObject data = new JSONObject();
-                    object.put("type", "whoAreYou");
-                    data.put("isSF", true);
+                    object.put("event", "whoAmI");
+                    data.put("client", "SF");
                     object.put("data", data);
 
                     this.send(object.toString());
@@ -126,7 +126,7 @@ public class GameManager {
                 @Override
                 public void onMessage(String message) {
                     JSONObject data = (JSONObject)JSONObject.stringToValue(message);
-                    switch(data.getString("type")){
+                    switch(data.getString("event")){
                         case "removeAI":
                             System.out.println("frontend got removeAI");
                             try {
