@@ -1,7 +1,5 @@
 package com.csc480.game.GUI.Actors;
 
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
@@ -10,8 +8,6 @@ import com.badlogic.gdx.utils.Array;
 import com.csc480.game.Engine.GameManager;
 import com.csc480.game.Engine.TextureManager;
 import com.csc480.game.GUI.GameScreen;
-
-import java.util.ArrayList;
 
 public class InfoPanelActor extends Group{
     private List<String> eventLog;
@@ -32,47 +28,27 @@ public class InfoPanelActor extends Group{
         Table myLayout = new Table();
         myLayout.setHeight(getHeight());
         myLayout.setWidth(getWidth());
-        //myLayout.setDebug(true);
         myLayout.top();
-        //myLayout.setPosition(getWidth()/2, getHeight()/2);
         Image bg = new Image(TextureManager.getInstance().infoBackground);
-//        bg.setScale(.25f,1f);
         bg.setPosition(0, 0);
-        //bg.setWidth(getWidth());
-        //bg.setHeight(getHeight());
         myLayout.background(bg.getDrawable()).top();
         Label title = new Label("Scores", TextureManager.getInstance().ui, "default");
         title.setColor(Color.RED);
         title.setName("title");
-        //title.setPosition(GameScreen.GUI_UNIT_SIZE*4,GameScreen.GUI_UNIT_SIZE*12);
-//        myLayout.add(title).expandX().padTop(15f);
-//        myLayout.row();
-        //addActor(title)
-
 
         green = new ProgressBar(0f,250f,1f,false,TextureManager.getInstance().ui, "GreenProgress");
         green.getStyle().background.setMinHeight(10f);
         green.getStyle().knobBefore.setMinHeight(10f);
-//        green.setScaleY(.01f);
-//        green.setWidth(getWidth());
-//        green.setHeight(GameScreen.GUI_UNIT_SIZE/10);
         myLayout.add(green).fillX().padBottom(5f).padTop(19f);
         myLayout.row();
-
-
-//        green.setValue(250f);//todo remove this//////////////////////////////////////////
 
         gold = new ProgressBar(0f,250f,1f,false,TextureManager.getInstance().ui, "GoldProgress");
         gold.getStyle().background.setMinHeight(10f);
         gold.getStyle().knobBefore.setMinHeight(10f);
         myLayout.add(gold).fillX().padBottom(10);
         myLayout.row();
-//        gold.setValue(50f);//todo remove this////////////////////////////////////////////
-//
-
 
         Table sublayout = new Table();
-        //sublayout.setDebug(true);
         p0Name = new Label("player0", TextureManager.getInstance().ui, "default");
         p0Score = new Label("0", TextureManager.getInstance().ui, "default");
         sublayout.add(p0Name).padLeft(10f).padTop(5f).left().expandX().minWidth(150f).padBottom(10f);
@@ -98,8 +74,6 @@ public class InfoPanelActor extends Group{
         myLayout.add(sublayout);
         myLayout.row();
 
-
-
         logOfEvents = new Array<String>();
         eventLog = new List<String>(TextureManager.getInstance().ui, "default");
         eventLog.setPosition(GameScreen.GUI_UNIT_SIZE, GameScreen.GUI_UNIT_SIZE*5);
@@ -107,8 +81,6 @@ public class InfoPanelActor extends Group{
         myLayout.add(eventLog).fillX().padLeft(10f).padRight(10f).padBottom(10f).maxWidth(200f).minHeight(300f);
 
         addActor(myLayout);
-//        setDebug(true,true);
-
     }
 
     public void UpdatePlayerStatus(int position, String name, int score){
@@ -167,19 +139,16 @@ public class InfoPanelActor extends Group{
             String line1 = event.substring(0,br_index);
             String line2 = event.substring(br_index,event.length());
             event = line1 + "\n" + line2;
-
         }
         tempEvents.add(event);
         eventLog.setItems(tempEvents);
-        eventLog.setSelectedIndex(-1);//.setSelectedIndex(logOfEvents.size-1);
-        //eventLog.getItems().add(event);
+        eventLog.setSelectedIndex(-1);
 
     }
     public void ShowBonus(String event){
         MoveByAction mba = new MoveByAction();
         mba.setAmount(2000f,0);
         mba.setDuration(20f);
-//        if(event.toLowerCase().contains("oswego bonus"))
         GameManager.getInstance().theGame.theGameScreen.oswego.addAction(mba);
         if(GameManager.getInstance().theGame != null && GameManager.getInstance().theGame.theGameScreen != null)
             GameManager.getInstance().theGame.theGameScreen.oswego.setPosition(-GameScreen.GUI_UNIT_SIZE*40,GameScreen.GUI_UNIT_SIZE*5);
