@@ -3,14 +3,8 @@ package com.csc480.game.Engine.Model;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.math.Vector2;
 import com.csc480.game.Engine.GameManager;
-//import com.csc480.game.Engine.SocketManager;
 import com.csc480.game.Engine.WordVerification;
 
-import com.mashape.unirest.http.Unirest;
-import io.socket.client.IO;
-import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
-import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONArray;
@@ -25,8 +19,7 @@ public class AI extends Player {
     private static int counter = 0;
     private static boolean greenTeam = true;
     public PriorityQueue myCache;
-    public Socket mySocket;
-    public WebSocket connection;
+    public WebSocketClient connection;
     volatile Board myBoard;
     volatile boolean startIndex = true;
 
@@ -49,6 +42,7 @@ public class AI extends Player {
         myCache = new PriorityQueue(200);
         myBoard = new Board(11);
         connectSocket();
+        connection.connect();
     }
 
     /**
@@ -72,7 +66,6 @@ public class AI extends Player {
                         //System.out.println("The AI found made a decent play");
                         System.out.println(this.name + " trying to play: "+bestPlay.myWord + "  while in state " + this.state);
                         System.out.println(this.name + " JSONIFIED DATA TO BE SET: "+GameManager.JSONifyPlayIdea(bestPlay, myBoard));
-                        //mySocket.emit("playWord", GameManager.JSONifyPlayIdea(bestPlay, myBoard));
                         JSONObject object = new JSONObject();
                         JSONObject data = new JSONObject();
                         object.put("event", "playWord");
@@ -104,7 +97,6 @@ public class AI extends Player {
                                 toSwap.put((tiles[i]+"").toUpperCase());
                             }
                         }
-                        //mySocket.emit("swap", toSwap);
                         JSONObject object = new JSONObject();
                         JSONObject data = new JSONObject();
                         object.put("event", "swap");
@@ -151,11 +143,6 @@ public class AI extends Player {
      */
     public boolean connectSocket(){
         try{
-            /*IO.Options opts = new IO.Options();
-            opts.forceNew = true;
-            mySocket = IO.socket("http://localhost:3000",opts);
-            mySocket.connect();
-            socketEvents();*/
             connection = new WebSocketClient(new URI("ws://localhost:3000")) {
                 @Override
                 public void onOpen(ServerHandshake handshakedata) {
@@ -166,11 +153,12 @@ public class AI extends Player {
                     object.put("data", data);
 
                     this.send(object.toString());
+                    System.out.println("AI CONNECTION ESTABLISHED: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
                 }
 
                 @Override
                 public void onMessage(String message) {
-                    JSONObject data = (JSONObject) JSONObject.stringToValue(message);
+                    JSONObject data = new JSONObject(message);
 
                     switch(data.getString("event")){
                         case "dataUpdate":
@@ -274,19 +262,6 @@ public class AI extends Player {
                     ex.printStackTrace();
                 }
             };
-            //emit to server that AI has connected.
-            //fetch new tiles?
-            /*
-            mySocket.on("whoAreYou", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    System.out.println("whoAreYou");
-                    JSONObject data = new JSONObject();
-                    data.put("isAI",true);
-                    mySocket.emit("whoAreYou",data);
-
-                }
-            });*/
         }
         catch (Exception e){
             System.err.print(e);
@@ -294,169 +269,10 @@ public class AI extends Player {
         return false;
     }
 
-    public boolean isConnected(){
-        return mySocket.connected();
-    }
-
-    /**
-     * Kill an AI's connection to the back end
-     */
-    /*public void disconnectAI(){
-        mySocket.disconnect();
-    }*/
-    public void disconnectAI(){
+    public void disconnectAI() {
         connection.closeConnection(0, "gotDisconnect");
         connection.close();
     }
-
-    /**
-     * Reconnect an AI to the backend
-     */
-    public void ReConnectSocket(){
-        try {
-            IO.Options opts = new IO.Options();
-            opts.forceNew = true;
-            opts.reconnection = true;
-            mySocket = IO.socket("http://localhost:3000", opts);
-            mySocket.connect();
-        } catch (URISyntaxException e){
-            System.err.println(e);
-        }
-    }
-
-    /**
-     * Creates the Socket Listeners for each event the AI should respond to
-     */
-    /*public void socketEvents(){
-        //while(mySocket.connected()) {
-            mySocket.on("whoAreYou", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    //System.out.println();
-                    System.out.println(AI.this.name+" got whoAreYou");
-                    JSONObject data = new JSONObject();
-                    data.put("isAI", true);
-                    data.put("team",team);
-                    System.out.println(data.toString());
-                    mySocket.emit("whoAreYou", data);
-
-                }
-            }).on("play", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-
-                        System.out.println(AI.this.name + " got play");
-                        try {
-                            JSONObject data = (JSONObject) args[0];
-                            System.out.println(data.toString());
-                            boolean invalid = data.getBoolean("invalid");
-                            if (invalid) {
-                                if (state == 2)
-                                    System.out.println(AI.this.name + " State set back to 1");
-                                    state = 1;
-                            } else {
-                                if (state == 2)
-                                    System.out.println(AI.this.name + " State set to 0");
-                                    state = 0;
-                            }
-                            update();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                }
-            }).on("dataUpdate", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    System.out.println(AI.this.name + " got dataUpdate");
-                    try {
-                        JSONObject data = (JSONObject) args[0];
-                        System.out.println(data.toString());
-                        boolean myTurn = data.getBoolean("isTurn");
-                        JSONArray jsonTiles = data.getJSONArray("tiles");
-                        char[] newTiles = new char[jsonTiles.length()];
-                        for(int i = 0; i < newTiles.length; i++){
-                            tiles[i] = jsonTiles.getString(i).toLowerCase().charAt(0);
-//                            System.out.println(tiles[i]);
-                        }
-
-                        //reconnect an AI
-                        //System.out.println(myTurn);
-                        if (myTurn) {
-                            long startTime = System.currentTimeMillis();
-
-//                            tiles = GameManager.getInstance().getNewHand();
-                            myCache.Clear();
-                            if(startIndex) {
-                                FindPlays(myBoard);
-                            }
-                            else{
-                                FindPlayInverted(myBoard);
-                            }
-                            if(!GameManager.debug)
-                                while(System.currentTimeMillis() - startTime < 6000){
-                                    if(System.currentTimeMillis() - startTime % 100 == 0) {
-                                        System.out.println(System.currentTimeMillis());
-                                    }
-                                }
-                            state = 1;
-//                            tiles = GameManager.getInstance().getNewHand();
-                            try {
-                                GameManager.getInstance().updatePlayers(GameManager.getInstance().thePlayers);
-                            }catch (NullPointerException e){
-                                e.printStackTrace();
-                            }
-                        }
-                        else{
-                            state = 0;
-                        }
-                        update();
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        e.printStackTrace();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).on("boardUpdate", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-//                LogEvent("boardUpdate");
-                    System.out.println(name+" got boardUpdate");
-                    try {
-                        JSONObject data = (JSONObject) args[0];
-                        System.out.println("data: "+data.toString());
-                        JSONArray board = data.getJSONArray("board");
-//                    System.out.println("BACKEND BOARD STATE: "+board.toString());
-//                    System.out.println("PARSED BACKEND BOARD STATE: "+unJSONifyBackendBoard(board));
-                        //find the board/user state differences
-                        myBoard.the_game_board = GameManager.getInstance().unJSONifyBackendBoard(board);
-                        //hard update the game and user states
-                    }catch(ArrayIndexOutOfBoundsException e){
-                        e.printStackTrace();
-                    }catch(JSONException e){
-                        e.printStackTrace();
-                    }
-                }
-            }).on("playWord", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    //System.out.println(AI.this.name + " got playWord, but does nothing");
-                    myCache.Clear();
-                }
-            }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    System.out.println(AI.this.name + " got disconnect");
-                    mySocket.disconnect();
-                    mySocket = null;
-                }
-            }).on(Socket.EVENT_ERROR, new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    System.out.println(AI.this.name + " got error: "+args[0]);
-                }
-            });
-        //}
-    }*/
 
     /**
      * This Should be used to actually play a word. If this returns null, call FindPlay() and run this method again.
@@ -474,10 +290,6 @@ public class AI extends Player {
     public void MyWordWasPlayed(){
         myCache.Clear();
     }
-
-
-
-
 
 
 
