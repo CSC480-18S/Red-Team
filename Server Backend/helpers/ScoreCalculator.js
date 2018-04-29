@@ -37,8 +37,7 @@ module.exports = (words, gameBoard) => {
             default:
               break
           }
-          boardTile.multiplierType = null
-          boardTile.multiplier = null
+          boardTile.nullMultiplier()
           return t.score * letterBonus
         }
       }

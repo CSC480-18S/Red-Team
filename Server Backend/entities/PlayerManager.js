@@ -213,8 +213,9 @@ class PlayerManager {
       this.disconnect(this.name, this.position, this.oldDataSave())
     })
 
-    this.socket.on('message', event => {
-      this.determineEvent(event)
+    this.socket.on('message', data => {
+      let event = JSON.parse(data)
+      this.determineEvent(event, this)
     })
   }
 
@@ -259,10 +260,7 @@ class PlayerManager {
     }
 
     switch (event) {
-      case 'play':
-        eventData.data = data
-        break
-        // Data update now includes the board
+      // Data update now includes the board
       case 'dataUpdate':
         eventData.data = this.sendableData()
         eventData.data.board = data
@@ -276,6 +274,11 @@ class PlayerManager {
     }
 
     this.socket.send(JSON.stringify(eventData))
+  }
+
+  invalidPlay(data) {
+    this.sendEvent('invalidPlay')
+    this.gameEvent(data)
   }
 
   gameEvent(data) {
