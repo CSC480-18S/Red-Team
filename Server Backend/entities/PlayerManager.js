@@ -234,16 +234,15 @@ class PlayerManager {
    * @param {String} event - event
    */
   determineEvent(event) {
-    let e = JSON.parse(event)
-    switch (e.event) {
+    switch (event.event) {
       case 'playWord':
         dg(`${this.name} made play`, 'debug')
-        this.gamePlays('play', this, e.newBoard)
+        this.gamePlays(event, this)
         break
       case 'swap':
         dg(`${this.name} swapped`, 'info')
         this.updateHand(this.tiles)
-        this.gamePlays('swap', this)
+        this.gamePlays(event, this)
         break
     }
   }
