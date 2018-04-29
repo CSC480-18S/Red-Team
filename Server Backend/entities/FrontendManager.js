@@ -30,15 +30,19 @@ class FrontendManager {
     switch (event) {
       case 'connectAI':
       case 'removeAI':
-        this.eventData.data.position = data
+        eventData.data.position = data
         break
       case 'updateState':
-        this.eventData.data = {
+        eventData.data = {
           board: data.board,
           players: data.players.map(p => {
-            return p.sendableData()
+            if (p !== null) {
+              return p.sendableData()
+            }
+
+            return null
           }),
-          yellow: data.yellow,
+          gold: data.gold,
           green: data.green
         }
         break
