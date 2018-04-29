@@ -5,17 +5,16 @@ const PlayerManager = require('./PlayerManager')
 const GameManager = require('./GameManager')
 const FrontendManager = require('./FrontendManager')
 
-let firstTurnSet = false
-
 module.exports = (webSocket) => {
   class ServerManager {
     constructor() {
       this.frontends = []
       this.currentlyConnected = 0
-      this.gameManager = new GameManager(this.emitDataUpdate.bind(this), this.emitGameEvent.bind(this), this.updateFrontends.bind(this))
+      this.gameManager = new GameManager(this.emitDataUpdate.bind(this), this.emitGameEvent.bind(this), this.updateFrontends.bind(this), this.changeTurn.bind(this))
       this.players = new Array(4).fill(null)
       this.oldPlayerData = new Array(4).fill(null)
       this.queue = []
+      this.firstTurnSet = false
       this.listenForClients()
     }
 
@@ -73,7 +72,11 @@ module.exports = (webSocket) => {
         let p = this.players[i]
         if (p === null) {
           let board = this.gameManager.board.sendableBoard()
-          let player = new PlayerManager(i, socket, isAI, this.clientDisconnect.bind(this), this.gameManager.determineEvent)
+          let player = new PlayerManager(i, socket, isAI, this.clientDisconnect.bind(this), this.gameManager.determineEvent.bind(this.gameManager))
+          if (!this.firstTurnSet) {
+            player.isTurn = true
+            this.firstTurnSet = true
+          }
           if (this.oldPlayerData[i] !== null) {
             this.injectOldData(i, player)
           }
@@ -84,10 +87,6 @@ module.exports = (webSocket) => {
             this.emitCurrentlyConnected()
           } else {
             player.injectAIData(i, this.emitPlayerConnected.bind(this), board)
-          }
-          if (!firstTurnSet) {
-            player.isTurn = true
-            firstTurnSet = true
           }
           return
         }
@@ -261,6 +260,18 @@ module.exports = (webSocket) => {
         }
       }
       socket.send(JSON.stringify(error))
+    }
+
+    changeTurn(position) {
+      this.players[position].isTurn = false
+      do {
+        position++
+        if (position > 3) {
+          position = 0
+        }
+      } while (this.players[position] === null)
+      this.players[position].isTurn = true
+      this.emitDataUpdate(this.gameManager.sendableBoard())
     }
   }
 
