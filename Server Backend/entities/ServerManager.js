@@ -76,16 +76,18 @@ module.exports = (webSocket) => {
           if (this.oldPlayerData[i] !== null) {
             this.injectOldData(i, player)
           }
+          this.players.splice(i, 1, player)
           if (!isAI) {
             this.currentlyConnected++
+            player.retrieveDBInfo(this.emitPlayerConnected.bind(this))
             this.emitCurrentlyConnected()
+          } else {
+            player.injectAIData(i, this.emitPlayerConnected.bind(this))
           }
           if (!firstTurnSet) {
             player.isTurn = true
             firstTurnSet = true
           }
-          player.retrieveDBInfo()
-          this.players.splice(i, 1, player)
           return
         }
       }
@@ -109,6 +111,7 @@ module.exports = (webSocket) => {
       }
       this.players.splice(position, 1, null)
       if (!isAI) {
+        this.emitPlayerLeft(name)
         this.emitCurrentlyConnected()
         this.addAI(position)
       }
@@ -194,6 +197,22 @@ module.exports = (webSocket) => {
       }
       for (let queued of this.queue) {
         queued.socket.send(JSON.stringify(cc))
+      }
+    }
+
+    emitPlayerConnected(name) {
+      for (let player of this.players) {
+        if (player !== null) {
+          player.gameEvent(`${name} has joined`)
+        }
+      }
+    }
+
+    emitPlayerLeft(name) {
+      for (let player of this.players) {
+        if (player !== null) {
+          player.gameEvent(`${name} has left`)
+        }
       }
     }
 

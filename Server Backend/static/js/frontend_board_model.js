@@ -38,10 +38,10 @@ ws.onopen = () => {
         console.log(mes.data)
 
         // // test data
-        // var gameEvent = response.action
-        // // gameEvent = response.action;
-        // document.getElementById('actualEvent').innerHTML = '<br>'
-        // document.getElementById('actualEvent').innerHTML = gameEvent
+        var gameEvent = mes.data.action
+        // gameEvent = response.action;
+        document.getElementById('actualEvent').innerHTML = '<br>'
+        document.getElementById('actualEvent').innerHTML = gameEvent
         break
       case 'dataUpdate':
         dataUpdate(mes.data)
