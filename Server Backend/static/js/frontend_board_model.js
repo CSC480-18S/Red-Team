@@ -24,87 +24,11 @@ ws.on('connection', response() => {
 		alert(`${JSON.stringify(response, null, 4)}`)
 		break
 	case 'boardUpdate':
-		this.data.goldScore = response.yellow
-		this.data.greenScore = response.green
-
-		this.data.currentPlayTileAmount = 0
-		for (i = 0; i < row; i++) {
-			for (j = 0; j < column; j++) {
-				var square = document.getElementById('square-' + i + '-' + j)
-				if (!square.hasChildNodes()) {
-					if (response.board[i][j] !== null) {
-						var tile = {
-							id: 'playedLetter: ' + response.board[i][j],
-							letter: response.board[i][j],
-							value: tileValue(response.board[i][j]),
-							highlightedColor: undefined,
-							visibility: 'visible'
-						}
-						console.log(tile)
-						var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-						svg.setAttribute('id', tile.id)
-						svg.setAttribute('visibility', 'visible')
-						var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-						rect.setAttribute('x', 0)
-						rect.setAttribute('y', 0)
-						rect.setAttribute('stroke', 'black')
-						rect.setAttribute('stroke-width', '1px')
-						rect.setAttribute('width', '100%')
-						rect.setAttribute('height', '100%')
-						rect.setAttribute('fill', '#D3D3D3')
-						svg.appendChild(rect)
-						var text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-						text.setAttribute('x', '50%')
-						text.setAttribute('y', '60%')
-						text.setAttribute('alignment-baseline', 'middle')
-						text.setAttribute('text-anchor', 'middle')
-						text.setAttribute('fill', undefined)
-						text.textContent = tile.letter
-						svg.appendChild(text)
-						var text2 = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-						text2.setAttribute('x', '70%')
-						text2.setAttribute('y', '30%')
-						text2.setAttribute('fill', undefined)
-						text2.setAttribute('class', 'letter-value')
-						text2.textContent = tile.value
-						svg.appendChild(text2)
-						square.appendChild(svg)
-
-						this.data.tilesOnBoardValueAndPosition.push({tileLetter: tile.letter,
-						xAxis: i,
-						yAxis: j
-						})
-					}
-				}
-			}
-		}
+		boardUpdate(response)
 		break
 	case 'play':
 		console.log(response)
-
-		if (response.invalid) {
-			for (let i = 0; i < this.data.currentPlayTileAmount; i++) {
-				var t = this.data.tilesOnBoardValueAndPosition[this.data.tilesOnBoardValueAndPosition.length - 1]
-				// console.log(t)
-
-				if (t != undefined) {
-					var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
-					this.data.tilesOnBoardValueAndPosition.pop()
-					square.removeChild(square.firstChild)
-				}
-			}		
-			this.data.selectedTileId = ''
-			for (var i = 0; i < tileSlotNumber; i++) {
-				this.data.tileSlots[i].tile.highlightedColor = '#000000'
-			}
-
-			this.data.currentPlayTileAmount = 0
-		}
-
-		for (let i = 0; i < this.data.tileSlots.length; i++) {
-			this.data.tileSlots[i].hasTile = true
-			this.data.tileSlots[i].tile.visibility = 'visible'
-		}
+		play(response)
 		break
 	case 'gameEvent':
 		console.log('received gameEvent: ')
@@ -117,54 +41,7 @@ ws.on('connection', response() => {
 		document.getElementById('actualEvent').innerHTML = gameEvent
 		break
 	case 'dataUpdate':
-		this.data.isTurn = response.isTurn
-		this.data.score = response.score
-		this.data.playTime = 60
-
-		let time
-		if (this.data.isTurn) {
-			clearInterval(time)
-			time = setInterval(() => {
-				this.data.playTime--
-				if (this.data.playTime % 2 === 0) {
-					this.data.colored = true
-				} else {
-					this.data.colored = false
-				}
-			}, 1000)
-		} else {
-			clearInterval(time)
-			this.data.colored = false
-		
-		
-		}
-
-		console.log('received dataUpdate event: ')
-		console.log(response)
-		this.data.username = response.name
-		this.data.tileSlots = generateTiles(response.tiles)
-		// response.position is the position of four players on the server
-		// tested data
-		// var tiles = ['T', 'E', 'S', 'T'];
-		// var isTurn = true;
-		// if (isTurn === false) {
-		if (response.isTurn === false) {
-			this.data.isMyTurn = 'Wait for your turn...'
-			document.getElementById('btnSwap').disabled = true
-			document.getElementById('btnPlace').disabled = true
-			document.getElementById('btnShuffle').disabled = true
-			for (var i = 0; i < tileSlotNumber; i++) {
-				this.data.tileSlots[i].tile.disabled = true
-			}
-		} else {
-			this.data.isMyTurn = "It's your turn!"
-			document.getElementById('btnSwap').disabled = false
-			document.getElementById('btnPlace').disabled = false
-			document.getElementById('btnShuffle').disabled = false
-			for (var i = 0; i < tileSlotNumber; i++) {
-				this.data.tileSlots[i].tile.disabled = false
-			}
-		}
+		dataUpdate(response)
 		break	
 	default:
 		console.log(message.event)
@@ -172,6 +49,142 @@ ws.on('connection', response() => {
 	}   
   
 })
+
+//responds to boardUpdate socket event
+function boardUpdate(resonse) {
+	this.data.goldScore = response.yellow
+	this.data.greenScore = response.green
+
+	this.data.currentPlayTileAmount = 0
+	for (i = 0; i < row; i++) {
+		for (j = 0; j < column; j++) {
+			var square = document.getElementById('square-' + i + '-' + j)
+			if (!square.hasChildNodes()) {
+				if (response.board[i][j] !== null) {
+					var tile = {
+						id: 'playedLetter: ' + response.board[i][j],
+						letter: response.board[i][j],
+						value: tileValue(response.board[i][j]),
+						highlightedColor: undefined,
+						visibility: 'visible'
+					}
+					console.log(tile)
+					var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+					svg.setAttribute('id', tile.id)
+					svg.setAttribute('visibility', 'visible')
+					var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+					rect.setAttribute('x', 0)
+					rect.setAttribute('y', 0)
+					rect.setAttribute('stroke', 'black')
+					rect.setAttribute('stroke-width', '1px')
+					rect.setAttribute('width', '100%')
+					rect.setAttribute('height', '100%')
+					rect.setAttribute('fill', '#D3D3D3')
+					svg.appendChild(rect)
+					var text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+					text.setAttribute('x', '50%')
+					text.setAttribute('y', '60%')
+					text.setAttribute('alignment-baseline', 'middle')
+					text.setAttribute('text-anchor', 'middle')
+					text.setAttribute('fill', undefined)
+					text.textContent = tile.letter
+					svg.appendChild(text)
+					var text2 = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+					text2.setAttribute('x', '70%')
+					text2.setAttribute('y', '30%')
+					text2.setAttribute('fill', undefined)
+					text2.setAttribute('class', 'letter-value')
+					text2.textContent = tile.value
+					svg.appendChild(text2)
+					square.appendChild(svg)
+
+					this.data.tilesOnBoardValueAndPosition.push({tileLetter: tile.letter,
+					xAxis: i,
+					yAxis: j
+					})
+				}
+			}
+		}
+	}
+}	
+
+//response to play socket event
+function play(response) {
+	if (response.invalid) {
+		for (let i = 0; i < this.data.currentPlayTileAmount; i++) {
+			var t = this.data.tilesOnBoardValueAndPosition[this.data.tilesOnBoardValueAndPosition.length - 1]
+			// console.log(t)
+
+			if (t != undefined) {
+				var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
+				this.data.tilesOnBoardValueAndPosition.pop()
+				square.removeChild(square.firstChild)
+			}
+		}		
+		this.data.selectedTileId = ''
+		for (var i = 0; i < tileSlotNumber; i++) {
+			this.data.tileSlots[i].tile.highlightedColor = '#000000'
+		}
+
+		this.data.currentPlayTileAmount = 0
+	}
+
+	for (let i = 0; i < this.data.tileSlots.length; i++) {			  this.data.tileSlots[i].hasTile = true
+		this.data.tileSlots[i].tile.visibility = 'visible'
+	}
+}	
+
+//response to dataUpdate socket event
+function dataUpdate(response) {
+	this.data.isTurn = response.isTurn
+	this.data.score = response.score
+	this.data.playTime = 60
+
+	let time
+	if (this.data.isTurn) {
+		clearInterval(time)
+		time = setInterval(() => {
+			this.data.playTime--
+			if (this.data.playTime % 2 === 0) {
+				this.data.colored = true
+			} else {
+				this.data.colored = false
+			}
+		}, 1000)
+	} else {
+		clearInterval(time)
+		this.data.colored = false
+		
+		
+	}
+
+	console.log('received dataUpdate event: ')
+	console.log(response)
+	this.data.username = response.name
+	this.data.tileSlots = generateTiles(response.tiles)
+		// response.position is the position of four players on the server
+		// tested data
+		// var tiles = ['T', 'E', 'S', 'T'];
+		// var isTurn = true;
+		// if (isTurn === false) {
+	if (response.isTurn === false) {
+		this.data.isMyTurn = 'Wait for your turn...'
+		document.getElementById('btnSwap').disabled = true
+		document.getElementById('btnPlace').disabled = true
+		document.getElementById('btnShuffle').disabled = true
+		for (var i = 0; i < tileSlotNumber; i++) {
+			this.data.tileSlots[i].tile.disabled = true
+		}
+	} else {
+		this.data.isMyTurn = "It's your turn!"
+		document.getElementById('btnSwap').disabled = false
+		document.getElementById('btnPlace').disabled = false
+		document.getElementById('btnShuffle').disabled = false
+		for (var i = 0; i < tileSlotNumber; i++) {
+			this.data.tileSlots[i].tile.disabled = false
+		}
+	}
+}	
 
 //OLD SOCKETS.IO STUFF -- LEFT COMMENTED OUT IN CASE WEBSOCKETS STUFF IS IMPLEMENTED INCORRECTLY
 
