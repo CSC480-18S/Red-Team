@@ -88,6 +88,12 @@ public class GameManager {
 
 
     }
+
+    public void Dispose(){
+        connection.closeConnection(0, "dispose called");
+        connection.close();
+    }
+
     public void Update(){
         if(connectAIQueue.size() > 0){
             Integer position = connectAIQueue.remove(0);
