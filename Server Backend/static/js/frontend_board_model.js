@@ -22,6 +22,7 @@ ws.onopen = () => {
         break
       case 'gameOver':
         alert(`${JSON.stringify(mes.data, null, 4)}`)
+		gameOver(mes.data)
         break
       case 'boardUpdate':
         boardUpdate(mes.data)
@@ -110,6 +111,25 @@ function boardUpdate(response) {
     }
   }
 }
+
+function gameOver(response) {
+	for (let i = 0; i < this.data.tilesOnBoardValueAndPosition.length - 1; i++) {
+      var t = this.data.tilesOnBoardValueAndPosition[this.data.tilesOnBoardValueAndPosition.length - 1]
+      // console.log(t)
+
+      //if (t != undefined) {
+        var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
+        this.data.tilesOnBoardValueAndPosition.pop()
+        square.removeChild(square.firstChild)
+      }
+    }
+    this.data.selectedTileId = ''
+    for (var i = 0; i < tileSlotNumber; i++) {
+      this.data.tileSlots[i].tile.highlightedColor = '#000000'
+    }
+
+    //this.data.currentPlayTileAmount = 0
+}		
 
 // response to play socket event
 function play(response) {
