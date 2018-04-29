@@ -59,13 +59,6 @@ public class GameManager {
         eventBacklog = new ArrayList<String>();
         WordVerification.getInstance();
         ConnectSocket();
-
-        //setUpEvents();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         for(int i = 0; i < 4; i++){
             if(produceAI) {
                 theAIs[i] = new AI();
@@ -128,6 +121,7 @@ public class GameManager {
 
                 @Override
                 public void onMessage(String message) {
+                    System.out.println("frontend got message\n"+message);
                     JSONObject object = new JSONObject(message);
                     JSONObject data = object.getJSONObject("data");
 
@@ -235,6 +229,7 @@ public class GameManager {
 
                                 JSONArray players = data.getJSONArray("players");
                                 for (int i = 0; i < players.length(); i++) {
+                                    if(players.get(i) == JSONObject.NULL) continue;
                                     JSONObject player = (JSONObject) players.get(i);
                                     int index = player.getInt("position");
                                     boolean isAI;
@@ -243,11 +238,10 @@ public class GameManager {
                                     } catch (JSONException e) {
                                         //the
                                         isAI = true;
-                                        //todo reconnect an AI at that position
-                                        theAIs[index].disconnectAI();
-                                        theAIs[index] = null;
-                                        theAIs[index] = new AI();
-                                        thePlayers[index] = theAIs[index];
+//                                        theAIs[index].disconnectAI();
+//                                        theAIs[index] = null;
+//                                        theAIs[index] = new AI();
+//                                        thePlayers[index] = theAIs[index];
                                     }
                                     try {
                                         if (player.get("score") != JSONObject.NULL)
