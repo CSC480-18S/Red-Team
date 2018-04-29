@@ -32,7 +32,7 @@ ws.onopen = () => {
         play(mes.data)
         break
 	  case 'playTime':
-		playTime(mes.data)
+		playTime(mes.data.time)
 		break
       case 'gameEvent':
         console.log('received gameEvent: ')
@@ -158,16 +158,13 @@ function play(response) {
   }
 }
 //response to playTime socket event
-function playTime(response) {
-	let time
-	time = setInterval(() => {
-		this.data.playTime = response
-		if this.data.playTime % 2 == 0) {
-			this.data.colored = true;
-		}	else {
-			this.data.colored = false
-		}	
-	}, 1000)	
+function playTime(time) {
+	this.data.playTime = time
+	if this.data.playTime % 2 == 0) {
+		this.data.colored = true;
+	}	else {
+		this.data.colored = false
+	}		
 	
 }	
 
