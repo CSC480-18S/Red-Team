@@ -139,7 +139,7 @@ class PlayerManager {
   /**
    * Retrieves the player's information from the DB
    */
-  retrieveDBInfo(callback) {
+  retrieveDBInfo(callback, board) {
     mg(this.socket._socket.remoteAddress, (mac) => {
       db.checkIfUserExists(mac)
         .then(r => {
@@ -151,7 +151,7 @@ class PlayerManager {
                   team: r2 === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green',
                   link: r[0]._links.self.href
                 }
-                this.injectDatabaseData(user.username, user.team, user.link)
+                this.injectDatabaseData(user.username, user.team, user.link, board)
                 callback(this.name)
               })
           } else {
@@ -180,28 +180,28 @@ class PlayerManager {
    * @param {team} team - team
    * @param {URL} link - player DB url
    */
-  injectDatabaseData(name, team, link) {
+  injectDatabaseData(name, team, link, board) {
     this.name = name
     this.team = team
     this.link = link
     dg(`${name} connected`, 'debug')
-    this.setUp()
+    this.setUp(board)
   }
 
-  injectAIData(number, callback) {
+  injectAIData(number, callback, board) {
     this.name = `AI_${number}`
     let random = Math.floor(Math.random() * 2)
     this.team = random === 0 ? 'Gold' : 'Green'
     dg(`${this.name} connected`, 'debug')
     callback(this.name)
-    this.setUp()
+    this.setUp(board)
   }
 
-  setUp() {
+  setUp(board) {
     // TODO: Fix this @Landon
     // this.sendEvent('boardUpdate', null)
     this.addToHand()
-    this.sendEvent('dataUpdate')
+    this.dataUpdate(board)
     this.listenForIncoming()
   }
 
@@ -262,27 +262,15 @@ class PlayerManager {
       case 'play':
         eventData.data = data
         break
+        // Data update now includes the board
       case 'dataUpdate':
-        eventData.data = {
-          name: this.name,
-          position: this.position,
-          tiles: this.tiles,
-          isTurn: this.isTurn,
-          score: this.score
-        }
+        eventData.data = this.sendableData()
+        eventData.data.board = data
         break
       case 'gameEvent':
         eventData.data = {
           action: data,
           bonus: false
-        }
-        break
-      case 'boardUpdate':
-      // TODO: Check if this can be removed
-        eventData.data = {
-          board: data.board,
-          yellow: data.yellow,
-          green: data.green
         }
         break
     }
@@ -292,6 +280,10 @@ class PlayerManager {
 
   gameEvent(data) {
     this.sendEvent('gameEvent', data)
+  }
+
+  dataUpdate(board) {
+    this.sendEvent('dataUpdate', board)
   }
 
   /**

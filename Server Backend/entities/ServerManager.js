@@ -12,7 +12,7 @@ module.exports = (webSocket) => {
     constructor() {
       this.frontends = []
       this.currentlyConnected = 0
-      this.gameManager = new GameManager(null)
+      this.gameManager = new GameManager(webSocket)
       this.players = new Array(4).fill(null)
       this.oldPlayerData = new Array(4).fill(null)
       this.queue = []
@@ -72,6 +72,7 @@ module.exports = (webSocket) => {
       for (let i = 0; i < this.players.length; i++) {
         let p = this.players[i]
         if (p === null) {
+          let board = this.gameManager.board.sendableBoard()
           let player = new PlayerManager(i, socket, isAI, this.clientDisconnect.bind(this), this.gameManager.determineEvent)
           if (this.oldPlayerData[i] !== null) {
             this.injectOldData(i, player)
@@ -79,10 +80,10 @@ module.exports = (webSocket) => {
           this.players.splice(i, 1, player)
           if (!isAI) {
             this.currentlyConnected++
-            player.retrieveDBInfo(this.emitPlayerConnected.bind(this))
+            player.retrieveDBInfo(this.emitPlayerConnected.bind(this), board)
             this.emitCurrentlyConnected()
           } else {
-            player.injectAIData(i, this.emitPlayerConnected.bind(this))
+            player.injectAIData(i, this.emitPlayerConnected.bind(this), board)
           }
           if (!firstTurnSet) {
             player.isTurn = true
