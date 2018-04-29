@@ -22,6 +22,7 @@ ws.onopen = () => {
         break
       case 'gameOver':
         alert(`${JSON.stringify(mes.data, null, 4)}`)
+		gameOver(mes.data)
         break
       case 'boardUpdate':
         boardUpdate(mes.data)
@@ -30,6 +31,9 @@ ws.onopen = () => {
         console.log(mes.data)
         play(mes.data)
         break
+	  case 'playTime':
+		playTime(mes.data.time)
+		break
       case 'gameEvent':
         console.log('received gameEvent: ')
         console.log(mes.data)
@@ -108,6 +112,25 @@ function boardUpdate(response) {
   }
 }
 
+function gameOver(response) {
+	for (let i = 0; i < this.data.tilesOnBoardValueAndPosition.length - 1; i++) {
+      var t = this.data.tilesOnBoardValueAndPosition[this.data.tilesOnBoardValueAndPosition.length - 1]
+      // console.log(t)
+
+      //if (t != undefined) {
+        var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
+        this.data.tilesOnBoardValueAndPosition.pop()
+        square.removeChild(square.firstChild)
+      }
+    }
+    this.data.selectedTileId = ''
+    for (var i = 0; i < tileSlotNumber; i++) {
+      this.data.tileSlots[i].tile.highlightedColor = '#000000'
+    }
+
+    //this.data.currentPlayTileAmount = 0
+}		
+
 // response to play socket event
 function play(response) {
   if (response.invalid) {
@@ -134,12 +157,23 @@ function play(response) {
     this.data.tileSlots[i].tile.visibility = 'visible'
   }
 }
+//response to playTime socket event
+function playTime(time) {
+	this.data.playTime = time
+	if this.data.playTime % 2 == 0) {
+		this.data.colored = true;
+	}	else {
+		this.data.colored = false
+	}		
+	
+}	
+
 
 // response to dataUpdate socket event
 function dataUpdate(response) {
   this.data.isTurn = response.isTurn
   this.data.score = response.score
-  this.data.playTime = 60
+  /*this.data.playTime = 60
 
   let time
   if (this.data.isTurn) {
@@ -154,7 +188,7 @@ function dataUpdate(response) {
     }, 1000)
   } else {
     clearInterval(time)
-    this.data.colored = false
+    this.data.colored = false*/
   }
 
   console.log('received dataUpdate event: ')
