@@ -135,40 +135,13 @@ public class InfoPanelActor extends Group{
     }
 
     public void UpdateProgressBars(){
-        int gr = 0, gl =0;
+        int gr = GameManager.getInstance().greenScore, gl =GameManager.getInstance().goldScore;
         if(GameManager.getInstance().theGame == null)return;
         if(GameManager.getInstance().theGame.theGameScreen == null)return;
-
-        if(GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer != null)
-        if(GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer.team.toLowerCase().compareTo("green") == 0){
-            gr += GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer.score;
-        }else if(GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer.team.toLowerCase().compareTo("gold") == 0)
-            {gl += GameManager.getInstance().theGame.theGameScreen.top.associatedPlayer.score;}
-
-        if(GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer != null)
-        if(GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer.team.toLowerCase().compareTo("green") == 0){
-            gr += GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer.score;
-        }else if(GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer.team.toLowerCase().compareTo("gold") == 0)
-            {gl += GameManager.getInstance().theGame.theGameScreen.bottom.associatedPlayer.score;}
-
-        if(GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer != null)
-        if(GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer.team.toLowerCase().compareTo("green") == 0){
-            gr += GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer.score;
-        }else if(GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer.team.toLowerCase().compareTo("gold") == 0)
-            { gl += GameManager.getInstance().theGame.theGameScreen.left.associatedPlayer.score;}
-
-        if(GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer != null)
-        if(GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer.team.toLowerCase().compareTo("green") == 0){
-            gr += GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer.score;
-        }else if(GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer.team.toLowerCase().compareTo("gold") == 0) {
-            gl += GameManager.getInstance().theGame.theGameScreen.right.associatedPlayer.score;
-
-        }
         green.setRange(0f,gr+gl+0f);
         gold.setRange(0f,gr+gl+0f);
         green.setValue(gr+0f);
         gold.setValue(gl+0f);
-
     }
 
     /**

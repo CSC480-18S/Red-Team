@@ -47,6 +47,7 @@ public class GameScreen implements Screen {
     private Viewport view;
     private  OrthographicCamera viewCam;
     GameBoardActor gameBoardActor;
+    private boolean updateGameStatus = false;
 
     private boolean doStateUpdate = false;
 
@@ -91,6 +92,27 @@ public class GameScreen implements Screen {
         //render the actors
         stage.draw();
         GameManager.getInstance().Update();
+        if(updateGameStatus){
+           updateGameStatus = false;
+            if (bottom != null) {
+                bottom.setPlayer(GameManager.getInstance().thePlayers[0]);
+                bottom.updateState();
+            }
+            if (right != null) {
+                right.setPlayer(GameManager.getInstance().thePlayers[1]);
+                right.updateState();
+            }
+            if (top != null) {
+                top.setPlayer(GameManager.getInstance().thePlayers[2]);
+                top.updateState();
+            }
+
+            if (left != null) {
+                left.setPlayer(GameManager.getInstance().thePlayers[3]);
+                left.updateState();
+            }
+           UpdateInfoPanel();
+        }
         }catch (NullPointerException n){
             n.printStackTrace();
         }
