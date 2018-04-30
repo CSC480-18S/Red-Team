@@ -273,6 +273,11 @@ class PlayerManager {
       case 'gameOver':
         eventData.data = data
         break
+      case 'playTimer':
+        eventData.data = {
+          time: data
+        }
+        break
     }
 
     this.socket.send(JSON.stringify(eventData))
@@ -293,6 +298,10 @@ class PlayerManager {
 
   gameOver(data) {
     this.sendEvent('gameOver', data)
+  }
+
+  playTimer(time) {
+    this.sendEvent('playTimer', time)
   }
 
   /**

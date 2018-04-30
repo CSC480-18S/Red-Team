@@ -7,12 +7,12 @@ var firstTimeGeneratedTiles = []
 
 // sockets
 let ws = new WebSocket('ws://localhost:3000')
-ws.onopen = function(event){
+ws.onopen = function(event) {
   // send "whoAmI" event
   let whoAmI = { event: 'whoAmI', data: { client: 'CL' } }
   ws.send(JSON.stringify(whoAmI))
 
-  ws.onmessage = function(event){
+  ws.onmessage = function(event) {
     // NEW WEBSOCKETS STUFF -- UNABLE TO TEST, MAY BE POORLY IMPLEMENTED
     let mes = JSON.parse(event.data)
     console.log(mes.event)
@@ -22,7 +22,7 @@ ws.onopen = function(event){
         break
       case 'gameOver':
         alert(`${JSON.stringify(mes.data, null, 4)}`)
-		gameOver(mes.data)
+        gameOver(mes.data)
         break
       case 'boardUpdate':
         boardUpdate(mes.data)
@@ -31,9 +31,9 @@ ws.onopen = function(event){
         console.log(mes.data)
         play(mes.data)
         break
-	  case 'playTime':
-		playTime(mes.data.time)
-		break
+	  case 'playTimer':
+        playTime(mes.data.time)
+        break
       case 'gameEvent':
         console.log('received gameEvent: ')
         console.log(mes.data)
@@ -113,23 +113,23 @@ function boardUpdate(response) {
 }
 
 function gameOver(response) {
-	for (let i = 0; i < this.data.tilesOnBoardValueAndPosition.length - 1; i++) {
-      var t = this.data.tilesOnBoardValueAndPosition[this.data.tilesOnBoardValueAndPosition.length - 1]
-      // console.log(t)
+  for (let i = 0; i < this.data.tilesOnBoardValueAndPosition.length - 1; i++) {
+    var t = this.data.tilesOnBoardValueAndPosition[this.data.tilesOnBoardValueAndPosition.length - 1]
+    // console.log(t)
 
-      //if (t != undefined) {
-        var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
-        this.data.tilesOnBoardValueAndPosition.pop()
-        square.removeChild(square.firstChild)
-      // }
-    }
-    this.data.selectedTileId = ''
-    for (var i = 0; i < tileSlotNumber; i++) {
-      this.data.tileSlots[i].tile.highlightedColor = '#000000'
-    }
+    // if (t != undefined) {
+    var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
+    this.data.tilesOnBoardValueAndPosition.pop()
+    square.removeChild(square.firstChild)
+    // }
+  }
+  this.data.selectedTileId = ''
+  for (var i = 0; i < tileSlotNumber; i++) {
+    this.data.tileSlots[i].tile.highlightedColor = '#000000'
+  }
 
-    //this.data.currentPlayTileAmount = 0
-}		
+  // this.data.currentPlayTileAmount = 0
+}
 
 // response to play socket event
 function play(response) {
@@ -157,23 +157,21 @@ function play(response) {
     this.data.tileSlots[i].tile.visibility = 'visible'
   }
 }
-//response to playTime socket event
+// response to playTime socket event
 function playTime(time) {
-	this.data.playTime = time
-	if (this.data.playTime % 2 == 0) {
-		this.data.colored = true;
-	}	else {
-		this.data.colored = false
-	}		
-	
-}	
-
+  this.data.playTime = time
+  if (this.data.playTime % 2 == 0) {
+    this.data.colored = true
+  }	else {
+    this.data.colored = false
+  }
+}
 
 // response to dataUpdate socket event
 function dataUpdate(response) {
   this.data.isTurn = response.isTurn
   this.data.score = response.score
-  /*this.data.playTime = 60
+  /* this.data.playTime = 60
 
   let time
   if (this.data.isTurn) {
@@ -189,7 +187,7 @@ function dataUpdate(response) {
   } else {
     clearInterval(time)
     this.data.colored = false
-  }*/
+  } */
 
   console.log('received dataUpdate event: ')
   console.log(response)
@@ -217,7 +215,7 @@ function dataUpdate(response) {
       this.data.tileSlots[i].tile.disabled = false
     }
   }
-  }
+}
 
 // OLD SOCKETS.IO STUFF -- LEFT COMMENTED OUT IN CASE WEBSOCKETS STUFF IS IMPLEMENTED INCORRECTLY
 
@@ -770,10 +768,10 @@ function emitBoard() {
   console.log(array)
 
   // socket.emit('playWord', array)
-  let board = { event: 'playWord', data: { array } }
+  let board = { event: 'playWord', data: {play: array} }
   ws.send(JSON.stringify(board))
 }
 
 function helpFunction() {
-   alert("-To play a tile on the board, 'Tap' the tile in your hand and then 'Tap' the board where you want to play it. \n -The EXCHANGE button will replace your tiles with a new hand and move on to the next player's turn. \n -The SHUFFLE button will shuffle the tiles in your hand, but will not skip your turn. \n -The DONE button is how you place a word on the board to complete your turn. \n -You will have one minute to play a word or EXCHANGE your hand before your turn is skipped. \n -The GAME EVENT box will flash red when it is your turn and the timer is counting down.");
- } 
+  alert("-To play a tile on the board, 'Tap' the tile in your hand and then 'Tap' the board where you want to play it. \n -The EXCHANGE button will replace your tiles with a new hand and move on to the next player's turn. \n -The SHUFFLE button will shuffle the tiles in your hand, but will not skip your turn. \n -The DONE button is how you place a word on the board to complete your turn. \n -You will have one minute to play a word or EXCHANGE your hand before your turn is skipped. \n -The GAME EVENT box will flash red when it is your turn and the timer is counting down.")
+}

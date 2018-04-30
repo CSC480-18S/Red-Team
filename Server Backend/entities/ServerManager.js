@@ -285,21 +285,23 @@ module.exports = (webSocket) => {
       dg(`it is now ${this.players[position].name}'s turn`, 'debug')
       this.emitDataUpdate(this.gameManager.board.sendableBoard())
       this.gameManager.afterTurn()
+      this.gameManager.playTimer(true)
+      this.gameManager.playTimer(false, this.players[position])
     }
 
     gameOverEvent() {
       let finalScores = []
       let winner = null
       let highestScore = 0
-      for (let manager of this.players) {
-        if (manager.id !== null) {
-          if (manager.score > highestScore) {
-            highestScore = manager.score
-            winner = manager.name
+      for (let player of this.players) {
+        if (player !== null) {
+          if (player.score > highestScore) {
+            highestScore = player.score
+            winner = player.name
           }
           let data = {
-            name: manager.name,
-            score: manager.score
+            name: player.name,
+            score: player.score
           }
           finalScores.push(data)
         }
