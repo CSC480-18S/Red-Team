@@ -220,6 +220,7 @@ disgruntled
 disposition
 exceptional
 spontaneous
+marketplace
 abbreviate
 abdication
 aberration
@@ -669,7 +670,6 @@ foreboding
 inaugurate
 millennium
 proficient
-vice versa
 aardwolves
 abacterial
 abandoners
@@ -10124,6 +10124,7 @@ compass
 midterm
 reslife
 openmic
+privacy
 abacus
 abject
 abjure
@@ -14968,6 +14969,7 @@ fans
 bevs
 quad
 dean
+blog
 act
 add
 age
@@ -15364,6 +15366,7 @@ ban
 bap
 bsr
 cts
+api
 am
 an
 as
