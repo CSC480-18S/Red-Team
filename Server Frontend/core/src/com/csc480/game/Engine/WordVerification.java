@@ -52,7 +52,7 @@ public class WordVerification {
 
         try{
             File fileAI;
-            fileAI = new File(Gdx.files.internal("aiwords.txt").path());
+            fileAI = new File(Gdx.files.internal("LtoS15kWordCorpus.txt").path());
             inFileScanner = new Scanner(fileAI);
             ArrayList<String> tempWords = new ArrayList<>();
             while (inFileScanner.hasNext()){
