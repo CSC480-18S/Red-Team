@@ -148,9 +148,11 @@ public class GameScreen implements Screen {
     }
 
     private void BuildStage(OswebbleGame mainGame){
+        if(GameManager.debug)
         System.out.println("Density: "+Gdx.graphics.getDensity());
         //must calculate the aspect ratio to resize properly
         aspectRatio = (float)Gdx.graphics.getHeight() / (float)Gdx.graphics.getWidth();
+        if(GameManager.debug)
         System.out.println("aspectRatio: "+aspectRatio);
 
         //we probably dont want to use bitmapfonts, as they can get blurry
@@ -218,6 +220,7 @@ public class GameScreen implements Screen {
         infoPanel.scaleBy(.1f);
         playArea.addActor(infoPanel);
 
+        if(GameManager.debug)
         System.out.println(board.getChildren().size);
         playArea.addActor(board);
         playArea.scaleBy(GUI_UNIT_SIZE * .04f);//had to do this because i originally tested all the sizes at a lower dpi

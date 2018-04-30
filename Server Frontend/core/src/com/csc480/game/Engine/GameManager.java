@@ -66,7 +66,8 @@ public class GameManager {
             if(produceAI) {
                 theAIs[i] = new AI();
                 thePlayers[i] = theAIs[i];
-                System.out.println("AI MADE +++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+                if(GameManager.debug)
+                    System.out.println("AI MADE +++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
             }else {
                 thePlayers[i] = new Player();
             }
@@ -112,7 +113,8 @@ public class GameManager {
                 @Override
                 public void onOpen(ServerHandshake handshakedata) {
                     //this.connect();
-                    System.out.println("Opened");
+                    if(GameManager.debug)
+                        System.out.println("Opened");
                     JSONObject object = new JSONObject();
                     JSONObject data = new JSONObject();
                     object.put("event", "whoAmI");
@@ -125,13 +127,15 @@ public class GameManager {
 
                 @Override
                 public void onMessage(String message) {
-                    System.out.println("frontend got message\n"+message);
+                    if(GameManager.debug)
+                        System.out.println("frontend got message\n"+message);
                     JSONObject object = new JSONObject(message);
                     JSONObject data = object.getJSONObject("data");
 
                     switch (object.getString("event")) {
                         case "removeAI":
-                            System.out.println("frontend got removeAI");
+                            if(GameManager.debug)
+                                System.out.println("frontend got removeAI");
                             try {
                                 //JSONObject data = (JSONObject) args[0];
                                 int position = data.getInt("position");
@@ -146,10 +150,12 @@ public class GameManager {
                             break;
                         case "connectAI":
                             LogEvent("Reconnecting an AI");
-                            System.out.println("connectAI");
+                            if(GameManager.debug)
+                                System.out.println("connectAI");
                             try {
                                 //JSONObject data = (JSONObject) args[0];
-                                System.out.println(data.toString());
+                                if(GameManager.debug)
+                                    System.out.println(data.toString());
                                 int position = data.getInt("position");
                                 //reconnect an AI
                                 connectAIQueue.add(position);
@@ -186,7 +192,8 @@ public class GameManager {
                             break;
 
                         case "boardUpdate":
-                            System.out.println("frontend got boardUpdate");
+                            if(GameManager.debug)
+                                System.out.println("frontend got boardUpdate");
                             try {
                                 System.out.println("data: " + data.toString());
                                 JSONArray board = data.getJSONArray("board");
@@ -203,7 +210,8 @@ public class GameManager {
                             }
                             break;
                         case "gameEvent":
-                            System.out.println("frontend got gameEvent");
+                            if(GameManager.debug)
+                                System.out.println("frontend got gameEvent");
                             try {
                                 boolean isBonus = false;
                                 String action = data.getString("action");
@@ -222,9 +230,11 @@ public class GameManager {
                             }
                             break;
                         case "updateState":
-                            System.out.println("frontend got updateState");
+                            if(GameManager.debug)
+                                System.out.println("frontend got updateState");
                             try {
-                                System.out.println(data);
+                                if(GameManager.debug)
+                                    System.out.println(data);
                                 JSONArray board = data.getJSONArray("board");
                                 //find the board/user state differences
                                 wordHasBeenPlayed(unJSONifyBackendBoard(board));
@@ -268,7 +278,8 @@ public class GameManager {
                                             }
                                         }
                                         thePlayers[index].turn = player.getBoolean("isTurn");
-                                        System.out.println("updated player info @ index " + index+" isturn="+thePlayers[index].turn);
+                                        if(GameManager.debug)
+                                            System.out.println("updated player info @ index " + index+" isturn="+thePlayers[index].turn);
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
@@ -288,13 +299,15 @@ public class GameManager {
                             }
                             break;
                         case "gameOver":
-                            System.out.println("gameOver");
+                            if(GameManager.debug)
+                                System.out.println("gameOver");
                             LogEvent("gameOver");
                             //"score": scores of game "timeout": double
                             //"gameData": array of all data of the scores and such
                             try {
                                 //JSONObject data = (JSONObject) args[0];
-                                System.out.println(data.toString());
+                                if(GameManager.debug)
+                                    System.out.println(data.toString());
                                 JSONArray scores = data.getJSONArray("scores");
                                 Array<String> playersScores = new Array<String>();
                                 for (int i = 0; i < scores.length(); i++) {
@@ -321,13 +334,15 @@ public class GameManager {
                             }
                             break;
                         case "newGame":
-                            System.out.println("newGame");
+                            if(GameManager.debug)
+                                System.out.println("newGame");
                             theGame.theGameScreen.gameOverActor.setVisible(false);
                             if (debug)
                                 logQueue.add("Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START++));
                             break;
                         case "newGameCountdown":
-                            System.out.println("ferver frontend got newGameCountdown");
+                            if(GameManager.debug)
+                                System.out.println("ferver frontend got newGameCountdown");
                             //JSONObject data = (JSONObject) args[0];
                             int t = 20;
                             if (data.get("time") != JSONObject.NULL)
@@ -340,8 +355,10 @@ public class GameManager {
 
                 @Override
                 public void onClose(int code, String reason, boolean remote) {
-                    System.out.println("GAMEMANAGER SOCKET CLOSED");
-                    System.out.println("REASON: " + reason + " CODE: " + code + "------------------------------------------------------------------------------------------------");
+                    if(GameManager.debug)
+                        System.out.println("GAMEMANAGER SOCKET CLOSED");
+                    if(GameManager.debug)
+                        System.out.println("REASON: " + reason + " CODE: " + code + "------------------------------------------------------------------------------------------------");
                 }
 
                 @Override
@@ -350,8 +367,10 @@ public class GameManager {
                 }
             };
             connection.connect();
-        System.out.println(connection.isOpen() + " @#$!(&!^@*(&#$^*(#&U^!@&^#&*!@^$&*!^#@%&*(!#@^$&*!@^$*&!^%*(&!^$&(*!^@$(!#&(^$*&!@^#&!^@$&*^!&*^$&!*(@^$*&(!^@$&*(");
-        System.out.println(connection.isConnecting() + " @#$!(&!^@*(&#$^*(#&U^!@&^#&*!@^$&*!^#@%&*(!#@^$&*!@^$*&!^%*(&!^$&(*!^@$(!#&(^$*&!@^#&!^@$&*^!&*^$&!*(@^$*&(!^@$&*(");
+            if(GameManager.debug)
+                System.out.println(connection.isOpen() + " @#$!(&!^@*(&#$^*(#&U^!@&^#&*!@^$&*!^#@%&*(!#@^$&*!@^$*&!^%*(&!^$&(*!^@$(!#&(^$*&!@^#&!^@$&*^!&*^$&!*(@^$*&(!^@$&*(");
+            if(GameManager.debug)
+                System.out.println(connection.isConnecting() + " @#$!(&!^@*(&#$^*(#&U^!@&^#&*!@^$&*!^#@%&*(!#@^$&*!@^$*&!^%*(&!^$&(*!^@$(!#&(^$*&!@^#&!^@$&*^!&*^$&!*(@^$*&(!^@$&*(");
         } catch (URISyntaxException e){
             System.err.println(e);
         }
@@ -580,7 +599,8 @@ public class GameManager {
             }
             parentJsonArray.put(childJsonArray);
         }
-        System.out.println(parentJsonArray.toString());
+        if(GameManager.debug)
+            System.out.println(parentJsonArray.toString());
         return parentJsonArray;
     }
 
