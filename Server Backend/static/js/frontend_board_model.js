@@ -698,8 +698,9 @@ var swap = function() {
     this.tileSlots[i].tile.visibility = 'visible'
   }
 
-  socket.emit('swap', [this.tileSlots[0].tile.letter, this.tileSlots[1].tile.letter, this.tileSlots[2].tile.letter,
-    this.tileSlots[3].tile.letter, this.tileSlots[4].tile.letter, this.tileSlots[5].tile.letter, this.tileSlots[6].tile.letter])
+  let swap = {event: 'swap'}
+  ws.send(JSON.stringify(swap))
+  ws.send(JSON.stringify(whoAmI))
 }
 
 var grey = function() {
