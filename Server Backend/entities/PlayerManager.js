@@ -311,26 +311,6 @@ class PlayerManager {
   }
 
   /**
-   * When a client connects, their information is injected into the manager
-   * @param {String} name - name of player
-   * @param {String} team - team player is on
-   * @param {String} link = player link in db
-   * @param {Boolean} isAI - AI or not
-   * @param {Object} socket - socket object
-   */
-  createHandshakeWithClient(name, team, link, isAI, socket, data) {
-    this._name = name
-    this._team = team
-    this._link = link
-    this._isAI = isAI
-    this._socket = socket
-    this._socketId = socket.id
-    this.sendEvent('boardUpdate', data)
-    this.sendEvent('dataUpdate')
-    this.listenForEvents()
-  }
-
-  /**
    * Once a play is made, the player's hand is updated
    * @param {Array} tilesUsed - tiles that were used in a play
    */
