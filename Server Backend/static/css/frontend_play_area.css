@@ -13,7 +13,10 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: normal; }
 
 body {
-  background-color: lightgray}
+  background-image: url("/static/imgs/3-unsplash.jpg");
+  background-repeat: no-repeat;
+  background-size:cover;
+  }
 
 table {
   border: 1px solid black;
