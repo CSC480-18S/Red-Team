@@ -67,6 +67,9 @@ module.exports = (webSocket) => {
      * @param {Object} socket - socket object
      */
     createManager(socket, isAI) {
+      if (this.currentlyConnected === 4) {
+        this.killAI()
+      }
       for (let i = 0; i < this.players.length; i++) {
         let p = this.players[i]
         if (p === null) {
@@ -91,8 +94,19 @@ module.exports = (webSocket) => {
           return
         }
       }
-      // change to error message
       this.emitErrorMessage(socket, 'too many players connected')
+    }
+
+    killAI() {
+      for (let i = 0; i < this.players.length; i++) {
+        let p = this.players[i]
+        if (p === null && p.isAI) {
+          dg(`removing ai_${i}`)
+          this.removeAI(i)
+          this.clientDisconnect(p.name, p.position, p.oldDataSave())
+          return
+        }
+      }
     }
 
     /**
@@ -285,26 +299,29 @@ module.exports = (webSocket) => {
       dg(`it is now ${this.players[position].name}'s turn`, 'debug')
       this.emitDataUpdate(this.gameManager.board.sendableBoard())
       this.gameManager.afterTurn()
+      this.gameManager.playTimer(true)
+      this.gameManager.playTimer(false, this.players[position])
     }
 
     gameOverEvent() {
       let finalScores = []
       let winner = null
       let highestScore = 0
-      for (let manager of this.players) {
-        if (manager.id !== null) {
-          if (manager.score > highestScore) {
-            highestScore = manager.score
-            winner = manager.name
+      for (let player of this.players) {
+        if (player !== null) {
+          if (player.score > highestScore) {
+            highestScore = player.score
+            winner = player.name
           }
           let data = {
-            name: manager.name,
-            score: manager.score
+            name: player.name,
+            score: player.score
           }
           finalScores.push(data)
         }
       }
-      let goldWin = this._goldScore > this._greenScore
+      let latestData = this.latestData()
+      let goldWin = latestData.gold > latestData.green
       db.updateWin('Gold', this._goldScore, goldWin)
       db.updateWin('Green', this._greenScore, !goldWin)
 
