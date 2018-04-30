@@ -773,3 +773,7 @@ function emitBoard() {
   let board = { event: 'playWord', data: { array } }
   ws.send(JSON.stringify(board))
 }
+
+function helpFunction() {
+   alert("-To play a tile on the board, 'Tap' the tile in your hand and then 'Tap' the board where you want to play it. \n -The EXCHANGE button will replace your tiles with a new hand and move on to the next player's turn. \n -The SHUFFLE button will shuffle the tiles in your hand, but will not skip your turn. \n -The DONE button is how you place a word on the board to complete your turn. \n -You will have one minute to play a word or EXCHANGE your hand before your turn is skipped. \n -The GAME EVENT box will flash red when it is your turn and the timer is counting down.");
+ } 
