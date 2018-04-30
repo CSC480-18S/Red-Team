@@ -67,6 +67,9 @@ module.exports = (webSocket) => {
      * @param {Object} socket - socket object
      */
     createManager(socket, isAI) {
+      if (this.currentlyConnected === 4) {
+        this.killAI()
+      }
       for (let i = 0; i < this.players.length; i++) {
         let p = this.players[i]
         if (p === null) {
@@ -91,8 +94,19 @@ module.exports = (webSocket) => {
           return
         }
       }
-      // change to error message
       this.emitErrorMessage(socket, 'too many players connected')
+    }
+
+    killAI() {
+      for (let i = 0; i < this.players.length; i++) {
+        let p = this.players[i]
+        if (p === null && p.isAI) {
+          dg(`removing ai_${i}`)
+          this.removeAI(i)
+          this.clientDisconnect(p.name, p.position, p.oldDataSave())
+          return
+        }
+      }
     }
 
     /**
