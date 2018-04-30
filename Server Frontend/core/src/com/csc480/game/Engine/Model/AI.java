@@ -211,9 +211,13 @@ public class AI extends Player {
                                 GameManager.getInstance().theGame.theGameScreen.QueueUpdatePlayers();
                                 update();
                             } catch (ArrayIndexOutOfBoundsException e) {
-                                e.printStackTrace();
+                                if(GameManager.getInstance().debug) {
+                                    e.printStackTrace();
+                                }
                             } catch (JSONException e) {
-                                e.printStackTrace();
+                                if(GameManager.getInstance().debug) {
+                                    e.printStackTrace();
+                                }
                             }
                             break;
 
@@ -226,7 +230,9 @@ public class AI extends Player {
                                 state = 1;
                                 update();
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                if(GameManager.getInstance().debug) {
+                                    e.printStackTrace();
+                                }
                             }
                             break;
                         case "playWord":
@@ -244,14 +250,18 @@ public class AI extends Player {
                 //if an error occurs print it
                 @Override
                 public void onError(Exception ex) {
-                    ex.printStackTrace();
+                    if(GameManager.getInstance().debug) {
+                        ex.printStackTrace();
+                    }
                 }
             };
             //intiate actual connection
             connection.connect();
         }
         catch (Exception e){
-            System.err.print(e);
+            if(GameManager.getInstance().debug) {
+                e.printStackTrace();
+            }
         }
     }
 
