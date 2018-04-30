@@ -4,13 +4,14 @@ const dg = require('../helpers/Debug')(true)
 const PlayerManager = require('./PlayerManager')
 const GameManager = require('./GameManager')
 const FrontendManager = require('./FrontendManager')
+const db = require('../helpers/DB')
 
 module.exports = (webSocket) => {
   class ServerManager {
     constructor() {
       this.frontends = []
       this.currentlyConnected = 0
-      this.gameManager = new GameManager(this.emitDataUpdate.bind(this), this.emitGameEvent.bind(this), this.updateFrontends.bind(this), this.changeTurn.bind(this))
+      this.gameManager = new GameManager(this.emitDataUpdate.bind(this), this.emitGameEvent.bind(this), this.updateFrontends.bind(this), this.changeTurn.bind(this), this.gameOverEvent.bind(this))
       this.players = new Array(4).fill(null)
       this.oldPlayerData = new Array(4).fill(null)
       this.queue = []
@@ -201,12 +202,19 @@ module.exports = (webSocket) => {
       }
     }
 
+    emitFrontendGameEvent(action) {
+      for (let frontend of this.frontends) {
+        frontend.gameEvent(action)
+      }
+    }
+
     emitGameEvent(action) {
       for (let player of this.players) {
         if (player !== null) {
           player.gameEvent(action)
         }
       }
+      this.emitFrontendGameEvent(action)
     }
 
     emitDataUpdate(board) {
@@ -272,6 +280,98 @@ module.exports = (webSocket) => {
       dg(`it is now ${this.players[position].name}'s turn`, 'debug')
       this.emitDataUpdate(this.gameManager.board.sendableBoard())
       this.gameManager.afterTurn()
+    }
+
+    gameOverEvent() {
+      let finalScores = []
+      let winner = null
+      let highestScore = 0
+      for (let manager of this.players) {
+        if (manager.id !== null) {
+          if (manager.score > highestScore) {
+            highestScore = manager.score
+            winner = manager.name
+          }
+          let data = {
+            name: manager.name,
+            score: manager.score
+          }
+          finalScores.push(data)
+        }
+      }
+      let goldWin = this._goldScore > this._greenScore
+      db.updateWin('Gold', this._goldScore, goldWin)
+      db.updateWin('Green', this._greenScore, !goldWin)
+
+      let gameOverData = {
+        scores: finalScores,
+        winner: winner === null ? 'No one!' : winner,
+        winningTeam: goldWin ? 'Gold' : 'Green'
+      }
+
+      for (let player of this.players) {
+        if (player !== null) {
+          player.isTurn = false
+          player.dataUpdate(this.gameManager.board.sendableBoard())
+          player.gameOver(gameOverData)
+        }
+      }
+
+      for (let frontend of this.frontends) {
+        frontend.gameOver(gameOverData)
+      }
+
+      let timeUntil = 5
+      // TODO: See if this can be moved to game event? @Landon
+      let timer = setInterval(() => {
+        if (timeUntil !== 0) {
+          dg(`${timeUntil}`, 'debug')
+          for (let player of this.players) {
+            if (player !== null) {
+              this.emitGameEvent(`New game starts in ${timeUntil}`)
+            }
+          }
+          timeUntil--
+        } else {
+          clearInterval(timer)
+          dg('new game started!', 'info')
+          for (let frontend of this.frontends) {
+            frontend.sendEvent('newGame')
+            this.startNewGame()
+          }
+        }
+      }, 1000)
+    }
+
+    /**
+   * Starts a new game by resetting everything
+   */
+    startNewGame() {
+      this.resetPlayers()
+      this.resetGameboard()
+      this.players[0].isTurn = true
+      this.emitDataUpdate(this.gameManager.board.sendableBoard())
+      for (let frontend of this.frontends) {
+        frontend.updateState(this.latestData())
+      }
+      this.emitGameEvent('New game started')
+    }
+
+    /**
+   * Creates a new gameboard and initializes it
+   */
+    resetGameboard() {
+      this.gameManager.resetGameboard()
+    }
+
+    /**
+   * Resets all players' scores
+   */
+    resetPlayers() {
+      this.players.map(p => {
+        p.resetScore()
+        p.updateHand(p.tiles)
+      })
     }
   }
 
