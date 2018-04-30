@@ -87,6 +87,11 @@ module.exports = (webSocket) => {
           } else {
             player.injectAIData(i, this.emitPlayerConnected.bind(this), board)
           }
+          
+          for (let frontend of this.frontends) {
+            frontend.updateState(this.latestData())
+          }
+          
           return
         }
       }
