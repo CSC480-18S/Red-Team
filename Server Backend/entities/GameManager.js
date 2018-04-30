@@ -117,7 +117,7 @@ class GameManager {
      * Timer for a player's turn
      */
   playTimer(reset, player) {
-    let time = 15
+    let time = 60
     if (reset) {
       if (this.timer !== null) {
         clearInterval(this.timer)
@@ -143,7 +143,6 @@ class GameManager {
           this.updateTurn(player, true)
         }
       }, 1000)
-      console.log(this.timer)
     }
   }
 
