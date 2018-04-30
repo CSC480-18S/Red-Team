@@ -9,7 +9,7 @@ const dg = require('../helpers/Debug')(true)
 const db = require('../helpers/DB')
 
 class GameManager {
-  constructor(dataUpdate, gameEvent, frontendsUpdate, changeTurn) {
+  constructor(dataUpdate, gameEvent, frontendsUpdate, changeTurn, gameOverEvent) {
     this._gameBoard = new Gameboard()
     this._greenScore = 0
     this._goldScore = 0
@@ -18,6 +18,7 @@ class GameManager {
     this.gameEvent = gameEvent
     this.frontendsUpdate = frontendsUpdate
     this.changeTurn = changeTurn
+    this.gameOverEvent = gameOverEvent
   }
 
   /**
@@ -154,66 +155,9 @@ class GameManager {
   gameOver() {
     dg('all players have swapped tiles, game over', 'info')
     this.gameEvent('Game over!')
-    for (let manager of this._playerManagers) {
-      if (manager.id !== null) {
-        manager.isTurn = false
-        manager.sendEvent('dataUpdate')
-      }
-    }
+    this.gameOverEvent()
 
     this._swaps = 0
-
-    let finalScores = []
-    let winner = null
-    let highestScore = 0
-    for (let manager of this._playerManagers) {
-      if (manager.id !== null) {
-        if (manager.score > highestScore) {
-          highestScore = manager.score
-          winner = manager.name
-        }
-        let data = {
-          name: manager.name,
-          score: manager.score
-        }
-        finalScores.push(data)
-      }
-    }
-    let goldWin = this._goldScore > this._greenScore
-    db.updateWin('Gold', this._goldScore, goldWin)
-    db.updateWin('Green', this._greenScore, !goldWin)
-
-    let gameOverData = {
-      event: 'gameOver',
-      data: {
-        scores: finalScores,
-        winner: winner === null ? 'No one!' : winner,
-        winningTeam: goldWin ? 'Gold' : 'Green'
-      }
-    }
-
-    this.ws.send(JSON.stringify(gameOverData))
-
-    let timeUntil = 5
-    // TODO: See if this can be moved to game event? @Landon
-    let timer = setInterval(() => {
-      if (timeUntil !== 0) {
-        dg(`${timeUntil}`, 'debug')
-        let timer = {
-          type: 'newGameCountdown',
-          data: {
-            timer: timeUntil
-          }
-        }
-        this.ws.send(JSON.stringify(timer))
-        this.gameEvent(`New game starts in ${timeUntil}`)
-        timeUntil--
-      } else {
-        clearInterval(timer)
-        dg('new game started!', 'info')
-        this.startNewGame()
-      }
-    }, 1000)
   }
 
   /**
@@ -310,23 +254,12 @@ class GameManager {
   }
 
   /**
-   * Starts a new game by resetting everything
-   */
-  startNewGame() {
-    this.resetPlayers()
-    this.resetGameboard()
-    this.ws.send(JSON.stringify({event: 'newGame'}))
-    this.boardUpdate()
-    this.updateClientData()
-    this.gameEvent('New game started')
-  }
-
-  /**
    * Creates a new gameboard and initializes it
    */
   resetGameboard() {
+    this._greenScore = 0
+    this._goldScore = 0
     this._gameBoard = new Gameboard()
-    this._playerManagers[0].isTurn = true
   }
 
   /**

@@ -270,6 +270,9 @@ class PlayerManager {
           bonus: false
         }
         break
+      case 'gameOver':
+        eventData.data = data
+        break
     }
 
     this.socket.send(JSON.stringify(eventData))
@@ -286,6 +289,10 @@ class PlayerManager {
 
   dataUpdate(board) {
     this.sendEvent('dataUpdate', board)
+  }
+
+  gameOver(data) {
+    this.sendEvent('gameOver', data)
   }
 
   /**
