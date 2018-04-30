@@ -29,8 +29,6 @@ module.exports = (webSocket) => {
             case 'whoAmI':
               this.determineClientType(r.data.client, socket)
               break
-            default:
-              socket.send('hmmmm, wrong message.')
           }
         })
 
@@ -199,7 +197,7 @@ module.exports = (webSocket) => {
 
     updateFrontends() {
       for (let frontend of this.frontends) {
-        frontend.updateState(this.latestData)
+        frontend.updateState(this.latestData())
       }
     }
 
@@ -271,7 +269,9 @@ module.exports = (webSocket) => {
         }
       } while (this.players[position] === null)
       this.players[position].isTurn = true
-      this.emitDataUpdate(this.gameManager.sendableBoard())
+      dg(`it is now ${this.players[position].name}'s turn`, 'debug')
+      this.emitDataUpdate(this.gameManager.board.sendableBoard())
+      this.gameManager.afterTurn()
     }
   }
 
