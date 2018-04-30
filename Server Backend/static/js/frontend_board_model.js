@@ -700,7 +700,6 @@ var swap = function() {
 
   let swap = {event: 'swap'}
   ws.send(JSON.stringify(swap))
-  ws.send(JSON.stringify(whoAmI))
 }
 
 var grey = function() {
