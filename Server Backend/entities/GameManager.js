@@ -105,11 +105,12 @@ class GameManager {
     if (!swapped) {
       this._swaps = 0
     }
-    dg(`it is now ${manager.name}'s turn`, 'debug')
     // clearInterval(timer)
-    this.frontendsUpdate()
-    this.dataUpdate(this.board.sendableBoard())
     // this.timer()
+  }
+
+  afterTurn() {
+    this.frontendsUpdate()
   }
 
   /**
@@ -378,10 +379,8 @@ class GameManager {
     }
     let score = this.calculateScore(player, data)
 
-    dg('sending out word played event', 'debug')
-    this.dataUpdate(this.board.sendableBoard())
     dg('sending out game event event', 'debug')
-    let words = data.data.map(w => w.word)
+    let words = data.map(w => w.word)
     let action = `${player.name} played ${words} for ${score.totalScore} points`
     dg(action, 'info')
     // TODO: Need to flag whether or not this is a bonus play or not @Landon
