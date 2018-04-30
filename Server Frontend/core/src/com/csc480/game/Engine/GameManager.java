@@ -226,6 +226,9 @@ public class GameManager {
                                 //hard update the game and user states
                                 hardUpdateBoardState(unJSONifyBackendBoard(board));
 
+                                greenScore = data.getInt("green");
+                                goldScore = data.getInt("gold");
+
                                 JSONArray players = data.getJSONArray("players");
                                 for (int i = 0; i < players.length(); i++) {
                                     if(players.get(i) == JSONObject.NULL) continue;
@@ -525,7 +528,8 @@ public class GameManager {
 
         }else {
             //System.out.println("adding "+eventName+"to backlog");
-            eventBacklog.add(eventName);
+            if(!eventBacklog.contains(eventName))
+                eventBacklog.add(eventName);
         }
 
     }

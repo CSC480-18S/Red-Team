@@ -108,6 +108,7 @@ public class InfoPanelActor extends Group{
 
     public void UpdateProgressBars(){
         int gr = GameManager.getInstance().greenScore, gl =GameManager.getInstance().goldScore;
+        System.out.println("scores: "+gr+", "+gl);
         if(GameManager.getInstance().theGame == null)return;
         if(GameManager.getInstance().theGame.theGameScreen == null)return;
         green.setRange(0f,gr+gl+0f);
@@ -121,6 +122,7 @@ public class InfoPanelActor extends Group{
      * @param event text to display
      */
     public void LogEvent(String event){
+        if(logOfEvents.contains(event, true))return;
         if(logOfEvents.size >= 4){
             logOfEvents.removeIndex(0);
         }

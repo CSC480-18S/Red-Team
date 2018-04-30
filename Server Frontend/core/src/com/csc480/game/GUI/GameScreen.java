@@ -61,7 +61,7 @@ public class GameScreen implements Screen {
         infoPanel.UpdatePlayerStatus(2, top.getPlayer().name, top.getPlayer().score);
         infoPanel.UpdatePlayerStatus(3, left.getPlayer().name, left.getPlayer().score);
 
-        //infoPanel.UpdateProgressBars();
+        infoPanel.UpdateProgressBars();
     }
 
     @Override
@@ -111,7 +111,8 @@ public class GameScreen implements Screen {
                 left.setPlayer(GameManager.getInstance().thePlayers[3]);
                 left.updateState();
             }
-           UpdateInfoPanel();
+            UpdateInfoPanel();
+
         }
         }catch (NullPointerException n){
             n.printStackTrace();

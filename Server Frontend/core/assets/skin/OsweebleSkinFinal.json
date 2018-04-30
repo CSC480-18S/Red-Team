@@ -27,9 +27,9 @@ com.badlogic.gdx.graphics.Color: {
 		a: 1
 	}
 	OzGreen: {
-		r: 0.16470589
-		g: 0.3882353
-		b: 0.25882354
+		r: 0.070588
+		g: 0.69803
+		b: 0.29019
 		a: 1
 	}
 	white: {
@@ -88,9 +88,9 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	greenfill: {
 		name: progress-bar-fill
 		color: {
-			r: 0.16470589
-			g: 0.3882353
-			b: 0.25882354
+			r: 0.070588
+			g: 0.69803
+			b: 0.29019
 			a: 1
 		}
 	}
