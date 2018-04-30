@@ -19,6 +19,7 @@ class GameManager {
     this.frontendsUpdate = frontendsUpdate
     this.changeTurn = changeTurn
     this.gameOverEvent = gameOverEvent
+    this.timer = null
   }
 
   /**
@@ -101,13 +102,11 @@ class GameManager {
   /**
    * Updates who's turn it is
    */
-  updateTurn(manager, swapped) {
-    this.changeTurn(manager.position)
+  updateTurn(player, swapped) {
+    this.changeTurn(player.position)
     if (!swapped) {
       this._swaps = 0
     }
-    // clearInterval(timer)
-    // this.timer()
   }
 
   afterTurn() {
@@ -117,33 +116,36 @@ class GameManager {
   /**
      * Timer for a player's turn
      */
-  // timer() {
-  //   for (let manager of this._playerManagers) {
-  //     if (manager.id !== null && manager.isTurn) {
-  //       let time = 60
-  //       timer = setInterval(() => {
-  //         if (time >= 0) {
-  //           if (manager.id !== null) {
-  //             time--
-  //           } else {
-  //             clearInterval(timer)
-  //           }
-  //         } else {
-  //           clearInterval(timer)
-  //           dg(`${manager.name}'s time has expired`, 'info')
-  //           this.gameEvent(`${manager.name}'s time has expired`)
-  //           this._swaps++
-  //           if (this.checkGameOver()) {
-  //             this.gameOver()
-  //             return
-  //           }
-  //           this.updateTurn(manager, true)
-  //         }
-  //       }, 1000)
-  //     }
-  //     break
-  //   }
-  // }
+  playTimer(reset, player) {
+    let time = 15
+    if (reset) {
+      if (this.timer !== null) {
+        clearInterval(this.timer)
+      }
+    } else {
+      this.timer = setInterval(() => {
+        if (time > 0) {
+          if (player !== null) {
+            time--
+            player.playTimer(time)
+          } else {
+            clearInterval(this.timer)
+          }
+        } else {
+          clearInterval(this.timer)
+          dg(`${player.name}'s time has expired`, 'info')
+          this.gameEvent(`${player.name}'s time has expired`)
+          this._swaps++
+          if (this.checkGameOver()) {
+            this.gameOver()
+            return
+          }
+          this.updateTurn(player, true)
+        }
+      }, 1000)
+      console.log(this.timer)
+    }
+  }
 
   /**
      * Checks to see if the game is over
