@@ -12,7 +12,7 @@ function makeDir(callback, dirPath) {
     if (err) {
       logger('Error while creating dir "' + dirPath + '", err: ' + err)
     }
-    
+
     callback(err)
   })
 }
@@ -43,7 +43,7 @@ function writeFile(callback, filePath, data) {
     if (err) {
       logger('Error while writing file "' + filePath + '", err: ' + err)
     }
-    
+
     callback(err)
   })
 }
@@ -58,7 +58,7 @@ function appendFile(callback, filePath, data) {
     if (err) {
       logger('Error while writing file "' + filePath + '", err: ' + err)
     }
-    
+
     callback(err)
   })
 }

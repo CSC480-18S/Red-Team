@@ -18,7 +18,7 @@ function saveForLater(url, data) {
     data: data
   }
   redundancies.push(obj)
-  
+
   let json = JSON.stringify(redundancies)
   fm.writeFile((err) => {
     if (err) {
@@ -32,17 +32,17 @@ function saveForLater(url, data) {
  */
 function resend() {
   logger('Attempting RM resends')
-  
+
   fm.readFile((readData) => {
     let logJSON = readData
     redundancies = JSON.parse(logJSON)
-    
+
     let changes = false
 
     for (let i = 0; i < redundancies.length; ++i) {
       let url = redundancies[i].url
       let data = redundancies[i].data
-      
+
       axios.post(url, data)
         .then(function(response) {
           redundancies.splice(i, 1)

@@ -121,7 +121,7 @@ function gameOver(response) {
         var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
         this.data.tilesOnBoardValueAndPosition.pop()
         square.removeChild(square.firstChild)
-      }
+      // }
     }
     this.data.selectedTileId = ''
     for (var i = 0; i < tileSlotNumber; i++) {
@@ -160,7 +160,7 @@ function play(response) {
 //response to playTime socket event
 function playTime(time) {
 	this.data.playTime = time
-	if this.data.playTime % 2 == 0) {
+	if (this.data.playTime % 2 == 0) {
 		this.data.colored = true;
 	}	else {
 		this.data.colored = false
@@ -188,8 +188,8 @@ function dataUpdate(response) {
     }, 1000)
   } else {
     clearInterval(time)
-    this.data.colored = false*/
-  }
+    this.data.colored = false
+  }*/
 
   console.log('received dataUpdate event: ')
   console.log(response)
@@ -217,7 +217,7 @@ function dataUpdate(response) {
       this.data.tileSlots[i].tile.disabled = false
     }
   }
-}
+  }
 
 // OLD SOCKETS.IO STUFF -- LEFT COMMENTED OUT IN CASE WEBSOCKETS STUFF IS IMPLEMENTED INCORRECTLY
 
