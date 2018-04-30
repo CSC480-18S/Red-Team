@@ -33,6 +33,7 @@ public class GameManager {
     private ArrayList<String> eventBacklog;
     private ArrayList<Integer> connectAIQueue;
     private ArrayList<Integer> removeAIQueue;
+    private ArrayList<String> logQueue;
 
 
     /**
@@ -51,6 +52,7 @@ public class GameManager {
     private GameManager(){
         connectAIQueue = new ArrayList<>();
         removeAIQueue = new ArrayList<>();
+        logQueue = new ArrayList<>();
 
         thePlayers = new Player[4];
         theAIs = new AI[4];
@@ -90,6 +92,9 @@ public class GameManager {
             thePlayers[position] = new Player();
 
         }
+        if(logQueue.size() > 0)
+            theGame.theGameScreen.debug.setText(logQueue.remove(0));
+
 //        for(AI a: theAIs){
 //            a.update();
 //        }
@@ -132,7 +137,7 @@ public class GameManager {
                                 int position = data.getInt("position");
                                 removeAIQueue.add(position);
                                 if (debug)
-                                    theGame.theGameScreen.debug.setText("Got removeAI. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
+                                   logQueue.add("Got removeAI. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
                             } catch (ArrayIndexOutOfBoundsException e) {
                                 e.printStackTrace();
                             } catch (JSONException e) {
@@ -167,7 +172,7 @@ public class GameManager {
 //                                        break;
 //                                }
                                 if (debug)
-                                    theGame.theGameScreen.debug.setText("Got connectAI. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
+                                    logQueue.add("Got connectAI. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
                             } catch (ArrayIndexOutOfBoundsException e) {
                                 e.printStackTrace();
                             } catch (JSONException e) {
@@ -190,7 +195,7 @@ public class GameManager {
                                 //hard update the game and user states
                                 hardUpdateBoardState(unJSONifyBackendBoard(board));
                                 if (debug)
-                                    theGame.theGameScreen.debug.setText("Got boardUpdate. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
+                                    logQueue.add("Got boardUpdate. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
                             } catch (ArrayIndexOutOfBoundsException e) {
                                 e.printStackTrace();
                             } catch (JSONException e) {
@@ -209,7 +214,7 @@ public class GameManager {
                                     BonusEvent(action);
                                 LogEvent(action);
                                 if (debug)
-                                    theGame.theGameScreen.debug.setText("Got gameEvent. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
+                                    logQueue.add("Got gameEvent. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
                             } catch (ArrayIndexOutOfBoundsException e) {
                                 e.printStackTrace();
                             } catch (JSONException e) {
@@ -274,7 +279,7 @@ public class GameManager {
                                     }
                                 }
                                 if (debug)
-                                    theGame.theGameScreen.debug.setText("Got updateState. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
+                                    logQueue.add("Got updateState. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
 
                             } catch (ArrayIndexOutOfBoundsException e) {
                                 e.printStackTrace();
@@ -308,7 +313,7 @@ public class GameManager {
                                 theGame.theGameScreen.gameOverActor.update(winner, playersScores, winningTeam);
                                 theGame.theGameScreen.gameOverActor.setVisible(true);
                                 if (debug)
-                                    theGame.theGameScreen.debug.setText("Got gameOverEvent. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
+                                    logQueue.add("Got gameOverEvent. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
                             } catch (ArrayIndexOutOfBoundsException e) {
                                 e.printStackTrace();
                             } catch (JSONException e) {
@@ -319,7 +324,7 @@ public class GameManager {
                             System.out.println("newGame");
                             theGame.theGameScreen.gameOverActor.setVisible(false);
                             if (debug)
-                                theGame.theGameScreen.debug.setText("Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START++));
+                                logQueue.add("Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START++));
                             break;
                         case "newGameCountdown":
                             System.out.println("ferver frontend got newGameCountdown");

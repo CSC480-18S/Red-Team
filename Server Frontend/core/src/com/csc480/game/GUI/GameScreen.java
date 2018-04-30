@@ -87,34 +87,34 @@ public class GameScreen implements Screen {
         //Set the entire screen to this color
         Gdx.gl.glClearColor(.666f, .666f, .666f, 1);
         try{
-        //perform the actions of the actors
-        stage.act(delta);
-        //render the actors
-        stage.draw();
-        GameManager.getInstance().Update();
-        if(updateGameStatus){
-           updateGameStatus = false;
-            if (bottom != null) {
-                bottom.setPlayer(GameManager.getInstance().thePlayers[0]);
-                bottom.updateState();
-            }
-            if (right != null) {
-                right.setPlayer(GameManager.getInstance().thePlayers[1]);
-                right.updateState();
-            }
-            if (top != null) {
-                top.setPlayer(GameManager.getInstance().thePlayers[2]);
-                top.updateState();
-            }
+            //perform the actions of the actors
+            stage.act(delta);
+            //render the actors
+            stage.draw();
+            GameManager.getInstance().Update();
+            if(updateGameStatus){
+               updateGameStatus = false;
+                if (bottom != null) {
+                    bottom.setPlayer(GameManager.getInstance().thePlayers[0]);
+                    bottom.updateState();
+                }
+                if (right != null) {
+                    right.setPlayer(GameManager.getInstance().thePlayers[1]);
+                    right.updateState();
+                }
+                if (top != null) {
+                    top.setPlayer(GameManager.getInstance().thePlayers[2]);
+                    top.updateState();
+                }
 
-            if (left != null) {
-                left.setPlayer(GameManager.getInstance().thePlayers[3]);
-                left.updateState();
-            }
-            UpdateInfoPanel();
+                if (left != null) {
+                    left.setPlayer(GameManager.getInstance().thePlayers[3]);
+                    left.updateState();
+                }
+                UpdateInfoPanel();
 
-        }
-        }catch (NullPointerException n){
+            }
+        }catch (Exception n){//this is so bad i hate myself for this
             n.printStackTrace();
         }
         if(doStateUpdate){
