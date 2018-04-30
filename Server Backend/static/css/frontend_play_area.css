@@ -13,7 +13,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: normal; }
 
 body {
-  background-color: lightgray; }
+  background-color: lightgray}
 
 table {
   border: 1px solid black;
@@ -95,6 +95,8 @@ img {
     */ }
 
 #teamScores {
+  width: 315px;
+  margin: 0 auto;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -108,9 +110,9 @@ img {
     font-weight: bold;
     font-size: 24px; }
     #teamScores h4:nth-child(-n + 2) {
-      color: green; }
+      color: #12b24a; }
     #teamScores h4:nth-child(n + 3) {
-      color: #f2c332; }
+      color: #ffcc33; }
 
 .wrapper-buttons {
   display: grid;
@@ -128,12 +130,12 @@ img {
 .btnCust {
   -webkit-box-shadow: 10px 10px 5px -5px rgba(0, 0, 0, 0.3);
           box-shadow: 10px 10px 5px -5px rgba(0, 0, 0, 0.3); }
-  .btnCust:hover {
+  .btnCust:active {
     -webkit-box-shadow: inset 10px 10px 5px -5px rgba(0, 0, 0, 0.3);
             box-shadow: inset 10px 10px 5px -5px rgba(0, 0, 0, 0.3); }
 
 #btnPlace {
-  background-color: #33bc2f;
+  background-color: #12b24a;
   grid-column: 2 / 3;
   grid-row: 1 / 2; }
 
@@ -150,7 +152,7 @@ button {
   border-radius: 2px;
   width: 90%;
   /*background: white;*/
-  border: 1.5px solid black; }
+  border: 1.5px solid lightgray; }
 
 .row-style {
   margin: 2px 2px 0 2px;
@@ -163,14 +165,12 @@ button {
   height: 26px;
   border-style: solid;
   border-width: 1.5px;
-  border-color: black; }
+  border-color: lightgray; }
 
 .slot-style {
   float: left;
   margin: 0 0 0 2px;
-  border-style: solid;
-  border-width: 1.5px;
-  border-color: black; }
+ }
 
 .wrapper-turn-notifier {
   color: red;
@@ -179,7 +179,7 @@ button {
   text-align: center; }
 
 .letter-value {
-  font-size: 0.35em; }
+  font-size: 0.55em; }
 
 .container-buttons {
   width: 100%; }
@@ -188,7 +188,7 @@ button {
   width: 311px;
   padding: 0.1rem;
   margin: 0.5em auto;
-  border: 1.5px solid black;
+  border: 1.5px solid lightgray;
   height: 40px;
   text-align: center;
   overflow: auto;
@@ -198,8 +198,33 @@ button {
 #usernameArea {
   margin: 0 auto;
   text-align: center;
-  margin-top: 20px; }
+  font-size: 22px;
+  margin-top: 20px; 
+}
 
+#grid-container {
+     width: 311px;
+     margin: 0.5em auto;
+     display: grid;
+     grid-template-columns: 64px 1fr 64px;
+     color:black;
+ }
+
+ #info {
+     padding: 0.5rem;
+     grid-column: 2 / 3;
+ }
+
+ #help {
+     grid-column: 3 / 4;
+     cursor: help;
+     color: lightcoral;
+ }
+ 
+ #help-image {
+     padding: 0.5rem;
+ }
+ 
 #square-0-0 {
   background: #f2c332; }
 
@@ -211,3 +236,9 @@ button {
 
 .bg-grey {
   background: grey; }
+
+.timer {
+ text-align: center;
+ font-size: 19px;
+    color:black;
+}
