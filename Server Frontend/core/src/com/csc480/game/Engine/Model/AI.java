@@ -70,7 +70,9 @@ public class AI extends Player {
                     //turns the bestPlay into a JSONObject and sends it to the backend.
                     if (bestPlay != null && bestPlay.myWord != null && myBoard.verifyWordPlacement(bestPlay.placements)) {
                         System.out.println(this.name + " trying to play: "+bestPlay.myWord + "  while in state " + this.state);
-                        System.out.println(this.name + " JSONIFIED DATA TO BE SET: "+GameManager.JSONifyPlayIdea(bestPlay, myBoard));
+                        if(GameManager.getInstance().debug) {
+                            System.out.println(this.name + " JSONIFIED DATA TO BE SET: " + GameManager.JSONifyPlayIdea(bestPlay, myBoard));
+                        }
                         JSONObject object = new JSONObject();
                         JSONObject data = new JSONObject();
                         object.put("event", "playWord");
@@ -78,7 +80,9 @@ public class AI extends Player {
                         object.put("data", data);
 
                         //send play to backend
-                        System.out.println(AI.this.name+" sending \n"+object.toString());
+                        if(GameManager.getInstance().debug) {
+                            System.out.println(AI.this.name + " sending \n" + object.toString());
+                        }
                         this.connection.send(object.toString()+"");
                         //change this state to 2, meaning that the AI is now awaiting a response from the backend
                         this.state = 2;
@@ -107,7 +111,9 @@ public class AI extends Player {
                         data.put("tiles", toSwap);
                         object.put("data", data);
                         //send the tiles to the backend to receive new ones
-                        System.out.println(AI.this.name+" sending \n"+object.toString());
+                        if(GameManager.getInstance().debug) {
+                            System.out.println(AI.this.name + " sending \n" + object.toString());
+                        }
                         this.connection.send(object.toString()+"");
                         //update state to idle
                         this.state = 0;
@@ -156,7 +162,9 @@ public class AI extends Player {
 
                 @Override
                 public void onMessage(String message) {
-                    System.out.println(AI.this.name+" got message\n"+message);
+                    if(GameManager.getInstance().debug) {
+                        System.out.println(AI.this.name + " got message\n" + message);
+                    }
                     //parse the message to a JSONObject
 
                     JSONObject object = new JSONObject(message);
@@ -195,8 +203,11 @@ public class AI extends Player {
                                     //debug
                                     if(!GameManager.debug) {
                                         while (System.currentTimeMillis() - startTime < 6000) {
-                                            if (System.currentTimeMillis() - startTime % 100 == 0) {
-                                                System.out.println(System.currentTimeMillis());
+                                            try {
+                                                Thread.sleep(200);
+                                            }
+                                            catch (InterruptedException e){
+
                                             }
                                         }
                                     }
