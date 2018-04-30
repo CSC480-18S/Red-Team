@@ -87,11 +87,7 @@ module.exports = (webSocket) => {
           } else {
             player.injectAIData(i, this.emitPlayerConnected.bind(this), board)
           }
-          
-          for (let frontend of this.frontends) {
-            frontend.updateState(this.latestData())
-          }
-          
+
           return
         }
       }
@@ -248,6 +244,8 @@ module.exports = (webSocket) => {
           player.gameEvent(`${name} has joined`)
         }
       }
+      this.updateFrontends()
+      this.emitFrontendGameEvent(`${name} has joined`)
     }
 
     emitPlayerLeft(name) {
@@ -256,6 +254,8 @@ module.exports = (webSocket) => {
           player.gameEvent(`${name} has left`)
         }
       }
+      this.updateFrontends()
+      this.emitFrontendGameEvent(`${name} has left`)
     }
 
     /**
@@ -356,9 +356,7 @@ module.exports = (webSocket) => {
       this.resetGameboard()
       this.players[0].isTurn = true
       this.emitDataUpdate(this.gameManager.board.sendableBoard())
-      for (let frontend of this.frontends) {
-        frontend.updateState(this.latestData())
-      }
+      this.updateFrontends()
       this.emitGameEvent('New game started')
     }
 
