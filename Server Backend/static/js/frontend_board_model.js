@@ -7,14 +7,14 @@ var firstTimeGeneratedTiles = []
 
 // sockets
 let ws = new WebSocket('ws://localhost:3000')
-ws.onopen = () => {
+ws.onopen = function(event){
   // send "whoAmI" event
   let whoAmI = { event: 'whoAmI', data: { client: 'CL' } }
   ws.send(JSON.stringify(whoAmI))
 
-  ws.onmessage = (message) => {
+  ws.onmessage = function(event){
     // NEW WEBSOCKETS STUFF -- UNABLE TO TEST, MAY BE POORLY IMPLEMENTED
-    let mes = JSON.parse(message.data)
+    let mes = JSON.parse(event.data)
     console.log(mes.event)
     switch (mes.event) {
       case 'errorMessage':
