@@ -46,6 +46,15 @@ class FrontendManager {
           green: data.green
         }
         break
+      case 'gameOver':
+        eventData.data = data
+        break
+      case 'gameEvent':
+        eventData.data = {
+          action: data,
+          bonus: false
+        }
+        break
     }
 
     this.socket.send(JSON.stringify(eventData))
@@ -61,6 +70,14 @@ class FrontendManager {
 
   updateState(data) {
     this.sendEvent('updateState', data)
+  }
+
+  gameOver(data) {
+    this.sendEvent('gameOver', data)
+  }
+
+  gameEvent(data) {
+    this.sendEvent('gameEvent', data)
   }
 }
 
