@@ -158,6 +158,7 @@ public class AI extends Player {
                 public void onMessage(String message) {
                     System.out.println(AI.this.name+" got message\n"+message);
                     //parse the message to a JSONObject
+
                     JSONObject object = new JSONObject(message);
                     //put the JSONObject data from the received message in order to find the actual data
                     JSONObject data = object.getJSONObject("data");
@@ -207,6 +208,7 @@ public class AI extends Player {
                                     state = 0;
                                 }
                                 //call update for AI to either wait or play
+                                GameManager.getInstance().theGame.theGameScreen.QueueUpdatePlayers();
                                 update();
                             } catch (ArrayIndexOutOfBoundsException e) {
                                 e.printStackTrace();
