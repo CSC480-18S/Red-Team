@@ -306,7 +306,8 @@ module.exports = (webSocket) => {
           finalScores.push(data)
         }
       }
-      let goldWin = this._goldScore > this._greenScore
+      let latestData = this.latestData()
+      let goldWin = latestData.gold > latestData.green
       db.updateWin('Gold', this._goldScore, goldWin)
       db.updateWin('Green', this._greenScore, !goldWin)
 
