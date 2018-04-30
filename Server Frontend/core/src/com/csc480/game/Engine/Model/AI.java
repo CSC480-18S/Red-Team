@@ -59,6 +59,7 @@ public class AI extends Player {
                 case 0://waiting
                     break;
                 case 1://play
+                    System.out.println(this.name+" is thinking of plays!!!");
                     //pops the best play out of the priority queue
                     PlayIdea bestPlay = PlayBestWord();
                     //loops to check if the best play is null and if it is a valid placement, if either fail, pops the next value
@@ -77,17 +78,18 @@ public class AI extends Player {
                         object.put("data", data);
 
                         //send play to backend
-                        this.connection.send(object.toString());
+                        System.out.println(AI.this.name+" sending \n"+object.toString());
+                        this.connection.send(object.toString()+"");
                         //change this state to 2, meaning that the AI is now awaiting a response from the backend
                         this.state = 2;
                         GameManager.getInstance().placementsUnderConsideration.clear();
                         //remove tiles from hand
                         removeTilesFromHand(bestPlay);
-                        GameManager.getInstance().updatePlayers(GameManager.getInstance().thePlayers);
+
                     }
                     //if tbe best play is null or the verification fails, the AI passes its turn
                     else{
-                        GameManager.getInstance().updatePlayers(GameManager.getInstance().thePlayers);
+
                         System.out.println("no plays found, hand : "+new String(tiles));
                         //clear cache as it has no valid plays
                         myCache.Clear();
@@ -105,7 +107,8 @@ public class AI extends Player {
                         data.put("tiles", toSwap);
                         object.put("data", data);
                         //send the tiles to the backend to receive new ones
-                        this.connection.send(object.toString());
+                        System.out.println(AI.this.name+" sending \n"+object.toString());
+                        this.connection.send(object.toString()+"");
                         //update state to idle
                         this.state = 0;
                     }
@@ -172,6 +175,9 @@ public class AI extends Player {
                                 for(int i = 0; i < newTiles.length; i++){
                                     tiles[i] = jsonTiles.getString(i).toLowerCase().charAt(0);
                                 }
+                                JSONArray board = data.getJSONArray("board");
+                                //find the board/user state differences
+                                myBoard.the_game_board = GameManager.getInstance().unJSONifyBackendBoard(board);
                                 //initiate play thinking
                                 if (myTurn) {
                                     //grab startTime in order to stop the AI from thinking for 6 seconds
@@ -195,26 +201,10 @@ public class AI extends Player {
                                     }
                                     //update state to thinking
                                     state = 1;
-                                    try {
-                                        GameManager.getInstance().updatePlayers(GameManager.getInstance().thePlayers);
-                                    }catch (NullPointerException e){
-                                        e.printStackTrace();
-                                    }
                                 }
                                 else{
                                     //not this AI's turn, state to 0
                                     state = 0;
-                                }
-                                try {
-                                    //System.out.println("data: "+data.toString());
-                                    JSONArray board = data.getJSONArray("board");
-                                    //find the board/user state differences
-                                    myBoard.the_game_board = GameManager.getInstance().unJSONifyBackendBoard(board);
-                                    //hard update the game and user states
-                                }catch(ArrayIndexOutOfBoundsException e){
-                                    e.printStackTrace();
-                                }catch(JSONException e){
-                                    e.printStackTrace();
                                 }
                                 //call update for AI to either wait or play
                                 update();
