@@ -46,7 +46,8 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
         compile "de.tomgrill.gdxdialogs:gdx-dialogs-desktop:1.2.5"
-        
+
+
     }
 }
 
