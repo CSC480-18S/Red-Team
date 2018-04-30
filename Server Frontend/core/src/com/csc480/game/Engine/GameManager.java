@@ -59,6 +59,7 @@ public class GameManager {
         eventBacklog = new ArrayList<String>();
         WordVerification.getInstance();
         ConnectSocket();
+
         for(int i = 0; i < 4; i++){
             if(produceAI) {
                 theAIs[i] = new AI();
@@ -68,8 +69,6 @@ public class GameManager {
                 thePlayers[i] = new Player();
             }
         }
-
-
     }
 
     public void Dispose(){
@@ -235,15 +234,7 @@ public class GameManager {
                                     boolean isAI;
                                     try {
                                         isAI = player.getBoolean("isAI");
-                                    } catch (JSONException e) {
-                                        //the
-                                        isAI = true;
-//                                        theAIs[index].disconnectAI();
-//                                        theAIs[index] = null;
-//                                        theAIs[index] = new AI();
-//                                        thePlayers[index] = theAIs[index];
-                                    }
-                                    try {
+
                                         if (player.get("score") != JSONObject.NULL)
                                             thePlayers[index].score = player.getInt("score");
                                         else
@@ -268,9 +259,8 @@ public class GameManager {
                                                     thePlayers[index].tiles[h] = '_';
                                             }
                                         }
-
                                         thePlayers[index].turn = player.getBoolean("isTurn");
-                                        System.out.println("updating player @ index " + index);
+                                        System.out.println("updated player info @ index " + index+" isturn="+thePlayers[index].turn);
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
