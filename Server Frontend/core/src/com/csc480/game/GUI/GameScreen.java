@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RotateByAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.csc480.game.Engine.GameManager;
@@ -48,6 +49,11 @@ public class GameScreen implements Screen {
     private  OrthographicCamera viewCam;
     GameBoardActor gameBoardActor;
     private boolean updateGameStatus = false;
+    private boolean triggerGameOverDialog = false;
+    private boolean closeGameOverDialog = false;
+    private String winner;
+    private Array<String> playersScores;
+    private String winningTeam;
 
 
     public GameScreen(OswebbleGame mainGame){
@@ -110,6 +116,16 @@ public class GameScreen implements Screen {
                     left.updateState();
                 }
                 UpdateInfoPanel();
+
+            }
+            if(triggerGameOverDialog){
+                triggerGameOverDialog = false;
+                gameOverActor.update(winner, playersScores, winningTeam);
+                gameOverActor.setVisible(true);
+            }
+            if(closeGameOverDialog){
+                closeGameOverDialog = false;
+                gameOverActor.setVisible(false);
 
             }
         }catch (Exception n){//this is so bad i hate myself for this
@@ -266,5 +282,15 @@ public class GameScreen implements Screen {
     }
     public void QueueUpdatePlayers(){
         updateGameStatus = true;
+    }
+
+    public void TriggerEndGame(String winner, Array<String> playersScores , String winningTeam){
+        this.winner = winner;
+        this.playersScores = playersScores;
+        this.winningTeam = winningTeam;
+        triggerGameOverDialog = true;
+    }
+    public void TriggerNewGame(){
+        closeGameOverDialog = true;
     }
 }
