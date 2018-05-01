@@ -133,26 +133,25 @@ function updatePlayerDirty(player, word) {
     })
 }
 
-// TODO: Add later @Landon
 /**
  * Updates a player's special word count
  * @param {Object} player - player object
  * @param {String} word - special word
  */
-// function updatePlayerDirty(player, words) {
-//   if (!player.isAI) {
-//     axios.post(PLAYED_WORDS, {
-//       word: words,
-//       value: words,
-//       dirty: false,
-//       special: true,
-//       player: player.link
-//     })
-//       .catch(e => {
-//         rm.saveForLater(PLAYERS, words)
-//       })
-//   }
-// }
+function updatePlayerSpecial(player, word) {
+  if (!player.isAI) {
+    axios.post(PLAYED_WORDS, {
+      word: word,
+      value: word,
+      dirty: false,
+      special: true,
+      player: player.link
+    })
+      .catch(e => {
+        rm.saveForLater(PLAYERS, word)
+      })
+  }
+}
 
 /**
  * Checks to see if the teams were instantiated on the DB, and if not, make requests to make them
@@ -225,6 +224,7 @@ module.exports = {
   pruneResults,
   updatePlayer,
   updatePlayerDirty,
+  updatePlayerSpecial,
   checkForTeams,
   getTeamURL,
   updateWin
