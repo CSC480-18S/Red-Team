@@ -323,8 +323,9 @@ public class GameManager {
                                     winningTeam = data.getString("winningTeam");
 
                                 //todo call @GUI stuff
-                                theGame.theGameScreen.gameOverActor.update(winner, playersScores, winningTeam);
-                                theGame.theGameScreen.gameOverActor.setVisible(true);
+                                theGame.theGameScreen.TriggerEndGame(winner, playersScores, winningTeam);
+//                                theGame.theGameScreen.gameOverActor.update(winner, playersScores, winningTeam);
+//                                theGame.theGameScreen.gameOverActor.setVisible(true);
                                 if (debug)
                                     logQueue.add("Got gameOverEvent. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
                             } catch (ArrayIndexOutOfBoundsException e) {
@@ -336,7 +337,7 @@ public class GameManager {
                         case "newGame":
                             if(GameManager.debug)
                                 System.out.println("newGame");
-                            theGame.theGameScreen.gameOverActor.setVisible(false);
+                            theGame.theGameScreen.TriggerNewGame();
                             if (debug)
                                 logQueue.add("Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START++));
                             break;
