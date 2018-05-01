@@ -128,7 +128,8 @@ img {
   background-color: #e2caba;
   /*#e2caba #6FA6F4 #EFBB96*/
   grid-column: 1 / 2;
-  grid-row: 1 / 2; }
+  grid-row: 1 / 2;
+  height: 57px;}
   
 
 .btnCust {
@@ -141,12 +142,14 @@ img {
 #btnPlace {
   background-color: #12b24a;
   grid-column: 2 / 3;
-  grid-row: 1 / 2; }
+  grid-row: 1 / 2;
+  height: 57px;}
 
 #btnShuffle {
   background-color: #e2caba;
   grid-column: 3 / 4;
-  grid-row: 1 / 2; }
+  grid-row: 1 / 2;
+  height: 57px;}
 
 button {
   font-size: 0.8rem;
@@ -189,7 +192,7 @@ button {
   width: 100%; }
 
 #textBox {
-  width: 311px;
+  width: 315px;
   padding: 0.1rem;
   margin: 0.5em auto;
     margin-top: 0px;
