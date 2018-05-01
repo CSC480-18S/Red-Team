@@ -52,7 +52,7 @@ class GameManager {
     if (letters.valid) {
       const words = ex.extractWords(letters.data, newBoard)
 
-      this.wordValidation(words)
+      this.wordValidation(words, player)
         .then(r => {
           let boardResponse = null
           if (r.valid === true) {
@@ -180,21 +180,23 @@ class GameManager {
   /**
    * Checks to see if word(s) are in the DB
    * @param {Array} words - words to be checked against the DB
+   * @param {Object} player - player
    */
-  wordValidation(words) {
+  wordValidation(words, player) {
     const search = words.data.map(s => s.word).join(',')
 
     dg('checking words against database', 'debug')
     return db.dictionaryCheck(search).then(r => {
-      return this.pruneResults(r)
+      return this.pruneResults(r, player)
     })
   }
 
   /**
    * Prunes the data sent back from the DB to check if anywords are either invalid or bad words
    * @param {Array} response - word data sent back from DB
+   * @param {Object} player - player
    */
-  pruneResults(response) {
+  pruneResults(response, player) {
     dg('pruning results of database response', 'debug')
     for (let word of response) {
       if (word.bad) {
@@ -210,6 +212,9 @@ class GameManager {
           error: 1,
           data: word.word
         }
+      }
+      if (word.special) {
+        db.updatePlayerSpecial(player, word)
       }
     }
 
