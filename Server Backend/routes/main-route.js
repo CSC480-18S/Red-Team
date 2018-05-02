@@ -8,6 +8,7 @@ const db = require('../helpers/DB')
 
 router.get('/', function(req, res, next) {
   checkUserExists(req, res)
+  // res.json('hi')
 })
 
 router.get('/admin', function(req, res, next) {

@@ -1,7 +1,7 @@
 'use strict'
 
 const axios = require('axios')
-const rm = require('./RedundancyManager')
+// const rm = require('./RedundancyManager')
 const logger = require('./Logger')
 
 const DICTIONARY_CHECK = 'http://localhost:8090/dictionary/validate?words='
@@ -180,14 +180,14 @@ function checkForTeams() {
           })
         })
           .catch(e => {
-            rm.saveForLater(TEAMS, {name: 'Green'})
+            // rm.saveForLater(TEAMS, {name: 'Green'})
             logger('failed checkForTeams() in DB.js: ' + e)
           })
       }
     })
     .catch(e => {
-      rm.saveForLater(TEAMS, {name: 'Gold'})
-      rm.saveForLater(TEAMS, {name: 'Green'})
+      // rm.saveForLater(TEAMS, {name: 'Gold'})
+      // rm.saveForLater(TEAMS, {name: 'Green'})
       logger('failed checkForTeams() in DB.js: ' + e)
     })
 }

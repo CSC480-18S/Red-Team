@@ -127,7 +127,11 @@ class GameManager {
         if (time > 0) {
           if (player !== null) {
             time--
-            player.playTimer(time)
+            if (player.socket.readyState !== 3) {
+              player.playTimer(time)
+            } else {
+              clearInterval(this.timer)
+            }
           } else {
             clearInterval(this.timer)
           }
