@@ -21,85 +21,113 @@ GameManager.prototype.getGameBoard = function() {
   return this.gameboard.board
 }
 
+GameManager.prototype.latestData = function() {
+  return {
+    board: this.board.sendableBoard(),
+    gold: this.goldScore,
+    green: this.greenScore
+  }
+}
+
 GameManager.prototype.addPlayer = function(id, socket, isAI) {
   this.playerManager.createPlayer(id, socket, isAI)
 }
 
 GameManager.prototype.attemptPlay = function(newBoard, player) {
+  const letters = ex.extractLetters(newBoard, this._gameBoard.board, player)
 
+  if (letters.valid) {
+    const words = ex.extractWords(letters.data, newBoard)
+
+    this.wordValidation(words, player)
+      .then(r => {
+        let boardResponse = null
+        if (r.valid === true) {
+          // if invalid type of play, gets the word that was invalid, else is undefined
+          boardResponse = this._gameBoard.placeWords(words.data, player)
+          // if the board has attempted to play a word
+          if (boardResponse.valid) {
+            let ls = letters.data.map(l => l.letter)
+            player.updateHand(ls)
+          }
+          return this.respond(boardResponse.error, boardResponse.data, player)
+        } else {
+          // if the word is invalid
+          return this.respond(r.error, r.data, player)
+        }
+      })
+      .catch(e => {
+        dg(`${e}`, 'error')
+      })
+  } else {
+
+  }
+}
+
+GameManager.prototype.wordValidation = function(words, player) {
+  const search = words.data.map(s => s.word).join(',')
+
+  dg('checking words against database', 'debug')
+  return db.dictionaryCheck(search).then(r => {
+    return this.pruneResults(r, player)
+  })
+}
+
+GameManager.prototype.pruneResults = function(response, player) {
+  for (let word of response) {
+    if (word.bad) {
+      return {
+        valid: false,
+        error: 6,
+        data: word.word
+      }
+    }
+    if (!word.valid) {
+      return {
+        valid: false,
+        error: 1,
+        data: word.word
+      }
+    }
+    if (word.special) {
+      db.updatePlayerSpecial(player, word)
+    }
+
+    return {
+      valid: true
+    }
+  }
+}
+
+GameManager.prototype.swap = function(id) {
+  this._swaps++
+  if (this.isGameOver()) {
+    this.gameOver()
+  }
+  this.playerManager.updateTiles(id)
+  this.playerManager.updateTurn(id)
+
+  // TODO: Alert players with dataUpdate @Landon
+  // TODO: Alert players with gameEvent @Landon
+  // TODO: Alert frontends with updateState and gameEvent @Landon
+}
+
+GameManager.prototype.isGameOver = function() {
+  return this.swaps === 4
+}
+
+GameManager.prototype.gameOver = function() {
+  dg('all players have swapped tiles, game over', 'info')
+
+  this._swaps = 0
+
+  // TODO: Send game event telling game is over @Landon
+  // TODO: Send game over event
 }
 
 module.exports = function() {
   return new GameManager()
 }
-
-// class GameManager {
-//   play(newBoard, player) {
-//     const letters = ex.extractLetters(newBoard, this._gameBoard.board, player)
-
-//     if (letters.valid) {
-//       const words = ex.extractWords(letters.data, newBoard)
-
-//       this.wordValidation(words, player)
-//         .then(r => {
-//           let boardResponse = null
-//           if (r.valid === true) {
-//           // if invalid type of play, gets the word that was invalid, else is undefined
-//             boardResponse = this._gameBoard.placeWords(words.data, player)
-//             // if the board has attempted to play a word
-//             if (boardResponse.valid) {
-//               let ls = letters.data.map(l => l.letter)
-//               player.updateHand(ls)
-//             }
-//             return this.respond(boardResponse.error, boardResponse.data, player)
-//           } else {
-//           // if the word is invalid
-//             return this.respond(r.error, r.data, player)
-//           }
-//         })
-//         .catch(e => {
-//           dg(`${e}`, 'error')
-//         })
-//     } else {
-
-//     }
-//   }
-
-//   /**
-//    * Grabs the latest data of the game
-//    */
-//   latestData() {
-//     return {
-//       board: this.board.sendableBoard(),
-//       gold: this._goldScore,
-//       green: this._greenScore
-//     }
-//   }
-
-//   swapMade(player) {
-//     this._swaps++
-//     if (this.checkGameOver()) {
-//       this.gameOver()
-//       return
-//     }
-//     player.updateHand(player.tiles)
-//     this.gameEvent(`${player.name} swapped tiles`)
-//     this.updateTurn(player, true)
-//   }
-
-//   /**
-//    * Updates who's turn it is
-//    */
-//   updateTurn(player, swapped) {
-//     this.changeTurn(player.position)
-//     if (!swapped) {
-//       this._swaps = 0
-//     }
-//   }
-
-//   afterTurn() {
-//     this.frontendsUpdate()
-//   }
 
 //   /**
 //      * Timer for a player's turn
@@ -132,21 +160,6 @@ module.exports = function() {
 //         }
 //       }, 1000)
 //     }
-//   }
-
-//   /**
-//      * Checks to see if the game is over
-//      */
-//   checkGameOver() {
-//     return this._swaps === 4
-//   }
-
-//   gameOver() {
-//     dg('all players have swapped tiles, game over', 'info')
-//     this.gameEvent('Game over!')
-//     this.gameOverEvent()
-
-//     this._swaps = 0
 //   }
 
 //   /**

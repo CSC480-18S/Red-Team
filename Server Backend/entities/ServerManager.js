@@ -77,6 +77,7 @@ ServerManager.prototype.checkChannelAdd = function(success, channel, id, socket)
         break
       case 'SFs':
         event = 'updateState'
+        // TODO: Fix @Landon
         data = this.gameManager.latestData()
         break
       case 'Queued':
