@@ -12,7 +12,7 @@ function ServerManager(ws) {
 }
 
 ServerManager.prototype.init = function() {
-  // this.gameManager = GameManager()
+  this.gameManager = GameManager()
   this.listenForClients()
 }
 
@@ -31,7 +31,6 @@ ServerManager.prototype.listenForClients = function() {
       let client = this.socketManager.getClient(socket.id)
       this.socketManager.removeFromChannel(client.channel, socket.id)
       this.socketManager.broadcast('Queued', 'currentlyConnected', this.generateAmount(this.amountOfClients()))
-      dg(`${socket.id} -> disconnected`, 'info')
     })
   })
 }
@@ -71,10 +70,10 @@ ServerManager.prototype.checkChannelAdd = function(success, channel, id, socket)
 
     switch (channel) {
       case 'AIs':
-        // this.gameManager.addPlayer(id, socket, true)
+        this.gameManager.addPlayer(id, socket, true)
         break
       case 'Clients':
-        // this.gameManager.addPlayer(id, socket, false)
+        this.gameManager.addPlayer(id, socket, false)
         break
       case 'SFs':
         event = 'updateState'
@@ -92,13 +91,13 @@ ServerManager.prototype.checkChannelAdd = function(success, channel, id, socket)
     if (!['Clients', 'AI'].includes(channel)) {
       this.socketManager.emit(channel, id, event, data)
     }
-
-    dg(`id: ${id} -> channel: (${channel})`, 'info')
   } else {
     channel = 'Error'
     this.socketManager.addToChannel(channel, id, socket)
     this.socketManager.emit(channel, id, 'errorMessage', this.generateError('There are already 4 players conencted.'))
   }
+
+  dg(`id: ${id} -> connected to channel: (${channel})`, 'info')
 }
 
 ServerManager.prototype.amountOfClients = function() {

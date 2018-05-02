@@ -27,7 +27,7 @@ const server = http.createServer(app)
 const socket = require('./helpers/Socket')(server)
 
 const ServerManager = require('./entities/ServerManager')(socket)
-new ServerManager()
+ServerManager.init()
 
 /**
  * Imports the routes to be used
