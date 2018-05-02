@@ -51,14 +51,15 @@ public class WordVerification {
         }
 
         try{
+
             File fileAI;
             fileAI = new File(Gdx.files.internal("LtoS15kWordCorpus.txt").path());
-            inFileScanner = new Scanner(fileAI);
+            Scanner aiFileScanner = new Scanner(fileAI);
             ArrayList<String> tempWords = new ArrayList<>();
-            while (inFileScanner.hasNext()){
-                tempWords.add(inFileScanner.nextLine());
+            while (aiFileScanner.hasNext()){
+                tempWords.add(aiFileScanner.nextLine());
             }
-            inFileScanner.close();
+            aiFileScanner.close();
             AIWords = new String[0];
             AIWords = tempWords.toArray(AIWords);
         }catch (FileNotFoundException e){
@@ -131,7 +132,7 @@ public class WordVerification {
             //if there is nothing on the board then what is in the hand is valid
             return possiblePlays;
         }
-        for(String e: validWords){
+        for(String e: AIWords){
             String temp = handAndReleventBoardTiles;
             boolean isGoodFlag = true;
             if(e.length() <= constraints.length){
