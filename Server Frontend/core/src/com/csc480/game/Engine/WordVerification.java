@@ -105,7 +105,7 @@ public class WordVerification {
         if(root.letter == 0){
             //System.out.println("First play, so we can skip a bunch");
             for(String e: AIWords){
-                String temp = handAndReleventBoardTiles;
+                String temp = hand+"";
                 boolean isGoodFlag = true;
                 if(e.length() <= constraints.length) {
                     for (int i = 0; i < e.length(); i++) {
@@ -200,8 +200,8 @@ public class WordVerification {
                                 PlayIdea p = new PlayIdea(e,play,(byte) play.size());
                                 if(VerifyNotCheating(p,hand,constraints)) {
                                     possiblePlays.add(p);
-                                    if(GameManager.debug)
-                                        return possiblePlays;
+//                                    if(GameManager.debug)
+//                                        return possiblePlays;
                                 }
                             }else {
                                 //System.out.println("handle the first play case");
@@ -220,8 +220,8 @@ public class WordVerification {
                                 PlayIdea p = new PlayIdea(e,play,(byte)play.size());
                                 if(VerifyNotCheating(p,hand,constraints)) {
                                     possiblePlays.add(p);
-                                    if(GameManager.debug)
-                                        return possiblePlays;
+//                                    if(GameManager.debug)
+//                                        return possiblePlays;
                                 }
                             }
                         }
