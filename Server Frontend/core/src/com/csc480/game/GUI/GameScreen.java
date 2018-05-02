@@ -90,7 +90,7 @@ public class GameScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         //Set the entire screen to this color
         Gdx.gl.glClearColor(.666f, .666f, .666f, 1);
-        try{
+//        try{
             //perform the actions of the actors
             stage.act(delta);
             //render the actors
@@ -128,9 +128,9 @@ public class GameScreen implements Screen {
                 gameOverActor.setVisible(false);
 
             }
-        }catch (Exception n){//this is so bad i hate myself for this
-            n.printStackTrace();
-        }
+//        }catch (Exception n){//this is so bad i hate myself for this
+//            n.printStackTrace();
+//        }
     }
 
     @Override
@@ -208,22 +208,22 @@ public class GameScreen implements Screen {
         //bottom
         Group tileRacks = new Group();
         tileRacks.setPosition(GUI_UNIT_SIZE * 1, GUI_UNIT_SIZE * 1);
-        bottom = new HandActor(false);
+        bottom = new HandActor(false, 0);
         tileRacks.addActor(bottom);
         bottom.setPosition(GUI_UNIT_SIZE * 2, GUI_UNIT_SIZE * 0);
         //left
-        left = new HandActor(false);
+        left = new HandActor(false, 1);
         tileRacks.addActor(left);
         left.setPosition(GUI_UNIT_SIZE * 12, GUI_UNIT_SIZE * 2);
         left.rotateBy(90);
         //top
-        top = new HandActor(true);
+        top = new HandActor(true, 2);
         tileRacks.addActor(top);
 //        top.setPosition(GUI_UNIT_SIZE * 10, GUI_UNIT_SIZE * 12);
 //        top.rotateBy(180);
         top.setPosition(GUI_UNIT_SIZE * 2, GUI_UNIT_SIZE * 10.125f);
         //right
-        right = new HandActor(false);
+        right = new HandActor(false, 3);
         tileRacks.addActor(right);
         right.setPosition(GUI_UNIT_SIZE * 0, GUI_UNIT_SIZE * 10);
         right.rotateBy(-90);
