@@ -23,6 +23,8 @@ PlayerManager.prototype.updatePostitions = function() {
   Object.keys(this.players).forEach((player, index) => {
     player.position = index
   })
+
+  dg('positions updated', 'debug')
 }
 
 PlayerManager.prototype.createPlayer = function(id, socket, isAI) {
@@ -87,7 +89,11 @@ PlayerManager.prototype.injectOldData = function(position, id) {
 }
 
 PlayerManager.prototype.updateTiles = function(id, tilesToBeRemoved) {
-  this.removeTiles(id, tilesToBeRemoved)
+  if (tilesToBeRemoved === undefined) {
+    this.removeTiles(id, this.players[id].tiles)
+  } else {
+    this.removeTiles(id, tilesToBeRemoved)
+  }
   this.injectTiles(id)
 
   dg(`Tiles updated -> ${id}`, 'debug')
@@ -176,6 +182,28 @@ PlayerManager.prototype.getPlayerInfo = function(id) {
         console.log(e)
       })
   })
+}
+
+PlayerManager.prototype.updateTurn = function(id) {
+  let player = this.players[id]
+  let position = player.position
+
+  player.isTurn = false
+  position++
+
+  if (position > 3) {
+    position = 0
+  }
+
+  let players = Object.keys(this.players)
+
+  for (let player of players) {
+    let p = this.players[player]
+    if (p.position === position) {
+      p.isTurn = true
+      return true
+    }
+  }
 }
 
 module.exports = function() {
