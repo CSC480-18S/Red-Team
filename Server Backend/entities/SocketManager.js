@@ -27,7 +27,10 @@ SocketManager.prototype.clientAmount = function() {
 }
 
 SocketManager.prototype.addClient = function(channel, id, socket) {
-  this.clients[id] = socket
+  this.clients[id] = {
+    socket: socket,
+    channel: channel
+  }
 }
 
 SocketManager.prototype.addToChannel = function(channel, id, socket) {
@@ -42,7 +45,11 @@ SocketManager.prototype.addToChannel = function(channel, id, socket) {
   return true
 }
 
-SocketManager.prototype.getClient = function(channel, id) {
+SocketManager.prototype.getClient = function(id) {
+  return this.clients[id]
+}
+
+SocketManager.prototype.getClientFromChannel = function(channel, id) {
   let c = this.channels[channel]
   let clients = Object.keys(c.clients)
 
@@ -62,6 +69,7 @@ SocketManager.prototype.removeFromChannel = function(channel, id) {
   for (let client of clients) {
     if (id === client) {
       delete c.clients[id]
+      delete this.clients[id]
       return true
     }
   }
@@ -128,7 +136,7 @@ SocketManager.prototype.emit = function(channel, id, event, data) {
 
   for (let client of clients) {
     if (id === client) {
-      this.clients[id].send(payload)
+      this.clients[id].socket.send(payload)
       return true
     }
   }
