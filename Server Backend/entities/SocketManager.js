@@ -1,5 +1,7 @@
 'use strict'
 
+const dg = require('../helpers/Debug')(true)
+
 function SocketManager() {
   this.channels = {}
   this.clients = {}
@@ -70,6 +72,9 @@ SocketManager.prototype.removeFromChannel = function(channel, id) {
     if (id === client) {
       delete c.clients[id]
       delete this.clients[id]
+
+      dg(`id: ${id} -> disconnected from channel: (${channel})`, 'info')
+
       return true
     }
   }
