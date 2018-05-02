@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.SnapshotArray;
+import com.csc480.game.Engine.GameManager;
 import com.csc480.game.Engine.Model.AI;
 import com.csc480.game.Engine.Model.Placement;
 import com.csc480.game.Engine.Model.Player;
@@ -33,10 +34,12 @@ public class HandActor extends Group {
     Label name;
     Label yourTurn;
     Image turn;
-    Player associatedPlayer;
+    //Player associatedPlayer;
+    int associatedPlayerIndex;
 
-    public HandActor(boolean flipTiles){
+    public HandActor(boolean flipTiles, int index){
         super();
+        associatedPlayerIndex = index;
         myHand = new ArrayList<TileActor>();
         flip = flipTiles;
         turn = new Image(TextureManager.getInstance().greenBar);
@@ -62,7 +65,7 @@ public class HandActor extends Group {
         name.setName("name");
         name.setPosition(GameScreen.GUI_UNIT_SIZE/2,0);
         //rack.setScale(.2f);
-        associatedPlayer = new Player();
+        //associatedPlayer = new Player();
         //this.addActor(rack);
         this.addActor(name);
         addTile(new TileActor('A'));
@@ -72,7 +75,7 @@ public class HandActor extends Group {
     }
 
     public Player getPlayer(){
-        return associatedPlayer;
+        return GameManager.getInstance().thePlayers[associatedPlayerIndex];
     }
     /**
      * This should be used instead of addActor. This will place the new tile in the proper position.
@@ -117,9 +120,9 @@ public class HandActor extends Group {
      * @param newPlayer
      */
     public void setPlayer(Player newPlayer){
-        associatedPlayer = newPlayer;
-        name.setText(associatedPlayer.name);
-        if(associatedPlayer.team.toLowerCase().compareTo("gold") == 0){
+        //associatedPlayer = newPlayer;
+        name.setText(GameManager.getInstance().thePlayers[associatedPlayerIndex].name);
+        if(GameManager.getInstance().thePlayers[associatedPlayerIndex].team.toLowerCase().compareTo("gold") == 0){
             turn.setDrawable(new TextureRegionDrawable(new TextureRegion(TextureManager.getInstance().goldBar)));
         } else {
             turn.setDrawable(new TextureRegionDrawable(new TextureRegion(TextureManager.getInstance().greenBar)));
@@ -132,18 +135,18 @@ public class HandActor extends Group {
      * Will sync the tiles display with the GameState
      */
     public void updateState(){
-        if(associatedPlayer != null) {
-            if (associatedPlayer.turn)
+        if(GameManager.getInstance().thePlayers[associatedPlayerIndex] != null) {
+            if (GameManager.getInstance().thePlayers[associatedPlayerIndex].turn)
                 turn.setVisible(true);
             else
                 turn.setVisible(false);
         }else turn.setVisible(false);
         ArrayList<Character> whatsInHand = new ArrayList<Character>();
         //System.out.println("associa player hand size of "+associatedPlayer.tiles.length);
-        for(int i = 0; i < associatedPlayer.tiles.length; i++) {
-            if(associatedPlayer.tiles[i] != 0)
-                if(associatedPlayer.isAI)
-                    whatsInHand.add(new Character(associatedPlayer.tiles[i]));
+        for(int i = 0; i < GameManager.getInstance().thePlayers[associatedPlayerIndex].tiles.length; i++) {
+            if(GameManager.getInstance().thePlayers[associatedPlayerIndex].tiles[i] != 0)
+                if(GameManager.getInstance().thePlayers[associatedPlayerIndex].isAI)
+                    whatsInHand.add(new Character(GameManager.getInstance().thePlayers[associatedPlayerIndex].tiles[i]));
                 else
                     whatsInHand.add(new Character('_'));
         }
@@ -167,7 +170,7 @@ public class HandActor extends Group {
         for(Character c: whatsInHand){
             this.addTile(new TileActor(c.charValue()));
         }
-        name.setText(associatedPlayer.name);
+        name.setText(GameManager.getInstance().thePlayers[associatedPlayerIndex].name);
         //name.act(0);
     }
 

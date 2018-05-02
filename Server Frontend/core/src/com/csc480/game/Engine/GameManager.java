@@ -26,7 +26,8 @@ public class GameManager {
     public OswebbleGame theGame;
     public ArrayList<Placement> placementsUnderConsideration;//ones being considered
     public Player[] thePlayers;
-    public AI[] theAIs;
+    //public AI[] theAIs;
+    public ArrayList<AI> theAIQueue;
     public Board theBoard;
     public int greenScore = 0;
     public int goldScore = 0;
@@ -55,7 +56,8 @@ public class GameManager {
         logQueue = new ArrayList<>();
 
         thePlayers = new Player[4];
-        theAIs = new AI[4];
+        //theAIs = new AI[4];
+        theAIQueue = new ArrayList<>();
         placementsUnderConsideration = new ArrayList<Placement>();
         theBoard = new Board(OswebbleGame.BOARD_SIZE);
         eventBacklog = new ArrayList<String>();
@@ -64,13 +66,13 @@ public class GameManager {
 
         for(int i = 0; i < 4; i++){
             if(produceAI) {
-                theAIs[i] = new AI();
-                thePlayers[i] = theAIs[i];
+                //theAIs[i] = new AI();
+                //thePlayers[i] = theAIs[i];
+                theAIQueue.add(new AI());
                 if(GameManager.debug)
                     System.out.println("AI MADE +++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-            }else {
-                thePlayers[i] = new Player();
             }
+            thePlayers[i] = new Player();
         }
     }
 
@@ -82,15 +84,18 @@ public class GameManager {
     public void Update(){
         if(connectAIQueue.size() > 0){
             Integer position = connectAIQueue.remove(0);
-            theAIs[position] = new AI();
-            thePlayers[position] = theAIs[position];
+            theAIQueue.add(new AI());
+            //theAIs[position] = new AI();
+            //thePlayers[position] = theAIs[position];
         }
         if(removeAIQueue.size() > 0){
-            Integer position = removeAIQueue.remove(0);
-            if(theAIs[position] != null)
-                theAIs[position].disconnectAI();
-            theAIs[position] = null;
-            thePlayers[position] = new Player();
+            AI dead = theAIQueue.remove(0);
+            dead.disconnectAI();
+//            Integer position = removeAIQueue.remove(0);
+//            if(theAIs[position] != null)
+//                theAIs[position].disconnectAI();
+//            theAIs[position] = null;
+//            thePlayers[position] = new Player();
 
         }
         if(logQueue.size() > 0)
@@ -138,8 +143,9 @@ public class GameManager {
                                 System.out.println("frontend got removeAI");
                             try {
                                 //JSONObject data = (JSONObject) args[0];
-                                int position = data.getInt("position");
-                                removeAIQueue.add(position);
+                                //int position = data.getInt("position");
+                                //removeAIQueue.add(position);
+                                removeAIQueue.add(0);
                                 if (debug)
                                    logQueue.add("Got removeAI. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
                             } catch (ArrayIndexOutOfBoundsException e) {
@@ -156,9 +162,10 @@ public class GameManager {
                                 //JSONObject data = (JSONObject) args[0];
                                 if(GameManager.debug)
                                     System.out.println(data.toString());
-                                int position = data.getInt("position");
+                                //int position = data.getInt("position");
                                 //reconnect an AI
-                                connectAIQueue.add(position);
+                                //connectAIQueue.add(position);
+                                connectAIQueue.add(0);
 //                                switch (position) {
 //                                    case 0:
 //                                        theGame.theGameScreen.bottom.setPlayer(theAIs[(position)]);
@@ -245,44 +252,51 @@ public class GameManager {
                                 goldScore = data.getInt("gold");
 
                                 JSONArray players = data.getJSONArray("players");
-                                for (int i = 0; i < players.length(); i++) {
+                                int i;
+                                for (i = 0; i < players.length(); i++) {
                                     if(players.get(i) == JSONObject.NULL) continue;
                                     JSONObject player = (JSONObject) players.get(i);
-                                    int index = player.getInt("position");
+                                    //int index = player.getInt("position");
                                     boolean isAI;
                                     try {
                                         isAI = player.getBoolean("isAI");
+                                        thePlayers[i].isAI = isAI;
 
                                         if (player.get("score") != JSONObject.NULL)
-                                            thePlayers[index].score = player.getInt("score");
+                                            thePlayers[i].score = player.getInt("score");
                                         else
-                                            thePlayers[index].score = 0;
+                                            thePlayers[i].score = 0;
 
                                         if (player.get("name") != JSONObject.NULL)
-                                            thePlayers[index].name = player.getString("name");
+                                            thePlayers[i].name = player.getString("name");
                                         else
-                                            thePlayers[index].name = "";
+                                            thePlayers[i].name = "";
 
                                         if (player.get("team") != JSONObject.NULL)
-                                            thePlayers[index].team = player.getString("team");
+                                            thePlayers[i].team = player.getString("team");
                                         else
-                                            thePlayers[index].team = "";
+                                            thePlayers[i].team = "";
 
                                         if (player.get("tiles") != JSONObject.NULL) {
                                             JSONArray hand = player.getJSONArray("tiles");
                                             for (int h = 0; h < hand.length(); h++) {
                                                 if (isAI)
-                                                    thePlayers[index].tiles[h] = hand.getString(h).toLowerCase().charAt(0);
+                                                    thePlayers[i].tiles[h] = hand.getString(h).toLowerCase().charAt(0);
                                                 else
-                                                    thePlayers[index].tiles[h] = '_';
+                                                    thePlayers[i].tiles[h] = '_';
                                             }
                                         }
-                                        thePlayers[index].turn = player.getBoolean("isTurn");
+                                        thePlayers[i].turn = player.getBoolean("isTurn");
                                         if(GameManager.debug)
-                                            System.out.println("updated player info @ index " + index+" isturn="+thePlayers[index].turn);
+                                            System.out.println("updated player info @ index " + i+" isturn="+thePlayers[i].turn);
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
+                                }
+                                //set all other spots to null
+                                i++;
+                                for (;i < 4; i++) {
+                                    thePlayers[i] = new Player();
                                 }
                                 if (theGame != null) {
                                     if (theGame.theGameScreen != null) {
@@ -407,7 +421,7 @@ public class GameManager {
         }
         return parsed;
     }
-
+/*
     public void updatePlayers(Player[] backEndPlayers){
         //currentPlayerIndex = currentPlayer;
         //Update the Players
@@ -461,7 +475,7 @@ public class GameManager {
             theGame.theGameScreen.infoPanel.UpdatePlayerStatus(i, inHand.name, inHand.score);
         }
     }
-
+    */
     /**
      * This will force the Board state to sync with the backend data, should only be used to recover from failures
      */
@@ -550,15 +564,19 @@ public class GameManager {
      * @param eventName
      */
     public void LogEvent(String eventName) {
-        ApplyEventBackLog();
-        if(theGame != null && theGame.theGameScreen != null && theGame.theGameScreen.infoPanel !=null) {
-            theGame.theGameScreen.infoPanel.LogEvent(eventName);
-
-        }else {
-            //System.out.println("adding "+eventName+"to backlog");
-            if(!eventBacklog.contains(eventName))
+        if(!eventBacklog.contains(eventName))
+            synchronized (eventBacklog) {
                 eventBacklog.add(eventName);
-        }
+            }
+//        ApplyEventBackLog();
+//        if(theGame != null && theGame.theGameScreen != null && theGame.theGameScreen.infoPanel !=null) {
+//            theGame.theGameScreen.infoPanel.LogEvent(eventName);
+//
+//        }else {
+//            System.out.println("adding "+eventName+"to backlog");
+//            if(!eventBacklog.contains(eventName))
+//                eventBacklog.add(eventName);
+//        }
 
     }
 
@@ -567,13 +585,16 @@ public class GameManager {
     }
 
     /**
+     * SHOULD ONLY EVER BE CALLED WHEN NOT RENDERING
      * Attempt to display any events gotten that have yet to be shown
      */
     private void ApplyEventBackLog(){
         if(theGame != null && theGame.theGameScreen != null && theGame.theGameScreen.infoPanel !=null) {
-            for(String s: eventBacklog)
-                theGame.theGameScreen.infoPanel.LogEvent(s);
-            eventBacklog.clear();
+            synchronized (eventBacklog) {
+                for(String s: eventBacklog)
+                    theGame.theGameScreen.infoPanel.LogEvent(s);
+                eventBacklog.clear();
+            }
         }
 
     }
