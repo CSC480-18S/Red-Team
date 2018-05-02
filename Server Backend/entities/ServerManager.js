@@ -26,12 +26,21 @@ ServerManager.prototype.listenForClients = function() {
           break
       }
     })
+
+    socket.on('close', () => {
+      let client = this.socketManager.getClient(socket.id)
+      this.socketManager.removeFromChannel(client.channel, socket.id)
+      this.socketManager.broadcast('Queued', 'currentlyConnected', this.generateAmount(this.amountOfClients()))
+      dg(`${socket.id} -> disconnected`, 'info')
+    })
   })
 }
 
 ServerManager.prototype.attemptChannelAdd = function(client, socket) {
   let channel = null
   let id = si.generate()
+
+  socket.id = id
 
   switch (client) {
     case 'AI':
@@ -62,31 +71,46 @@ ServerManager.prototype.checkChannelAdd = function(success, channel, id, socket)
 
     switch (channel) {
       case 'AIs':
-        this.gameManager.addPlayer(id, socket, true)
+        // this.gameManager.addPlayer(id, socket, true)
         break
       case 'Clients':
-        this.gameManager.addPlayer(id, socket, false)
+        // this.gameManager.addPlayer(id, socket, false)
         break
       case 'SFs':
         event = 'updateState'
         data = this.gameManager.latestData()
         break
-      case 'Q':
+      case 'Queued':
         event = 'currentlyConnected'
-        data = this.socketManager.channelClientAmount('Clients')
+        data = this.generateAmount(this.amountOfClients())
         break
       case 'Error':
         event = 'errorMessage'
         data = this.generateError('There seems to be an error.')
         break
     }
+    if (!['Clients', 'AI'].includes(channel)) {
+      this.socketManager.emit(channel, id, event, data)
+    }
 
-    this.socketManager.emit(channel, id, event, data)
+    dg(`id: ${id} -> channel: (${channel})`, 'info')
   } else {
     channel = 'Error'
     this.socketManager.addToChannel(channel, id, socket)
     this.socketManager.emit(channel, id, 'errorMessage', this.generateError('There are already 4 players conencted.'))
   }
+}
+
+ServerManager.prototype.amountOfClients = function() {
+  return this.socketManager.channelClientAmount('Clients')
+}
+
+ServerManager.prototype.generateAmount = function(number) {
+  let amount = {
+    amount: number
+  }
+
+  return JSON.stringify(amount)
 }
 
 ServerManager.prototype.generateError = function(message) {
@@ -104,39 +128,6 @@ ServerManager.prototype.getMessage = function(message) {
 module.exports = (ws) => {
   return new ServerManager(ws)
 }
-
-// class ServerManager {
-//   constructor() {
-//     this.frontends = []
-//     this.currentlyConnected = 0
-//     this.gameManager = new GameManager(this.emitDataUpdate.bind(this), this.emitGameEvent.bind(this), this.updateFrontends.bind(this), this.changeTurn.bind(this), this.gameOverEvent.bind(this))
-//     this.players = new Array(4).fill(null)
-//     this.oldPlayerData = new Array(4).fill(null)
-//     this.queue = []
-//     this.firstTurnSet = false
-//     this.listenForClients()
-//   }
-
-//   /**
-//    * Listens to socket events that happen
-//    */
-
-//   determineClientType(client, socket) {
-//     switch (client) {
-//       case 'SF':
-//         this.createFrontend(socket)
-//         break
-//       case 'AI':
-//         this.createManager(socket, true)
-//         break
-//       case 'CL':
-//         this.createManager(socket, false)
-//         break
-//       case 'Q':
-//         this.addToQueue(socket)
-//         break
-//     }
-//   }
 
 //   // TODO: Check is user is playing already @Landon
 
