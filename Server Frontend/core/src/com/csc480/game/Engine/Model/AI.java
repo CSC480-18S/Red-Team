@@ -436,6 +436,9 @@ public class AI extends Player {
         if(!hasFoundASinglePlayableTile){
             TileData centerTile =  new TileData(new Vector2(5,5), (char)0,0,0, this.name, System.currentTimeMillis());
             char[] constraints = new char[11];
+            for (int i = 0; i < constraints.length; i++) {
+                constraints[i] = 0;
+            }
             ArrayList<PlayIdea> possiblePlaysCent = WordVerification.getInstance().TESTgetWordsFromHand(new String(tiles), constraints, 5, centerTile, true);
             if(!possiblePlaysCent.isEmpty()) {
                 myCache.Push(possiblePlaysCent.get(0));
