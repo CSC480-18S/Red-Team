@@ -11,6 +11,7 @@ function Player(id, socket, isAI, position) {
   this.link = null
   this.name = null
   this.team = null
+  this.listenForIncoming()
 }
 
 Player.prototype.addInformation = function(name, team, link) {
@@ -43,6 +44,7 @@ Player.prototype.setTiles = function(tiles) {
 Player.prototype.listenForIncoming = function() {
   this.socket.on('close', () => {
     console.log('zis player has left')
+    // TODO: Need to remove from playermanager
   })
 
   this.socket.on('message', data => {
@@ -54,7 +56,8 @@ Player.prototype.listenForIncoming = function() {
 Player.prototype.data = function() {
   return {
     name: this.name,
-    team: this.team.name,
+    team: 'Green',
+    // team: this.team.name,
     position: this.position,
     isTurn: this.isTurn,
     isAI: this.isAI,
@@ -64,6 +67,6 @@ Player.prototype.data = function() {
   }
 }
 
-module.exports = function(id, socket, isAI) {
-  return new Player(id, socket, isAI)
+module.exports = function(id, socket, isAI, position) {
+  return new Player(id, socket, isAI, position)
 }

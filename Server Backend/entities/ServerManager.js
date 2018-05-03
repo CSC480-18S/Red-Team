@@ -2,17 +2,18 @@
 
 const dg = require('../helpers/Debug')(true)
 const GameManager = require('./GameManager')
-const sm = require('./SocketManager')
+const SocketManager = require('./SocketManager')
 const si = require('shortid')
 
 function ServerManager(ws) {
   this.ws = ws
   this.gameManager = null
-  this.socketManager = sm()
+  this.socketManager = null
 }
 
 ServerManager.prototype.init = function() {
-  this.gameManager = GameManager()
+  this.socketManager = SocketManager()
+  this.gameManager = GameManager(this.socketManager)
   this.listenForClients()
 }
 
@@ -80,18 +81,15 @@ ServerManager.prototype.checkChannelAdd = function(success, channel, id, socket)
         // TODO: Fix @Landon
         data = this.gameManager.latestData()
         break
-      case 'Queued':
-        event = 'currentlyConnected'
-        data = this.generateAmount(this.amountOfClients())
-        break
       case 'Error':
         event = 'errorMessage'
         data = this.generateError('There seems to be an error.')
         break
     }
-    if (!['Clients', 'AI'].includes(channel)) {
-      this.socketManager.emit(channel, id, event, data)
-    }
+    // TODO: Update frontend @Landon
+    event = 'currentlyConnected'
+    data = this.generateAmount(this.amountOfClients())
+    this.socketManager.broadcast('Queued', event, data)
   } else {
     channel = 'Error'
     this.socketManager.addToChannel(channel, id, socket)
@@ -130,44 +128,6 @@ module.exports = (ws) => {
 }
 
 //   // TODO: Check is user is playing already @Landon
-
-//   /**
-//    * Creates a player manager for a connected player
-//    * @param {String} name - name of the player
-//    * @param {String} team - player team
-//    * @param {Boolean} ai - is ai
-//    * @param {Object} socket - socket object
-//    */
-//   createManager(socket, isAI) {
-//     if (this.currentlyConnected === 4) {
-//       this.killAI()
-//     }
-//     for (let i = 0; i < this.players.length; i++) {
-//       let p = this.players[i]
-//       if (p === null) {
-//         let board = this.gameManager.board.sendableBoard()
-//         let player = new PlayerManager(i, socket, isAI, this.clientDisconnect.bind(this), this.gameManager.determineEvent.bind(this.gameManager))
-//         if (!this.firstTurnSet) {
-//           player.isTurn = true
-//           this.firstTurnSet = true
-//         }
-//         if (this.oldPlayerData[i] !== null) {
-//           this.injectOldData(i, player)
-//         }
-//         this.players.splice(i, 1, player)
-//         if (!isAI) {
-//           this.currentlyConnected++
-//           player.retrieveDBInfo(this.emitPlayerConnected.bind(this), board)
-//           this.emitCurrentlyConnected()
-//         } else {
-//           player.injectAIData(i, this.emitPlayerConnected.bind(this), board)
-//         }
-
-//         return
-//       }
-//     }
-//     this.emitErrorMessage(socket, 'too many players connected')
-//   }
 
 //   killAI() {
 //     for (let i = 0; i < this.players.length; i++) {
@@ -448,23 +408,5 @@ module.exports = (ws) => {
 //     this.updateFrontends()
 //     this.emitGameEvent('New game started')
 //   }
-
-//   /**
-//  * Creates a new gameboard and initializes it
-//  */
-//   resetGameboard() {
-//     this.gameManager.resetGameboard()
-//   }
-
-//   /**
-//  * Resets all players' scores
-//  */
-//   resetPlayers() {
-//     this.players.map(p => {
-//       p.resetScore()
-//       p.updateHand(p.tiles)
-//     })
-//   }
-// }
 
 // return ServerManager

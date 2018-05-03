@@ -9,10 +9,10 @@ const db = require('../helpers/DB')
 const mg = require('../helpers/MacGrabber')
 const Player = require('./Player')
 
-function PlayerManager(gameManager) {
+function PlayerManager() {
   this.players = {}
   this.oldData = {}
-  this.gameManager = gameManager
+  this.firstTurnSet = false
 }
 
 PlayerManager.prototype.getAmountOfPlayers = function() {
@@ -30,6 +30,10 @@ PlayerManager.prototype.updatePostitions = function() {
 PlayerManager.prototype.createPlayer = function(id, socket, isAI) {
   // TODO: Distinguish AI from clients @Landon
   let player = Player(id, socket, isAI, this.getAmountOfPlayers())
+  if (!this.firstTurnSet) {
+    player.isTurn = true
+    this.firstTurnSet = true
+  }
 
   this.players[id] = player
 
@@ -40,13 +44,25 @@ PlayerManager.prototype.createPlayer = function(id, socket, isAI) {
   if (true) {
     if (!this.injectOldData(player.position, id)) {
       this.injectTiles(id)
-      return true
+      return player
     }
   } else {
     // TODO: Tell player they need to registerI @Landon
     return false
   }
   // })
+}
+
+PlayerManager.prototype.getPlayer = function(id) {
+  return this.players[id]
+}
+
+PlayerManager.prototype.getAllPlayers = function() {
+  let players = Object.keys(this.players).map(id => {
+    return this.players[id]
+  })
+
+  return players
 }
 
 PlayerManager.prototype.removePlayer = function(id) {
@@ -189,11 +205,12 @@ PlayerManager.prototype.updateTurn = function(id) {
   let position = player.position
 
   player.isTurn = false
-  position++
-
-  if (position > 3) {
-    position = 0
-  }
+  do {
+    position++
+    if (position > 3) {
+      position = 0
+    }
+  } while (!(id in this.players))
 
   let players = Object.keys(this.players)
 
@@ -204,6 +221,14 @@ PlayerManager.prototype.updateTurn = function(id) {
       return true
     }
   }
+}
+
+PlayerManager.prototype.reset = function() {
+  Object.keys(this.players).forEach((player) => {
+    player.resetScore()
+    player.isTurn = false
+    this.updateTiles(player.id)
+  })
 }
 
 module.exports = function() {

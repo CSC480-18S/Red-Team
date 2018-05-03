@@ -161,7 +161,7 @@ class Gameboard {
     return {
       valid: v,
       error: e,
-      data: w
+      word: w
     }
   }
 

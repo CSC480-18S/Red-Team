@@ -86,6 +86,8 @@ SocketManager.prototype.broadcast = function(channel, event, data) {
   switch (event) {
     case 'updateState':
     case 'currentlyConnected':
+    case 'removeAI':
+    case 'connectAI':
       break
     default:
       return false
@@ -117,41 +119,36 @@ SocketManager.prototype.broadcastAll = function(event, data) {
   Object.keys(this.channels).forEach((channel) => {
     let c = this.channels[channel]
     Object.keys(channel).forEach((client) => {
-      c.clients[client].send(payload)
+      c.clients[client].socket.send(payload)
     })
   })
 }
 
-SocketManager.prototype.emit = function(channel, id, event, data) {
+SocketManager.prototype.emit = function(id, event, data) {
   switch (event) {
     case 'gameEvent':
     case 'dataUpdate':
     case 'errorMessage':
     case 'updateState':
     case 'currentlyConnected':
+    case 'invalidPlay':
       break
     default:
       return false
   }
 
+  let client = this.getClient(id)
+
   let payload = this.generatePayload(event, data)
 
-  let c = this.channels[channel]
-  let clients = Object.keys(c.clients)
+  client.socket.send(payload)
 
-  for (let client of clients) {
-    if (id === client) {
-      this.clients[id].socket.send(payload)
-      return true
-    }
-  }
-
-  return false
+  return true
 }
 
 SocketManager.prototype.generatePayload = function(message, data) {
   let payload = {
-    type: message,
+    event: message,
     data: data
   }
 
