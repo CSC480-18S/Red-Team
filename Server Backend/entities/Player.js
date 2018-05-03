@@ -1,8 +1,7 @@
 'use strict'
 
-function Player(id, socket, isAI, position) {
+function Player(id, isAI, position) {
   this.id = id
-  this.socket = socket
   this.isAI = isAI
   this.position = position
   this.score = 0
@@ -11,7 +10,7 @@ function Player(id, socket, isAI, position) {
   this.link = null
   this.name = null
   this.team = null
-  this.listenForIncoming()
+  // this.listenForIncoming()
 }
 
 Player.prototype.addInformation = function(name, team, link) {
@@ -39,18 +38,6 @@ Player.prototype.injectData = function(data) {
 
 Player.prototype.setTiles = function(tiles) {
   this.tiles = tiles
-}
-
-Player.prototype.listenForIncoming = function() {
-  this.socket.on('close', () => {
-    console.log('zis player has left')
-    // TODO: Need to remove from playermanager
-  })
-
-  this.socket.on('message', data => {
-    let event = JSON.parse(data)
-    this.determineEvent(event, this)
-  })
 }
 
 Player.prototype.data = function() {

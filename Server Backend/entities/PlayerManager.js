@@ -9,10 +9,12 @@ const db = require('../helpers/DB')
 const mg = require('../helpers/MacGrabber')
 const Player = require('./Player')
 
-function PlayerManager() {
+function PlayerManager(determineEvent, updatePlayers) {
   this.players = {}
-  this.oldData = {}
+  this.oldData = []
   this.firstTurnSet = false
+  this.determineEvent = determineEvent
+  this.updatePlayers = updatePlayers
 }
 
 PlayerManager.prototype.getAmountOfPlayers = function() {
@@ -21,7 +23,7 @@ PlayerManager.prototype.getAmountOfPlayers = function() {
 
 PlayerManager.prototype.updatePostitions = function() {
   Object.keys(this.players).forEach((player, index) => {
-    player.position = index
+    this.players[player].position = index
   })
 
   dg('positions updated', 'debug')
@@ -29,28 +31,40 @@ PlayerManager.prototype.updatePostitions = function() {
 
 PlayerManager.prototype.createPlayer = function(id, socket, isAI) {
   // TODO: Distinguish AI from clients @Landon
-  let player = Player(id, socket, isAI, this.getAmountOfPlayers())
+  let player = Player(id, isAI, this.getAmountOfPlayers())
   if (!this.firstTurnSet) {
     player.isTurn = true
     this.firstTurnSet = true
   }
 
   this.players[id] = player
+  this.listenForGameActions(socket)
 
   dg(`Player created -> ${id}`, 'debug')
 
   // TODO: DB stuff @Landon
   // return this.getPlayerInfo(id).then(success => {
   if (true) {
-    if (!this.injectOldData(player.position, id)) {
+    if (!this.injectOldData(id)) {
       this.injectTiles(id)
-      return player
     }
+    return player
   } else {
     // TODO: Tell player they need to registerI @Landon
     return false
   }
   // })
+}
+
+PlayerManager.prototype.listenForGameActions = function(socket) {
+  socket.on('close', () => {
+    this.removePlayer(socket.id)
+  })
+
+  socket.on('message', data => {
+    let event = JSON.parse(data)
+    this.determineEvent(event)
+  })
 }
 
 PlayerManager.prototype.getPlayer = function(id) {
@@ -67,6 +81,8 @@ PlayerManager.prototype.getAllPlayers = function() {
 
 PlayerManager.prototype.removePlayer = function(id) {
   // TODO: Need to be able to distinguish clients from AI @Landon
+  // TODO: If their turn, change to next turn
+  this.grabOldData(id)
   delete this.players[id]
   this.updatePostitions()
 
@@ -75,24 +91,24 @@ PlayerManager.prototype.removePlayer = function(id) {
   return true
 }
 
-PlayerManager.prototype.addOldData = function(position, id) {
+PlayerManager.prototype.grabOldData = function(id) {
   let player = this.players[id]
 
-  this.oldData[position] = {
+  this.oldData.push({
     tiles: player.tiles,
     isTurn: player.isTurn
-  }
+  })
 
   dg(`Data saved -> ${id}`, 'debug')
 
   return true
 }
 
-PlayerManager.prototype.injectOldData = function(position, id) {
-  if (position in this.oldData) {
+PlayerManager.prototype.injectOldData = function(id) {
+  if (this.oldData.length > 0) {
     let player = this.players[id]
-    player.injectData(this.oldData[position])
-    delete this.oldData[position]
+    player.injectData(this.oldData[0])
+    this.oldData.splice(0, 1)
 
     dg(`Data injected -> ${id}`, 'debug')
 
@@ -221,6 +237,8 @@ PlayerManager.prototype.updateTurn = function(id) {
       return true
     }
   }
+
+  this.updatePlayers()
 }
 
 PlayerManager.prototype.reset = function() {
@@ -231,6 +249,6 @@ PlayerManager.prototype.reset = function() {
   })
 }
 
-module.exports = function() {
-  return new PlayerManager()
+module.exports = function(determineEvent) {
+  return new PlayerManager(determineEvent)
 }
