@@ -58,11 +58,10 @@
             ws.send(JSON.stringify(queue))
 
             ws.onmessage = (message) => {
-                console.log(message)
                 let mes = JSON.parse(message.data)
                 console.log(mes)
                 switch(mes.event){
-                    case 'currentPlayerCount':
+                    case 'currentlyConnected':
                         updatePlayerCount(mes.data.amount)
                 }
             }

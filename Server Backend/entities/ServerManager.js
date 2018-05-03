@@ -102,13 +102,13 @@ ServerManager.prototype.checkChannelAdd = function(success, channel, id, socket)
 ServerManager.prototype.amountOfClients = function() {
   return this.socketManager.channelClientAmount('Clients')
 }
-
+// TODO: Make sure that payload is generated, but not stringified, the Socket Manager does the stringify @Landon
 ServerManager.prototype.generateAmount = function(number) {
   let amount = {
     amount: number
   }
 
-  return JSON.stringify(amount)
+  return amount
 }
 
 ServerManager.prototype.generateError = function(message) {
@@ -116,7 +116,7 @@ ServerManager.prototype.generateError = function(message) {
     error: message
   }
 
-  return JSON.stringify(error)
+  return error
 }
 
 ServerManager.prototype.getMessage = function(message) {

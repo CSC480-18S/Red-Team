@@ -19,7 +19,7 @@ function GameManager(socketManager) {
   this.goldScore = 0
   this.swaps = 0
   this.currentPlay = null
-  this.playerManager = PlayerManager()
+  this.playerManager = PlayerManager(this.determineEvent.bind(this), this.updatePlayers.bind(this))
   this.socketManager = socketManager
   // this.turnTimer()
 }
@@ -39,6 +39,10 @@ GameManager.prototype.latestData = function() {
 GameManager.prototype.addPlayer = function(id, socket, isAI) {
   let player = this.playerManager.createPlayer(id, socket, isAI)
   this.socketManager.emit(id, 'dataUpdate', player.data())
+}
+
+GameManager.prototype.determineEvent = function(event) {
+  console.log(event)
 }
 
 GameManager.prototype.attemptPlay = function(newBoard, id) {
@@ -139,20 +143,18 @@ GameManager.prototype.turnTimer = function(id) {
   timer.on('end', function() {
     dg('Turn time expired', 'verbose')
     this.currentPlay = null
-    if (this.playerManager.updateTurn(id)) {
-      let player = this.playerManager.getPlayer(id)
-      this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`${player.name}'s time has expired`))
+    let player = this.playerManager.getPlayer(id)
+    this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`${player.name}'s time has expired`))
 
-      this.updatePlayers()
+    this.playerManager.updateTurn(id)
 
-      this.swaps++
-      if (this.isGameOver()) {
-        this.gameOver()
-        return true // game is over, dont send out data update because it is sent out later
-      }
-
-      return false // send out data update
+    this.swaps++
+    if (this.isGameOver()) {
+      this.gameOver()
+      return true // game is over, dont send out data update because it is sent out later
     }
+
+    return false // send out data update
   })
 }
 
