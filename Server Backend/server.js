@@ -106,5 +106,10 @@ server.listen(port, function() {
 
 db.checkForTeams()
 
-// attempt RedundancyManager resends
-rm.resend()
+const RESEND_DELAY = 1000 * 60 * 5
+
+// Starts a loop for calling RedundancyManager resends
+setInterval(function() {
+  console.log('Attempting resends')
+  rm.resend()
+}, RESEND_DELAY)
