@@ -111,7 +111,7 @@ function extractWords(letters, newBoard) {
   let play = _.uniqWith(words, _.isEqual)
   return {
     valid: true,
-    data: play
+    words: play
   }
 }
 

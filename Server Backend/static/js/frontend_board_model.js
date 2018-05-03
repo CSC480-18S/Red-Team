@@ -45,7 +45,6 @@ ws.onopen = function(event) {
         break
       default:
         console.log(mes.data)
-        console.log(mes.data)
     }
   }
 }
@@ -168,23 +167,6 @@ function playTime(time) {
 function dataUpdate(response) {
   this.data.isTurn = response.isTurn
   this.data.score = response.score
-  /*this.data.playTime = 60
-
-  let time
-  if (this.data.isTurn) {
-    clearInterval(time)
-    time = setInterval(() => {
-      this.data.playTime--
-      if (this.data.playTime % 2 === 0) {
-        this.data.colored = true
-      } else {
-        this.data.colored = false
-      }
-    }, 1000)
-  } else {
-    clearInterval(time)
-    this.data.colored = false
-  } */
 
   this.data.username = response.name
   this.data.tileSlots = generateTiles(response.tiles)

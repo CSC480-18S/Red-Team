@@ -8,13 +8,20 @@ const ex = require('../helpers/Extractor')
 const dg = require('../helpers/Debug')(true)
 const db = require('../helpers/DB')
 const PlayerManager = require('./PlayerManager')
+const PlayCounter = require('timedown')
 
-function GameManager() {
-  this.gameboard = null
+let timer = PlayCounter()
+let t = timer.ns('playTimer', '10s')
+
+function GameManager(socketManager) {
+  this.gameboard = new Gameboard()
   this.greenScore = 0
   this.goldScore = 0
   this.swaps = 0
+  this.currentPlay = null
   this.playerManager = PlayerManager()
+  this.socketManager = socketManager
+  // this.turnTimer()
 }
 
 GameManager.prototype.getGameBoard = function() {
@@ -30,30 +37,39 @@ GameManager.prototype.latestData = function() {
 }
 
 GameManager.prototype.addPlayer = function(id, socket, isAI) {
-  this.playerManager.createPlayer(id, socket, isAI)
+  let player = this.playerManager.createPlayer(id, socket, isAI)
+  this.socketManager.emit(id, 'dataUpdate', player.data())
 }
 
-GameManager.prototype.attemptPlay = function(newBoard, player) {
+GameManager.prototype.attemptPlay = function(newBoard, id) {
+  let player = this.playerManager.getPlayer(id)
   const letters = ex.extractLetters(newBoard, this._gameBoard.board, player)
 
   if (letters.valid) {
     const words = ex.extractWords(letters.data, newBoard)
+    this.currentPlay = words
 
     this.wordValidation(words, player)
       .then(r => {
-        let boardResponse = null
+        let play = null
         if (r.valid === true) {
           // if invalid type of play, gets the word that was invalid, else is undefined
-          boardResponse = this._gameBoard.placeWords(words.data, player)
+          play = this._gameBoard.placeWords(this.currentPlay, player)
           // if the board has attempted to play a word
-          if (boardResponse.valid) {
+          if (play.valid) {
             let ls = letters.data.map(l => l.letter)
             player.updateHand(ls)
           }
-          return this.respond(boardResponse.error, boardResponse.data, player)
+          let response = this.determineResponse(play)
+          if (response.valid) {
+            this.validPlay(id, this.currentPlay)
+          } else {
+            this.invalidPlay(id, response.reason)
+          }
         } else {
           // if the word is invalid
-          return this.respond(r.error, r.data, player)
+          let response = this.determineResponse(r)
+          return this.invalidPlay(id, response.reason)
         }
       })
       .catch(e => {
@@ -76,17 +92,18 @@ GameManager.prototype.wordValidation = function(words, player) {
 GameManager.prototype.pruneResults = function(response, player) {
   for (let word of response) {
     if (word.bad) {
+      db.updatePlayerDirty(player, word)
       return {
         valid: false,
         error: 6,
-        data: word.word
+        word: word.word
       }
     }
     if (!word.valid) {
       return {
         valid: false,
         error: 1,
-        data: word.word
+        word: word.word
       }
     }
     if (word.special) {
@@ -99,13 +116,55 @@ GameManager.prototype.pruneResults = function(response, player) {
   }
 }
 
+GameManager.prototype.turnTimer = function(id) {
+  t.restart('60000ms', {refresh: '1000ms'})
+  timer.start('playTimer')
+
+  // Listen to timer counter events
+  timer.on('tick', function(time) {
+    dg(`play time left: ${time.ms} -> ${id}`, 'debug')
+    // TODO: Send to client @Landon
+  })
+
+  timer.on('ending', function(time) {
+    dg('Turn time is expiring', 'verbose')
+    this.socketManager.emit(id, 'gameEvent', this.generateGameEvent(`You have ${Math.ceil(time.ms / 1000)} seconds left!`))
+  })
+
+  timer.on('stop', function(time) {
+    dg('Play made', 'verbose')
+    // TODO: When the player made a play in the time window
+  })
+
+  timer.on('end', function() {
+    dg('Turn time expired', 'verbose')
+    this.currentPlay = null
+    if (this.playerManager.updateTurn(id)) {
+      let player = this.playerManager.getPlayer(id)
+      this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`${player.name}'s time has expired`))
+
+      this.updatePlayers()
+
+      this.swaps++
+      if (this.isGameOver()) {
+        this.gameOver()
+        return true // game is over, dont send out data update because it is sent out later
+      }
+
+      return false // send out data update
+    }
+  })
+}
+
 GameManager.prototype.swap = function(id) {
+  this.currentPlay = null
   this._swaps++
+  this.playerManager.updateTiles(id)
+  this.playerManager.updateTurn(id)
+
   if (this.isGameOver()) {
     this.gameOver()
   }
-  this.playerManager.updateTiles(id)
-  this.playerManager.updateTurn(id)
 
   // TODO: Alert players with dataUpdate @Landon
   // TODO: Alert players with gameEvent @Landon
@@ -119,224 +178,131 @@ GameManager.prototype.isGameOver = function() {
 GameManager.prototype.gameOver = function() {
   dg('all players have swapped tiles, game over', 'info')
 
-  this._swaps = 0
-
   // TODO: Send game event telling game is over @Landon
   // TODO: Send game over event
 }
 
-module.exports = function() {
-  return new GameManager()
+GameManager.prototype.reset = function() {
+  this.currentPlay = null
+  this._swaps = 0
+  this.goldScore = 0
+  this.greenScore = 0
+
+  this.playerManager.reset()
+
+  this.gameboard = new Gameboard()
 }
 
-//   /**
-//      * Timer for a player's turn
-//      */
-//   playTimer(reset, player) {
-//     let time = 60
-//     if (reset) {
-//       if (this.timer !== null) {
-//         clearInterval(this.timer)
-//       }
-//     } else {
-//       this.timer = setInterval(() => {
-//         if (time > 0) {
-//           if (player !== null) {
-//             time--
-//             player.playTimer(time)
-//           } else {
-//             clearInterval(this.timer)
-//           }
-//         } else {
-//           clearInterval(this.timer)
-//           dg(`${player.name}'s time has expired`, 'info')
-//           this.gameEvent(`${player.name}'s time has expired`)
-//           this._swaps++
-//           if (this.checkGameOver()) {
-//             this.gameOver()
-//             return
-//           }
-//           this.updateTurn(player, true)
-//         }
-//       }, 1000)
-//     }
-//   }
+GameManager.prototype.newGame = function() {
+  this.reset()
+  this.playerManager.getAllPlayers()[0].isTurn = true
+  // this.emitDataUpdate(this.gameManager.board.sendableBoard())
+  this.updateFrontends()
+  this.emitGameEvent('New game started')
+}
 
-//   /**
-//    * Sends out a boardUpdate event to all clients
-//    */
-//   boardUpdate() {
-//     let boardUpdateData = {
-//       event: 'boardUpdate',
-//       data: {
-//         board: this._gameBoard.sendableBoard(),
-//         yellow: this._goldScore,
-//         green: this._greenScore
-//       }
-//     }
+GameManager.prototype.generateGameEvent = function(action) {
+  return {
+    action: action
+  }
+}
 
-//     this.ws.send(JSON.stringify(boardUpdateData))
-//   }
+GameManager.prototype.updatePlayers = function() {
+  let players = this.playerManager.getAllPlayers()
 
-//   /**
-//    * Checks to see if word(s) are in the DB
-//    * @param {Array} words - words to be checked against the DB
-//    * @param {Object} player - player
-//    */
-//   wordValidation(words, player) {
-//     const search = words.data.map(s => s.word).join(',')
+  players.forEach(p => {
+    let data = p.data
+    data.board = this.gameboard.sendableBoard()
+    this.serverManager.emit(p.id, 'dataUpdate', p.data)
+  })
+}
 
-//     dg('checking words against database', 'debug')
-//     return db.dictionaryCheck(search).then(r => {
-//       return this.pruneResults(r, player)
-//     })
-//   }
+GameManager.prototype.determineResponse = function(play) {
+  let reason = null
+  let invalid = true
 
-//   /**
-//    * Prunes the data sent back from the DB to check if anywords are either invalid or bad words
-//    * @param {Array} response - word data sent back from DB
-//    * @param {Object} player - player
-//    */
-//   pruneResults(response, player) {
-//     dg('pruning results of database response', 'debug')
-//     for (let word of response) {
-//       if (word.bad) {
-//         return {
-//           valid: false,
-//           error: 6,
-//           data: word.word
-//         }
-//       }
-//       if (!word.valid) {
-//         return {
-//           valid: false,
-//           error: 1,
-//           data: word.word
-//         }
-//       }
-//       if (word.special) {
-//         db.updatePlayerSpecial(player, word)
-//       }
-//     }
+  switch (play.error) {
+    case 1:
+      reason = `${play.word} is not a valid word`
+      break
+    case 2:
+      reason = `${play.word} Placed out of the bounds of the board`
+      break
+    case 3:
+      reason = `${play.word} placed in invalid position`
+      break
+    case 4:
+      reason = `${play.word} was not played over the center tile`
+      break
+    case 5:
+      reason = `${play.word} not connected to played tiles`
+      break
+    case 6:
+      reason = `${play.word} is a bad word`
+      break
+    case 7:
+      reason = 'You tried to cheat :)'
+      break
+    default:
+      invalid = false
 
-//     return {
-//       valid: true
-//     }
-//   }
+      return {
+        invalid,
+        reason
+      }
+  }
+}
 
-//   /**
-//    * Calculates the score of a play
-//    * @param {Object} player - player to add score to
-//    * @param {Array} words - array of words to calculate score for
-//    */
-//   calculateScore(player, words) {
-//     let score = sc(words, this._gameBoard.board)
+GameManager.prototype.invalidPlay = function(id, reason) {
+  dg(`${id} -> invalid play`, 'info')
 
-//     if (!player.isAI) {
-//       db.updatePlayer(player, score.words)
-//     }
+  this.socketManager.emit(id, 'invalidPlay')
+  this.socketManager.emit(id, 'gameEvent', this.generateGameEvent(reason))
+  return true
+}
 
-//     this.addScore(player, score.totalScore)
-//     this.updateTurn(player, false)
-//     return score
-//   }
+GameManager.prototype.validPlay = function(id, play) {
+  dg(`${id} -> valid play`, 'info')
 
-//   /**
-//    * Adds the score to the player's score and the team they are on
-//    * @param {Object} player - player to add score to
-//    * @param {Number} score - score
-//    */
-//   addScore(player, score) {
-//     // Need to update DB as well
-//     player.addScore(score)
+  let player = this.playerManager.getPlayer(id)
 
-//     switch (player.team) {
-//       case 'Green':
-//         this._greenScore += score
-//         break
-//       case 'Gold':
-//         this._goldScore += score
-//         break
-//     }
-//   }
+  let score = this.calculateScore(play)
 
-//   /**
-//    * Creates a new gameboard and initializes it
-//    */
-//   resetGameboard() {
-//     this._greenScore = 0
-//     this._goldScore = 0
-//     this._gameBoard = new Gameboard()
-//   }
+  let words = play.map(w => w.word)
+  let action = `${player.name} played ${words} for ${score.totalScore} points`
 
-//   /**
-//    * Resets all players' scores
-//    */
-//   resetPlayers() {
-//     this._greenScore = 0
-//     this._goldScore = 0
+  this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(action))
 
-//     this._playerManagers.map(p => {
-//       p.resetScore()
-//       p.updateHand(p.tiles)
-//     })
-//   }
+  this.playerManager.updateTurn(id)
+  this.updatePlayers()
 
-//   respond(e, data, player) {
-//     let reason = null
-//     let invalid = true
+  // TODO: Somehow figure out how to check if words in play are bonus words...we are getting the list of words from the score so we can do something with that @Landon
+}
 
-//     switch (e) {
-//       case 1:
-//         reason = 'Not a valid word'
-//         break
-//       case 2:
-//         reason = 'Placed out of the bounds of the board'
-//         break
-//       case 3:
-//         reason = 'Invalid placement'
-//         break
-//       case 4:
-//         reason = 'Word was not played over the center tile'
-//         break
-//       case 5:
-//         reason = 'Word not connected to played tiles'
-//         break
-//       case 6:
-//         reason = 'That is a bad word'
-//         db.updatePlayerDirty(player, data)
-//         break
-//       case 7:
-//         reason = 'You cheated'
-//         break
-//       default:
-//         invalid = false
-//     }
+GameManager.prototype.calculateScore = function(words) {
+  return sc(words, this.getGameBoard)
+}
 
-//     if (invalid) {
-//       player.invalidPlay(reason)
-//       return
-//     }
-//     let score = this.calculateScore(player, data)
+GameManager.prototype.addScore = function(id, score) {
+  let player = this.playerManager.getPlayer(id)
+  player.updateScore(score)
 
-//     dg('sending out game event event', 'debug')
-//     let words = data.map(w => w.word)
-//     let action = `${player.name} played ${words} for ${score.totalScore} points`
-//     dg(action, 'info')
-//     // TODO: Need to flag whether or not this is a bonus play or not @Landon
-//     // const search = words.map(s => s).join(',')
-//     // db.dictionaryCheck(search).then(r => {
-//     //   let bonus = false
-//     //   for (let word of r) {
-//     //     if (word.special) {
-//     //       bonus = true
-//     //     }
-//     //   }
-//     this.gameEvent(action)
-//     // }).catch(e => {
-//     //   console.log(e)
-//     // })
-//   }
-// }
+  if (!player.isAI) {
+    db.updatePlayer(player, score.words)
+  }
 
-// module.exports = GameManager
+  switch (player.team) {
+    case 'Green':
+      this.greenScore += score
+      break
+    case 'Gold':
+      this.goldScore += score
+      break
+  }
+
+  return true
+}
+
+module.exports = function(socketManager) {
+  return new GameManager(socketManager)
+}
