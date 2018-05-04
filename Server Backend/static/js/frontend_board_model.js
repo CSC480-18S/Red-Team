@@ -18,6 +18,7 @@ ws.onopen = function(event) {
     switch (mes.event) {
       case 'errorMessage':
         alert(mes.data.error)
+        removeForError()
         break
       case 'gameOver':
         alert(`${JSON.stringify(mes.data, null, 4)}`)
@@ -45,6 +46,10 @@ ws.onopen = function(event) {
         console.log(mes.data)
     }
   }
+}
+
+function removeForError() {
+  $('#root').remove()
 }
 
 // response to dataUpdate socket event

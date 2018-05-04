@@ -101,7 +101,7 @@ ServerManager.prototype.checkChannelAdd = function(success, channel, id, socket,
   } else {
     channel = 'Error'
     this.socketManager.addToChannel(channel, id, socket)
-    this.socketManager.emit(channel, id, 'errorMessage', this.generateError('There are already 4 players conencted.'))
+    this.socketManager.emit(id, 'errorMessage', this.generateError('There are already 4 players conencted.'))
   }
 
   dg(`id: ${id} -> connected to channel: (${channel})`, 'info')
