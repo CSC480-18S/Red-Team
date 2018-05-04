@@ -61,15 +61,21 @@ ServerManager.prototype.attemptChannelAdd = function(client, socket) {
       channel = 'Error'
   }
 
-  this.grabClientInfo(socket, (result) => {
-    if (!result) {
-      channel = 'Error'
-    } else {
-      let success = this.socketManager.addToChannel(channel, id, socket)
+  if (channel !== 'Queued') {
+    this.grabClientInfo(socket, (result) => {
+      if (!result) {
+        channel = 'Error'
+      } else {
+        let success = this.socketManager.addToChannel(channel, id, socket)
 
-      this.checkChannelAdd(success, channel, id, socket, result)
-    }
-  })
+        this.checkChannelAdd(success, channel, id, socket, result)
+      }
+    })
+  } else {
+    let success = this.socketManager.addToChannel(channel, id, socket)
+
+    this.checkChannelAdd(success, channel, id, socket)
+  }
 }
 
 ServerManager.prototype.checkChannelAdd = function(success, channel, id, socket, data) {
