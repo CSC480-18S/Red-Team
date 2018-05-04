@@ -30,27 +30,32 @@ PlayerManager.prototype.updatePostitions = function() {
 PlayerManager.prototype.createPlayer = function(id, socket, isAI) {
   // TODO: Distinguish AI from clients @Landon
   let player = Player(id, isAI, this.getAmountOfPlayers())
+
+  this.players[id] = player
+
+  if (!this.injectOldData(id)) {
+    this.injectTiles(id)
+  }
   if (!this.firstTurnSet) {
     player.isTurn = true
     this.firstTurnSet = true
   }
 
-  this.players[id] = player
   this.listenForGameActions(socket)
 
   dg(`Player created -> ${id}`, 'debug')
 
   // TODO: DB stuff @Landon
   // return this.getPlayerInfo(id).then(success => {
-  if (true) {
-    if (!this.injectOldData(id)) {
-      this.injectTiles(id)
-    }
-    return player
-  } else {
-    // TODO: Tell player they need to registerI @Landon
-    return false
-  }
+  // if (true) {
+  // if (!this.injectOldData(id)) {
+  //   this.injectTiles(id)
+  // }
+  return player
+  // } else {
+  //   // TODO: Tell player they need to registerI @Landon
+  //   return false
+  // }
   // })
 }
 
@@ -213,6 +218,7 @@ PlayerManager.prototype.updateTurn = function(id, latestData) {
     p = this.players[player]
     if (p.position === position) {
       p.isTurn = true
+      break
     }
   }
 

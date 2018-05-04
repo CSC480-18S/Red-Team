@@ -252,7 +252,11 @@ GameManager.prototype.reset = function() {
 }
 
 GameManager.prototype.newGame = function() {
-  this.playerManager.getAllPlayers()[0].isTurn = true
+  if (this.playerManager.getAllPlayers().length === 0) {
+    this.playerManager.firstTurnSet = false
+  } else {
+    this.playerManager.getAllPlayers()[0].isTurn = true
+  }
   this.playerManager.updatePlayers(this.latestData())
   // this.emitDataUpdate(this.gameManager.board.sendableBoard())
   // this.updateFrontends()
