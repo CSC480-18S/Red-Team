@@ -5,16 +5,13 @@
  */
 const ld = require('../helpers/LetterDistributor')
 const dg = require('../helpers/Debug')(true)
-const db = require('../helpers/DB')
-const mg = require('../helpers/MacGrabber')
 const Player = require('./Player')
 
-function PlayerManager(determineEvent, updatePlayers) {
+function PlayerManager(determineEvent) {
   this.players = {}
   this.oldData = []
   this.firstTurnSet = false
   this.determineEvent = determineEvent
-  this.updatePlayers = updatePlayers
 }
 
 PlayerManager.prototype.getAmountOfPlayers = function() {
@@ -63,7 +60,7 @@ PlayerManager.prototype.listenForGameActions = function(socket) {
 
   socket.on('message', data => {
     let event = JSON.parse(data)
-    this.determineEvent(event)
+    this.determineEvent(event, socket.id)
   })
 }
 
@@ -81,7 +78,7 @@ PlayerManager.prototype.getAllPlayers = function() {
 
 PlayerManager.prototype.removePlayer = function(id) {
   // TODO: Need to be able to distinguish clients from AI @Landon
-  // TODO: If their turn, change to next turn
+  // TODO: Tell other players through game event
   this.grabOldData(id)
   delete this.players[id]
   this.updatePostitions()
@@ -151,7 +148,7 @@ PlayerManager.prototype.injectTiles = function(id) {
     }
   }
 
-  player.setTiles(tiles)
+  player.addTiles(tiles)
 
   dg(`Tiles injected -> ${id}`, 'debug')
 
@@ -182,40 +179,6 @@ PlayerManager.prototype.removeTiles = function(id, tilesToBeRemoved) {
   return true
 }
 
-PlayerManager.prototype.getPlayerInfo = function(id) {
-  return mg(this.socket._socket.remoteAddress, (mac) => {
-    return db.checkIfUserExists(mac)
-      .then(r => {
-        if (db.pruneResults(r)) {
-          db.getTeamURL(mac)
-            .then(r2 => {
-              let name = r[0].username
-              let team = {
-                link: r2,
-                name: r2 === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green'
-              }
-              let link = r[0]._links.self.href
-
-              let player = this.players[id]
-
-              player.addInformation(name, team, link)
-
-              dg(`DB data grabbed -> ${id}`, 'debug')
-
-              return true
-            })
-        } else {
-          dg(`DB data not retrieved -> ${id}`, 'debug')
-
-          return false
-        }
-      })
-      .catch(e => {
-        console.log(e)
-      })
-  })
-}
-
 PlayerManager.prototype.updateTurn = function(id) {
   let player = this.players[id]
   let position = player.position
@@ -226,7 +189,7 @@ PlayerManager.prototype.updateTurn = function(id) {
     if (position > 3) {
       position = 0
     }
-  } while (!(id in this.players))
+  } while (position >= this.getAmountOfPlayers())
 
   let players = Object.keys(this.players)
 

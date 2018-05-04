@@ -4,6 +4,8 @@ const dg = require('../helpers/Debug')(true)
 const GameManager = require('./GameManager')
 const SocketManager = require('./SocketManager')
 const si = require('shortid')
+const db = require('../helpers/DB')
+const mg = require('../helpers/MacGrabber')
 
 function ServerManager(ws) {
   this.ws = ws
@@ -59,37 +61,43 @@ ServerManager.prototype.attemptChannelAdd = function(client, socket) {
       channel = 'Error'
   }
 
-  let success = this.socketManager.addToChannel(channel, id, socket)
+  this.grabClientInfo(socket, (result) => {
+    if (!result) {
+      channel = 'Error'
+    } else {
+      let success = this.socketManager.addToChannel(channel, id, socket)
 
-  this.checkChannelAdd(success, channel, id, socket)
+      this.checkChannelAdd(success, channel, id, socket, result)
+    }
+  })
 }
 
-ServerManager.prototype.checkChannelAdd = function(success, channel, id, socket) {
+ServerManager.prototype.checkChannelAdd = function(success, channel, id, socket, data) {
   if (success) {
     let event = null
-    let data = null
+    let message = null
 
     switch (channel) {
       case 'AIs':
-        this.gameManager.addPlayer(id, socket, true)
+        this.gameManager.addPlayer(id, socket, true, data)
         break
       case 'Clients':
-        this.gameManager.addPlayer(id, socket, false)
+        this.gameManager.addPlayer(id, socket, false, data)
         break
       case 'SFs':
         event = 'updateState'
         // TODO: Fix @Landon
-        data = this.gameManager.latestData()
+        message = this.gameManager.latestData()
         break
       case 'Error':
         event = 'errorMessage'
-        data = this.generateError('There seems to be an error.')
+        message = this.generateError('There seems to be an error.')
         break
     }
     // TODO: Update frontend @Landon
     event = 'currentlyConnected'
-    data = this.generateAmount(this.amountOfClients())
-    this.socketManager.broadcast('Queued', event, data)
+    message = this.generateAmount(this.amountOfClients())
+    this.socketManager.broadcast('Queued', event, message)
   } else {
     channel = 'Error'
     this.socketManager.addToChannel(channel, id, socket)
@@ -97,6 +105,38 @@ ServerManager.prototype.checkChannelAdd = function(success, channel, id, socket)
   }
 
   dg(`id: ${id} -> connected to channel: (${channel})`, 'info')
+}
+
+ServerManager.prototype.grabClientInfo = function(socket, callback) {
+  mg(socket._socket.remoteAddress, (mac) => {
+    db.checkIfUserExists(mac)
+      .then(r => {
+        if (db.pruneResults(r)) {
+          db.getTeamURL(mac)
+            .then(r2 => {
+              let dbData = {
+                name: r[0].username,
+                team: {
+                  link: r2,
+                  name: r2 === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green'
+                },
+                link: r[0]._links.self.href
+              }
+
+              dg(`DB data grabbed -> ${socket.id}`, 'debug')
+
+              callback(dbData)
+            })
+        } else {
+          dg(`Player does not exist in the DB -> ${socket.id}`, 'debug')
+
+          callback(false)
+        }
+      })
+      .catch(e => {
+        console.log(e)
+      })
+  })
 }
 
 ServerManager.prototype.amountOfClients = function() {

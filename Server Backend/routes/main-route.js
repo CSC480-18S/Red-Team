@@ -59,7 +59,6 @@ function checkUserExists(req, res) {
                 team: r2 === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green'
               }
               req.session.check = true
-              console.log(req.session.user)
               res.render('login', {user: req.session.user, error: req.session.error})
             })
         } else {
