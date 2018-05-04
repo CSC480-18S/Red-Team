@@ -197,36 +197,11 @@ public class GameManager {
                             goldScore = data.getInt("gold");
 
                             break;
-
-                        case "boardUpdate":
-                            if(GameManager.debug)
-                                System.out.println("frontend got boardUpdate");
-                            try {
-                                System.out.println("data: " + data.toString());
-                                JSONArray board = data.getJSONArray("board");
-                                //find the board/user state differences
-                                wordHasBeenPlayed(unJSONifyBackendBoard(board));
-                                //hard update the game and user states
-                                hardUpdateBoardState(unJSONifyBackendBoard(board));
-                                if (debug)
-                                    logQueue.add("Got boardUpdate. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
-                            } catch (ArrayIndexOutOfBoundsException e) {
-                                e.printStackTrace();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            break;
                         case "gameEvent":
                             if(GameManager.debug)
                                 System.out.println("frontend got gameEvent");
                             try {
-                                boolean isBonus = false;
                                 String action = data.getString("action");
-                                if (data.get("bonus") != JSONObject.NULL)
-                                    isBonus = data.getBoolean("bonus");
-                                //System.out.println(action);
-                                if (isBonus)
-                                    BonusEvent(action);
                                 LogEvent(action);
                                 if (debug)
                                     logQueue.add("Got gameEvent. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
@@ -250,6 +225,12 @@ public class GameManager {
 
                                 greenScore = data.getInt("green");
                                 goldScore = data.getInt("gold");
+                                boolean isBonus = false;
+                                if (data.get("bonus") != JSONObject.NULL)
+                                    isBonus = data.getBoolean("bonus");
+                                //System.out.println(action);
+                                if (isBonus)
+                                    BonusEvent("Bonus Word!");
 
                                 JSONArray players = data.getJSONArray("players");
                                 int i;
