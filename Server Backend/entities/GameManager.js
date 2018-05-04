@@ -19,7 +19,7 @@ function GameManager(socketManager) {
   this.goldScore = 0
   this.swaps = 0
   this.currentPlay = null
-  this.playerManager = PlayerManager(this.determineEvent.bind(this))
+  this.playerManager = PlayerManager(socketManager, this.determineEvent.bind(this))
   this.socketManager = socketManager
   // this.turnTimer()
 }
@@ -30,7 +30,7 @@ GameManager.prototype.getGameBoard = function() {
 
 GameManager.prototype.latestData = function() {
   return {
-    board: this.board.sendableBoard(),
+    board: this.gameboard.sendableBoard(),
     gold: this.goldScore,
     green: this.greenScore
   }
@@ -39,7 +39,10 @@ GameManager.prototype.latestData = function() {
 GameManager.prototype.addPlayer = function(id, socket, isAI, data) {
   let player = this.playerManager.createPlayer(id, socket, isAI)
   player.addInformation(data)
-  this.socketManager.emit(id, 'dataUpdate', player.data())
+  let latestData = player.data()
+  latestData.latestData = this.latestData()
+  this.socketManager.emit(id, 'dataUpdate', latestData)
+  this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`${player.name} has joined the game`))
 }
 
 GameManager.prototype.determineEvent = function(event, id) {
@@ -48,8 +51,7 @@ GameManager.prototype.determineEvent = function(event, id) {
       this.attemptPlay(event.data.play, id)
       break
     case 'swap':
-      console.log('swapped')
-      console.log(event)
+      this.swap(id)
       break
     default:
       console.log('something else')
@@ -68,7 +70,7 @@ GameManager.prototype.attemptPlay = function(newBoard, id) {
     this.wordValidation(words, player)
       .then(r => {
         let play = null
-        if (r.valid === true) {
+        if (r.valid) {
           // if invalid type of play, gets the word that was invalid, else is undefined
           play = this.gameboard.placeWords(this.currentPlay, player)
           // if the board has attempted to play a word
@@ -158,7 +160,7 @@ GameManager.prototype.turnTimer = function(id) {
     let player = this.playerManager.getPlayer(id)
     this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`${player.name}'s time has expired`))
 
-    this.playerManager.updateTurn(id)
+    this.playerManager.updateTurn(id, this.latestData())
 
     this.swaps++
     if (this.isGameOver()) {
@@ -172,9 +174,9 @@ GameManager.prototype.turnTimer = function(id) {
 
 GameManager.prototype.swap = function(id) {
   this.currentPlay = null
-  this._swaps++
+  this.swaps++
   this.playerManager.updateTiles(id)
-  this.playerManager.updateTurn(id)
+  this.playerManager.updateTurn(id, this.latestData())
 
   if (this.isGameOver()) {
     this.gameOver()
@@ -249,11 +251,11 @@ GameManager.prototype.determineResponse = function(play) {
       break
     default:
       valid = true
+  }
 
-      return {
-        valid,
-        reason
-      }
+  return {
+    valid,
+    reason
   }
 }
 
@@ -263,14 +265,14 @@ GameManager.prototype.validPlay = function(id, play) {
   let player = this.playerManager.getPlayer(id)
 
   let score = this.calculateScore(play)
+  this.addScore(id, score, play.words)
 
   let words = play.words.map(w => w.word)
   let action = `${player.name} played ${words} for ${score} points`
 
   this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(action))
 
-  this.playerManager.updateTurn(id)
-  // this.updatePlayers()
+  this.playerManager.updateTurn(id, this.latestData())
 
   // TODO: Somehow figure out how to check if words in play are bonus words...we are getting the list of words from the score so we can do something with that @Landon
 }
@@ -287,12 +289,12 @@ GameManager.prototype.calculateScore = function(words) {
   return sc(words, this.getGameBoard())
 }
 
-GameManager.prototype.addScore = function(id, score) {
+GameManager.prototype.addScore = function(id, score, words) {
   let player = this.playerManager.getPlayer(id)
-  player.updateScore(score)
+  this.playerManager.updateScore(id, score)
 
   if (!player.isAI) {
-    db.updatePlayer(player, score.words)
+    db.updatePlayer(player, words)
   }
 
   switch (player.team) {
