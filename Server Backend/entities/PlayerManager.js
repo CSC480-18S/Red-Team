@@ -208,14 +208,17 @@ PlayerManager.prototype.updateTurn = function(id, latestData) {
 
   let players = Object.keys(this.players)
 
+  let p
   for (let player of players) {
-    let p = this.players[player]
+    p = this.players[player]
     if (p.position === position) {
       p.isTurn = true
     }
   }
 
   this.updatePlayers(latestData)
+
+  return p.id
 }
 
 PlayerManager.prototype.updatePlayers = function(latestData) {
@@ -228,11 +231,15 @@ PlayerManager.prototype.updatePlayers = function(latestData) {
   })
 }
 
-PlayerManager.prototype.reset = function() {
-  Object.keys(this.players).forEach((player) => {
+PlayerManager.prototype.reset = function(latestData) {
+  Object.keys(this.players).forEach((id) => {
+    let player = this.players[id]
     player.resetScore()
     player.isTurn = false
     this.updateTiles(player.id)
+    let data = player.data()
+    data.latestData = latestData
+    this.socketManager.emit(id, 'dataUpdate', data)
   })
 }
 

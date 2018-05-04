@@ -124,7 +124,7 @@ SocketManager.prototype.broadcastAll = function(event, data) {
   })
 }
 
-SocketManager.prototype.emit = function(id, event, data) {
+SocketManager.prototype.emit = function(id, event, data, callback) {
   switch (event) {
     case 'gameEvent':
     case 'dataUpdate':
@@ -132,18 +132,20 @@ SocketManager.prototype.emit = function(id, event, data) {
     case 'updateState':
     case 'currentlyConnected':
     case 'invalidPlay':
+    case 'playTimer':
       break
     default:
       return false
   }
 
   let client = this.getClient(id)
+  if (client === undefined) {
+    return callback()
+  }
 
   let payload = this.generatePayload(event, data)
 
   client.socket.send(payload)
-
-  return true
 }
 
 SocketManager.prototype.generatePayload = function(message, data) {

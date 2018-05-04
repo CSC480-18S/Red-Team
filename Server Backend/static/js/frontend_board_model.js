@@ -26,8 +26,9 @@ ws.onopen = function(event) {
       case 'invalidPlay':
         invalidPlay()
         break
-        case 'playTime':
-        playTime(mes.data)
+      case 'playTimer':
+        console.log(mes)
+        playTime(mes.data.time)
         break
       case 'gameEvent':
         console.log('received gameEvent: ')
@@ -49,6 +50,9 @@ ws.onopen = function(event) {
 // response to dataUpdate socket event
 function dataUpdate(response) {
   this.data.isTurn = response.isTurn
+  if (!response.isTurn) {
+    this.data.colored = false
+  }
   this.data.score = response.score
   this.data.goldScore = response.latestData.gold
   this.data.greenScore = response.latestData.green
@@ -65,7 +69,7 @@ function dataUpdate(response) {
   // var isTurn = true;
   // if (isTurn === false) {
   if (response.isTurn === false) {
-    this.data.isMyTurn = 'Wait for your turn...'
+    this.data.playTime = 'Wait for your turn...'
     document.getElementById('btnSwap').disabled = true
     document.getElementById('btnPlace').disabled = true
     document.getElementById('btnShuffle').disabled = true
@@ -73,7 +77,7 @@ function dataUpdate(response) {
       this.data.tileSlots[i].tile.disabled = true
     }
   } else {
-    this.data.isMyTurn = "It's your turn!"
+    this.data.playTime = "It's your turn!"
     document.getElementById('btnSwap').disabled = false
     document.getElementById('btnPlace').disabled = false
     document.getElementById('btnShuffle').disabled = false
@@ -186,7 +190,7 @@ function playTime(response) {
 // response to playTime socket event
 function playTime(time) {
   this.data.playTime = time
-  if (this.data.playTime % 2 == 0) {
+  if (this.data.playTime % 2 === 0) {
     this.data.colored = true
   }	else {
     this.data.colored = false
@@ -365,7 +369,12 @@ var data = {
   username: '',
   greenScore: 0,
   goldScore: 0,
+<<<<<<< HEAD
   playTime: 60,
+=======
+  // backgcoresroundColor: ["rgb(171,171,171)", "orange", "green"]
+  playTime: '',
+>>>>>>> updating
   isTurn: false,
   score: 0,
   colored: false

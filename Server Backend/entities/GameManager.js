@@ -8,10 +8,6 @@ const ex = require('../helpers/Extractor')
 const dg = require('../helpers/Debug')(true)
 const db = require('../helpers/DB')
 const PlayerManager = require('./PlayerManager')
-const PlayCounter = require('timedown')
-
-let timer = PlayCounter()
-let t = timer.ns('playTimer', '10s')
 
 function GameManager(socketManager) {
   this.gameboard = new Gameboard()
@@ -21,7 +17,7 @@ function GameManager(socketManager) {
   this.currentPlay = null
   this.playerManager = PlayerManager(socketManager, this.determineEvent.bind(this))
   this.socketManager = socketManager
-  // this.turnTimer()
+  this.timer = null
 }
 
 GameManager.prototype.getGameBoard = function() {
@@ -135,56 +131,58 @@ GameManager.prototype.pruneResults = function(response, player) {
 }
 
 GameManager.prototype.turnTimer = function(id) {
-  t.restart('60000ms', {refresh: '1000ms'})
-  timer.start('playTimer')
-
-  // Listen to timer counter events
-  timer.on('tick', function(time) {
-    dg(`play time left: ${time.ms} -> ${id}`, 'debug')
-    // TODO: Send to client @Landon
-  })
-
-  timer.on('ending', function(time) {
-    dg('Turn time is expiring', 'verbose')
-    this.socketManager.emit(id, 'gameEvent', this.generateGameEvent(`You have ${Math.ceil(time.ms / 1000)} seconds left!`))
-  })
-
-  timer.on('stop', function(time) {
-    dg('Play made', 'verbose')
-    // TODO: When the player made a play in the time window
-  })
-
-  timer.on('end', function() {
-    dg('Turn time expired', 'verbose')
-    this.currentPlay = null
-    let player = this.playerManager.getPlayer(id)
-    this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`${player.name}'s time has expired`))
-
-    this.playerManager.updateTurn(id, this.latestData())
-
-    this.swaps++
-    if (this.isGameOver()) {
-      this.gameOver()
-      return true // game is over, dont send out data update because it is sent out later
+  clearInterval(this.timer)
+  let time = 60
+  this.timer = setInterval(() => {
+    if (time === 10) {
+      dg('Turn time is expiring', 'verbose')
+      this.socketManager.emit(id, 'gameEvent', this.generateGameEvent(`You have ${Math.ceil(time)} seconds left!`))
     }
 
-    return false // send out data update
-  })
+    if (time > 0) {
+      time--
+      this.socketManager.emit(id, 'playTimer', this.generateTimeLeft(time), () => {
+        clearInterval(this.timer)
+      })
+      dg(`play time left: ${time} -> ${id}`, 'debug')
+    } else {
+      clearInterval(this.timer)
+      dg('Turn time expired', 'verbose')
+      this.currentPlay = null
+      let player = this.playerManager.getPlayer(id)
+      this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`${player.name}'s time has expired`))
+
+      this.updateTurn(id, this.latestData())
+
+      this.swaps++
+      if (this.isGameOver()) {
+        this.gameOver()
+      }
+    }
+  }, 1000)
 }
 
 GameManager.prototype.swap = function(id) {
+  let player = this.playerManager.getPlayer(id)
   this.currentPlay = null
   this.swaps++
   this.playerManager.updateTiles(id)
-  this.playerManager.updateTurn(id, this.latestData())
+  this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`${player.name} has swapped tiles`))
+  this.updateTurn(id, this.latestData())
 
   if (this.isGameOver()) {
+    clearInterval(this.timer)
     this.gameOver()
   }
 
   // TODO: Alert players with dataUpdate @Landon
   // TODO: Alert players with gameEvent @Landon
   // TODO: Alert frontends with updateState and gameEvent @Landon
+}
+
+GameManager.prototype.updateTurn = function(id, latestData) {
+  let newId = this.playerManager.updateTurn(id, this.latestData())
+  this.turnTimer(newId)
 }
 
 GameManager.prototype.isGameOver = function() {
@@ -194,32 +192,82 @@ GameManager.prototype.isGameOver = function() {
 GameManager.prototype.gameOver = function() {
   dg('all players have swapped tiles, game over', 'info')
 
+  this.socketManager.broadcastAll('gameEvent', this.generateGameEvent('Game over!'))
+
+  let finalScores = []
+  let winner = null
+  let highestScore = 0
+  let players = this.playerManager.getAllPlayers()
+  for (let player of players) {
+    if (player.score > highestScore) {
+      highestScore = player.score
+      winner = player.name
+    }
+    let data = {
+      name: player.name,
+      score: player.score
+    }
+    finalScores.push(data)
+  }
+  let goldWin = this._goldScore > this._greenScore
+  db.updateWin('Gold', this._goldScore, goldWin)
+  db.updateWin('Green', this._greenScore, !goldWin)
+
+  let data = {
+    scores: finalScores,
+    winner: winner === null ? 'No one!' : winner,
+    winningTeam: goldWin ? 'Gold' : 'Green'
+  }
+
+  this.socketManager.broadcastAll('gameOver', data)
+
+  this.reset()
+
+  let timeUntil = 30
+  // TODO: See if this can be moved to game event? @Landon
+  let timer = setInterval(() => {
+    if (timeUntil > 0) {
+      dg(`${timeUntil}`, 'debug')
+      this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`New game starts in ${timeUntil}`))
+      timeUntil--
+    } else {
+      clearInterval(timer)
+      dg('new game started!', 'info')
+      this.newGame()
+    }
+  }, 1000)
   // TODO: Send game event telling game is over @Landon
   // TODO: Send game over event
 }
 
 GameManager.prototype.reset = function() {
   this.currentPlay = null
-  this._swaps = 0
+  this.swaps = 0
   this.goldScore = 0
   this.greenScore = 0
 
-  this.playerManager.reset()
+  this.playerManager.reset(this.latestData())
 
   this.gameboard = new Gameboard()
 }
 
 GameManager.prototype.newGame = function() {
-  this.reset()
   this.playerManager.getAllPlayers()[0].isTurn = true
+  this.playerManager.updatePlayers(this.latestData())
   // this.emitDataUpdate(this.gameManager.board.sendableBoard())
-  this.updateFrontends()
-  this.emitGameEvent('New game started')
+  // this.updateFrontends()
+  this.socketManager.broadcastAll('gameEvent', this.generateGameEvent('New game started!'))
 }
 
 GameManager.prototype.generateGameEvent = function(action) {
   return {
     action: action
+  }
+}
+
+GameManager.prototype.generateTimeLeft = function(time) {
+  return {
+    time: time
   }
 }
 
@@ -261,6 +309,7 @@ GameManager.prototype.determineResponse = function(play) {
 
 GameManager.prototype.validPlay = function(id, play) {
   dg(`${id} -> valid play`, 'info')
+  this.swaps = 0
 
   let player = this.playerManager.getPlayer(id)
 
@@ -272,7 +321,7 @@ GameManager.prototype.validPlay = function(id, play) {
 
   this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(action))
 
-  this.playerManager.updateTurn(id, this.latestData())
+  this.updateTurn(id, this.latestData())
 
   // TODO: Somehow figure out how to check if words in play are bonus words...we are getting the list of words from the score so we can do something with that @Landon
 }
