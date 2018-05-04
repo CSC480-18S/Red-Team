@@ -11,13 +11,10 @@ const dg = require('./Debug')
 * @param {Array} words - array of words to calculate score for
 * @param {Array} gameBoard - board
 */
-module.exports = (words, gameBoard) => {
+module.exports = (play, gameBoard) => {
   dg('calculating score', 'debug')
   let cumulativeScore = 0
-  let play = {
-    words: []
-  }
-  words.map(w => {
+  play.words.map(w => {
     let x = 0
     let y = 0
     const wordArray = w.word.toUpperCase().split('')
@@ -44,14 +41,8 @@ module.exports = (words, gameBoard) => {
     }).reduce((prev, curr) => {
       return prev + curr
     })
-    let wordScore = {
-      word: w.word,
-      score: score * wordBonus
-    }
-    play.words.push(wordScore)
 
-    cumulativeScore += wordScore.score
+    cumulativeScore += (score * wordBonus)
   })
-  play.totalScore = cumulativeScore
-  return play
+  return cumulativeScore
 }

@@ -84,7 +84,7 @@ class Gameboard {
    * Method that places words on the baord
    * @param {Array} words - array of words to place
    */
-  placeWords(words, user) {
+  placeWords(words) {
     const tempBoard = _.cloneDeep(this._board)
 
     /**
@@ -93,7 +93,7 @@ class Gameboard {
     let validWordPlacement = false
     let invalidWord = null
     let firstPlayBypass = false
-    for (let w of words) {
+    for (let w of words.words) {
       let word = this.createWordObject(w)
       let wordActual = word.word
 
@@ -122,7 +122,7 @@ class Gameboard {
             validWordPlacement = true
           }
 
-          this.tileSetter(tempBoard[j][i], wordLetter, user)
+          this.tileSetter(tempBoard[j][i], wordLetter)
         }
       }
 
@@ -148,7 +148,7 @@ class Gameboard {
       return this.validatorDispatcher(false, 5, invalidWord)
     }
     this._board = tempBoard
-    return this.validatorDispatcher(true, 0, words)
+    return this.validatorDispatcher(true, 0, words.words)
   }
 
   /**
@@ -161,7 +161,7 @@ class Gameboard {
     return {
       valid: v,
       error: e,
-      word: w
+      words: w
     }
   }
 
@@ -169,12 +169,9 @@ class Gameboard {
    * Helper method that sets properties of a tile
    * @param {Object} tile - tile to work with
    * @param {String} letter - letter to be set in the tile
-   * @param {String} user - user that played the letter
    */
-  tileSetter(tile, letter, user) {
+  tileSetter(tile, letter) {
     tile.letter = letter
-    tile.playedBy = user
-    tile.timePlayedAt = new Date().getTime()
   }
 
   /**

@@ -10,16 +10,15 @@ function Player(id, isAI, position) {
   this.link = null
   this.name = null
   this.team = null
+  this.teamLink = null
   // this.listenForIncoming()
 }
 
-Player.prototype.addInformation = function(name, team, link) {
-  this.name = name
-  this.team = {
-    name: team.name,
-    link: team.link
-  }
-  this.link = link
+Player.prototype.addInformation = function(data) {
+  this.name = data.name
+  this.team = data.team.name
+  this.teamLink = data.team.link
+  this.link = data.link
   return true
 }
 
@@ -34,6 +33,10 @@ Player.prototype.updateScore = function(score) {
 Player.prototype.injectData = function(data) {
   this.tiles = data.tiles
   this.isTurn = data.isTurn
+}
+
+Player.prototype.addTiles = function(tiles) {
+  this.tiles.push(...tiles)
 }
 
 Player.prototype.setTiles = function(tiles) {

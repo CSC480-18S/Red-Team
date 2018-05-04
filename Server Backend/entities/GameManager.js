@@ -19,7 +19,7 @@ function GameManager(socketManager) {
   this.goldScore = 0
   this.swaps = 0
   this.currentPlay = null
-  this.playerManager = PlayerManager(this.determineEvent.bind(this), this.updatePlayers.bind(this))
+  this.playerManager = PlayerManager(this.determineEvent.bind(this))
   this.socketManager = socketManager
   // this.turnTimer()
 }
@@ -36,18 +36,30 @@ GameManager.prototype.latestData = function() {
   }
 }
 
-GameManager.prototype.addPlayer = function(id, socket, isAI) {
+GameManager.prototype.addPlayer = function(id, socket, isAI, data) {
   let player = this.playerManager.createPlayer(id, socket, isAI)
+  player.addInformation(data)
   this.socketManager.emit(id, 'dataUpdate', player.data())
 }
 
-GameManager.prototype.determineEvent = function(event) {
-  console.log(event)
+GameManager.prototype.determineEvent = function(event, id) {
+  switch (event.event) {
+    case 'playWord':
+      this.attemptPlay(event.data.play, id)
+      break
+    case 'swap':
+      console.log('swapped')
+      console.log(event)
+      break
+    default:
+      console.log('something else')
+      console.log(event.data)
+  }
 }
 
 GameManager.prototype.attemptPlay = function(newBoard, id) {
   let player = this.playerManager.getPlayer(id)
-  const letters = ex.extractLetters(newBoard, this._gameBoard.board, player)
+  const letters = ex.extractLetters(newBoard, this.getGameBoard(), player)
 
   if (letters.valid) {
     const words = ex.extractWords(letters.data, newBoard)
@@ -58,11 +70,11 @@ GameManager.prototype.attemptPlay = function(newBoard, id) {
         let play = null
         if (r.valid === true) {
           // if invalid type of play, gets the word that was invalid, else is undefined
-          play = this._gameBoard.placeWords(this.currentPlay, player)
+          play = this.gameboard.placeWords(this.currentPlay, player)
           // if the board has attempted to play a word
           if (play.valid) {
             let ls = letters.data.map(l => l.letter)
-            player.updateHand(ls)
+            this.playerManager.updateTiles(id, ls)
           }
           let response = this.determineResponse(play)
           if (response.valid) {
@@ -85,7 +97,7 @@ GameManager.prototype.attemptPlay = function(newBoard, id) {
 }
 
 GameManager.prototype.wordValidation = function(words, player) {
-  const search = words.data.map(s => s.word).join(',')
+  const search = words.words.map(s => s.word).join(',')
 
   dg('checking words against database', 'debug')
   return db.dictionaryCheck(search).then(r => {
@@ -209,19 +221,9 @@ GameManager.prototype.generateGameEvent = function(action) {
   }
 }
 
-GameManager.prototype.updatePlayers = function() {
-  let players = this.playerManager.getAllPlayers()
-
-  players.forEach(p => {
-    let data = p.data
-    data.board = this.gameboard.sendableBoard()
-    this.serverManager.emit(p.id, 'dataUpdate', p.data)
-  })
-}
-
 GameManager.prototype.determineResponse = function(play) {
   let reason = null
-  let invalid = true
+  let valid = false
 
   switch (play.error) {
     case 1:
@@ -246,13 +248,31 @@ GameManager.prototype.determineResponse = function(play) {
       reason = 'You tried to cheat :)'
       break
     default:
-      invalid = false
+      valid = true
 
       return {
-        invalid,
+        valid,
         reason
       }
   }
+}
+
+GameManager.prototype.validPlay = function(id, play) {
+  dg(`${id} -> valid play`, 'info')
+
+  let player = this.playerManager.getPlayer(id)
+
+  let score = this.calculateScore(play)
+
+  let words = play.words.map(w => w.word)
+  let action = `${player.name} played ${words} for ${score} points`
+
+  this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(action))
+
+  this.playerManager.updateTurn(id)
+  // this.updatePlayers()
+
+  // TODO: Somehow figure out how to check if words in play are bonus words...we are getting the list of words from the score so we can do something with that @Landon
 }
 
 GameManager.prototype.invalidPlay = function(id, reason) {
@@ -263,26 +283,8 @@ GameManager.prototype.invalidPlay = function(id, reason) {
   return true
 }
 
-GameManager.prototype.validPlay = function(id, play) {
-  dg(`${id} -> valid play`, 'info')
-
-  let player = this.playerManager.getPlayer(id)
-
-  let score = this.calculateScore(play)
-
-  let words = play.map(w => w.word)
-  let action = `${player.name} played ${words} for ${score.totalScore} points`
-
-  this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(action))
-
-  this.playerManager.updateTurn(id)
-  this.updatePlayers()
-
-  // TODO: Somehow figure out how to check if words in play are bonus words...we are getting the list of words from the score so we can do something with that @Landon
-}
-
 GameManager.prototype.calculateScore = function(words) {
-  return sc(words, this.getGameBoard)
+  return sc(words, this.getGameBoard())
 }
 
 GameManager.prototype.addScore = function(id, score) {

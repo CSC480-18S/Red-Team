@@ -118,8 +118,8 @@ SocketManager.prototype.broadcastAll = function(event, data) {
 
   Object.keys(this.channels).forEach((channel) => {
     let c = this.channels[channel]
-    Object.keys(channel).forEach((client) => {
-      c.clients[client].socket.send(payload)
+    Object.keys(c.clients).forEach((client) => {
+      c.clients[client].send(payload)
     })
   })
 }
