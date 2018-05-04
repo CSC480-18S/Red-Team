@@ -15,7 +15,8 @@ function GameManager(socketManager) {
   this.goldScore = 0
   this.swaps = 0
   this.currentPlay = null
-  this.playerManager = PlayerManager(socketManager, this.determineEvent.bind(this))
+  this.names = ['AI_John', 'AI_Mary', 'AI_Bob', 'AI_Cindy']
+  this.playerManager = PlayerManager(socketManager, this.determineEvent.bind(this), this.aiNames.bind(this))
   this.socketManager = socketManager
   this.timer = null
 }
@@ -34,11 +35,33 @@ GameManager.prototype.latestData = function() {
 
 GameManager.prototype.addPlayer = function(id, socket, isAI, data) {
   let player = this.playerManager.createPlayer(id, socket, isAI)
-  player.addInformation(data)
+  if (isAI) {
+    player.addInformation(this.generateAIData())
+  } else {
+    player.addInformation(data)
+  }
   let latestData = player.data()
   latestData.latestData = this.latestData()
   this.socketManager.emit(id, 'dataUpdate', latestData)
   this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`${player.name} has joined the game`))
+}
+
+GameManager.prototype.aiNames = function(aiName) {
+  if (aiName === undefined) {
+    return this.names.shift()
+  } else {
+    this.names.push(aiName)
+  }
+}
+
+GameManager.prototype.generateAIData = function(player) {
+  let teams = ['Green', 'Gold']
+  return {
+    name: this.aiNames(),
+    team: {
+      name: teams[Math.floor(Math.random() * teams.length)]
+    }
+  }
 }
 
 GameManager.prototype.determineEvent = function(event, id) {
