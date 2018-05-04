@@ -23,12 +23,8 @@ ws.onopen = function(event) {
         alert(`${JSON.stringify(mes.data, null, 4)}`)
         gameOver(mes.data)
         break
-      case 'boardUpdate':
-        boardUpdate(mes.data)
-        break
-      case 'play':
-        console.log(mes.data)
-        play(mes.data)
+      case 'invalidPlay':
+        invalidPlay()
         break
 	  case 'playTimer':
         playTime(mes.data.time)
@@ -41,6 +37,7 @@ ws.onopen = function(event) {
         document.getElementById('actualEvent').innerHTML = gameEvent
         break
       case 'dataUpdate':
+        console.log(mes)
         dataUpdate(mes.data)
         break
       default:
@@ -49,21 +46,55 @@ ws.onopen = function(event) {
   }
 }
 
-// responds to boardUpdate socket event
-function boardUpdate(response) {
-  this.data.goldScore = response.yellow
-  this.data.greenScore = response.green
+// response to dataUpdate socket event
+function dataUpdate(response) {
+  this.data.isTurn = response.isTurn
+  this.data.score = response.score
+  this.data.goldScore = response.latestData.gold
+  this.data.greenScore = response.latestData.green
 
+  boardUpdate(response.latestData.board)
+
+  console.log('received dataUpdate event: ')
+  console.log(response)
+  this.data.username = response.name
+  this.data.tileSlots = generateTiles(response.tiles)
+  // response.position is the position of four players on the server
+  // tested data
+  // var tiles = ['T', 'E', 'S', 'T'];
+  // var isTurn = true;
+  // if (isTurn === false) {
+  if (response.isTurn === false) {
+    this.data.isMyTurn = 'Wait for your turn...'
+    document.getElementById('btnSwap').disabled = true
+    document.getElementById('btnPlace').disabled = true
+    document.getElementById('btnShuffle').disabled = true
+    for (var i = 0; i < tileSlotNumber; i++) {
+      this.data.tileSlots[i].tile.disabled = true
+    }
+  } else {
+    this.data.isMyTurn = "It's your turn!"
+    document.getElementById('btnSwap').disabled = false
+    document.getElementById('btnPlace').disabled = false
+    document.getElementById('btnShuffle').disabled = false
+    for (var i = 0; i < tileSlotNumber; i++) {
+      this.data.tileSlots[i].tile.disabled = false
+    }
+  }
+}
+
+// responds to boardUpdate socket event
+function boardUpdate(board) {
   this.data.currentPlayTileAmount = 0
   for (i = 0; i < row; i++) {
     for (j = 0; j < column; j++) {
       var square = document.getElementById('square-' + i + '-' + j)
       if (!square.hasChildNodes()) {
-        if (response.board[i][j] !== null) {
+        if (board[i][j] !== null) {
           var tile = {
-            id: 'playedLetter: ' + response.board[i][j],
-            letter: response.board[i][j],
-            value: tileValue(response.board[i][j]),
+            id: 'playedLetter: ' + board[i][j],
+            letter: board[i][j],
+            value: tileValue(board[i][j]),
             highlightedColor: undefined,
             visibility: 'visible'
           }
@@ -125,25 +156,24 @@ function gameOver(response) {
   // this.data.currentPlayTileAmount = 0
 }
 
-// response to play socket event
-function play(response) {
-  if (response.invalid) {
-    for (let i = 0; i < this.data.currentPlayTileAmount; i++) {
-      var t = this.data.tilesOnBoardValueAndPosition[this.data.tilesOnBoardValueAndPosition.length - 1]
+// response to invalidPlay socket event
+function invalidPlay() {
+  for (let i = 0; i < this.data.currentPlayTileAmount; i++) {
+    var t = this.data.tilesOnBoardValueAndPosition[this.data.tilesOnBoardValueAndPosition.length - 1]
+    // console.log(t)
 
-      if (t != undefined) {
-        var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
-        this.data.tilesOnBoardValueAndPosition.pop()
-        square.removeChild(square.firstChild)
-      }
+    if (t != undefined) {
+      var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
+      this.data.tilesOnBoardValueAndPosition.pop()
+      square.removeChild(square.firstChild)
     }
-    this.data.selectedTileId = ''
-    for (var i = 0; i < tileSlotNumber; i++) {
-      this.data.tileSlots[i].tile.highlightedColor = '#000000'
-    }
-
-    this.data.currentPlayTileAmount = 0
   }
+  this.data.selectedTileId = ''
+  for (var i = 0; i < tileSlotNumber; i++) {
+    this.data.tileSlots[i].tile.highlightedColor = '#000000'
+  }
+
+  this.data.currentPlayTileAmount = 0
 
   for (let i = 0; i < this.data.tileSlots.length; i++) {
     this.data.tileSlots[i].hasTile = true
@@ -157,33 +187,6 @@ function playTime(time) {
     this.data.colored = true
   }	else {
     this.data.colored = false
-  }
-}
-
-// response to dataUpdate socket event
-function dataUpdate(response) {
-  this.data.isTurn = response.isTurn
-  this.data.score = response.score
-
-  this.data.username = response.name
-  this.data.tileSlots = generateTiles(response.tiles)
-  // response.position is the position of four players on the server
-  if (response.isTurn === false) {
-    this.data.isMyTurn = 'Wait for your turn...'
-    document.getElementById('btnSwap').disabled = true
-    document.getElementById('btnPlace').disabled = true
-    document.getElementById('btnShuffle').disabled = true
-    for (var i = 0; i < tileSlotNumber; i++) {
-      this.data.tileSlots[i].tile.disabled = true
-    }
-  } else {
-    this.data.isMyTurn = "It's your turn!"
-    document.getElementById('btnSwap').disabled = false
-    document.getElementById('btnPlace').disabled = false
-    document.getElementById('btnShuffle').disabled = false
-    for (var i = 0; i < tileSlotNumber; i++) {
-      this.data.tileSlots[i].tile.disabled = false
-    }
   }
 }
 
@@ -615,8 +618,7 @@ var swap = function() {
     this.tileSlots[i].tile.visibility = 'visible'
   }
 
-  let swap = {event: 'swap'}
-  ws.send(JSON.stringify(swap))
+  ws.send(JSON.stringify({event: 'swap'}))
 }
 
 var grey = function() {

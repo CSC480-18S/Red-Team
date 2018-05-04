@@ -7,10 +7,11 @@ const ld = require('../helpers/LetterDistributor')
 const dg = require('../helpers/Debug')(true)
 const Player = require('./Player')
 
-function PlayerManager(determineEvent) {
+function PlayerManager(socketManager, determineEvent) {
   this.players = {}
   this.oldData = []
   this.firstTurnSet = false
+  this.socketManager = socketManager
   this.determineEvent = determineEvent
 }
 
@@ -55,13 +56,21 @@ PlayerManager.prototype.createPlayer = function(id, socket, isAI) {
 
 PlayerManager.prototype.listenForGameActions = function(socket) {
   socket.on('close', () => {
-    this.removePlayer(socket.id)
+    let player = this.players[socket.id]
+    this.removePlayer(player.id)
+    this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`${player.name} has left the game`))
   })
 
   socket.on('message', data => {
     let event = JSON.parse(data)
     this.determineEvent(event, socket.id)
   })
+}
+
+PlayerManager.prototype.generateGameEvent = function(action) {
+  return {
+    action: action
+  }
 }
 
 PlayerManager.prototype.getPlayer = function(id) {
@@ -86,6 +95,12 @@ PlayerManager.prototype.removePlayer = function(id) {
   dg(`Player removed -> ${id}`, 'debug')
 
   return true
+}
+
+PlayerManager.prototype.updateScore = function(id, score) {
+  let player = this.players[id]
+
+  player.updateScore(score)
 }
 
 PlayerManager.prototype.grabOldData = function(id) {
@@ -179,7 +194,7 @@ PlayerManager.prototype.removeTiles = function(id, tilesToBeRemoved) {
   return true
 }
 
-PlayerManager.prototype.updateTurn = function(id) {
+PlayerManager.prototype.updateTurn = function(id, latestData) {
   let player = this.players[id]
   let position = player.position
 
@@ -197,11 +212,20 @@ PlayerManager.prototype.updateTurn = function(id) {
     let p = this.players[player]
     if (p.position === position) {
       p.isTurn = true
-      return true
     }
   }
 
-  this.updatePlayers()
+  this.updatePlayers(latestData)
+}
+
+PlayerManager.prototype.updatePlayers = function(latestData) {
+  let players = this.getAllPlayers()
+
+  players.forEach(player => {
+    let data = player.data()
+    data.latestData = latestData
+    this.socketManager.emit(player.id, 'dataUpdate', data)
+  })
 }
 
 PlayerManager.prototype.reset = function() {
@@ -212,6 +236,6 @@ PlayerManager.prototype.reset = function() {
   })
 }
 
-module.exports = function(determineEvent) {
-  return new PlayerManager(determineEvent)
+module.exports = function(socketManager, determineEvent) {
+  return new PlayerManager(socketManager, determineEvent)
 }
