@@ -234,7 +234,7 @@ public class AI extends Player {
 
                         case "invalidPlay":
                             //received when an invalid play is sent to the backend
-                            System.out.println(AI.this.name + " got play");
+                            System.out.println(AI.this.name + " got invalid play");
                             try {
                                 if (state == 2)
                                     System.out.println(AI.this.name + " State set back to 1");
@@ -287,8 +287,8 @@ public class AI extends Player {
      * @return the best play the AI can think of
      */
     public PlayIdea PlayBestWord(){
-        if(myCache.size ==0)
-            return null;
+//        if(myCache.size ==0)
+//            return null;
         PlayIdea best = myCache.Pull();
         //myCache.Clear();
         return best;
@@ -306,7 +306,7 @@ public class AI extends Player {
         for(int i = 0; i < boardState.the_game_board.length; i ++){
             for(int j = 0; j < boardState.the_game_board[0].length; j++){
                 if(boardState.the_game_board[i][j] != null) {
-                    if (System.currentTimeMillis() - startTime < 10000) {
+                    if (System.currentTimeMillis() - startTime < 15000) {
                         hasFoundASinglePlayableTile = true;
                         //parse horiz
                         char[] horConstr = new char[11];
@@ -348,20 +348,28 @@ public class AI extends Player {
 //NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
                                 }
                         }
-                    }
-                    else{
+                    }else{
                         return;
                     }
                 }
             }
         }
         if(!hasFoundASinglePlayableTile){
+            if(GameManager.debug)
+                System.out.println("AI thinks its the first play");
             TileData centerTile =  new TileData(new Vector2(5,5), (char)0,0,0, this.name, System.currentTimeMillis());
             char[] constraints = new char[11];
+            for (int i = 0; i < constraints.length; i++) {
+                constraints[i] = 0;
+            }
+            System.out.println("my hand on center FindPLays ="+tiles);
             ArrayList<PlayIdea> possiblePlaysCent = WordVerification.getInstance().TESTgetWordsFromHand(new String(tiles), constraints, 5, centerTile, true);
             if(!possiblePlaysCent.isEmpty()) {
-                myCache.Push(possiblePlaysCent.get(0));
-                GameManager.getInstance().placementsUnderConsideration = possiblePlaysCent.get(0).placements;
+                for (PlayIdea p : possiblePlaysCent) {
+                    myCache.Push(p);
+                    GameManager.getInstance().placementsUnderConsideration = p.placements;
+                }
+
 //NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
             } else{
 //SKIP MY TURN AND REDRAW//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -382,7 +390,7 @@ public class AI extends Player {
         for(int i = boardState.the_game_board.length - 1; i >= 0; i --){
             for(int j = boardState.the_game_board[0].length - 1 ; j >= 0; j--){
                 if(boardState.the_game_board[i][j] != null) {
-                    if(System.currentTimeMillis() - startTime < 10000) {
+                    if(System.currentTimeMillis() - startTime < 15000) {
                         hasFoundASinglePlayableTile = true;
                         //parse horiz
                         char[] horConstr = new char[11];
@@ -441,8 +449,10 @@ public class AI extends Player {
             }
             ArrayList<PlayIdea> possiblePlaysCent = WordVerification.getInstance().TESTgetWordsFromHand(new String(tiles), constraints, 5, centerTile, true);
             if(!possiblePlaysCent.isEmpty()) {
-                myCache.Push(possiblePlaysCent.get(0));
-                GameManager.getInstance().placementsUnderConsideration = possiblePlaysCent.get(0).placements;
+                for (PlayIdea p: possiblePlaysCent) {
+                    myCache.Push(p);
+                    GameManager.getInstance().placementsUnderConsideration = p.placements;
+                }
 //NEED TO ADD A PLAY IDEA TO THE QUEUE/////////////////////////////////////////////////////////////////////////////////////////////////////////
             } else{
 //SKIP MY TURN AND REDRAW//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

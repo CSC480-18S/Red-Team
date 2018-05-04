@@ -104,7 +104,7 @@ public class WordVerification {
         ArrayList<PlayIdea> possiblePlays = new ArrayList<PlayIdea>();
         if(root.letter == 0){
             //System.out.println("First play, so we can skip a bunch");
-            for(String e: AIWords){
+            for(String e: validWords){
                 String temp = hand+"";
                 boolean isGoodFlag = true;
                 if(e.length() <= constraints.length) {
@@ -132,7 +132,7 @@ public class WordVerification {
             //if there is nothing on the board then what is in the hand is valid
             return possiblePlays;
         }
-        for(String e: AIWords){
+        for(String e: validWords){
             String temp = handAndReleventBoardTiles;
             boolean isGoodFlag = true;
             if(e.length() <= constraints.length){

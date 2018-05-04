@@ -281,7 +281,6 @@ capricious
 categories
 chauvinist
 chronology
-close/shut
 coalescing
 colleagues
 collection
@@ -328,7 +327,6 @@ coordinate
 cornucopia
 corpulence
 correspond
-cross-eyed
 cumbersome
 cumulative
 curmudgeon
@@ -2417,7 +2415,6 @@ diffident
 digestion
 diligence
 dimension
-ding-dong
 direction
 discomfit
 discourse
@@ -2491,7 +2488,6 @@ fireworks
 fisherman
 flaunting
 fledgling
-flip-flop
 following
 foolproof
 footprint
@@ -5281,7 +5277,6 @@ gasoline
 gauntlet
 generate
 goldfish
-good-bye
 goodness
 gossamer
 gourmand
@@ -7737,7 +7732,6 @@ boiling
 bolster
 bombast
 boorish
-bow-wow
 boyhood
 breadth
 breathe
@@ -8003,7 +7997,6 @@ factory
 faculty
 failure
 fanatic
-far-off
 faraway
 farming
 farther
@@ -8074,7 +8067,6 @@ glasses
 glimmer
 glutton
 gnarled
-good-by
 goodbye
 grandma
 grandpa
@@ -14362,7 +14354,7 @@ more
 moss
 most
 move
-mrs.
+mrs
 much
 mule
 muse
@@ -14676,7 +14668,7 @@ ugly
 undo
 unit
 upon
-use.
+use
 used
 uses
 vain
@@ -15159,8 +15151,6 @@ mix
 moo
 mop
 mow
-mr.
-mrs
 mud
 mug
 nap
