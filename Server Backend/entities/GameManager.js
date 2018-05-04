@@ -76,7 +76,7 @@ GameManager.prototype.attemptPlay = function(newBoard, id) {
           }
           let response = this.determineResponse(play)
           if (response.valid) {
-            this.validPlay(id, this.currentPlay)
+            this.validPlay(id)
           } else {
             this.invalidPlay(id, response.reason)
           }
@@ -311,19 +311,21 @@ GameManager.prototype.determineResponse = function(play) {
   }
 }
 
-GameManager.prototype.validPlay = function(id, play) {
+GameManager.prototype.validPlay = function(id) {
   dg(`${id} -> valid play`, 'info')
   this.swaps = 0
 
   let player = this.playerManager.getPlayer(id)
 
-  let score = this.calculateScore(play)
-  this.addScore(id, score, play.words)
+  let score = this.calculateScore()
+  this.addScore(id, score)
 
-  let words = play.words.map(w => w.word)
-  let action = `${player.name} played ${words} for ${score} points`
+  let words = this.currentPlay.words.map(w => w.word)
+  let action = `${player.name} played ${words} for ${score.totalScore} points`
 
   this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(action))
+
+  this.currentPlay = null
 
   this.updateTurn(id, this.latestData())
 
@@ -332,33 +334,33 @@ GameManager.prototype.validPlay = function(id, play) {
 
 GameManager.prototype.invalidPlay = function(id, reason) {
   dg(`${id} -> invalid play`, 'info')
+  this.currentPlay = null
 
   this.socketManager.emit(id, 'invalidPlay')
   this.socketManager.emit(id, 'gameEvent', this.generateGameEvent(reason))
   return true
 }
 
-GameManager.prototype.calculateScore = function(words) {
-  return sc(words, this.getGameBoard())
+GameManager.prototype.calculateScore = function() {
+  return sc(this.currentPlay.words, this.getGameBoard())
 }
 
-GameManager.prototype.addScore = function(id, score, words) {
+GameManager.prototype.addScore = function(id, score) {
   let player = this.playerManager.getPlayer(id)
-  this.playerManager.updateScore(id, score)
+  this.playerManager.updateScore(id, score.totalScore)
 
   if (!player.isAI) {
-    db.updatePlayer(player, words)
+    db.updatePlayer(player, score.words)
   }
 
   switch (player.team) {
     case 'Green':
-      this.greenScore += score
+      this.greenScore += score.totalScore
       break
     case 'Gold':
-      this.goldScore += score
+      this.goldScore += score.totalScore
       break
   }
-
   return true
 }
 
