@@ -7,8 +7,11 @@ const mg = require('../helpers/MacGrabber')
 const db = require('../helpers/DB')
 
 router.get('/', function(req, res, next) {
-  checkUserExists(req, res)
-  // res.json('hi')
+  if (!req.session.user) {
+    checkUserExists(req, res)
+  } else {
+    res.render('login', {user: req.session.user, error: req.session.error})
+  }
 })
 
 router.get('/admin', function(req, res, next) {
