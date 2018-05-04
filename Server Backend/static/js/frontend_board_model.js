@@ -21,7 +21,7 @@ ws.onopen = function(event) {
         break
       case 'gameOver':
         alert(`${JSON.stringify(mes.data, null, 4)}`)
-        gameOver(mes.data)
+		    gameOver(mes.data)
         break
       case 'boardUpdate':
         boardUpdate(mes.data)
@@ -30,8 +30,8 @@ ws.onopen = function(event) {
         console.log(mes.data)
         play(mes.data)
         break
-	  case 'playTimer':
-        playTime(mes.data.time)
+        case 'playTime':
+        playTime(mes.data)
         break
       case 'gameEvent':
         console.log('received gameEvent: ')
@@ -151,6 +151,9 @@ function play(response) {
     this.data.tileSlots[i].tile.visibility = 'visible'
   }
 }
+
+//response to playTime socket event
+function playTime(response) {
 // response to playTime socket event
 function playTime(time) {
   this.data.playTime = time
@@ -165,7 +168,7 @@ function playTime(time) {
 function dataUpdate(response) {
   this.data.isTurn = response.isTurn
   this.data.score = response.score
-  /* this.data.playTime = 60
+  /*this.data.playTime = 60
 
   let time
   if (this.data.isTurn) {
@@ -633,8 +636,8 @@ var swap = function() {
     this.tileSlots[i].tile.visibility = 'visible'
   }
 
-  socket.emit('swap', [this.tileSlots[0].tile.letter, this.tileSlots[1].tile.letter, this.tileSlots[2].tile.letter,
-    this.tileSlots[3].tile.letter, this.tileSlots[4].tile.letter, this.tileSlots[5].tile.letter, this.tileSlots[6].tile.letter])
+  let swap = {event: 'swap'}
+  ws.send(JSON.stringify(swap))
 }
 
 var grey = function() {

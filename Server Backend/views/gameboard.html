@@ -14,13 +14,10 @@
             <div id="usernameArea">
              <div id="grid-container">
                  <div id="info">
-                     <h4 class="username">Hi, <b>{{username}}</b></h4>
-                     <h4 class="username">Your score: <b>{{score}}</b></h4>
+                     <h4 class="username">Hi, <b>{{username}}</b>, your score is <b>{{score}}</b></h4>
                  </div>
                  <a id="help" onclick="helpFunction()"><i class="fas fa-info-circle" style="color: black; width:70px; height:80px;" ></i></a>
              </div>
-            
-            
             <div id="teamScores">
                 <h4 class="username">Green:</h4>
                 <h4 class="username">{{greenScore}}</h4>
@@ -57,9 +54,9 @@
         </div>
 
         <div class="wrapper-buttons">
-            <button id="btnSwap" class="btnCust" @click="onClickSwap"><img src="/static/imgs/exchange.png"><br>EXCHANGE</button>
-            <button id="btnPlace" class="btnCust" @click="onClickPlace" onclick="emitBoard()"><img src="/static/imgs/done.svg"><br>DONE</button>
-            <button id="btnShuffle" class="btnCust" @click="onClickShuffle"><img src="/static/imgs/shuffle.png"><br>SHUFFLE</button>
+            <button id="btnSwap" class="btnCust" @click="onClickSwap"><img src="/static/imgs/exchange.png">EXCHANGE</button>
+            <button id="btnPlace" class="btnCust" @click="onClickPlace" onclick="emitBoard()"><img src="/static/imgs/done.svg">DONE</button>
+            <button id="btnShuffle" class="btnCust" @click="onClickShuffle"><img src="/static/imgs/shuffle.png">SHUFFLE</button>
         </div>
         
     </div>
