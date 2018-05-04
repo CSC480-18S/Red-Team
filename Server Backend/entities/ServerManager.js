@@ -61,7 +61,7 @@ ServerManager.prototype.attemptChannelAdd = function(client, socket) {
       channel = 'Error'
   }
 
-  if (channel !== 'Queued') {
+  if (channel === 'Clients') {
     this.grabClientInfo(socket, (result) => {
       if (!result) {
         channel = 'Error'
@@ -85,7 +85,7 @@ ServerManager.prototype.checkChannelAdd = function(success, channel, id, socket,
 
     switch (channel) {
       case 'AIs':
-        this.gameManager.addPlayer(id, socket, true, data)
+        this.gameManager.addPlayer(id, socket, true)
         break
       case 'Clients':
         this.gameManager.addPlayer(id, socket, false, data)
