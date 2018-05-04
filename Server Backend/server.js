@@ -5,7 +5,7 @@ const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
 const http = require('http')
-// const RedundancyManager = require('./helpers/RedundancyManager')
+const rm = require('./helpers/RedundancyManager')
 const db = require('./helpers/DB')
 
 /**
@@ -106,13 +106,10 @@ server.listen(port, function() {
 
 db.checkForTeams()
 
-// const rm = new RedundancyManager()
-// setTimeout(function() {
-//   rm.loadLog()
-// }, 1000)
-// setTimeout(function() {
-//   rm.resend()
-// }, 2000)
+const RESEND_DELAY = 1000 * 60 * 5
 
-// const rm = require('./helpers/RedundancyManager')
-// rm.saveForLater('url1', 'data1')
+// Starts a loop for calling RedundancyManager resends
+setInterval(function() {
+  console.log('Attempting resends')
+  rm.resend()
+}, RESEND_DELAY)

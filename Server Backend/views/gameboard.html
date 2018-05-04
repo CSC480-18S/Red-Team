@@ -11,10 +11,16 @@
 <body>
     <div id="root">
 
-        <div id="usernameArea">
-            <h4 class="username">You are {{username}}</h4>
-            <h4 class="username">Score: {{score}}</h4>
-            <h4 v-if="isTurn" class="username">Play Time: {{playTime}}</h4>
+            <div id="usernameArea">
+             <div id="grid-container">
+                 <div id="info">
+                     <h4 class="username">Hi, <b>{{username}}</b></h4>
+                     <h4 class="username">Your score: <b>{{score}}</b></h4>
+                 </div>
+                 <a id="help" onclick="helpFunction()"><i class="fas fa-info-circle" style="color: black; width:70px; height:80px;" ></i></a>
+             </div>
+            
+            
             <div id="teamScores">
                 <h4 class="username">Green:</h4>
                 <h4 class="username">{{greenScore}}</h4>
@@ -23,7 +29,7 @@
             </div>
         </div>
 
-        <div id="textBox" :style="[colored ? {background: 'lightcoral'} : {background: 'none'}]">
+        <div id="textBox" :style="[colored ? {background: 'lightcoral'} : {background: 'darkgray'}]">
             <p class="gameEvent"><b>Game Event</b></p>
             <p class="gameEvent" id="actualEvent"></p>
         </div>
@@ -34,12 +40,16 @@
             </div>
         </div>
         
+        <div id="timer">
+            <h4 v-if="isTurn" class="timer">Play Time: <b>{{playTime}}</b></h4>
+        </div>
+        
         <div class="wrapper-slots">
             <div class="row-style">
                 <div class="slot-style" v-for="tileSlot in tileSlots" :id="tileSlot.id">
                     <svg :id="tileSlot.tile.id" :visibility="tileSlot.tile.visibility" @click="onClickTile(tileSlot.tile.id)">
-                        <rect x="0" y="0" stroke="black" stroke-width="1px" width="100%" height="100%" fill="#f4dc00"/>
-                        <text x="50%" y="60%" alignment-baseline="middle" text-anchor="middle" :fill="tileSlot.tile.highlightedColor">{{ tileSlot.tile.letter }}</text>
+                        <rect x="0" y="0" width="100%" height="100%" fill="#ffcc33"/>
+                        <text font-size= 18px x="50%" y="60%" alignment-baseline="middle" text-anchor="middle" :fill="tileSlot.tile.highlightedColor">{{ tileSlot.tile.letter }}</text>
                         <text class="letter-value" x="70%" y="30%" :fill="tileSlot.tile.highlightedColor">{{ tileSlot.tile.value }}</text>
                     </svg>
                 </div>
@@ -59,6 +69,7 @@
     <script type="text/javascript" src="/static/js/frontend_board_model.js"></script>
     <script type="text/javascript" src="/static/js/frontend_board_view_model.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/frontend_play_area.css">
+    <link rel="stylesheet" href="/static/css/fontawesome-5.0.1.0.min.css">
 
 </body>
 </html>

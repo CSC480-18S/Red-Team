@@ -139,7 +139,7 @@ class PlayerManager {
   /**
    * Retrieves the player's information from the DB
    */
-  retrieveDBInfo(callback) {
+  retrieveDBInfo(callback, board) {
     mg(this.socket._socket.remoteAddress, (mac) => {
       db.checkIfUserExists(mac)
         .then(r => {
@@ -151,7 +151,7 @@ class PlayerManager {
                   team: r2 === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green',
                   link: r[0]._links.self.href
                 }
-                this.injectDatabaseData(user.username, user.team, user.link)
+                this.injectDatabaseData(user.username, user.team, user.link, board)
                 callback(this.name)
               })
           } else {
@@ -180,28 +180,28 @@ class PlayerManager {
    * @param {team} team - team
    * @param {URL} link - player DB url
    */
-  injectDatabaseData(name, team, link) {
+  injectDatabaseData(name, team, link, board) {
     this.name = name
     this.team = team
     this.link = link
     dg(`${name} connected`, 'debug')
-    this.setUp()
+    this.setUp(board)
   }
 
-  injectAIData(number, callback) {
+  injectAIData(number, callback, board) {
     this.name = `AI_${number}`
     let random = Math.floor(Math.random() * 2)
     this.team = random === 0 ? 'Gold' : 'Green'
     dg(`${this.name} connected`, 'debug')
     callback(this.name)
-    this.setUp()
+    this.setUp(board)
   }
 
-  setUp() {
+  setUp(board) {
     // TODO: Fix this @Landon
     // this.sendEvent('boardUpdate', null)
     this.addToHand()
-    this.sendEvent('dataUpdate')
+    this.dataUpdate(board)
     this.listenForIncoming()
   }
 
@@ -213,8 +213,9 @@ class PlayerManager {
       this.disconnect(this.name, this.position, this.oldDataSave())
     })
 
-    this.socket.on('message', event => {
-      this.determineEvent(event)
+    this.socket.on('message', data => {
+      let event = JSON.parse(data)
+      this.determineEvent(event, this)
     })
   }
 
@@ -233,16 +234,15 @@ class PlayerManager {
    * @param {String} event - event
    */
   determineEvent(event) {
-    let e = JSON.parse(event)
-    switch (e.event) {
+    switch (event.event) {
       case 'playWord':
         dg(`${this.name} made play`, 'debug')
-        this.gamePlays('play', this, e.newBoard)
+        this.gamePlays(event, this)
         break
       case 'swap':
         dg(`${this.name} swapped`, 'info')
         this.updateHand(this.tiles)
-        this.gamePlays('swap', this)
+        this.gamePlays(event, this)
         break
     }
   }
@@ -259,17 +259,10 @@ class PlayerManager {
     }
 
     switch (event) {
-      case 'play':
-        eventData.data = data
-        break
+      // Data update now includes the board
       case 'dataUpdate':
-        eventData.data = {
-          name: this.name,
-          position: this.position,
-          tiles: this.tiles,
-          isTurn: this.isTurn,
-          score: this.score
-        }
+        eventData.data = this.sendableData()
+        eventData.data.board = data
         break
       case 'gameEvent':
         eventData.data = {
@@ -277,12 +270,12 @@ class PlayerManager {
           bonus: false
         }
         break
-      case 'boardUpdate':
-      // TODO: Check if this can be removed
+      case 'gameOver':
+        eventData.data = data
+        break
+      case 'playTimer':
         eventData.data = {
-          board: data.board,
-          yellow: data.yellow,
-          green: data.green
+          time: data
         }
         break
     }
@@ -290,8 +283,25 @@ class PlayerManager {
     this.socket.send(JSON.stringify(eventData))
   }
 
+  invalidPlay(data) {
+    this.sendEvent('invalidPlay')
+    this.gameEvent(data)
+  }
+
   gameEvent(data) {
     this.sendEvent('gameEvent', data)
+  }
+
+  dataUpdate(board) {
+    this.sendEvent('dataUpdate', board)
+  }
+
+  gameOver(data) {
+    this.sendEvent('gameOver', data)
+  }
+
+  playTimer(time) {
+    this.sendEvent('playTimer', time)
   }
 
   /**
@@ -307,26 +317,6 @@ class PlayerManager {
       score: this._score,
       team: this._team
     }
-  }
-
-  /**
-   * When a client connects, their information is injected into the manager
-   * @param {String} name - name of player
-   * @param {String} team - team player is on
-   * @param {String} link = player link in db
-   * @param {Boolean} isAI - AI or not
-   * @param {Object} socket - socket object
-   */
-  createHandshakeWithClient(name, team, link, isAI, socket, data) {
-    this._name = name
-    this._team = team
-    this._link = link
-    this._isAI = isAI
-    this._socket = socket
-    this._socketId = socket.id
-    this.sendEvent('boardUpdate', data)
-    this.sendEvent('dataUpdate')
-    this.listenForEvents()
   }
 
   /**
