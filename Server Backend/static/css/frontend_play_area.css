@@ -111,7 +111,7 @@ img {
       justify-content: space-around; }
   #teamScores h4 {
     font-weight: bold;
-    font-size: 24px; }
+    font-size: 22px; }
     #teamScores h4:nth-child(-n + 2) {
       color: #12b24a; }
     #teamScores h4:nth-child(n + 3) {
@@ -128,7 +128,9 @@ img {
   background-color: #e2caba;
   /*#e2caba #6FA6F4 #EFBB96*/
   grid-column: 1 / 2;
-  grid-row: 1 / 2; }
+  grid-row: 1 / 2;
+  height: 57px;}
+  
 
 .btnCust {
   -webkit-box-shadow: 10px 10px 5px -5px rgba(0, 0, 0, 0.3);
@@ -140,12 +142,14 @@ img {
 #btnPlace {
   background-color: #12b24a;
   grid-column: 2 / 3;
-  grid-row: 1 / 2; }
+  grid-row: 1 / 2;
+  height: 57px;}
 
 #btnShuffle {
   background-color: #e2caba;
   grid-column: 3 / 4;
-  grid-row: 1 / 2; }
+  grid-row: 1 / 2;
+  height: 57px;}
 
 button {
   font-size: 0.8rem;
@@ -188,9 +192,11 @@ button {
   width: 100%; }
 
 #textBox {
-  width: 311px;
+  width: 315px;
   padding: 0.1rem;
   margin: 0.5em auto;
+    margin-top: 0px;
+    margin-bottom: 1px;
   border: 1.5px solid lightgray;
   height: 40px;
   text-align: center;
@@ -201,24 +207,28 @@ button {
 #usernameArea {
   margin: 0 auto;
   text-align: center;
-  font-size: 22px;
-  margin-top: 20px; 
+  font-size: 17px;
+  margin-top: 12px; 
+  margin-bottom: auto;
+    
 }
 
 #grid-container {
      width: 311px;
-     margin: 0.5em auto;
+     height: 21px;
+     margin: auto;
+     margin-bottom: 4px;
      display: grid;
      grid-template-columns: 64px 1fr 64px;
  }
 
  #info {
-     padding: 0.5rem;
-     grid-column: 2 / 3;
+     padding: 0rem;
+     grid-column: 1 / 4;
  }
 
  #help {
-     grid-column: 3 / 4;
+     grid-column: 4 / 4;
      cursor: help;
      color: lightcoral;
  }
@@ -242,5 +252,6 @@ button {
 .timer {
  text-align: center;
  font-size: 19px;
-    color:black;
+margin-top: 3px;
+    color:white;
 }
