@@ -1,7 +1,6 @@
 var row = 11
 var column = 11
 var tileSlotNumber = 7
-
 var currentTileCount = tileSlotNumber + 1
 var firstTimeGeneratedTiles = []
 
@@ -37,10 +36,7 @@ ws.onopen = function(event) {
       case 'gameEvent':
         console.log('received gameEvent: ')
         console.log(mes.data)
-
-        // // test data
         var gameEvent = mes.data.action
-        // gameEvent = response.action;
         document.getElementById('actualEvent').innerHTML = '<br>'
         document.getElementById('actualEvent').innerHTML = gameEvent
         break
@@ -72,7 +68,7 @@ function boardUpdate(response) {
             highlightedColor: undefined,
             visibility: 'visible'
           }
-          console.log(tile)
+          
           var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
           svg.setAttribute('id', tile.id)
           svg.setAttribute('visibility', 'visible')
@@ -115,7 +111,6 @@ function boardUpdate(response) {
 function gameOver(response) {
   for (let i = 0; i < this.data.tilesOnBoardValueAndPosition.length - 1; i++) {
     var t = this.data.tilesOnBoardValueAndPosition[this.data.tilesOnBoardValueAndPosition.length - 1]
-    // console.log(t)
 
     // if (t != undefined) {
     var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
@@ -136,7 +131,6 @@ function play(response) {
   if (response.invalid) {
     for (let i = 0; i < this.data.currentPlayTileAmount; i++) {
       var t = this.data.tilesOnBoardValueAndPosition[this.data.tilesOnBoardValueAndPosition.length - 1]
-      // console.log(t)
 
       if (t != undefined) {
         var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
@@ -192,15 +186,9 @@ function dataUpdate(response) {
     this.data.colored = false
   } */
 
-  console.log('received dataUpdate event: ')
-  console.log(response)
   this.data.username = response.name
   this.data.tileSlots = generateTiles(response.tiles)
   // response.position is the position of four players on the server
-  // tested data
-  // var tiles = ['T', 'E', 'S', 'T'];
-  // var isTurn = true;
-  // if (isTurn === false) {
   if (response.isTurn === false) {
     this.data.isMyTurn = 'Wait for your turn...'
     document.getElementById('btnSwap').disabled = true
@@ -392,12 +380,10 @@ var data = {
   username: '',
   greenScore: 0,
   goldScore: 0,
-  // backgcoresroundColor: ["rgb(171,171,171)", "orange", "green"]
   playTime: 60,
   isTurn: false,
   score: 0,
   colored: false
-  // backgroundColor: ["rgb(171,171,171)", "orange", "green"]
 }
 
 function generateTableRows() {
@@ -412,16 +398,7 @@ function generateSquares() {
   var squares = []
   for (var i = 0; i < row; i++) {
     for (var j = 0; j < column; j++) {
-      // use sum to render square background color
-      // var sum = i + j
-      // switch (sum) {
-      // case 1: case 3: case 5: case 7: case 9: case 11: case 13: case 15: case 17: case 19:
       squares.push({id: 'square-' + i + '-' + j, xAxis: i, yAxis: j, isSquareGreen: true, isSquareYellow: false, squareBackgroundColor: 'rgb(171,171,171)'})
-      // break
-      // default:
-      // squares.push({id: 'square-' + i + '-' + j, xAxis: i, yAxis: j, isSquareGreen: false, isSquareYellow: false, squareBackgroundColor: "orange"})
-      // break
-      // }
     }
   }
 
@@ -467,9 +444,6 @@ function generateTiles(tilesToGenerate) {
       var letter = tilesToGenerate[i]
       var tileValue = this.tileValue(letter)
 
-      console.log(letter + ' ' + firstTimeGeneratedTiles[i])
-      console.log(letter === firstTimeGeneratedTiles[i])
-
       tileSlots.push({
         id: 'slot' + i,
         hasTile: true,
@@ -514,15 +488,6 @@ function tileValue(tile) {
   }
 }
 
-// function randomTile() {
-//   var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-//   var char = chars.substr(Math.floor(Math.random() * 26), 1)
-
-//   var value = tileValue(char)
-
-//   return {letter: char, letterValue: value, borderColor: '#000000', visibility: 'visible'}
-// }
-
 var drag = function(ev) {
   ev.dataTransfer.setData('text', ev.target.id)
 }
@@ -536,7 +501,6 @@ var drop = function(ev) {
   var data = ev.dataTransfer.getData('text')
   ev.target.innerHTML = ''; ev.target.appendChild(document.getElementById(data))
 
-  // test
   var isDoubleScore = false
   var i
   for (i = 0; i < this.doubleScoreGameBoardBlocks.length; i++) {
@@ -557,7 +521,6 @@ var drop = function(ev) {
 var selectAndDeselectTile = function(tileId) {
   // get the tile
   var tile = document.getElementById(tileId)
-  // tile.children[0].stroke = "red"; (20180304 not working)
   // set tile border color
   for (var i = 0; i < tileSlotNumber; i++) {
     isDisable = this.tileSlots[i].tile.disabled
@@ -584,7 +547,6 @@ var selectAndDeselectTile = function(tileId) {
       this.selectedTileParentId = parentId
       // record both tile and parent ID
       this.tilesOnBoard.push({tileId: tileId, parentId: parentId})
-      // print out selected tile letter in console
       this.selectedTileCopyId = ''
     } else if (wrapper.className === 'wrapper-board') {
       this.selectedTileCopyId = ''
@@ -594,14 +556,12 @@ var selectAndDeselectTile = function(tileId) {
 
 // when clicking a square on the game board
 var putTileInSquare = function(squareId) {
-  // console.log("putTileInSquare() called");
   var square = document.getElementById(squareId)
   // if a tile in a slot has been clicked
   if (this.selectedTileId !== '') {
     // get the square
     var selectedSquare = document.getElementById(squareId)
-    // copy
-    console.log('putTileInSquare() - selectedTileCopyId: ' + this.selectedTileCopyId)
+
     if (this.selectedTileCopyId === '' && selectedSquare.children.length === 0) {
       // get the tile
       var selectedTile = document.getElementById(this.selectedTileId)
@@ -610,12 +570,10 @@ var putTileInSquare = function(squareId) {
       // put the clone tile on the game board
       selectedSquare.appendChild(cln)
       //
-      console.log('cln.id: ' + cln.id)
       this.selectedTileCopyId = cln.id
       // update slot information
       for (var i = 0; i < tileSlotNumber; i++) {
         if (this.selectedTileId === this.tileSlots[i].tile.id) {
-          // this.tileSlots[i] = {};
           this.tileSlots[i].hasTile = false
           this.tileSlots[i].tile.visibility = 'hidden'
         }
@@ -631,39 +589,18 @@ var putTileInSquare = function(squareId) {
         }
       }
 
-      // add tile id in the current round
-      // this.currentRoundtileIdsOnBoard.push(this.selectedTileCopyId)
       this.currentRoundtileIdsOnBoard.push(cln.id)
     } else { // move around or distroy
-      // var selectedTileCopy = document.getElementById(this.selectedTileCopyId)
-      // this.tilesOnBoardValueAndPosition.pop()
-      // this.currentTileCount--
-
       if (!selectedSquare.hasChildNodes()) {
-        //        if (selectedTileCopy.children[0].getAttribute('fill') !== '#D3D3D3') {
-        //          selectedSquare.appendChild(selectedTileCopy)
-        //          for (var i = 0; i < this.squares.length; i++) {
-        //            if (squareId === this.squares[i].id) {
-        //              this.currentPlayTileAmount++
-        //              this.tilesOnBoardValueAndPosition.push({tileLetter: document.getElementById(this.selectedTileId).children[1].innerHTML,
-        //                xAxis: this.squares[i].xAxis,
-        //                yAxis: this.squares[i].yAxis
-        //              })
-        //            }
-        //          }
-        //        }
       } else {
         var childTile = selectedSquare.children[0]
         // only current round tiles can be put back
         if (childTile.children[0].getAttribute('fill') !== '#D3D3D3') {
-          // selectedSquare.removeChild(selectedTileCopy);
           selectedSquare.removeChild(childTile)
           this.selectedTileCopyId = ''
           // update slot information
           for (var i = 0; i < tileSlotNumber; i++) {
             if (childTile.id === this.tileSlots[i].tile.id) {
-              // if (this.selectedTileId === this.tileSlots[i].tile.id) {
-              // this.tileSlots[i] = {};
               this.tileSlots[i].hasTile = true
               this.tileSlots[i].tile.visibility = 'visible'
               this.tileSlots[i].tile.highlightedColor = '#000000'
@@ -677,8 +614,6 @@ var putTileInSquare = function(squareId) {
         }
       }
     }
-    // record the square position
-    // this.selectedSquareId = selectedSquare.id
   }
 }
 
@@ -717,31 +652,6 @@ var grey = function() {
   this.selectedTileId = ''
   this.selectedTileCopyId = ''
 }
-// var refillSlots = function() {
-//   for (var i = 0; i < tileSlotNumber; i++) {
-//     if (!this.tileSlots[i].hasTile) {
-//       // generate a tile in it (update id)
-//       var tile = randomTile()
-//       this.tileSlots[i].tile.id = 'tile' + currentTileCount
-//       this.tileSlots[i].tile.letter = tile.letter
-//       this.tileSlots[i].tile.value = tile.letterValue
-//       this.tileSlots[i].tile.visibility = 'visible'
-//       this.tileSlots[i].tile.highlightedColor = 'black'
-//       currentTileCount++
-//     }
-//   }
-
-//   // change color of tiles on board
-//   for (var i = 0; i < this.currentRoundtileIdsOnBoard.length; i++) {
-//     var tile = document.getElementById(this.currentRoundtileIdsOnBoard[i])
-//     tile.children[0].setAttribute('fill', 'rgb(251,251,227)') // #D3D3D3
-//     tile.children[1].setAttribute('fill', '#000000')
-//     tile.children[2].setAttribute('fill', '#000000')
-//   }
-
-//   this.currentRoundtileIdsOnBoard = []
-//   this.selectedTileId = ''
-// }
 
 var shuffle = function() {
   this.tileSlots.sort(function() { return 0.5 - Math.random() })
@@ -767,8 +677,6 @@ function emitBoard() {
     var y = tiles[i].yAxis
     array[x][y] = tiles[i].tileLetter
   }
-
-  console.log(array)
 
   // socket.emit('playWord', array)
   let board = { event: 'playWord', data: {play: array} }
