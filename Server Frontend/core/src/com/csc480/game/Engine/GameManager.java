@@ -32,8 +32,8 @@ public class GameManager {
     public int greenScore = 0;
     public int goldScore = 0;
     private ArrayList<String> eventBacklog;
-    private ArrayList<Integer> connectAIQueue;
-    private ArrayList<Integer> removeAIQueue;
+    public ArrayList<Integer> connectAIQueue;
+    public ArrayList<Integer> removeAIQueue;
     private ArrayList<String> logQueue;
 
 
@@ -89,7 +89,8 @@ public class GameManager {
             //thePlayers[position] = theAIs[position];
         }
         if(removeAIQueue.size() > 0){
-            AI dead = theAIQueue.remove(0);
+            int posToRemove = removeAIQueue.get(0);
+            AI dead = theAIQueue.remove(posToRemove);
             dead.disconnectAI();
 //            Integer position = removeAIQueue.remove(0);
 //            if(theAIs[position] != null)

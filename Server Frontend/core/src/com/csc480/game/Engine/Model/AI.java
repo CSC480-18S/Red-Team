@@ -173,6 +173,9 @@ public class AI extends Player {
 
                     switch(object.getString("event")){
                         //data update contains the board, if it is this AI's turn, and any new tiles this AI needed
+                        case "errorMessage":
+                            GameManager.getInstance().removeAIQueue.add(GameManager.getInstance().theAIQueue.indexOf(this));
+                            break;
                         case "dataUpdate":
                             System.out.println(AI.this.name + " got dataUpdate");
                             try {
