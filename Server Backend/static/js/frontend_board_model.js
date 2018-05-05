@@ -21,7 +21,7 @@ ws.onopen = function(event) {
         break
       case 'gameOver':
         alert(`${JSON.stringify(mes.data, null, 4)}`)
-		    gameOver(mes.data)
+        gameOver(mes.data)
         break
       case 'invalidPlay':
         invalidPlay()
@@ -107,7 +107,7 @@ function boardUpdate(board) {
             highlightedColor: undefined,
             visibility: 'visible'
           }
-          
+
           var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
           svg.setAttribute('id', tile.id)
           svg.setAttribute('visibility', 'visible')
@@ -189,15 +189,12 @@ function invalidPlay() {
     this.data.tileSlots[i].tile.visibility = 'visible'
   }
 }
-
-//response to playTime socket event
-function playTime(response) {
 // response to playTime socket event
 function playTime(time) {
   this.data.playTime = time
   if (this.data.playTime % 2 === 0) {
     this.data.colored = true
-  }	else {
+  } else {
     this.data.colored = false
   }
 }

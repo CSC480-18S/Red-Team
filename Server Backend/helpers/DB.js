@@ -142,7 +142,7 @@ function updatePlayerSpecial(player, word) {
   if (!player.isAI) {
     axios.post(PLAYED_WORDS, {
       word: word,
-      value: word,
+      value: 0,
       dirty: false,
       special: true,
       player: player.link

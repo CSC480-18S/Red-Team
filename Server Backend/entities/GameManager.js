@@ -16,7 +16,7 @@ function GameManager(socketManager) {
   this.swaps = 0
   this.currentPlay = null
   this.names = ['AI_Bill', 'AI_Tara', 'AI_Richard', 'AI_Xia']
-  this.playerManager = PlayerManager(socketManager, this.determineEvent.bind(this), this.aiNames.bind(this))
+  this.playerManager = PlayerManager(socketManager, this)
   this.socketManager = socketManager
   this.timer = null
 }
@@ -36,6 +36,7 @@ GameManager.prototype.latestData = function() {
 GameManager.prototype.updateStateData = function() {
   let data = this.latestData()
   data.players = this.playerManager.getAllPlayers()
+  data.bonus = this.currentPlay === null ? false : this.currentPlay.bonus
   return data
 }
 
@@ -136,7 +137,7 @@ GameManager.prototype.wordValidation = function(words, player) {
 GameManager.prototype.pruneResults = function(response, player) {
   for (let word of response) {
     if (word.bad) {
-      db.updatePlayerDirty(player, word)
+      db.updatePlayerDirty(player, word.word)
       return {
         valid: false,
         error: 6,
@@ -151,7 +152,10 @@ GameManager.prototype.pruneResults = function(response, player) {
       }
     }
     if (word.special) {
-      db.updatePlayerSpecial(player, word)
+      db.updatePlayerSpecial(player, word.word)
+      this.currentPlay.bonus = true
+    } else {
+      this.currentPlay.bonus = false
     }
 
     return {
@@ -199,15 +203,12 @@ GameManager.prototype.swap = function(id) {
   this.playerManager.updateTiles(id)
   this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`${player.name} has swapped tiles`))
   this.updateTurn(id, this.latestData())
+  this.socketManager.broadcast('SFs', 'updateState', this.updateStateData())
 
   if (this.isGameOver()) {
     clearInterval(this.timer)
     this.gameOver()
   }
-
-  // TODO: Alert players with dataUpdate @Landon
-  // TODO: Alert players with gameEvent @Landon
-  // TODO: Alert frontends with updateState and gameEvent @Landon
 }
 
 GameManager.prototype.updateTurn = function(id, latestData) {
@@ -240,8 +241,8 @@ GameManager.prototype.gameOver = function() {
     finalScores.push(data)
   }
   let goldWin = this._goldScore > this._greenScore
-  db.updateWin('Gold', this._goldScore, goldWin)
-  db.updateWin('Green', this._greenScore, !goldWin)
+  db.updateWin('Gold', this.goldScore, goldWin)
+  db.updateWin('Green', this.greenScore, !goldWin)
 
   let data = {
     scores: finalScores,
@@ -288,9 +289,8 @@ GameManager.prototype.newGame = function() {
     this.playerManager.getAllPlayers()[0].isTurn = true
   }
   this.playerManager.updatePlayers(this.latestData())
-  // this.emitDataUpdate(this.gameManager.board.sendableBoard())
-  // this.updateFrontends()
   this.socketManager.broadcastAll('gameEvent', this.generateGameEvent('New game started!'))
+  this.socketManager.broadcast('SFs', 'updateState', this.updateStateData())
 }
 
 GameManager.prototype.generateGameEvent = function(action) {
@@ -354,6 +354,7 @@ GameManager.prototype.validPlay = function(id) {
   let action = `${player.name} played ${words} for ${score.totalScore} points`
 
   this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(action))
+  this.socketManager.broadcast('SFs', 'updateState', this.updateStateData())
 
   this.currentPlay = null
 
