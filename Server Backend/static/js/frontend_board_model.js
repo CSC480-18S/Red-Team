@@ -17,8 +17,7 @@ ws.onopen = function(event) {
     console.log(mes.event)
     switch (mes.event) {
       case 'errorMessage':
-        alert(mes.data.error)
-        removeForError()
+        removeForError(mes.data.error)
         break
       case 'gameOver':
         alert(`${JSON.stringify(mes.data, null, 4)}`)
@@ -48,8 +47,9 @@ ws.onopen = function(event) {
   }
 }
 
-function removeForError() {
-  $('#root').remove()
+function removeForError(error) {
+  this.data.error = error
+  $('#removable').remove()
 }
 
 // response to dataUpdate socket event
@@ -374,15 +374,13 @@ var data = {
   username: '',
   greenScore: 0,
   goldScore: 0,
-<<<<<<< HEAD
-  playTime: 60,
-=======
   // backgcoresroundColor: ["rgb(171,171,171)", "orange", "green"]
   playTime: '',
->>>>>>> updating
   isTurn: false,
   score: 0,
-  colored: false
+  colored: false,
+  error: null
+  // backgroundColor: ["rgb(171,171,171)", "orange", "green"]
 }
 
 function generateTableRows() {

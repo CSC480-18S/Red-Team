@@ -10,8 +10,12 @@
     
 <body>
     <div id="root">
-
+        <div v-if="error" class="alert alert-danger" id="alert-area" role="alert">
+            {{error}}
+        </div>
+        <div id="removable">
             <div id="usernameArea">
+<<<<<<< HEAD
              <div id="grid-container">
                  <div id="info">
                      <h4 class="username">Hi, <b>{{username}}</b>, your score is <b>{{score}}</b></h4>
@@ -23,42 +27,66 @@
                 <h4 class="username">{{greenScore}}</h4>
                 <h4 class="username">{{goldScore}}</h4>
                 <h4 class="username">:Gold</h4>
+=======
+                <div id="grid-container">
+                    <div id="info">
+                        <h4 class="username">Hi, <b>{{username}}</b></h4>
+                        <h4 class="username">Your score: <b>{{score}}</b></h4>
+                    </div>
+                    <a id="help" onclick="helpFunction()"><i class="fas fa-info-circle" style="color: black; width:70px; height:80px;" ></i></a>
+                </div>
+                
+                
+                <div id="teamScores">
+                    <h4 class="username">Green:</h4>
+                    <h4 class="username">{{greenScore}}</h4>
+                    <h4 class="username">{{goldScore}}</h4>
+                    <h4 class="username">:Gold</h4>
+                </div>
+>>>>>>> more updates
             </div>
-        </div>
 
-        <div id="textBox" :style="[colored ? {background: 'lightcoral'} : {background: 'darkgray'}]">
-            <p class="gameEvent"><b>Game Event</b></p>
-            <p class="gameEvent" id="actualEvent"></p>
-        </div>
-        
-        <div class="wrapper-board">
-            <div class="row-style" v-for="row in rows">
-                <div class="col-style" v-for="square in squares" v-if="square.xAxis === row" :id="square.id" :style="{background: square.squareBackgroundColor}"@click="onClickSquare(square.id)"></div>
+            <div id="textBox" :style="[colored ? {background: 'lightcoral'} : {background: 'darkgray'}]">
+                <p class="gameEvent"><b>Game Event</b></p>
+                <p class="gameEvent" id="actualEvent"></p>
             </div>
-        </div>
-        
-        <div id="timer">
-            <h4 class="timer">Play Time: <b>{{playTime}}</b></h4>
-        </div>
-        
-        <div class="wrapper-slots">
-            <div class="row-style">
-                <div class="slot-style" v-for="tileSlot in tileSlots" :id="tileSlot.id">
-                    <svg :id="tileSlot.tile.id" :visibility="tileSlot.tile.visibility" @click="onClickTile(tileSlot.tile.id)">
-                        <rect x="0" y="0" width="100%" height="100%" fill="#ffcc33"/>
-                        <text font-size= 18px x="50%" y="60%" alignment-baseline="middle" text-anchor="middle" :fill="tileSlot.tile.highlightedColor">{{ tileSlot.tile.letter }}</text>
-                        <text class="letter-value" x="70%" y="30%" :fill="tileSlot.tile.highlightedColor">{{ tileSlot.tile.value }}</text>
-                    </svg>
+            
+            <div class="wrapper-board">
+                <div class="row-style" v-for="row in rows">
+                    <div class="col-style" v-for="square in squares" v-if="square.xAxis === row" :id="square.id" :style="{background: square.squareBackgroundColor}"@click="onClickSquare(square.id)"></div>
                 </div>
             </div>
-        </div>
+            
+            <div id="timer">
+                <h4 class="timer">Play Time: <b>{{playTime}}</b></h4>
+            </div>
+            
+            <div class="wrapper-slots">
+                <div class="row-style">
+                    <div class="slot-style" v-for="tileSlot in tileSlots" :id="tileSlot.id">
+                        <svg :id="tileSlot.tile.id" :visibility="tileSlot.tile.visibility" @click="onClickTile(tileSlot.tile.id)">
+                            <rect x="0" y="0" width="100%" height="100%" fill="#ffcc33"/>
+                            <text font-size= 18px x="50%" y="60%" alignment-baseline="middle" text-anchor="middle" :fill="tileSlot.tile.highlightedColor">{{ tileSlot.tile.letter }}</text>
+                            <text class="letter-value" x="70%" y="30%" :fill="tileSlot.tile.highlightedColor">{{ tileSlot.tile.value }}</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
 
+<<<<<<< HEAD
         <div class="wrapper-buttons">
             <button id="btnSwap" class="btnCust" @click="onClickSwap"><img src="/static/imgs/exchange.png">EXCHANGE</button>
             <button id="btnPlace" class="btnCust" @click="onClickPlace" onclick="emitBoard()"><img src="/static/imgs/done.svg">DONE</button>
             <button id="btnShuffle" class="btnCust" @click="onClickShuffle"><img src="/static/imgs/shuffle.png">SHUFFLE</button>
+=======
+            <div class="wrapper-buttons">
+                <button id="btnSwap" class="btnCust" @click="onClickSwap"><img src="/static/imgs/exchange.png"><br>EXCHANGE</button>
+                <button id="btnPlace" class="btnCust" @click="onClickPlace" onclick="emitBoard()"><img src="/static/imgs/done.svg"><br>DONE</button>
+                <button id="btnShuffle" class="btnCust" @click="onClickShuffle"><img src="/static/imgs/shuffle.png"><br>SHUFFLE</button>
+            </div>
+            
+>>>>>>> more updates
         </div>
-        
     </div>
 
     <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
@@ -67,6 +95,7 @@
     <script type="text/javascript" src="/static/js/frontend_board_model.js"></script>
     <script type="text/javascript" src="/static/js/frontend_board_view_model.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/frontend_play_area.css">
+    <link rel="stylesheet" href="/static/css/bootstrap-4.0.0.min.css"></script>
     <link rel="stylesheet" href="/static/css/fontawesome-5.0.1.0.min.css">
 
 </body>
