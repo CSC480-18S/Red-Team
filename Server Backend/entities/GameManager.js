@@ -276,10 +276,9 @@ GameManager.prototype.reset = function() {
   this.swaps = 0
   this.goldScore = 0
   this.greenScore = 0
+  this.gameboard = new Gameboard()
 
   this.playerManager.reset(this.latestData())
-
-  this.gameboard = new Gameboard()
 }
 
 GameManager.prototype.newGame = function() {

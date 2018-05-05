@@ -148,13 +148,13 @@ function boardUpdate(board) {
 }
 
 function gameOver(response) {
-  for (let i = 0; i < this.data.tilesOnBoardValueAndPosition.length - 1; i++) {
-    var t = this.data.tilesOnBoardValueAndPosition[this.data.tilesOnBoardValueAndPosition.length - 1]
+  for (let i = this.data.tilesOnBoardValueAndPosition.length - 1; i >= 0; i--) {
+    var t = this.data.tilesOnBoardValueAndPosition[i]
 
     // if (t != undefined) {
     var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
-    this.data.tilesOnBoardValueAndPosition.pop()
     square.removeChild(square.firstChild)
+    this.data.tilesOnBoardValueAndPosition.pop()
     // }
   }
   this.data.selectedTileId = ''
