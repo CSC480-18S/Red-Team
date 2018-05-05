@@ -193,7 +193,7 @@ function playTime(time) {
   this.data.playTime = time
   if (this.data.playTime % 2 === 0) {
     this.data.colored = true
-  }	else {
+  } else {
     this.data.colored = false
   }
 }

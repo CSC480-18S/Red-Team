@@ -7,13 +7,12 @@ const ld = require('../helpers/LetterDistributor')
 const dg = require('../helpers/Debug')(true)
 const Player = require('./Player')
 
-function PlayerManager(socketManager, determineEvent, addAIBack) {
+function PlayerManager(socketManager, gameManager) {
   this.players = {}
   this.oldData = []
   this.firstTurnSet = false
   this.socketManager = socketManager
-  this.determineEvent = determineEvent
-  this.addAIBack = addAIBack
+  this.gameManager = gameManager
 }
 
 PlayerManager.prototype.getAmountOfPlayers = function() {
@@ -64,15 +63,16 @@ PlayerManager.prototype.listenForGameActions = function(socket) {
   socket.on('close', () => {
     let player = this.players[socket.id]
     if (player.isAI) {
-      this.addAIBack(player.name)
+      this.gameManager.aiNames(player.name)
     }
     this.removePlayer(player.id)
     this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`${player.name} has left the game`))
+    this.socketManager.broadcast('SFs', 'updateState', this.gameManager.updateStateData())
   })
 
   socket.on('message', data => {
     let event = JSON.parse(data)
-    this.determineEvent(event, socket.id)
+    this.gameManager.determineEvent(event, socket.id)
   })
 }
 
@@ -253,6 +253,6 @@ PlayerManager.prototype.reset = function(latestData) {
   })
 }
 
-module.exports = function(socketManager, determineEvent, addAIBack) {
-  return new PlayerManager(socketManager, determineEvent, addAIBack)
+module.exports = function(socketManager, gameManager) {
+  return new PlayerManager(socketManager, gameManager)
 }

@@ -92,22 +92,23 @@ ServerManager.prototype.checkChannelAdd = function(success, channel, id, socket,
         break
       case 'SFs':
         event = 'updateState'
-        // TODO: Fix @Landon
-        message = this.gameManager.latestData()
+        message = this.gameManager.updateStateData()
         break
       case 'Error':
         event = 'errorMessage'
         message = this.generateError('There seems to be an error.')
-        break
+        this.socketManager.emit(id, event, message)
+        return
     }
-    // TODO: Update frontend @Landon
-    event = 'currentlyConnected'
-    message = this.generateAmount(this.amountOfClients())
-    this.socketManager.broadcast('Queued', event, message)
+    if (['AIs', 'Clients', 'Queued'].includes(channel)) {
+      this.socketManager.broadcast('Queued', 'currentlyConnected', this.generateAmount(this.amountOfClients()))
+    }
+    this.socketManager.broadcast('SFs', event, message)
   } else {
     channel = 'Error'
+    let message = this.generateError('There are already 4 players conencted.')
     this.socketManager.addToChannel(channel, id, socket)
-    this.socketManager.emit(id, 'errorMessage', this.generateError('There are already 4 players conencted.'))
+    this.socketManager.emit(id, 'errorMessage', message)
   }
 
   dg(`id: ${id} -> connected to channel: (${channel})`, 'info')
