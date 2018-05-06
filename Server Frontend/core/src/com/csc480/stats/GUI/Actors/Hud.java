@@ -256,9 +256,9 @@ public class Hud {
         return G_FPP3;
     }
 
-    Label G_FPOne = new Label("1) " + String.format("%.10s",setG_FPPosition1()) + String.format("%10s pts",setG_FPP1()),FontManager.getInstance().normal);
-    Label G_FPTwo = new Label("2) " + String.format("%.10s",setG_FPPosition2()) + String.format("%10s pts",setG_FPP2()),FontManager.getInstance().normal);
-    Label G_FPThree = new Label("3) " + String.format("%.10s",setG_FPPosition3()) + String.format("%10s pts",setG_FPP3()),FontManager.getInstance().normal);
+    Label G_FPOne = new Label("1) " + String.format("%.10s",setG_FPPosition1()) + String.format("%10s times",setG_FPP1()),FontManager.getInstance().normal);
+    Label G_FPTwo = new Label("2) " + String.format("%.10s",setG_FPPosition2()) + String.format("%10s times",setG_FPP2()),FontManager.getInstance().normal);
+    Label G_FPThree = new Label("3) " + String.format("%.10s",setG_FPPosition3()) + String.format("%10s times",setG_FPP3()),FontManager.getInstance().normal);
 
 
 
@@ -323,9 +323,9 @@ public class Hud {
         return G_FOP3;
     }
 
-    Label G_FOOne = new Label("1) " + String.format("%.10s",setG_FOPosition1()) + String.format("%10s pts",setG_FOP1()),FontManager.getInstance().normal);
-    Label G_FOTwo = new Label("2) " + String.format("%.10s",setG_FOPosition2()) + String.format("%10s pts",setG_FOP2()),FontManager.getInstance().normal);
-    Label G_FOThree = new Label("3) " + String.format("%.10s",setG_FOPosition3()) + String.format("%10s pts",setG_FOP3()),FontManager.getInstance().normal);
+    Label G_FOOne = new Label("1) " + String.format("%.10s",setG_FOPosition1()) + String.format("%10s times",setG_FOP1()),FontManager.getInstance().normal);
+    Label G_FOTwo = new Label("2) " + String.format("%.10s",setG_FOPosition2()) + String.format("%10s times",setG_FOP2()),FontManager.getInstance().normal);
+    Label G_FOThree = new Label("3) " + String.format("%.10s",setG_FOPosition3()) + String.format("%10s times",setG_FOP3()),FontManager.getInstance().normal);
 
 
 
@@ -709,9 +709,9 @@ public class Hud {
         return Y_FPP3;
     }
 
-    Label Y_FPOne = new Label("1) " + String.format("%.10s",setY_FPPosition1()) + String.format("%10s pts",setY_FPP1()),FontManager.getInstance().normal);
-    Label Y_FPTwo = new Label("2) " + String.format("%.10s",setY_FPPosition2()) + String.format("%10s pts",setY_FPP2()),FontManager.getInstance().normal);
-    Label Y_FPThree = new Label("3) " + String.format("%.10s",setY_FPPosition3()) + String.format("%10s pts",setY_FPP3()),FontManager.getInstance().normal);
+    Label Y_FPOne = new Label("1) " + String.format("%.10s",setY_FPPosition1()) + String.format("%10s times",setY_FPP1()),FontManager.getInstance().normal);
+    Label Y_FPTwo = new Label("2) " + String.format("%.10s",setY_FPPosition2()) + String.format("%10s times",setY_FPP2()),FontManager.getInstance().normal);
+    Label Y_FPThree = new Label("3) " + String.format("%.10s",setY_FPPosition3()) + String.format("%10s times",setY_FPP3()),FontManager.getInstance().normal);
 
 
 
@@ -776,9 +776,9 @@ public class Hud {
         return Y_FOP3;
     }
 
-    Label Y_FOOne = new Label("1) " + String.format("%.10s",setY_FOPosition1()) + String.format("%10s pts",setY_FOP1()),FontManager.getInstance().normal);
-    Label Y_FOTwo = new Label("2) " + String.format("%.10s",setY_FOPosition2()) + String.format("%10s pts",setY_FOP2()),FontManager.getInstance().normal);
-    Label Y_FOThree = new Label("3) " + String.format("%.10s",setY_FOPosition3()) + String.format("%10s pts",setY_FOP3()),FontManager.getInstance().normal);
+    Label Y_FOOne = new Label("1) " + String.format("%.10s",setY_FOPosition1()) + String.format("%10s times",setY_FOP1()),FontManager.getInstance().normal);
+    Label Y_FOTwo = new Label("2) " + String.format("%.10s",setY_FOPosition2()) + String.format("%10s times",setY_FOP2()),FontManager.getInstance().normal);
+    Label Y_FOThree = new Label("3) " + String.format("%.10s",setY_FOPosition3()) + String.format("%10s times",setY_FOP3()),FontManager.getInstance().normal);
 
 
 
@@ -900,7 +900,7 @@ public class Hud {
 
 
     ///////////////////////////////////////////T-TEST////////////////////////////////////////////////////////////
-    private double T_value = stats.calcTTest();
+    private double T_value = Math.round (stats.calcTTest() * 1000.0) / 1000.0;
 
 
 
