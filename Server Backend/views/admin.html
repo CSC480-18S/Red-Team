@@ -129,7 +129,7 @@
 						break
 					
                     case 'gameEvent':
-                    console.log(message)
+                        console.log(message)
 						let date = new Date()
 						let gameEvent = '<div class=\'update\'>'
 						gameEvent += `<p class=\'time\'><i class="fas fa-clock"></i> TIME: ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}</p>`
@@ -140,7 +140,9 @@
 
 						let objDiv = document.getElementById("event-area")
 						objDiv.scrollTop = objDiv.scrollHeight
-						break
+                        break
+                    case 'newGame':
+                        console.log(message)
 				}
 			}
 		}

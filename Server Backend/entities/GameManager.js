@@ -10,7 +10,7 @@ const db = require('../helpers/DB')
 const PlayerManager = require('./PlayerManager')
 
 function GameManager(socketManager) {
-  this.gameboard = new Gameboard()
+  this.gameboard = Gameboard()
   this.greenScore = 0
   this.goldScore = 0
   this.swaps = 0
@@ -208,15 +208,17 @@ GameManager.prototype.swap = function(id) {
   let player = this.playerManager.getPlayer(id)
   this.currentPlay = null
   this.swaps++
-  this.playerManager.updateTiles(id)
-  this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`${player.name} has swapped tiles`))
-  this.updateTurn(id, this.latestData())
-  this.socketManager.broadcast('SFs', 'updateState', this.updateStateData())
 
   if (this.isGameOver()) {
     clearInterval(this.timer)
     this.gameOver()
+    return
   }
+
+  this.playerManager.updateTiles(id)
+  this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`${player.name} has swapped tiles`))
+  this.updateTurn(id, this.latestData())
+  this.socketManager.broadcast('SFs', 'updateState', this.updateStateData())
 }
 
 GameManager.prototype.updateTurn = function(id, latestData) {
@@ -284,7 +286,7 @@ GameManager.prototype.reset = function() {
   this.swaps = 0
   this.goldScore = 0
   this.greenScore = 0
-  this.gameboard = new Gameboard()
+  this.gameboard = Gameboard()
 
   this.playerManager.reset(this.latestData())
   this.socketManager.broadcast('SFs', 'updateState', this.updateStateData())
@@ -298,6 +300,7 @@ GameManager.prototype.newGame = function() {
   }
   this.playerManager.updatePlayers(this.latestData())
   this.socketManager.broadcastAll('gameEvent', this.generateGameEvent('New game started!'))
+  this.socketManager.broadcast('SFs', 'newGame')
   this.socketManager.broadcast('SFs', 'updateState', this.updateStateData())
 }
 
