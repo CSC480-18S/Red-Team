@@ -99,7 +99,10 @@ SocketManager.prototype.broadcast = function(channel, event, data) {
   let clients = Object.keys(c.clients)
 
   clients.forEach((client) => {
-    c.clients[client].send(payload)
+    let socket = c.clients[client]
+    if (socket.readyState === 1) {
+      socket.send(payload)
+    }
   })
 }
 
@@ -119,7 +122,10 @@ SocketManager.prototype.broadcastAll = function(event, data) {
   Object.keys(this.channels).forEach((channel) => {
     let c = this.channels[channel]
     Object.keys(c.clients).forEach((client) => {
-      c.clients[client].send(payload)
+      let socket = c.clients[client]
+      if (socket.readyState === 1) {
+        socket.send(payload)
+      }
     })
   })
 }
@@ -144,8 +150,10 @@ SocketManager.prototype.emit = function(id, event, data, callback) {
   }
 
   let payload = this.generatePayload(event, data)
-
-  client.socket.send(payload)
+  let socket = client.socket
+  if (socket.readyState === 1) {
+    client.socket.send(payload)
+  }
 }
 
 SocketManager.prototype.generatePayload = function(message, data) {

@@ -64,6 +64,7 @@ PlayerManager.prototype.listenForGameActions = function(socket) {
     let player = this.players[socket.id]
     if (player.isAI) {
       this.gameManager.aiNames(player.name)
+      this.gameManager.aiTeams(player.team)
     }
     this.removePlayer(player.id)
     this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`${player.name} has left the game`))
@@ -148,8 +149,6 @@ PlayerManager.prototype.updateTiles = function(id, tilesToBeRemoved) {
     this.removeTiles(id, tilesToBeRemoved)
   }
   this.injectTiles(id)
-
-  dg(`Tiles updated -> ${id}`, 'debug')
 
   return true
 }
@@ -247,9 +246,6 @@ PlayerManager.prototype.reset = function(latestData) {
     player.resetScore()
     player.isTurn = false
     this.updateTiles(player.id)
-    let data = player.data()
-    data.latestData = latestData
-    this.socketManager.emit(id, 'dataUpdate', data)
   })
 }
 
