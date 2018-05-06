@@ -93,6 +93,7 @@ ServerManager.prototype.checkChannelAdd = function(success, channel, id, socket,
       case 'SFs':
         event = 'updateState'
         message = this.gameManager.updateStateData()
+        this.socketManager.connectAI(true)
         break
       case 'Error':
         event = 'errorMessage'

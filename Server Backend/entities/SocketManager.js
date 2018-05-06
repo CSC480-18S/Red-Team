@@ -35,6 +35,17 @@ SocketManager.prototype.addClient = function(channel, id, socket) {
   }
 }
 
+SocketManager.prototype.connectAI = function(initial) {
+  if (initial === undefined) {
+    this.broadcast('SFs', 'connectAI')
+  } else {
+    let amountToConnect = 4 - this.channelClientAmount('Clients')
+    for (let i = 0; i < amountToConnect; i++) {
+      this.broadcast('SFs', 'connectAI')
+    }
+  }
+}
+
 SocketManager.prototype.addToChannel = function(channel, id, socket) {
   if (channel === 'Clients') {
     if (this.channelClientAmount('AIs') > 0) {
