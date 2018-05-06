@@ -88,6 +88,7 @@ SocketManager.prototype.broadcast = function(channel, event, data) {
     case 'currentlyConnected':
     case 'removeAI':
     case 'connectAI':
+    case 'newGame':
       break
     default:
       return false
