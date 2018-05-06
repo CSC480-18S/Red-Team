@@ -89,15 +89,19 @@ public class GameManager {
             //thePlayers[position] = theAIs[position];
         }
         if(removeAIQueue.size() > 0){
-            int posToRemove = removeAIQueue.get(0);
-            AI dead = theAIQueue.remove(posToRemove);
-            dead.disconnectAI();
-//            Integer position = removeAIQueue.remove(0);
-//            if(theAIs[position] != null)
-//                theAIs[position].disconnectAI();
-//            theAIs[position] = null;
-//            thePlayers[position] = new Player();
-
+            int posToRemove = removeAIQueue.remove(0);
+            System.out.println("trying to remove AI @"+posToRemove);
+            if(theAIQueue.size() > 0 && posToRemove >= 0 && posToRemove < theAIQueue.size()){
+                AI dead = theAIQueue.remove(posToRemove);
+                dead.disconnectAI();
+            }
+        }
+        synchronized (theAIQueue){
+            ArrayList<AI> clone = (ArrayList<AI>) theAIQueue.clone();
+            for(AI a: clone){
+                if(!a.connection.isOpen())
+                    theAIQueue.remove(a);
+            }
         }
         if(logQueue.size() > 0)
             theGame.theGameScreen.debug.setText(logQueue.remove(0));
@@ -150,6 +154,7 @@ public class GameManager {
                                 //int position = data.getInt("position");
                                 //removeAIQueue.add(position);
                                 removeAIQueue.add(0);
+                                System.out.println("num ai ="+theAIQueue.size());
                                 if (debug)
                                    logQueue.add("Got removeAI. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
                             } catch (ArrayIndexOutOfBoundsException e) {
