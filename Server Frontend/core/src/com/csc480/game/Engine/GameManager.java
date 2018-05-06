@@ -136,7 +136,10 @@ public class GameManager {
                     if(GameManager.debug)
                         System.out.println("frontend got message\n"+message);
                     JSONObject object = new JSONObject(message);
-                    JSONObject data = object.getJSONObject("data");
+                    JSONObject data = null;
+                    try {
+                        data = object.getJSONObject("data");
+                    } catch (JSONException ignored){}
 
                     switch (object.getString("event")) {
                         case "removeAI":
