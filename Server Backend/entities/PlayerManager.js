@@ -96,8 +96,6 @@ PlayerManager.prototype.getAllPlayers = function() {
 }
 
 PlayerManager.prototype.removePlayer = function(id) {
-  // TODO: Need to be able to distinguish clients from AI @Landon
-  // TODO: Tell other players through game event
   this.grabOldData(id)
   delete this.players[id]
   this.updatePostitions()
