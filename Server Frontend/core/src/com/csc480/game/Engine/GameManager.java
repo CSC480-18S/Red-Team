@@ -99,8 +99,10 @@ public class GameManager {
         synchronized (theAIQueue){
             ArrayList<AI> clone = (ArrayList<AI>) theAIQueue.clone();
             for(AI a: clone){
-                if(!a.connection.isOpen())
+                if(a.connection.isClosed()){
                     theAIQueue.remove(a);
+                    System.out.println("AI connection not open. removing");
+                }
             }
         }
         if(logQueue.size() > 0)
@@ -169,8 +171,6 @@ public class GameManager {
                                 System.out.println("connectAI");
                             try {
                                 //JSONObject data = (JSONObject) args[0];
-                                if(GameManager.debug)
-                                    System.out.println(data.toString());
                                 //int position = data.getInt("position");
                                 //reconnect an AI
                                 //connectAIQueue.add(position);
@@ -243,7 +243,7 @@ public class GameManager {
 
                                 JSONArray players = data.getJSONArray("players");
                                 int i;
-                                for (i = 0; i < players.length(); i++) {
+                                for (i = 0; i < players.length() && i < 4; i++) {
                                     if(players.get(i) == JSONObject.NULL) continue;
                                     JSONObject player = (JSONObject) players.get(i);
                                     //int index = player.getInt("position");
