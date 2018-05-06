@@ -69,6 +69,7 @@ PlayerManager.prototype.listenForGameActions = function(socket) {
     this.removePlayer(player.id)
     this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`${player.name} has left the game`))
     this.socketManager.broadcast('SFs', 'updateState', this.gameManager.updateStateData())
+    this.socketManager.connectAI()
   })
 
   socket.on('message', data => {
