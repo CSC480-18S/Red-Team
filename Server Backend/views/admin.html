@@ -115,7 +115,8 @@
 		
 			socket.onmessage = function(event){
 				let message = JSON.parse(event.data)
-				
+                
+                console.log(message)
 				switch (message.event){
 					case 'whoAreYou':
 						let queue = { event: 'whoAreYou', data: {isSF: true} }
@@ -141,8 +142,6 @@
 						let objDiv = document.getElementById("event-area")
 						objDiv.scrollTop = objDiv.scrollHeight
                         break
-                    case 'newGame':
-                        console.log(message)
 				}
 			}
 		}

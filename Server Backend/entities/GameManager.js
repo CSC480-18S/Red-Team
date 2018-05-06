@@ -277,8 +277,6 @@ GameManager.prototype.gameOver = function() {
       this.newGame()
     }
   }, 1000)
-  // TODO: Send game event telling game is over @Landon
-  // TODO: Send game over event
 }
 
 GameManager.prototype.reset = function() {
@@ -370,8 +368,6 @@ GameManager.prototype.validPlay = function(id) {
   this.currentPlay = null
 
   this.updateTurn(id, this.latestData())
-
-  // TODO: Somehow figure out how to check if words in play are bonus words...we are getting the list of words from the score so we can do something with that @Landon
 }
 
 GameManager.prototype.invalidPlay = function(id, reason) {
