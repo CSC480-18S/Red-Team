@@ -37,7 +37,17 @@ SocketManager.prototype.addClient = function(channel, id, socket) {
 
 SocketManager.prototype.addToChannel = function(channel, id, socket) {
   if (channel === 'Clients') {
+    if (this.channelClientAmount('AIs') > 0) {
+      this.broadcast('SFs', 'removeAI')
+    }
     if (this.channelClientAmount(channel) === 4) {
+      return false
+    }
+  }
+
+  if (channel === 'AIs') {
+    let totalClients = this.channelClientAmount(channel) + this.channelClientAmount('Clients')
+    if (totalClients >= 4) {
       return false
     }
   }

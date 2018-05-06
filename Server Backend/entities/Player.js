@@ -11,7 +11,6 @@ function Player(id, isAI, position) {
   this.name = null
   this.team = null
   this.teamLink = null
-  // this.listenForIncoming()
 }
 
 Player.prototype.addInformation = function(data) {
