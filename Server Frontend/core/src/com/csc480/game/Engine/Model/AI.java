@@ -175,15 +175,15 @@ public class AI extends Player {
                         //data update contains the board, if it is this AI's turn, and any new tiles this AI needed
                         case "disconnect":
                             System.out.println(AI.this.name+" got disconnect message");
-                            GameManager.getInstance().removeAIQueue.add(GameManager.getInstance().theAIQueue.indexOf(this));
+                            AI.this.disconnectAI();
                             break;
                         case "removeAI":
                             System.out.println(AI.this.name+" got remove message");
-                            GameManager.getInstance().removeAIQueue.add(GameManager.getInstance().theAIQueue.indexOf(this));
+                            AI.this.disconnectAI();
                             break;
                         case "errorMessage":
                             System.out.println(AI.this.name+" got error message");
-                            GameManager.getInstance().removeAIQueue.add(GameManager.getInstance().theAIQueue.indexOf(this));
+                            AI.this.disconnectAI();
                             break;
                         case "dataUpdate":
                             System.out.println(AI.this.name + " got dataUpdate");
