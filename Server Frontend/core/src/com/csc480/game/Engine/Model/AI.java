@@ -35,7 +35,7 @@ public class AI extends Player {
      * 1 = playing
      * 2 = waitforVerification
      */
-    private int state = 0;
+    public int state = 0;
     public AI(){
         super();
         this.isAI = true;
@@ -173,7 +173,16 @@ public class AI extends Player {
 
                     switch(object.getString("event")){
                         //data update contains the board, if it is this AI's turn, and any new tiles this AI needed
+                        case "disconnect":
+                            System.out.println(AI.this.name+" got disconnect message");
+                            GameManager.getInstance().removeAIQueue.add(GameManager.getInstance().theAIQueue.indexOf(this));
+                            break;
+                        case "removeAI":
+                            System.out.println(AI.this.name+" got remove message");
+                            GameManager.getInstance().removeAIQueue.add(GameManager.getInstance().theAIQueue.indexOf(this));
+                            break;
                         case "errorMessage":
+                            System.out.println(AI.this.name+" got error message");
                             GameManager.getInstance().removeAIQueue.add(GameManager.getInstance().theAIQueue.indexOf(this));
                             break;
                         case "dataUpdate":
@@ -181,7 +190,8 @@ public class AI extends Player {
                             try {
                                 //JSONObject data = (JSONObject) args[0];
                                 //System.out.println(data.toString());
-                                boolean myTurn = data.getBoolean("isTurn");
+                                boolean myTurn = false;
+                                myTurn = data.getBoolean("isTurn");
                                 JSONArray jsonTiles = data.getJSONArray("tiles");
                                 char[] newTiles = new char[jsonTiles.length()];
                                 for(int i = 0; i < newTiles.length; i++){
@@ -239,6 +249,7 @@ public class AI extends Player {
                         case "invalidPlay":
                             //received when an invalid play is sent to the backend
                             System.out.println(AI.this.name + " got invalid play");
+                            if(!AI.this.turn)state = 0;
                             try {
                                 if (state == 2)
                                     System.out.println(AI.this.name + " State set back to 1");
@@ -260,7 +271,7 @@ public class AI extends Player {
                 public void onClose(int code, String reason, boolean remote) {
                     System.out.println("AI SOCKET CLOSED");
                     System.out.println("REASON: " + reason + " CODE: " + code + "------------------------------------------------------------------------------------------------");
-
+                    GameManager.getInstance().removeAIQueue.add(GameManager.getInstance().theAIQueue.indexOf(this));
                 }
                 //if an error occurs print it
                 @Override

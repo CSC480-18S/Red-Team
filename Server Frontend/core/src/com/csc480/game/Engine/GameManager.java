@@ -295,6 +295,9 @@ public class GameManager {
                             }
                             break;
                         case "gameOver":
+                            for (int i = 0; i < theAIQueue.size(); i++) {
+                                theAIQueue.get(i).state = 0;
+                            }
                             if(GameManager.debug)
                                 System.out.println("gameOver");
                             LogEvent("gameOver");
