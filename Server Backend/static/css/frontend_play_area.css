@@ -12,11 +12,9 @@
 h1, h2, h3, h4, h5, h6 {
   font-weight: normal; }
 
-body {
-  background-image: url("/static/imgs/small3-unsplash.jpg");
-  background-repeat: no-repeat;
-  background-size:cover;
-  }
+html, body{
+  background: lightgray !important;
+}
 
 table {
   border: 1px solid black;
@@ -209,15 +207,6 @@ button {
  
 #square-0-0 {
   background: #f2c332; }
-
-.bg-yellow {
-  background: yellow; }
-
-.bg-green {
-  background: green; }
-
-.bg-grey {
-  background: grey; }
 
 .timer {
  text-align: center;

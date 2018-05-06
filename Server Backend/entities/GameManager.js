@@ -16,6 +16,7 @@ function GameManager(socketManager) {
   this.swaps = 0
   this.currentPlay = null
   this.names = ['AI_Bill', 'AI_Tara', 'AI_Richard', 'AI_Xia']
+  this.teams = ['Green', 'Gold', 'Green', 'Gold']
   this.playerManager = PlayerManager(socketManager, this)
   this.socketManager = socketManager
   this.timer = null
@@ -62,12 +63,19 @@ GameManager.prototype.aiNames = function(aiName) {
   }
 }
 
+GameManager.prototype.aiTeams = function(aiTeam) {
+  if (aiTeam === undefined) {
+    return this.teams.shift()
+  } else {
+    this.teams.push(aiTeam)
+  }
+}
+
 GameManager.prototype.generateAIData = function(player) {
-  let teams = ['Green', 'Gold']
   return {
     name: this.aiNames(),
     team: {
-      name: teams[Math.floor(Math.random() * teams.length)]
+      name: this.aiTeams()
     }
   }
 }
@@ -250,9 +258,9 @@ GameManager.prototype.gameOver = function() {
     winningTeam: goldWin ? 'Gold' : 'Green'
   }
 
-  this.socketManager.broadcastAll('gameOver', data)
-
   this.reset()
+  this.playerManager.updatePlayers(this.latestData())
+  this.socketManager.broadcastAll('gameOver', data)
 
   let timeUntil = 30
   // TODO: See if this can be moved to game event? @Landon
@@ -279,6 +287,7 @@ GameManager.prototype.reset = function() {
   this.gameboard = new Gameboard()
 
   this.playerManager.reset(this.latestData())
+  this.socketManager.broadcast('SFs', 'updateState', this.updateStateData())
 }
 
 GameManager.prototype.newGame = function() {

@@ -7,11 +7,14 @@ const bodyParser = require('body-parser')
 const http = require('http')
 const rm = require('./helpers/RedundancyManager')
 const db = require('./helpers/DB')
+const responseTime = require('response-time')
 
 /**
  * Set to a variable, instead of typing this out everytime
  */
 const app = express()
+
+app.use(responseTime())
 
 const xSession = require('express-session')
 
@@ -56,11 +59,6 @@ app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT')
   next()
-})
-
-process.on('unhandledRejection', (reason, p) => {
-  console.log('Unhandled Rejection at: Promise', p, 'reason:', reason)
-  // application specific logging, throwing an error, or other logic here
 })
 
 /**

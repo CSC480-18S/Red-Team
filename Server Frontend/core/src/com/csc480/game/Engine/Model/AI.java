@@ -187,7 +187,8 @@ public class AI extends Player {
                                 for(int i = 0; i < newTiles.length; i++){
                                     tiles[i] = jsonTiles.getString(i).toLowerCase().charAt(0);
                                 }
-                                JSONArray board = data.getJSONArray("board");
+                                JSONObject latestData = data.getJSONObject("latestData");
+                                JSONArray board = latestData.getJSONArray("board");
                                 //find the board/user state differences
                                 myBoard.the_game_board = GameManager.getInstance().unJSONifyBackendBoard(board);
                                 //initiate play thinking
