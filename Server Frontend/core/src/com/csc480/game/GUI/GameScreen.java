@@ -130,9 +130,7 @@ public class GameScreen implements Screen {
                 gameOverActor.setVisible(false);
 
             }
-        }catch (Exception n){//this is so bad i hate myself for this
-            n.printStackTrace();
-        }
+
         if(doStateUpdate){
             doStateUpdate = false;
                 if(bottom != null){
