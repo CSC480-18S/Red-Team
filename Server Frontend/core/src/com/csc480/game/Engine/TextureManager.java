@@ -17,10 +17,10 @@ public class TextureManager {
         //public final TextureAtlas textureAtlas;
         public Skin ui;
         //public final Texture rack;
-        public final Texture background;
-        public final Texture infoBackground;
-        public final Texture greenBar;
-        public final Texture goldBar;
+        public final TextureAtlas.AtlasRegion background;
+        public final TextureAtlas.AtlasRegion infoBackground;
+        public final TextureAtlas.AtlasRegion greenBar;
+        public final TextureAtlas.AtlasRegion goldBar;
 //        public final Texture tile;
         public final TextureAtlas tilesAtlas;
 
@@ -49,11 +49,11 @@ public class TextureManager {
             //rack = new Texture(Gdx.files.internal("rack.jpg"));
 
 //            tile = new Texture(Gdx.files.internal("temp.png"));
-            tilesAtlas = new TextureAtlas(Gdx.files.internal("tilesAtlas.atlas"));
-            background = new Texture(Gdx.files.internal("Background.jpg"));
-            infoBackground = new Texture(Gdx.files.internal("board.png"));
-            greenBar = new Texture(Gdx.files.internal("greenBar.png"));
-            goldBar = new Texture(Gdx.files.internal("goldBar.png"));
+            tilesAtlas = new TextureAtlas(Gdx.files.internal("images/tilesAtlas.atlas"));
+            background = tilesAtlas.findRegion("Background");
+            infoBackground = tilesAtlas.findRegion("board");
+            greenBar = tilesAtlas.findRegion("greenBar");
+            goldBar = tilesAtlas.findRegion("goldBar");
             //ui.addRegions(uiAtlas);
             //textureAtlas = new TextureAtlas(Gdx.files.internal("spriteAtlas.atlas"));
         }

@@ -38,10 +38,8 @@ public class AI extends Player {
         this.name = "AI"+(counter++);
         if(greenTeam){
             this.team = "Green";
-            greenTeam = !greenTeam;
         }else {
-            this.team = "Yellow";
-            greenTeam = !greenTeam;
+            this.team = "Gold";
         }
         myCache = new PriorityQueue(200);
         myBoard = new Board(11);
@@ -253,11 +251,12 @@ public class AI extends Player {
                             else{
                                 FindPlayInverted(myBoard);
                             }
-                            while(System.currentTimeMillis() - startTime < 6000){
-                                if(System.currentTimeMillis() - startTime % 100 == 0) {
-                                    System.out.println(System.currentTimeMillis());
+                            if(!GameManager.debug)
+                                while(System.currentTimeMillis() - startTime < 6000){
+                                    if(System.currentTimeMillis() - startTime % 100 == 0) {
+                                        System.out.println(System.currentTimeMillis());
+                                    }
                                 }
-                            }
                             state = 1;
 //                            tiles = GameManager.getInstance().getNewHand();
                             try {
@@ -299,7 +298,8 @@ public class AI extends Player {
             }).on("playWord", new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    System.out.println(AI.this.name + " got playWord, but does nothing");
+                    //System.out.println(AI.this.name + " got playWord, but does nothing");
+                    myCache.Clear();
                 }
             }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
                 @Override

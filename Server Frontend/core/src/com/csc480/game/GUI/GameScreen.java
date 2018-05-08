@@ -48,6 +48,8 @@ public class GameScreen implements Screen {
     private  OrthographicCamera viewCam;
     GameBoardActor gameBoardActor;
 
+    private boolean doStateUpdate = false;
+
 
     public GameScreen(OswebbleGame mainGame){
         BuildStage(mainGame);
@@ -83,11 +85,34 @@ public class GameScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         //Set the entire screen to this color
         Gdx.gl.glClearColor(.666f, .666f, .666f, 1);
+        try{
         //perform the actions of the actors
         stage.act(delta);
         //render the actors
         stage.draw();
-
+        }catch (NullPointerException n){
+            n.printStackTrace();
+        }
+        if(doStateUpdate){
+            doStateUpdate = false;
+                if(bottom != null){
+                    bottom.setPlayer(GameManager.getInstance().thePlayers[0]);
+                    bottom.updateState();
+                }
+                if(right != null) {
+                    right.setPlayer(GameManager.getInstance().thePlayers[1]);
+                    right.updateState();
+                }
+                if(top != null) {
+                    top.setPlayer(GameManager.getInstance().thePlayers[2]);
+                    top.updateState();
+                }
+                if(left != null) {
+                    left.setPlayer(GameManager.getInstance().thePlayers[3]);
+                    left.updateState();
+                }
+               UpdateInfoPanel();
+        }
     }
 
     @Override
@@ -233,5 +258,9 @@ public class GameScreen implements Screen {
             stage.setDebugInvisible(false);
         }
 
+    }
+
+    public void QueueUpdate(){
+        doStateUpdate = true;
     }
 }

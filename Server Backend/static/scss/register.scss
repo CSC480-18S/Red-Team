@@ -91,3 +91,18 @@ html,body {
          }
      }
  }
+
+ @media screen and (max-width: 1000px) and (min-width: 568px) {
+    #register-area{
+         #register {
+             height: 50%;
+             width: 50%;
+
+             #logo-area{  
+                #logo{
+                    width: 50%;
+                }
+            }
+         }
+     }
+ }

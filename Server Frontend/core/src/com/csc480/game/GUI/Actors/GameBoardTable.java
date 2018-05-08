@@ -93,6 +93,9 @@ public class GameBoardTable extends Group {
         Cell center = board.getCells().get( x+(11*(10-y)) );
         if(center.getActor() == null || center.getActor().getName().compareTo(letter.toLowerCase()) != 0){
             System.out.println("updating tile");
+            Actor a = center.getActor();
+            if(a != null)
+                board.removeActor(a);
             Image i = new Image(TextureManager.getInstance().getTileTexture(letter));
             i.setName(letter.toLowerCase());
             center.setActor(i);
@@ -103,6 +106,7 @@ public class GameBoardTable extends Group {
         if(center.getActor().getName().compareTo("`") != 0){
             System.out.println("nullifying tile");
             Actor a = center.getActor();
+            board.removeActor(a);
             Image tile = new Image(TextureManager.getInstance().getTileTexture(TextureManager.INVIS_TILE));
             tile.setName("`");
             center.setActor(tile);

@@ -22,6 +22,8 @@ public class StatsScreen implements Screen {
     Stage stage;
     private Viewport view;
     private OrthographicCamera viewCam;
+    private StatsTables table;
+    private float updateCounter = 0;
 
 ////////////////////////////////////
     private SpriteBatch batch;
@@ -49,7 +51,8 @@ public class StatsScreen implements Screen {
        // sprite.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         //sprite.setSize(,Gdx.graphics.getHeight());
 
-        StatsTables table  = new StatsTables();
+        table  = new StatsTables();
+        table.TableLayout();
         //table.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         table.setWidth(GameScreen.GUI_UNIT_SIZE * 37);
         table.setHeight(GameScreen.GUI_UNIT_SIZE * 37 *aspectRatio);
@@ -61,6 +64,19 @@ public class StatsScreen implements Screen {
 
 
     }
+    private void updateGUI(){
+        stage.getActors().removeValue(table, true);
+
+        table  = new StatsTables();
+        table.TableLayout();
+        //table.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        table.setWidth(GameScreen.GUI_UNIT_SIZE * 37);
+        table.setHeight(GameScreen.GUI_UNIT_SIZE * 34.5f *aspectRatio);
+        //table.setDebug(true);
+
+        stage.addActor(table);
+    }
+
     @Override
     public void show() {
         aspectRatio = (float)Gdx.graphics.getHeight() / (float)Gdx.graphics.getWidth();
@@ -81,6 +97,15 @@ public class StatsScreen implements Screen {
         sprite.draw(batch);
         batch.end();
         ////////////////////////////
+
+        //Every ten seconds update the stats from the backend
+        if (updateCounter > 10) {
+            updateGUI();
+            updateCounter = 0;
+        } else {
+            updateCounter += delta;
+        }
+
         stage.act(delta);
         //render the actors
         stage.draw();

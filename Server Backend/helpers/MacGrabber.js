@@ -1,18 +1,20 @@
 'use strict'
 
-/**
- * Imports arp module
- */
 const arp = require('node-arp')
 
-/**
- * Gets the mac address of the client
- * @param {String} ip - ip address
- */
-module.exports = (ip) => {
-  arp.getMAC(ip, (error, mac) => {
-    if (!error) {
-      return mac
+function mac(ip, callback) {
+  ip = getIP(ip)
+  arp.getMAC(ip, function(err, mac) {
+    if (!err) {
+      callback(mac)
+    } else {
+      callback(1)
     }
   })
 }
+
+function getIP(ip) {
+  return ip.split(':')[3]
+}
+
+module.exports = mac

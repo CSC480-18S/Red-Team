@@ -5,11 +5,22 @@ const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
 const http = require('http')
+const RedundancyManager = require('./helpers/RedundancyManager')
+const db = require('./helpers/DB')
 
 /**
  * Set to a variable, instead of typing this out everytime
  */
 const app = express()
+
+const xSession = require('express-session')
+
+let session = xSession({
+  secret: 'bobistheman',
+  proxy: true,
+  resave: false,
+  saveUninitialized: false
+})
 
 const server = http.createServer(app)
 
@@ -19,7 +30,6 @@ const socket = require('./helpers/Socket')(server)
  * Imports the routes to be used
  */
 const mainRoute = require('./routes/main-route')(socket)
-const usersRoute = require('./routes/users-route')
 
 /**
  * Imports Override.js
@@ -43,6 +53,11 @@ app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT')
   next()
+})
+
+process.on('unhandledRejection', (reason, p) => {
+  console.log('Unhandled Rejection at: Promise', p, 'reason:', reason)
+  // application specific logging, throwing an error, or other logic here
 })
 
 /**
@@ -75,23 +90,9 @@ app.set('json spaces', 4)
 /**
  * Setting the routes to be used
  */
-app.use('/', mainRoute)
-app.use('/api', usersRoute)
+app.use('/', session, mainRoute)
 
-/**
- * TODO: Figure out authentication on the routes @Landon
- */
-function isLoggedIn(req, res, next) {
-  let allow = true
-
-  if (allow) {
-    next()
-  } else {
-    res.status(400).json({ code: 'A1', title: 'Auth error', desc: 'Not authorized.' })
-  }
-}
-
-app.use('/static', isLoggedIn, express.static(path.join(__dirname, '/static')))
+app.use('/static', express.static(path.join(__dirname, '/static')))
 
 /**
  * Called when the server is ready and it listens on the specified port
@@ -99,3 +100,16 @@ app.use('/static', isLoggedIn, express.static(path.join(__dirname, '/static')))
 server.listen(port, function() {
   console.log('Server started on port ' + port)
 })
+
+db.checkForTeams()
+
+// const rm = new RedundancyManager()
+// setTimeout(function() {
+//   rm.loadLog()
+// }, 1000)
+// setTimeout(function() {
+//   rm.resend()
+// }, 2000)
+
+// const rm = require('./helpers/RedundancyManager')
+// rm.saveForLater('url1', 'data1')

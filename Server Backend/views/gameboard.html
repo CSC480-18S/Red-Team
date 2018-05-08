@@ -5,27 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css?family=Aldrich|Press+Start+2P" rel="stylesheet">
 
-    <title></title>
+    <title>Oswebble | Game</title>
 </head>
-
+    
 <body>
     <div id="root">
 
         <div id="usernameArea">
             <h4 class="username">You are {{username}}</h4>
+            <h4 class="username">Score: {{score}}</h4>
+            <h4 v-if="isTurn" class="username">Play Time: {{playTime}}</h4>
+            <div id="teamScores">
+                <h4 class="username">Green:</h4>
+                <h4 class="username">{{greenScore}}</h4>
+                <h4 class="username">{{goldScore}}</h4>
+                <h4 class="username">:Gold</h4>
+            </div>
         </div>
 
-        <div id="textBox">
+        <div id="textBox" :style="[colored ? {background: 'lightcoral'} : {background: 'none'}]">
             <p class="gameEvent"><b>Game Event</b></p>
             <p class="gameEvent" id="actualEvent"></p>
         </div>
         
         <div class="wrapper-board">
             <div class="row-style" v-for="row in rows">
-                <div class="col-style" v-for="square in squares" v-if="square.xAxis === row" :id="square.id" :style="{background: square.squareBackgroundColor}" @click="onClickSquare(square.id)"></div>
+                <div class="col-style" v-for="square in squares" v-if="square.xAxis === row" :id="square.id" :style="{background: square.squareBackgroundColor}"@click="onClickSquare(square.id)"></div>
             </div>
         </div>
-
+        
         <div class="wrapper-slots">
             <div class="row-style">
                 <div class="slot-style" v-for="tileSlot in tileSlots" :id="tileSlot.id">
@@ -39,11 +47,11 @@
         </div>
 
         <div class="wrapper-buttons">
-            <button id="btnSwap" @click="onClickSwap"><img src="/static/imgs/exchange.png"><br>EXCHANGE</button>
-            <button id="btnPlace" @click="onClickPlace" onclick="emitBoard()"><img src="/static/imgs/done.svg"><br>DONE</button>
-            <button id="btnShuffle" @click="onClickShuffle"><img src="/static/imgs/shuffle.png"><br>SHUFFLE</button>
+            <button id="btnSwap" class="btnCust" @click="onClickSwap"><img src="/static/imgs/exchange.png"><br>EXCHANGE</button>
+            <button id="btnPlace" class="btnCust" @click="onClickPlace" onclick="emitBoard()"><img src="/static/imgs/done.svg"><br>DONE</button>
+            <button id="btnShuffle" class="btnCust" @click="onClickShuffle"><img src="/static/imgs/shuffle.png"><br>SHUFFLE</button>
         </div>
-
+        
     </div>
 
     <script type="text/javascript" src="/static/js/vuejs-2.5.16.min.js"></script>

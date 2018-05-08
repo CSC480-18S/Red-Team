@@ -4,67 +4,86 @@
 const express = require('express')
 const router = express.Router()
 const mg = require('../helpers/MacGrabber')
-const session = require('express-session')
-
-let ses = session({
-  name: 'login-session',
-  secret: 'testlol'
-})
+const db = require('../helpers/DB')
 
 module.exports = (socket) => {
 /* eslint no-new:0 */
   const GameManager = require('../entities/GameManager')(socket)
-  const g = new GameManager()
+  new GameManager()
 
-  let users = []
-
-  router.get('/', ses, function(req, res, next) {
-    let ip = req.ip
-    ip = ip.split(':')[3]
-    for (let i = 0; i < users.length; i++) {
-      if (users[i].mac === mg(ip)) {
-        req.session.user = users[i].username
-        res.render('login', {user: users[i], error: req.session.error})
-        return
-      }
-    }
-
-    res.render('register', {error: req.session.error})
+  router.get('/', function(req, res, next) {
+    checkUserExists(req, res)
   })
 
   router.get('/admin', function(req, res, next) {
     res.render('admin')
   })
 
-  router.get('/game', ses, function(req, res, next) {
-    console.log(req.session)
-    if (!req.session.user) {
-      req.session.error = 'Please register/login first.'
-      res.redirect('/')
-    } else {
-      res.render('gameboard')
-      req.session.destroy()
-    }
+  router.get('/game', function(req, res, next) {
+    gateCheck(req, res)
   })
 
-  router.post('/register', ses, function(req, res, next) {
-    let ip = req.ip
-    ip = ip.split(':')[3]
+  router.post('/register', function(req, res, next) {
     let user = {
       username: req.body.username.trim(),
-      team: req.body.team.trim(),
-      mac: mg(ip)
+      team: req.body.team.trim()
     }
 
-    users.push(user)
-    req.session.error = undefined
-
-    res.redirect('/')
+    addUser(req, res, user)
   })
 
-  function gateCheck(req, res, next) {
-    console.log(req.bob === true)
-    next()
+  function addUser(req, res, user) {
+    mg(req.ip, (mac) => {
+      user.mac = mac
+      console.log(user)
+      db.checkIfUserNameExists(user.username).then(r => {
+        if (db.pruneResults(r)) {
+          req.session.error = 'Username is already taken'
+          res.redirect('/')
+        } else {
+          db.addUser(user.username, user.team, user.mac).then(t => {
+            req.session.user = user
+            req.session.error = undefined
+            res.redirect('/')
+          })
+        }
+      })
+    })
+  }
+
+  function checkUserExists(req, res) {
+    mg(req.ip, (mac) => {
+      db.checkIfUserExists(mac)
+        .then(r => {
+          if (db.pruneResults(r)) {
+            db.getTeamURL(mac)
+              .then(r2 => {
+                req.session.user = {
+                  username: r[0].username,
+                  team: r2 === 'http://localhost:8091/teams/1' ? 'Gold' : 'Green'
+                }
+                req.session.check = true
+                console.log(req.session.user)
+                res.render('login', {user: req.session.user, error: req.session.error})
+              })
+          } else {
+            res.render('register', {error: req.session.error})
+          }
+        }).catch(e => {
+          console.log(e)
+        })
+    })
+  }
+
+  function gateCheck(req, res) {
+    if (req.session.check) {
+      req.session.error = undefined
+      req.session.check = false
+      res.render('gameboard')
+    } else {
+      req.session.error = 'Please login/register first.'
+      res.redirect('/')
+    }
   }
 
   return router

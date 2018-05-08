@@ -11,10 +11,9 @@ html, body {
 * {
   font-family: "bs", sans-serif; }
 
-#alert-area{
-    margin: 0;
-    text-align: center;
-}
+#alert-area {
+  margin: 0;
+  text-align: center; }
 
 #main-area {
   height: 100%;
@@ -75,3 +74,10 @@ html, body {
   #register-area #register {
     height: 90%;
     width: 90%; } }
+
+@media screen and (max-width: 1000px) and (min-width: 568px) {
+  #register-area #register {
+    height: 50%;
+    width: 50%; }
+    #register-area #register #logo-area #logo {
+      width: 50%; } }
