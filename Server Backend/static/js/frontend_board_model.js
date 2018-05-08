@@ -24,18 +24,18 @@ ws.onopen = function(event) {
         // \nWinner: ${JSON.stringify(mes.data.winner, null, 4)}
         // \nWinning Team: ${JSON.stringify(mes.data.winningTeam, null, 4)}`)
 
-        let scores = mes.data.scores.map((player, index) =>{
+        let scores = mes.data.scores.map((player, index) => {
           return `${index + 1}: ${player.name} | Score: ${player.score}\n`
         })
 
         swal({
-          title: "Game Over!",
+          title: 'Game Over!',
           text: `${scores}
           Winning Team: ${mes.data.winningTeam}\n
           Winner: ${mes.data.winner}`,
-          icon: "success",
-          button: "Ok!",
-        });
+          icon: 'success',
+          button: 'Ok!'
+        })
         gameOver(mes.data)
         break
       case 'invalidPlay':
