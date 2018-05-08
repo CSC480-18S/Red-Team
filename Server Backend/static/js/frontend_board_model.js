@@ -20,7 +20,22 @@ ws.onopen = function(event) {
         removeForError(mes.data.error)
         break
       case 'gameOver':
-        alert(`${JSON.stringify(mes.data, null, 4)}`)
+        // alert(`Scores: \n${JSON.stringify(mes.data.scores, null, 4)}
+        // \nWinner: ${JSON.stringify(mes.data.winner, null, 4)}
+        // \nWinning Team: ${JSON.stringify(mes.data.winningTeam, null, 4)}`)
+
+        let scores = mes.data.scores.map((player, index) =>{
+          return `${index + 1}: ${player.name} | Score: ${player.score}\n`
+        })
+
+        swal({
+          title: "Game Over!",
+          text: `${scores}
+          Winning Team: ${mes.data.winningTeam}\n
+          Winner: ${mes.data.winner}`,
+          icon: "success",
+          button: "Ok!",
+        });
         gameOver(mes.data)
         break
       case 'invalidPlay':
