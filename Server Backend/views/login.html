@@ -23,7 +23,7 @@
                         <button type="button" id="play-button" class="btn btn-lg btn-block
                         <% if (user.team === 'Gold') { %>
                         btn-success    
-                        <% } else {%> btn-warning <% } %>"></button>
+                        <% } else {%> btn-warning <% } %>">Play!</button>
                 </div>
                 <div id="status-area">
                     <div class="stats">
@@ -43,7 +43,6 @@
     <script type="text/javascript" src="/static/js/tether-1.2.4.min.js"></script>
     <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="/static/js/bootstrap-4.0.0.min.js"></script>
-    <script type="text/javascript" src="/static/js/socketio-2.0.3.min.js"></script>
 
     <script type="text/javascript">
         $(window).bind("pageshow", function(event) {
@@ -51,20 +50,32 @@
                 window.location.reload(); 
             }
         });
-        let socket = io()
 
-        socket.on('whoAreYou', () => {
-            socket.emit('whoAreYou', {isQueued: true})
-        })
+        let ws = new WebSocket('ws://localhost:3000')
 
-        socket.on('currentPlayerCount', response => {
-            $('#currentPlayerCount').empty().text(response.amount)
-            if(response.amount >= 4){
+        ws.onopen = () => {
+            let queue = { event: 'whoAmI', data: { client: 'Q' } }
+            ws.send(JSON.stringify(queue))
+
+            ws.onmessage = (message) => {
+                console.log(message)
+                let mes = JSON.parse(message.data)
+                console.log(mes)
+                switch(mes.event){
+                    case 'currentPlayerCount':
+                        updatePlayerCount(mes.data.amount)
+                }
+            }
+        }
+
+        function updatePlayerCount(amount){
+            $('#currentPlayerCount').empty().text(amount)
+            if(amount >= 4){
                 $('#play-button').addClass('btn-danger').prop('disabled', true).empty().append('<i class="fas fa-times"></i> Max Players');
             } else {
                 $('#play-button').removeClass('btn-danger').prop('disabled', false).empty().append('Play!');
             }
-        })
+        }
     </script>
 
     <script type="text/javascript">

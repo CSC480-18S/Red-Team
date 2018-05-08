@@ -78,6 +78,11 @@ class Tile {
   get letter() {
     return this._letter
   }
+
+  nullMultiplier() {
+    this.multiplierType = null
+    this.multiplier = null
+  }
 }
 
 /**

@@ -6,26 +6,228 @@ var currentTileCount = tileSlotNumber + 1
 var firstTimeGeneratedTiles = []
 
 // sockets
-let socket = io.connect()
-socket.on('connect', () => {
-  console.log(socket.id)
-})
+let ws = new WebSocket('ws://localhost:3000')
+ws.onopen = function(event) {
+  // send "whoAmI" event
+  let whoAmI = { event: 'whoAmI', data: { client: 'CL' } }
+  ws.send(JSON.stringify(whoAmI))
 
-socket.on('whoAreYou', () => {
-  socket.emit('whoAreYou', {
-    isClient: true
-  })
-})
+  ws.onmessage = function(event) {
+    // NEW WEBSOCKETS STUFF -- UNABLE TO TEST, MAY BE POORLY IMPLEMENTED
+    let mes = JSON.parse(event.data)
+    console.log(mes.event)
+    switch (mes.event) {
+      case 'errorMessage':
+        alert(mes.data.error)
+        break
+      case 'gameOver':
+        alert(`${JSON.stringify(mes.data, null, 4)}`)
+        gameOver(mes.data)
+        break
+      case 'boardUpdate':
+        boardUpdate(mes.data)
+        break
+      case 'play':
+        console.log(mes.data)
+        play(mes.data)
+        break
+	  case 'playTimer':
+        playTime(mes.data.time)
+        break
+      case 'gameEvent':
+        console.log('received gameEvent: ')
+        console.log(mes.data)
 
-socket.on('errorMessage', response => {
+        // // test data
+        var gameEvent = mes.data.action
+        // gameEvent = response.action;
+        document.getElementById('actualEvent').innerHTML = '<br>'
+        document.getElementById('actualEvent').innerHTML = gameEvent
+        break
+      case 'dataUpdate':
+        dataUpdate(mes.data)
+        break
+      default:
+        console.log(mes.data)
+        console.log(mes.data)
+    }
+  }
+}
+
+// responds to boardUpdate socket event
+function boardUpdate(response) {
+  this.data.goldScore = response.yellow
+  this.data.greenScore = response.green
+
+  this.data.currentPlayTileAmount = 0
+  for (i = 0; i < row; i++) {
+    for (j = 0; j < column; j++) {
+      var square = document.getElementById('square-' + i + '-' + j)
+      if (!square.hasChildNodes()) {
+        if (response.board[i][j] !== null) {
+          var tile = {
+            id: 'playedLetter: ' + response.board[i][j],
+            letter: response.board[i][j],
+            value: tileValue(response.board[i][j]),
+            highlightedColor: undefined,
+            visibility: 'visible'
+          }
+          console.log(tile)
+          var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+          svg.setAttribute('id', tile.id)
+          svg.setAttribute('visibility', 'visible')
+          var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+          rect.setAttribute('x', 0)
+          rect.setAttribute('y', 0)
+          rect.setAttribute('stroke', 'black')
+          rect.setAttribute('stroke-width', '1px')
+          rect.setAttribute('width', '100%')
+          rect.setAttribute('height', '100%')
+          rect.setAttribute('fill', '#D3D3D3')
+          svg.appendChild(rect)
+          var text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+          text.setAttribute('x', '50%')
+          text.setAttribute('y', '60%')
+          text.setAttribute('alignment-baseline', 'middle')
+          text.setAttribute('text-anchor', 'middle')
+          text.setAttribute('fill', undefined)
+          text.textContent = tile.letter
+          svg.appendChild(text)
+          var text2 = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+          text2.setAttribute('x', '70%')
+          text2.setAttribute('y', '30%')
+          text2.setAttribute('fill', undefined)
+          text2.setAttribute('class', 'letter-value')
+          text2.textContent = tile.value
+          svg.appendChild(text2)
+          square.appendChild(svg)
+
+          this.data.tilesOnBoardValueAndPosition.push({tileLetter: tile.letter,
+            xAxis: i,
+            yAxis: j
+          })
+        }
+      }
+    }
+  }
+}
+
+function gameOver(response) {
+  for (let i = 0; i < this.data.tilesOnBoardValueAndPosition.length - 1; i++) {
+    var t = this.data.tilesOnBoardValueAndPosition[this.data.tilesOnBoardValueAndPosition.length - 1]
+    // console.log(t)
+
+    // if (t != undefined) {
+    var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
+    this.data.tilesOnBoardValueAndPosition.pop()
+    square.removeChild(square.firstChild)
+    // }
+  }
+  this.data.selectedTileId = ''
+  for (var i = 0; i < tileSlotNumber; i++) {
+    this.data.tileSlots[i].tile.highlightedColor = '#000000'
+  }
+
+  // this.data.currentPlayTileAmount = 0
+}
+
+// response to play socket event
+function play(response) {
+  if (response.invalid) {
+    for (let i = 0; i < this.data.currentPlayTileAmount; i++) {
+      var t = this.data.tilesOnBoardValueAndPosition[this.data.tilesOnBoardValueAndPosition.length - 1]
+      // console.log(t)
+
+      if (t != undefined) {
+        var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
+        this.data.tilesOnBoardValueAndPosition.pop()
+        square.removeChild(square.firstChild)
+      }
+    }
+    this.data.selectedTileId = ''
+    for (var i = 0; i < tileSlotNumber; i++) {
+      this.data.tileSlots[i].tile.highlightedColor = '#000000'
+    }
+
+    this.data.currentPlayTileAmount = 0
+  }
+
+  for (let i = 0; i < this.data.tileSlots.length; i++) {
+    this.data.tileSlots[i].hasTile = true
+    this.data.tileSlots[i].tile.visibility = 'visible'
+  }
+}
+// response to playTime socket event
+function playTime(time) {
+  this.data.playTime = time
+  if (this.data.playTime % 2 == 0) {
+    this.data.colored = true
+  }	else {
+    this.data.colored = false
+  }
+}
+
+// response to dataUpdate socket event
+function dataUpdate(response) {
+  this.data.isTurn = response.isTurn
+  this.data.score = response.score
+  /* this.data.playTime = 60
+
+  let time
+  if (this.data.isTurn) {
+    clearInterval(time)
+    time = setInterval(() => {
+      this.data.playTime--
+      if (this.data.playTime % 2 === 0) {
+        this.data.colored = true
+      } else {
+        this.data.colored = false
+      }
+    }, 1000)
+  } else {
+    clearInterval(time)
+    this.data.colored = false
+  } */
+
+  console.log('received dataUpdate event: ')
+  console.log(response)
+  this.data.username = response.name
+  this.data.tileSlots = generateTiles(response.tiles)
+  // response.position is the position of four players on the server
+  // tested data
+  // var tiles = ['T', 'E', 'S', 'T'];
+  // var isTurn = true;
+  // if (isTurn === false) {
+  if (response.isTurn === false) {
+    this.data.isMyTurn = 'Wait for your turn...'
+    document.getElementById('btnSwap').disabled = true
+    document.getElementById('btnPlace').disabled = true
+    document.getElementById('btnShuffle').disabled = true
+    for (var i = 0; i < tileSlotNumber; i++) {
+      this.data.tileSlots[i].tile.disabled = true
+    }
+  } else {
+    this.data.isMyTurn = "It's your turn!"
+    document.getElementById('btnSwap').disabled = false
+    document.getElementById('btnPlace').disabled = false
+    document.getElementById('btnShuffle').disabled = false
+    for (var i = 0; i < tileSlotNumber; i++) {
+      this.data.tileSlots[i].tile.disabled = false
+    }
+  }
+}
+
+// OLD SOCKETS.IO STUFF -- LEFT COMMENTED OUT IN CASE WEBSOCKETS STUFF IS IMPLEMENTED INCORRECTLY
+
+/* ws.on('errorMessage', response => {
   alert(response.error)
 })
 
-socket.on('gameOver', response => {
+ws.on('gameOver', response => {
   alert(`${JSON.stringify(response, null, 4)}`)
 })
 
-socket.on('boardUpdate', response => {
+ws.on('boardUpdate', response => {
   this.data.goldScore = response.yellow
   this.data.greenScore = response.green
 
@@ -82,7 +284,7 @@ socket.on('boardUpdate', response => {
   }
 })
 
-socket.on('play', response => {
+ws.on('play', response => {
   console.log(response)
 
   if (response.invalid) {
@@ -110,7 +312,7 @@ socket.on('play', response => {
   }
 })
 
-socket.on('gameEvent', response => {
+ws.on('gameEvent', response => {
   console.log('received gameEvent: ')
   console.log(response)
 
@@ -121,7 +323,7 @@ socket.on('gameEvent', response => {
   document.getElementById('actualEvent').innerHTML = gameEvent
 })
 
-socket.on('dataUpdate', response => {
+ws.on('dataUpdate', response => {
   this.data.isTurn = response.isTurn
   this.data.score = response.score
   this.data.playTime = 60
@@ -168,7 +370,7 @@ socket.on('dataUpdate', response => {
       this.data.tileSlots[i].tile.disabled = false
     }
   }
-})
+}) */
 
 // data object
 var data = {
@@ -565,5 +767,11 @@ function emitBoard() {
 
   console.log(array)
 
-  socket.emit('playWord', array)
+  // socket.emit('playWord', array)
+  let board = { event: 'playWord', data: {play: array} }
+  ws.send(JSON.stringify(board))
+}
+
+function helpFunction() {
+  alert("-To play a tile on the board, 'Tap' the tile in your hand and then 'Tap' the board where you want to play it. \n -The EXCHANGE button will replace your tiles with a new hand and move on to the next player's turn. \n -The SHUFFLE button will shuffle the tiles in your hand, but will not skip your turn. \n -The DONE button is how you place a word on the board to complete your turn. \n -You will have one minute to play a word or EXCHANGE your hand before your turn is skipped. \n -The GAME EVENT box will flash red when it is your turn and the timer is counting down.")
 }
