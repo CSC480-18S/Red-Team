@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -54,7 +55,7 @@ public class HandActorTest {
     public void setPlayerTC_00() {
             player01 = new Player();
             test.setPlayer(player01);
-            assertNotNull(test.name);
+            assertEquals(test.name, player01.name);
 
     }
 
