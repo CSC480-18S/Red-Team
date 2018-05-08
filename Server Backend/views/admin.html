@@ -30,7 +30,6 @@
     <script type="text/javascript" src="/static/js/tether-1.2.4.min.js"></script>
     <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="/static/js/bootstrap-4.0.0.min.js"></script>
-    <script type="text/javascript" src="/static/js/socketio-2.0.3.min.js"></script>
 
     <script type="text/javascript">
         $('#board').append('<th></th>')
@@ -92,43 +91,59 @@
             
             let playerInfo = ''
             for(let i = 0; i < players.length; i++){
-                playerInfo += '<div class=\'data\'>'
-                playerInfo += `<p><i class="fas fa-map-marker"></i> POSITION: ${players[i].position}</p>`
-                playerInfo += `<p><i class="fas fa-hand-paper"></i> TILES: [${players[i].tiles}]</p>`
-                playerInfo += `<p><i class="fas fa-star"></i></i> SCORE: ${players[i].score}</p>`
-                playerInfo += `<p><i class="fas fa-user"></i> NAME: ${players[i].name === null ? '' : players[i].name}</p>`
-                playerInfo += `<p><i class="fas fa-users"></i> TEAM: ${players[i].team === null ? '' : players[i].team}</p>`
-                playerInfo += `<p><i class="fas fa-arrow-right"></i> TURN: ${players[i].isTurn === null ? '' : players[i].isTurn}</p>`
-                playerInfo += '</div>'
+				if (players[i] !== null) {
+					playerInfo += '<div class=\'data\'>'
+					playerInfo += `<p><i class="fas fa-map-marker"></i> POSITION: ${players[i].position}</p>`
+					playerInfo += `<p><i class="fas fa-hand-paper"></i> TILES: [${players[i].tiles}]</p>`
+					playerInfo += `<p><i class="fas fa-star"></i></i> SCORE: ${players[i].score}</p>`
+					playerInfo += `<p><i class="fas fa-user"></i> NAME: ${players[i].name === null ? '' : players[i].name}</p>`
+					playerInfo += `<p><i class="fas fa-users"></i> TEAM: ${players[i].team === null ? '' : players[i].team}</p>`
+					playerInfo += `<p><i class="fas fa-arrow-right"></i> TURN: ${players[i].isTurn === null ? '' : players[i].isTurn}</p>`
+					playerInfo += '</div>'
+				}
             }
 
              $('#overall-info').empty().append(playerInfo)
 
         }
+        
+		let socket = new WebSocket('ws://localhost:3000')
+		
+        socket.onopen = function(event){
+			let sf = { event: 'whoAmI', data: { client: 'SF' } }
+            socket.send(JSON.stringify(sf))
+		
+			socket.onmessage = function(event){
+				let message = JSON.parse(event.data)
+				
+				switch (message.event){
+					case 'whoAreYou':
+						let queue = { event: 'whoAreYou', data: {isSF: true} }
+						socket.send(JSON.stringify(queue))
+						break
+					
+                    case 'updateState':
+                        console.log(message)
+						updateBoard(message.data.board)
+						updatePlayerInfo(message.data.players)
+						break
+					
+                    case 'gameEvent':
+                    console.log(message)
+						let date = new Date()
+						let gameEvent = '<div class=\'update\'>'
+						gameEvent += `<p class=\'time\'><i class="fas fa-clock"></i> TIME: ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}</p>`
+						gameEvent += '<div class=\'data\'>'
+						gameEvent += `<p><i class="fas fa-exclamation-triangle"></i> ${message.data.action.toUpperCase()}</p>`
+						gameEvent += '</div>'
+						$('#event-area').append(gameEvent)
 
-        let socket = io('localhost:3000');
-
-        socket.on('whoAreYou', () => {
-            socket.emit('whoAreYou', {isSF: true})
-        })
-
-        socket.on('updateState', r => {
-            updateBoard(r.board)
-            updatePlayerInfo(r.players)
-        })
-
-        socket.on('gameEvent', r => {
-            let date = new Date()
-            let gameEvent = '<div class=\'update\'>'
-            gameEvent += `<p class=\'time\'><i class="fas fa-clock"></i> TIME: ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}</p>`
-            gameEvent += '<div class=\'data\'>'
-            gameEvent += `<p><i class="fas fa-exclamation-triangle"></i> ${r.action.toUpperCase()}</p>`
-            gameEvent += '</div>'
-            $('#event-area').append(gameEvent)
-
-            let objDiv = document.getElementById("event-area");
-            objDiv.scrollTop = objDiv.scrollHeight;
-        })
+						let objDiv = document.getElementById("event-area")
+						objDiv.scrollTop = objDiv.scrollHeight
+						break
+				}
+			}
+		}
     
     </script>
 

@@ -5,7 +5,7 @@ const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
 const http = require('http')
-const RedundancyManager = require('./helpers/RedundancyManager')
+const rm = require('./helpers/RedundancyManager')
 const db = require('./helpers/DB')
 
 /**
@@ -26,10 +26,13 @@ const server = http.createServer(app)
 
 const socket = require('./helpers/Socket')(server)
 
+const ServerManager = require('./entities/ServerManager')(socket)
+new ServerManager()
+
 /**
  * Imports the routes to be used
  */
-const mainRoute = require('./routes/main-route')(socket)
+const mainRoute = require('./routes/main-route')
 
 /**
  * Imports Override.js
@@ -103,13 +106,5 @@ server.listen(port, function() {
 
 db.checkForTeams()
 
-// const rm = new RedundancyManager()
-// setTimeout(function() {
-//   rm.loadLog()
-// }, 1000)
-// setTimeout(function() {
-//   rm.resend()
-// }, 2000)
-
-// const rm = require('./helpers/RedundancyManager')
-// rm.saveForLater('url1', 'data1')
+// attempt RedundancyManager resends
+rm.resend()

@@ -58,6 +58,7 @@ public class GameOverActor extends Group {
 
     public void update(String winnerMessage, Array<String> playersScore, String winningTeam){
         //todo remove the ones that will never match the string
+        System.out.println("winning team set to "+winningTeam);
         if(winningTeam.toLowerCase().compareTo("green") == 0)
             theTabel.setBackground(greenbackGround.getDrawable());
         if(winningTeam.toLowerCase().compareTo("gold") == 0)

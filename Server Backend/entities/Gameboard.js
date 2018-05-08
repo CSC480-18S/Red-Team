@@ -103,7 +103,7 @@ class Gameboard {
          * Check to see if the word was somehow placed out of bounds
          */
           if (tempBoard[j][i] === undefined) {
-            return this.validatorDispatcher(2, wordActual)
+            return this.validatorDispatcher(false, 2, wordActual)
           }
           let l = tempBoard[j][i].letter
           let wordLetter = w.h ? word.word[i - word.sX].toUpperCase() : word.word[j - word.sY].toUpperCase()
@@ -112,7 +112,7 @@ class Gameboard {
          * Validate if the letter placed can be placed there
          */
           if (!this.validatePosition(l, wordLetter)) {
-            return this.validatorDispatcher(3, wordActual)
+            return this.validatorDispatcher(false, 3, wordActual)
           }
 
           /**
@@ -131,7 +131,7 @@ class Gameboard {
        */
       if (this._firstPlay) {
         if (!this.validateCenterTile(tempBoard)) {
-          return this.validatorDispatcher(4, wordActual)
+          return this.validatorDispatcher(false, 4, wordActual)
         }
         firstPlayBypass = true
         continue
@@ -145,19 +145,21 @@ class Gameboard {
      * Make sure that the entire play has valid placement
      */
     if (!firstPlayBypass && !validWordPlacement) {
-      return this.validatorDispatcher(5, invalidWord)
+      return this.validatorDispatcher(false, 5, invalidWord)
     }
     this._board = tempBoard
-    return this.validatorDispatcher(0, words)
+    return this.validatorDispatcher(true, 0, words)
   }
 
   /**
    * Dispatches error codes and words from the validatior
+   * @param {Number} v - valid
    * @param {Number} e - error code
    * @param {String/Array} w - word(s)
    */
-  validatorDispatcher(e, w) {
+  validatorDispatcher(v, e, w) {
     return {
+      valid: v,
       error: e,
       data: w
     }
