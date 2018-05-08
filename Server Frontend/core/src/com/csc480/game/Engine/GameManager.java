@@ -32,8 +32,8 @@ public class GameManager {
     public int greenScore = 0;
     public int goldScore = 0;
     private ArrayList<String> eventBacklog;
-    private ArrayList<Integer> connectAIQueue;
-    private ArrayList<Integer> removeAIQueue;
+    public ArrayList<Integer> connectAIQueue;
+    public ArrayList<Integer> removeAIQueue;
     private ArrayList<String> logQueue;
 
 
@@ -89,7 +89,8 @@ public class GameManager {
             //thePlayers[position] = theAIs[position];
         }
         if(removeAIQueue.size() > 0){
-            AI dead = theAIQueue.remove(0);
+            int posToRemove = removeAIQueue.get(0);
+            AI dead = theAIQueue.remove(posToRemove);
             dead.disconnectAI();
 //            Integer position = removeAIQueue.remove(0);
 //            if(theAIs[position] != null)
@@ -147,7 +148,7 @@ public class GameManager {
                                 //removeAIQueue.add(position);
                                 removeAIQueue.add(0);
                                 if (debug)
-                                   logQueue.add("Got removeAI. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
+                                    logQueue.add("Got removeAI. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
                             } catch (ArrayIndexOutOfBoundsException e) {
                                 e.printStackTrace();
                             } catch (JSONException e) {
@@ -197,36 +198,11 @@ public class GameManager {
                             goldScore = data.getInt("gold");
 
                             break;
-
-                        case "boardUpdate":
-                            if(GameManager.debug)
-                                System.out.println("frontend got boardUpdate");
-                            try {
-                                System.out.println("data: " + data.toString());
-                                JSONArray board = data.getJSONArray("board");
-                                //find the board/user state differences
-                                wordHasBeenPlayed(unJSONifyBackendBoard(board));
-                                //hard update the game and user states
-                                hardUpdateBoardState(unJSONifyBackendBoard(board));
-                                if (debug)
-                                    logQueue.add("Got boardUpdate. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
-                            } catch (ArrayIndexOutOfBoundsException e) {
-                                e.printStackTrace();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            break;
                         case "gameEvent":
                             if(GameManager.debug)
                                 System.out.println("frontend got gameEvent");
                             try {
-                                boolean isBonus = false;
                                 String action = data.getString("action");
-                                if (data.get("bonus") != JSONObject.NULL)
-                                    isBonus = data.getBoolean("bonus");
-                                //System.out.println(action);
-                                if (isBonus)
-                                    BonusEvent(action);
                                 LogEvent(action);
                                 if (debug)
                                     logQueue.add("Got gameEvent. Game num: " + (theGame.theGameScreen.NUM_GAMES_SINCE_START));
@@ -250,6 +226,12 @@ public class GameManager {
 
                                 greenScore = data.getInt("green");
                                 goldScore = data.getInt("gold");
+                                boolean isBonus = false;
+                                if (data.get("bonus") != JSONObject.NULL)
+                                    isBonus = data.getBoolean("bonus");
+                                //System.out.println(action);
+                                if (isBonus)
+                                    BonusEvent("Bonus Word!");
 
                                 JSONArray players = data.getJSONArray("players");
                                 int i;
@@ -412,7 +394,7 @@ public class GameManager {
                             serverTile.charAt(1),
                             0,
                             0,
-                           "",
+                            "",
                             0
                     );
                     parsed[i][j] = t;

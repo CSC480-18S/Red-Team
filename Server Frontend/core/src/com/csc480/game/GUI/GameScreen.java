@@ -55,8 +55,6 @@ public class GameScreen implements Screen {
     private Array<String> playersScores;
     private String winningTeam;
 
-    private boolean doStateUpdate = false;
-
 
     public GameScreen(OswebbleGame mainGame){
         BuildStage(mainGame);
@@ -93,64 +91,46 @@ public class GameScreen implements Screen {
         //Set the entire screen to this color
         Gdx.gl.glClearColor(.666f, .666f, .666f, 1);
 //        try{
-            //perform the actions of the actors
-            stage.act(delta);
-            //render the actors
-            stage.draw();
-            GameManager.getInstance().Update();
-            if(updateGameStatus){
-               updateGameStatus = false;
-                if (bottom != null) {
-                    bottom.setPlayer(GameManager.getInstance().thePlayers[0]);
-                    bottom.updateState();
-                }
-                if (right != null) {
-                    right.setPlayer(GameManager.getInstance().thePlayers[1]);
-                    right.updateState();
-                }
-                if (top != null) {
-                    top.setPlayer(GameManager.getInstance().thePlayers[2]);
-                    top.updateState();
-                }
-
-                if (left != null) {
-                    left.setPlayer(GameManager.getInstance().thePlayers[3]);
-                    left.updateState();
-                }
-                UpdateInfoPanel();
-
+        //perform the actions of the actors
+        stage.act(delta);
+        //render the actors
+        stage.draw();
+        GameManager.getInstance().Update();
+        if(updateGameStatus){
+            updateGameStatus = false;
+            if (bottom != null) {
+                bottom.setPlayer(GameManager.getInstance().thePlayers[0]);
+                bottom.updateState();
             }
-            if(triggerGameOverDialog){
-                triggerGameOverDialog = false;
-                gameOverActor.update(winner, playersScores, winningTeam);
-                gameOverActor.setVisible(true);
+            if (right != null) {
+                right.setPlayer(GameManager.getInstance().thePlayers[1]);
+                right.updateState();
             }
-            if(closeGameOverDialog){
-                closeGameOverDialog = false;
-                gameOverActor.setVisible(false);
-
+            if (top != null) {
+                top.setPlayer(GameManager.getInstance().thePlayers[2]);
+                top.updateState();
             }
 
-        if(doStateUpdate){
-            doStateUpdate = false;
-                if(bottom != null){
-                    bottom.setPlayer(GameManager.getInstance().thePlayers[0]);
-                    bottom.updateState();
-                }
-                if(right != null) {
-                    right.setPlayer(GameManager.getInstance().thePlayers[1]);
-                    right.updateState();
-                }
-                if(top != null) {
-                    top.setPlayer(GameManager.getInstance().thePlayers[2]);
-                    top.updateState();
-                }
-                if(left != null) {
-                    left.setPlayer(GameManager.getInstance().thePlayers[3]);
-                    left.updateState();
-                }
-               UpdateInfoPanel();
+            if (left != null) {
+                left.setPlayer(GameManager.getInstance().thePlayers[3]);
+                left.updateState();
+            }
+            UpdateInfoPanel();
+
         }
+        if(triggerGameOverDialog){
+            triggerGameOverDialog = false;
+            gameOverActor.update(winner, playersScores, winningTeam);
+            gameOverActor.setVisible(true);
+        }
+        if(closeGameOverDialog){
+            closeGameOverDialog = false;
+            gameOverActor.setVisible(false);
+
+        }
+//        }catch (Exception n){//this is so bad i hate myself for this
+//            n.printStackTrace();
+//        }
     }
 
     @Override
@@ -185,11 +165,11 @@ public class GameScreen implements Screen {
 
     private void BuildStage(OswebbleGame mainGame){
         if(GameManager.debug)
-        System.out.println("Density: "+Gdx.graphics.getDensity());
+            System.out.println("Density: "+Gdx.graphics.getDensity());
         //must calculate the aspect ratio to resize properly
         aspectRatio = (float)Gdx.graphics.getHeight() / (float)Gdx.graphics.getWidth();
         if(GameManager.debug)
-        System.out.println("aspectRatio: "+aspectRatio);
+            System.out.println("aspectRatio: "+aspectRatio);
 
         //we probably dont want to use bitmapfonts, as they can get blurry
         //see https://github.com/libgdx/libgdx/wiki/Gdx-freetype for a better solution
@@ -257,7 +237,7 @@ public class GameScreen implements Screen {
         playArea.addActor(infoPanel);
 
         if(GameManager.debug)
-        System.out.println(board.getChildren().size);
+            System.out.println(board.getChildren().size);
         playArea.addActor(board);
         playArea.scaleBy(GUI_UNIT_SIZE * .04f);//had to do this because i originally tested all the sizes at a lower dpi
 
@@ -300,9 +280,8 @@ public class GameScreen implements Screen {
         }
 
     }
-
-    public void QueueUpdate(){
-        doStateUpdate = true;
+    public void QueueUpdatePlayers(){
+        updateGameStatus = true;
     }
 
     public void TriggerEndGame(String winner, Array<String> playersScores , String winningTeam){
