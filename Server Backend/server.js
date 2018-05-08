@@ -106,7 +106,7 @@ server.listen(port, function() {
 
 db.checkForTeams()
 
-const RESEND_DELAY = 1000 * 60 * 5
+const RESEND_DELAY = 1000 * 60 * 2
 
 // Starts a loop for calling RedundancyManager resends
 setInterval(function() {

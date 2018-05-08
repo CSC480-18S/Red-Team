@@ -109,7 +109,11 @@ function updatePlayer(player, words) {
       this.updatePlayer(player, words)
     })
       .catch(e => {
-        rm.saveForLater(PLAYERS, words)
+        rm.saveForLater(PLAYED_WORDS, {
+          player: player,
+          words: words,
+          type: 0
+        })
       })
   }
 }
@@ -129,7 +133,11 @@ function updatePlayerDirty(player, word) {
   }
   axios.post(PLAYED_WORDS, play)
     .catch(e => {
-      rm.saveForLater(PLAYERS, play)
+      rm.saveForLater(PLAYED_WORDS, {
+        player: player,
+        words: word,
+        type: 1
+      })
     })
 }
 
@@ -148,7 +156,11 @@ function updatePlayerSpecial(player, word) {
       player: player.link
     })
       .catch(e => {
-        rm.saveForLater(PLAYERS, word)
+        rm.saveForLater(PLAYED_WORDS, {
+          player: player,
+          words: word,
+          type: 2
+        })
       })
   }
 }
@@ -211,7 +223,7 @@ function updateWin(team, score, win) {
   }
   axios.post(END_GAME, data)
     .catch(e => {
-      rm.saveForLater(END_GAME)
+      rm.saveForLater(END_GAME, data)
     })
 }
 
