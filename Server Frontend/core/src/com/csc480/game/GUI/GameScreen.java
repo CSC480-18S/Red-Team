@@ -275,8 +275,8 @@ public class GameScreen implements Screen {
         stage.addActor(debug);
 
         if(GameManager.getInstance().debug){
-            stage.setDebugAll(true);
-            stage.setDebugInvisible(false);
+//            stage.setDebugAll(true);
+//            stage.setDebugInvisible(false);
         }
 
     }

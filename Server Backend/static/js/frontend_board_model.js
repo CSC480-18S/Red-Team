@@ -20,10 +20,6 @@ ws.onopen = function(event) {
         removeForError(mes.data.error)
         break
       case 'gameOver':
-        // alert(`Scores: \n${JSON.stringify(mes.data.scores, null, 4)}
-        // \nWinner: ${JSON.stringify(mes.data.winner, null, 4)}
-        // \nWinning Team: ${JSON.stringify(mes.data.winningTeam, null, 4)}`)
-
         let scores = mes.data.scores.map((player, index) =>{
           return `${index + 1}: ${player.name} | Score: ${player.score}\n`
         })
