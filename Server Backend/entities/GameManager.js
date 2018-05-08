@@ -48,6 +48,7 @@ GameManager.prototype.addPlayer = function(id, socket, isAI, data) {
   } else {
     player.addInformation(data)
   }
+
   let latestData = player.data()
   latestData.latestData = this.latestData()
   this.socketManager.emit(id, 'dataUpdate', latestData)
@@ -265,7 +266,6 @@ GameManager.prototype.gameOver = function() {
   this.socketManager.broadcastAll('gameOver', data)
 
   let timeUntil = 30
-  // TODO: See if this can be moved to game event? @Landon
   let timer = setInterval(() => {
     if (timeUntil > 0) {
       dg(`${timeUntil}`, 'debug')
@@ -362,20 +362,20 @@ GameManager.prototype.validPlay = function(id) {
   let words = this.currentPlay.words.map(w => w.word)
   let action = `${player.name} played ${words} for ${score.totalScore} points`
 
+  this.updateTurn(id, this.latestData())
+
   this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(action))
   this.socketManager.broadcast('SFs', 'updateState', this.updateStateData())
 
   this.currentPlay = null
-
-  this.updateTurn(id, this.latestData())
 }
 
 GameManager.prototype.invalidPlay = function(id, reason) {
   dg(`${id} -> invalid play`, 'info')
   this.currentPlay = null
 
-  this.socketManager.emit(id, 'invalidPlay')
-  this.socketManager.emit(id, 'gameEvent', this.generateGameEvent(reason))
+  this.socketManager.emit(id, 'invalidPlay', () => {})
+  this.socketManager.emit(id, 'gameEvent', this.generateGameEvent(reason), () => {})
   return true
 }
 

@@ -235,7 +235,7 @@ PlayerManager.prototype.updatePlayers = function(latestData) {
   players.forEach(player => {
     let data = player.data()
     data.latestData = latestData
-    this.socketManager.emit(player.id, 'dataUpdate', data)
+    this.socketManager.emit(player.id, 'dataUpdate', data, () => {})
   })
 }
 
