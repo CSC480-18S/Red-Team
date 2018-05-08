@@ -1,71 +1,53 @@
 package com.csc480.game.GUI.Actors;
 
 import com.csc480.game.Engine.Model.Player;
-import org.junit.Assert;
+import com.csc480.game.TestRunner;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-public class HandActorTest {
-    HandActor test;
-    TileActor tileActor01;
-    Player player01;
-    boolean remove = false;
+public class HandActorTest extends TestRunner {
+
+    private HandActor test;
+
     @Before
-    public  void makeHand() {
+    public  void setup() {
         test = new HandActor(false, 0);
     }
 
     @Test
     public void addTileTC_00() {
-        tileActor01 = new TileActor('a');
-        test.addTile(tileActor01);
+        TileActor tile = new TileActor('a');
+        test.addTile(tile);
         for (int i = 0; i < test.myHand.size(); i++) {
-            System.out.println(test.myHand.get(i));
+            assertNotNull(test.myHand.get(i));
         }
-
-    }
-
-    @Test
-    public void addTileTC_02() {
-        tileActor01 = null;
-        test.addTile(tileActor01);
     }
 
     @Test
     public void removeTileTC_00() {
-        addTileTC_00();
-        remove = test.removeTile(tileActor01);
-        assertTrue(remove);
-
+        TileActor tile = new TileActor('A');
+        test.addTile(tile);
+        assertTrue(test.removeTile(tile));
     }
 
     @Test
     public void removeTileTC_02() {
-        tileActor01 = null;
-        remove = test.removeTile(tileActor01);
-        assertTrue(remove);
-
+        assertFalse(test.removeTile(null));
     }
 
     @Test
     public void setPlayerTC_00() {
-            player01 = new Player();
-            test.setPlayer(player01);
-            assertEquals(test.name, player01.name);
-
+        Player player = new Player();
+        test.setPlayer(player);
+        assertEquals(test.name.toString(), "name: " + player.name);
     }
 
     @Test
     public void setPlayerTC_02() {
-        player01 = null;
-        test.setPlayer(player01);
-
+        test.setPlayer(null);
+        assertEquals(test.name.toString(), "name: Not Assigned");
     }
-
-
 
 }
