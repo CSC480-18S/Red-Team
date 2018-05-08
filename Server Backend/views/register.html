@@ -53,18 +53,24 @@
     <script type="text/javascript" src="/static/js/tether-1.2.4.min.js"></script>
     <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="/static/js/bootstrap-4.0.0.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
     <script type="text/javascript">
         $(window).bind("pageshow", function(event) {
             if (event.originalEvent.persisted) {
-                window.location.reload(); 
+                window.location.reload();
             }
         });
     </script>
 
     <script type="text/javascript">
         $('document').ready(() => {
-            alert('Oswebble Tips:\n 1. The first word MUST be played over the center tile.\n 2. Words must be played either left-to-right or top-to-bottom.\n 3. To move a tile onto the board: "Tap" the tile from your hand to select a tile and then "Tap" the board to place the tile. \n 4. Words need to be placed next to or joined with other words already placed on the board. \n 5. Once a word is placed on the board, press "DONE" to end your turn. \n 6. Points are awarded by adding up the number on the tiles that make up the placed word. \n 7. Each player will get one minute for their turn. \n 8. Players have to exchange a tile or play a word on the board each turn before the timer runs out or their turn will be skipped. \n 9. Playing Oswego-themed words like "shineman", "lakers", "oswego", etc. (inlcuding proper nouns) will result in a bonus. \n 10. Playing a word over the gold ("DW") or green ("TW") tiles will result in a double or triple-word bonus. \n 11. Attempting to play profane words may result in your removal from the game. \n 12. Have Fun!');                         
+            swal({
+              title: "Oswebble Tips:",
+              text: `1. The first word MUST be played over the center tile.\n2. Words must be played either left-to-right or top-to-bottom.\n3. To move a tile onto the board: 'Tap' the tile from your hand to select a tile and then 'Tap' the board to place the tile.\n4. Words need to be placed next to or joined with other words already placed on the board.\n5. Once a word is placed on the board, press 'DONE' to end your turn.\n6. Points are awarded by adding up the number on the tiles that make up the placed word.\n7. Each player will get one minute for their turn.\n8. Players have to exchange a tile or play a word on the board each turn before the timer runs out or their turn will be skipped.\n9. Playing Oswego-themed words like 'shineman', 'lakers', 'oswego', etc. (inlcuding proper nouns) will result in a bonus.\n10. Playing a word over the gold ('DW') or green ('TW') tiles will result in a double or triple-word bonus.`,
+              icon: "info",
+              button: "Got it!",
+            });
         })
     </script>
 
