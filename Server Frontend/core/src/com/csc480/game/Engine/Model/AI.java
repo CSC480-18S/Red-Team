@@ -215,7 +215,8 @@ public class AI extends Player {
                                         FindPlayInverted(myBoard);
                                     }
                                     //debug
-                                    if(!GameManager.debug) {
+                                    //todo check_here
+//                                    if(!GameManager.debug) {
                                         while (System.currentTimeMillis() - startTime < 6000) {
                                             try {
                                                 Thread.sleep(200);
@@ -224,7 +225,7 @@ public class AI extends Player {
 
                                             }
                                         }
-                                    }
+//                                    }
                                     //update state to thinking
                                     state = 1;
                                 }
