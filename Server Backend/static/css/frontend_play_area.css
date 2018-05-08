@@ -71,24 +71,28 @@ img {
   overflow: auto; }
 
 #teamScores {
-  width: 315px;
+  width: 310px;
   margin: 0 auto;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
+  -webkit-box-direction;
       -ms-flex-direction: row;
           flex-direction: row;
   -ms-flex-pack: distribute;
-      justify-content: space-around; }
+      justify-content: space-between; }
   #teamScores h4 {
     font-weight: bold;
     font-size: 22px; }
-    #teamScores h4:nth-child(-n + 2) {
-      color: #12b24a; }
-    #teamScores h4:nth-child(n + 3) {
-      color: #ffcc33; }
+    #teamScores h4:nth-child(-n + 1) {
+       font-size: 22px;
+        color: #12b24a;
+    }
+    #teamScores h4:nth-child(n + 2) {
+       font-size: 22px;
+        color: #ffcc33;
+    }
 
 .wrapper-buttons {
   display: grid;
@@ -212,6 +216,6 @@ button {
  text-align: center;
  font-size: 19px;
  margin-top: 3px;
- color:white;
+ color:black;
 }
 

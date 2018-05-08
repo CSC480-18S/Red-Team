@@ -20,7 +20,7 @@ ws.onopen = function(event) {
         removeForError(mes.data.error)
         break
       case 'gameOver':
-        alert(`${JSON.stringify(mes.data, null, 4)}`)
+        alert(`${JSON.parse(mes.data)}`)
         gameOver(mes.data)
         break
       case 'invalidPlay':
