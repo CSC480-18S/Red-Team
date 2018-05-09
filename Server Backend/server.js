@@ -36,6 +36,7 @@ ServerManager.init()
  * Imports the routes to be used
  */
 const mainRoute = require('./routes/main-route')
+const statsRoute = require('./routes/stats-route')
 
 /**
  * Imports Override.js
@@ -91,7 +92,7 @@ app.set('json spaces', 4)
 /**
  * Setting the routes to be used
  */
-app.use('/', session, mainRoute)
+app.use('/', session, [mainRoute, statsRoute])
 
 app.use('/static', express.static(path.join(__dirname, '/static')))
 
