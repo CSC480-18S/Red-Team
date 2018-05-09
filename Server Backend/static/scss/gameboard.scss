@@ -1,0 +1,307 @@
+@font-face {
+  font-family: 'bs';
+  src: url("/static/webfonts/b-sans.otf") format("openType");
+}
+
+
+* {
+  margin: 0;
+  padding: 0;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  font-family: "bs", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+}
+
+html, body {
+  background: lightgray !important;
+}
+
+table {
+  border: 1px solid black;
+  margin: 1em auto;
+}
+
+td {
+  border: 1px solid black;
+  width: 1.6em;
+  height: 1.6em;
+}
+
+img {
+  width: 2.55em;
+  height: 2.55em;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#root {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.green-square {
+  background-color: #139350;
+}
+
+#square-5-5 {
+  background-color: #C19A24;
+}
+
+/* restrict the size of each tile slot */
+
+#slot0, #slot1, #slot2, #slot3, #slot4, #slot5, #slot6 {
+  width: 2.6em;
+  height: 2.6em;
+}
+
+td {
+  width: 1.5em;
+  height: 1.5em;
+}
+
+.wrapper-board {
+  margin: 0.5rem auto;
+  width: 315px;
+  overflow: auto;
+}
+
+img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.wrapper-slots {
+  margin: 0.5em auto;
+  width: 315px;
+  overflow: auto;
+}
+
+.wrapper-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr), 0.1rem;
+  grid-gap: 0.1rem;
+  width: 315px;
+  margin: 0 auto;
+}
+
+#btnSwap {
+  background-color: #e2caba;
+  /*#e2caba #6FA6F4 #EFBB96*/
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  height: 57px;
+}
+
+.btnCust {
+  -webkit-box-shadow: 10px 10px 5px -5px rgba(0, 0, 0, 0.3);
+  box-shadow: 10px 10px 5px -5px rgba(0, 0, 0, 0.3);
+  &:active {
+    -webkit-box-shadow: inset 10px 10px 5px -5px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 10px 10px 5px -5px rgba(0, 0, 0, 0.3);
+  }
+}
+
+#btnPlace {
+  background-color: #12b24a;
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  height: 57px;
+}
+
+#btnShuffle {
+  background-color: #e2caba;
+  grid-column: 3 / 4;
+  grid-row: 1 / 2;
+  height: 57px;
+}
+
+button {
+  font-size: 0.8rem;
+  display: block;
+  margin: 0 auto;
+  padding: 0.5rem;
+  border-radius: 2px;
+  width: 90%;
+  border: 1.5px solid lightgray;
+}
+
+.row-style {
+  margin-top: 3px;
+  // margin: 2px 2px 0 2px;
+  // clear: both;
+  display: flex;
+  justify-content: space-between;
+}
+
+.col-style {
+  // float: left;
+  display: inline-block;
+  // margin: 0 2px 2px 0;
+  width: 26px;
+  height: 26px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: gray;
+}
+
+.slot-style {
+  float: left;
+  margin: 0 0 0 2px;
+}
+
+.wrapper-turn-notifier {
+  color: red;
+  font-size: 20px;
+  margin-top: 13px;
+  text-align: center;
+}
+
+.letter-value {
+  font-size: 0.55em;
+}
+
+.container-buttons {
+  width: 100%;
+}
+
+.scoreArea{
+  width: 315px;
+  margin: 0 auto;
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-areas:"help help help help"
+                      "score score score score"
+                      "green green-score yellow-score yellow";
+  justify-items: center;
+  align-items: center;
+}
+
+#help{
+  grid-area: help;
+}
+
+#score{
+  grid-area: score;
+}
+
+#green{
+  grid-area: green;
+  color: #12b24a;
+}
+
+#green-score{
+  grid-area: green-score;
+  color: #12b24a;
+}
+
+#yellow-score{
+  grid-area: yellow-score;
+  color: #ffcc33;
+}
+
+#yellow{
+  grid-area: yellow;
+  color: #ffcc33;
+}
+
+#textBox {
+  width: 315px;
+  padding: 0.1rem;
+  margin: 0.5em auto;
+  margin-top: 0px;
+  margin-bottom: 1px;
+  border: 1.5px solid lightgray;
+  height: 40px;
+  text-align: center;
+  justify-content: center;
+  align-content: center;
+  overflow: auto;
+  -webkit-box-shadow: 10px 10px 5px -8px rgba(0, 0, 0, 0.3);
+  box-shadow: 10px 10px 5px -8px rgba(0, 0, 0, 0.3);
+}
+
+#actualEvent {
+  margin: 0;
+}
+
+#usernameArea {
+  margin: 0 auto;
+  text-align: center;
+  font-size: 17px;
+  margin-top: 12px;
+  margin-bottom: auto;
+}
+
+#grid-container {
+  width: 311px;
+  height: 21px;
+  margin: auto;
+  margin-bottom: 4px;
+  display: grid;
+  grid-template-columns: 64px 1fr 64px;
+}
+
+#info {
+  padding: 0rem;
+  grid-column: 1 / 4;
+}
+
+// #help {
+//   grid-column: 4 / 4;
+//   cursor: help;
+//   color: lightcoral;
+// }
+
+#help-image {
+  padding: 0.5rem;
+}
+
+#square-0-0 {
+  background: #f2c332;
+}
+
+.timer {
+  text-align: center;
+  font-size: 19px;
+  margin-top: 3px;
+  color: black;
+}
+
+@media screen and (min-width: 700px) {
+
+  .scoreArea{
+    width: auto;
+  }
+
+  .col-style {
+    // float: left;
+    display: inline-block;
+    // margin: 0 2px 2px 0;
+    width: 39px;
+    height: 39px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: gray;
+  }
+
+  .wrapper-board {
+    width: auto;
+  }
+
+  #textBox{
+    width: auto;
+  }
+}

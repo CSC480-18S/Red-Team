@@ -51,14 +51,15 @@ public class WordVerification {
         }
 
         try{
+
             File fileAI;
-            fileAI = new File(Gdx.files.internal("aiwords.txt").path());
-            inFileScanner = new Scanner(fileAI);
+            fileAI = new File(Gdx.files.internal("LtoS15kWordCorpus.txt").path());
+            Scanner aiFileScanner = new Scanner(fileAI);
             ArrayList<String> tempWords = new ArrayList<>();
-            while (inFileScanner.hasNext()){
-                tempWords.add(inFileScanner.nextLine());
+            while (aiFileScanner.hasNext()){
+                tempWords.add(aiFileScanner.nextLine());
             }
-            inFileScanner.close();
+            aiFileScanner.close();
             AIWords = new String[0];
             AIWords = tempWords.toArray(AIWords);
         }catch (FileNotFoundException e){
@@ -103,8 +104,8 @@ public class WordVerification {
         ArrayList<PlayIdea> possiblePlays = new ArrayList<PlayIdea>();
         if(root.letter == 0){
             //System.out.println("First play, so we can skip a bunch");
-            for(String e: AIWords){
-                String temp = handAndReleventBoardTiles;
+            for(String e: validWords){
+                String temp = hand+"";
                 boolean isGoodFlag = true;
                 if(e.length() <= constraints.length) {
                     for (int i = 0; i < e.length(); i++) {
@@ -199,8 +200,8 @@ public class WordVerification {
                                 PlayIdea p = new PlayIdea(e,play,(byte) play.size());
                                 if(VerifyNotCheating(p,hand,constraints)) {
                                     possiblePlays.add(p);
-                                    if(GameManager.debug)
-                                        return possiblePlays;
+//                                    if(GameManager.debug)
+//                                        return possiblePlays;
                                 }
                             }else {
                                 //System.out.println("handle the first play case");
@@ -219,8 +220,8 @@ public class WordVerification {
                                 PlayIdea p = new PlayIdea(e,play,(byte)play.size());
                                 if(VerifyNotCheating(p,hand,constraints)) {
                                     possiblePlays.add(p);
-                                    if(GameManager.debug)
-                                        return possiblePlays;
+//                                    if(GameManager.debug)
+//                                        return possiblePlays;
                                 }
                             }
                         }

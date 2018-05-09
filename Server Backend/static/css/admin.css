@@ -47,10 +47,10 @@ html, body {
     display: flex;
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
     -ms-flex-pack: distribute;
-        justify-content: space-around; }
+    justify-content: space-around; }
   #nav-area .data {
     text-align: left;
     padding-left: 10px;

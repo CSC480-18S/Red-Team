@@ -5,13 +5,16 @@ const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
 const http = require('http')
-const RedundancyManager = require('./helpers/RedundancyManager')
+const rm = require('./helpers/RedundancyManager')
 const db = require('./helpers/DB')
+const responseTime = require('response-time')
 
 /**
  * Set to a variable, instead of typing this out everytime
  */
 const app = express()
+
+app.use(responseTime())
 
 const xSession = require('express-session')
 
@@ -26,10 +29,14 @@ const server = http.createServer(app)
 
 const socket = require('./helpers/Socket')(server)
 
+const ServerManager = require('./entities/ServerManager')(socket)
+ServerManager.init()
+
 /**
  * Imports the routes to be used
  */
-const mainRoute = require('./routes/main-route')(socket)
+const mainRoute = require('./routes/main-route')
+const statsRoute = require('./routes/stats-route')
 
 /**
  * Imports Override.js
@@ -53,11 +60,6 @@ app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT')
   next()
-})
-
-process.on('unhandledRejection', (reason, p) => {
-  console.log('Unhandled Rejection at: Promise', p, 'reason:', reason)
-  // application specific logging, throwing an error, or other logic here
 })
 
 /**
@@ -90,7 +92,7 @@ app.set('json spaces', 4)
 /**
  * Setting the routes to be used
  */
-app.use('/', session, mainRoute)
+app.use('/', session, [mainRoute, statsRoute])
 
 app.use('/static', express.static(path.join(__dirname, '/static')))
 
@@ -103,13 +105,10 @@ server.listen(port, function() {
 
 db.checkForTeams()
 
-// const rm = new RedundancyManager()
-// setTimeout(function() {
-//   rm.loadLog()
-// }, 1000)
-// setTimeout(function() {
-//   rm.resend()
-// }, 2000)
+const RESEND_DELAY = 1000 * 60 * 2
 
-// const rm = require('./helpers/RedundancyManager')
-// rm.saveForLater('url1', 'data1')
+// Starts a loop for calling RedundancyManager resends
+setInterval(function() {
+  console.log('Attempting resends')
+  rm.resend()
+}, RESEND_DELAY)

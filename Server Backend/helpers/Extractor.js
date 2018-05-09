@@ -24,20 +24,26 @@ function extractLetters(newBoard, currentBoard, player) {
       }
     }
   }
-  dg('letters extracted', 'debug')
-  dg(JSON.stringify(letters, null, 4), 'data')
-  dg('checking against player\'s hand', 'debug')
+  // dg('checking against player\'s hand', 'debug')
+  // console.log('LETTERS: ' + letters.map(l => l.letter))
+  // console.log('TILES IN HAND: ' + player.tiles)
+  // for (let i = 0; i < letters.length; i++) {
+  //   let inHand = player.tiles.indexOf(letters[i].letter)
 
-  for (let i = 0; i < letters.length; i++) {
-    let inHand = player.tiles.indexOf(letters[i].letter)
+  //   if (inHand === -1) {
+  //     dg(`player ${player.name} has cheated`, 'info')
+  //     return {
+  //       valid: false,
+  //       error: 7,
+  //       data: letters[i].letter
+  //     }
+  //   }
+  // }
 
-    if (inHand === -1) {
-      dg(`player ${player.name} has cheated`, 'info')
-      return false
-    }
+  return {
+    valid: true,
+    data: letters
   }
-
-  return letters
 }
 
 function extractWords(letters, newBoard) {
@@ -102,10 +108,11 @@ function extractWords(letters, newBoard) {
     }
   })
 
-  const uniqueWords = _.uniqWith(words, _.isEqual)
-  dg('words extracted', 'debug')
-  dg(JSON.stringify(uniqueWords, null, 4), 'data')
-  return uniqueWords
+  let play = _.uniqWith(words, _.isEqual)
+  return {
+    valid: true,
+    words: play
+  }
 }
 
 module.exports = {
