@@ -44,7 +44,6 @@ ws.onopen = function(event) {
         console.log('received gameEvent: ')
         console.log(mes.data)
         var gameEvent = mes.data.action
-        document.getElementById('actualEvent').innerHTML = '<br>'
         document.getElementById('actualEvent').innerHTML = gameEvent
         break
       case 'dataUpdate':
@@ -192,7 +191,7 @@ function invalidPlay() {
 }
 // response to playTime socket event
 function playTime(time) {
-  this.data.playTime = time
+  this.data.playTime = 'Play time: ' + time
   if (this.data.playTime % 2 === 0) {
     this.data.colored = true
   } else {

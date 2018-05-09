@@ -177,7 +177,12 @@ button {
   text-align: center;
   overflow: auto;
   -webkit-box-shadow: 10px 10px 5px -8px rgba(0, 0, 0, 0.3);
-          box-shadow: 10px 10px 5px -8px rgba(0, 0, 0, 0.3); }
+          box-shadow: 10px 10px 5px -8px rgba(0, 0, 0, 0.3); 
+  }
+
+#actualEvent{
+  margin: 0;
+}
 
 #usernameArea {
   margin: 0 auto;
