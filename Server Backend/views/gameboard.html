@@ -14,18 +14,14 @@
             {{error}}
         </div>
         <div id="removable">
-            <div id="usernameArea">
-                <div id="grid-container">
-                    <div id="info">
-                        <h4 class="username">Your score is <b>{{score}}</b></h4>
-                    </div>
-                    <a id="help" onclick="helpFunction()"><i class="fas fa-info-circle" style="color: black; width:70px; height:80px;" ></i></a>
-                </div>
-                <div id="teamScores">
-                    <h4 class="username">Green:{{greenScore}}</h4>
-                    <h4 class="username">{{goldScore}}:Gold</h4>
-                </div>
-            </div>
+            <section class="scoreArea">
+                <a id="help" onclick="helpFunction()"><i class="fas fa-info-circle" style="color: black;" ></i></a>
+                <h4 id="score">Your Score: <b>{{score}}</b></h4>
+                <h4 id="green">Green:</h4>
+                <h4 id="green-score"><b>{{greenScore}}</b></h4>
+                <h4 id="yellow-score"><b>{{goldScore}}</b></h4>
+                <h4 id="yellow">:Yellow</h4>
+            </section>
 
             <div id="textBox" :style="[colored ? {background: 'lightcoral'} : {background: 'darkgray'}]">
                 <p class="gameEvent" id="actualEvent"></p>
@@ -62,15 +58,15 @@
         </div>
     </div>
 
-    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="/static/js/vuejs-2.5.16.min.js"></script>
-    <script type="text/javascript" src="/static/js/sweetalert.min.js"></script>
+    <script type="text/javascript" src="/static/min/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/min/js/vuejs.min.js"></script>
+    <script type="text/javascript" src="/static/min/js/sweetalert.min.js"></script>
+    <script type="text/javascript" src="/static/min/js/board.min.js"></script>
+    <script type="text/javascript" src="/static/min/js/board_view.min.js"></script>
 
-    <script type="text/javascript" src="/static/js/frontend_board_model.js"></script>
-    <script type="text/javascript" src="/static/js/frontend_board_view_model.js"></script>
-    <link rel="stylesheet" type="text/css" href="/static/css/frontend_play_area.css">
-    <link rel="stylesheet" href="/static/css/bootstrap-4.0.0.min.css"></script>
-    <link rel="stylesheet" href="/static/css/fontawesome-5.0.1.0.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/min/css/bootstrap.min.css"></script>
+    <link rel="stylesheet" type="text/css" href="/static/min/css/fontawesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/min/css/gameboard.min.css">
 
 </body>
 </html>

@@ -192,7 +192,7 @@ function invalidPlay() {
 // response to playTime socket event
 function playTime(time) {
   this.data.playTime = 'Play time: ' + time
-  if (this.data.playTime % 2 === 0) {
+  if (time % 2 === 0) {
     this.data.colored = true
   } else {
     this.data.colored = false

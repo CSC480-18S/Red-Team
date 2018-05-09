@@ -163,18 +163,22 @@ button {
 }
 
 .row-style {
-  margin: 2px 2px 0 2px;
-  clear: both;
+  margin-top: 3px;
+  // margin: 2px 2px 0 2px;
+  // clear: both;
+  display: flex;
+  justify-content: space-between;
 }
 
 .col-style {
-  float: left;
-  margin: 0 2px 2px 0;
+  // float: left;
+  display: inline-block;
+  // margin: 0 2px 2px 0;
   width: 26px;
   height: 26px;
   border-style: solid;
-  border-width: 1.5px;
-  border-color: lightgray;
+  border-width: 1px;
+  border-color: gray;
 }
 
 .slot-style {
@@ -197,6 +201,48 @@ button {
   width: 100%;
 }
 
+.scoreArea{
+  width: 315px;
+  margin: 0 auto;
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-areas:"help help help help"
+                      "score score score score"
+                      "green green-score yellow-score yellow";
+  justify-items: center;
+  align-items: center;
+}
+
+#help{
+  grid-area: help;
+}
+
+#score{
+  grid-area: score;
+}
+
+#green{
+  grid-area: green;
+  color: #12b24a;
+}
+
+#green-score{
+  grid-area: green-score;
+  color: #12b24a;
+}
+
+#yellow-score{
+  grid-area: yellow-score;
+  color: #ffcc33;
+}
+
+#yellow{
+  grid-area: yellow;
+  color: #ffcc33;
+}
+
 #textBox {
   width: 315px;
   padding: 0.1rem;
@@ -206,6 +252,8 @@ button {
   border: 1.5px solid lightgray;
   height: 40px;
   text-align: center;
+  justify-content: center;
+  align-content: center;
   overflow: auto;
   -webkit-box-shadow: 10px 10px 5px -8px rgba(0, 0, 0, 0.3);
   box-shadow: 10px 10px 5px -8px rgba(0, 0, 0, 0.3);
@@ -237,11 +285,11 @@ button {
   grid-column: 1 / 4;
 }
 
-#help {
-  grid-column: 4 / 4;
-  cursor: help;
-  color: lightcoral;
-}
+// #help {
+//   grid-column: 4 / 4;
+//   cursor: help;
+//   color: lightcoral;
+// }
 
 #help-image {
   padding: 0.5rem;
@@ -256,4 +304,30 @@ button {
   font-size: 19px;
   margin-top: 3px;
   color: black;
+}
+
+@media screen and (min-width: 700px) {
+
+  .scoreArea{
+    width: auto;
+  }
+
+  .col-style {
+    // float: left;
+    display: inline-block;
+    // margin: 0 2px 2px 0;
+    width: 39px;
+    height: 39px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: gray;
+  }
+
+  .wrapper-board {
+    width: auto;
+  }
+
+  #textBox{
+    width: auto;
+  }
 }

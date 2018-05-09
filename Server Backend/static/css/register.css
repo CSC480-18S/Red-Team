@@ -29,14 +29,14 @@ html, body {
   display: -ms-flexbox;
   display: flex;
   -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
   -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center; }
+  -ms-flex-align: center;
+  align-items: center; }
   #register-area #register {
     -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3), inset 0 -3px 3px rgba(0, 0, 0, 0.1);
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3), inset 0 -3px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3), inset 0 -3px 3px rgba(0, 0, 0, 0.1);
     background: lightgray;
     border-radius: 20px;
     height: 50%;
@@ -64,7 +64,7 @@ html, body {
 #footer {
   text-align: center;
   -webkit-box-shadow: 0px -2px 5px 0px rgba(0, 0, 0, 0.3);
-          box-shadow: 0px -2px 5px 0px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px -2px 5px 0px rgba(0, 0, 0, 0.3);
   grid-area: footer;
   background: lightgray;
   color: black;
