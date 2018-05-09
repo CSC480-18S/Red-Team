@@ -2,76 +2,73 @@
 const fs = require('fs')
 const logger = require('./Logger')
 
-class FileManager {
-  /**
-   * @param dir path to save directory (ex. "./dir1/dir2")
-   * @param filename name of save file (ex. "savefile.txt")
-   */
-  constructor(dir, filename) {
-    this._dir = dir
-    this._filename = filename
-    this._path = dir + '/' + filename
-    this._data = null
+/**
+ * Creates a directory.
+ * @param dirPath directory path to create
+ * @return true if there was an error, false otherwise
+ */
+function makeDir(callback, dirPath) {
+  fs.mkdir(dirPath, function(err) {
+    if (err) {
+      logger('Error while creating dir "' + dirPath + '", err: ' + err)
+    }
 
-    fs.access(dir, function(err) {
-      if (!err) {
-        fs.mkdir(dir, function(err2) {
-          if (err2) {
-            logger('Error while making dir, ', err)
-          } else {
-            logger('Created log dir')
-          }
-        })
-      } else {
-        logger('Dir already exists')
-      }
-    })
-  }
+    callback(err)
+  })
+}
 
-  /**
-   * Writes data to the save file.
-   * @param data data to write to save file
-   */
-  writeFile(data) {
-    fs.writeFile(this._path, data, function(err) {
-      if (err) {
-        logger('Error while writing file, ', err)
-      }
-    })
-  }
+/**
+ * Reads a file.
+ * @param filePath filepath to read from
+ * @return data read from the file, null if there was an error
+ */
+function readFile(callback, filePath) {
+  fs.readFile(filePath, (err, readData) => {
+    if (err) {
+      logger('Error while reading file "' + filePath + '", err: ' + err)
+      return null
+    } else {
+      callback(readData)
+    }
+  })
+}
 
-  /**
-   * Appends data to the save file.
-   * @param data data to append to save file
-   */
-  appendFile(data) {
-    fs.appendFile(this._path, data, function(err) {
-      if (err) {
-        logger('Error while writing file, ', err)
-      }
-    })
-  }
+/**
+ * Writes to a file.
+ * @param filePath filepath to write to
+ * @return true if there was an error, false otherwise
+ */
+function writeFile(callback, filePath, data) {
+  fs.writeFile(filePath, data, function(err) {
+    if (err) {
+      logger('Error while writing file "' + filePath + '", err: ' + err)
+    }
 
-  /**
-   * Reads data from the save file into local data.
-   * Use data getter to retrieve.
-   */
-  readFile() {
-    fs.readFile(this._path, (err, readData) => {
-      if (err) {
-        logger('Error while reading file')
-      } else {
-        this._data = readData
-      }
-    })
-  }
+    callback(err)
+  })
+}
 
-  get data() {
-    return this._data
-  }
+/**
+ * Appends to a file.
+ * @param filePath filepath to append to
+ * @return true if there was an error, false otherwise
+ */
+function appendFile(callback, filePath, data) {
+  fs.appendFile(filePath, data, function(err) {
+    if (err) {
+      logger('Error while writing file "' + filePath + '", err: ' + err)
+    }
+
+    callback(err)
+  })
 }
 
 /**
  * Exports this file so it can be used by other files.  Keep this at the bottom.
  */
-module.exports = FileManager
+module.exports = {
+  makeDir,
+  readFile,
+  writeFile,
+  appendFile
+}

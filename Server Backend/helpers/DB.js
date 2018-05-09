@@ -1,7 +1,8 @@
 'use strict'
 
 const axios = require('axios')
-const rm = require('./RedundancyManager')
+// const rm = require('./RedundancyManager')
+const logger = require('./Logger')
 
 const DICTIONARY_CHECK = 'http://localhost:8090/dictionary/validate?words='
 const FIND_BY_MAC = 'http://localhost:8091/players/search/findByMacAddr?mac='
@@ -108,8 +109,11 @@ function updatePlayer(player, words) {
       this.updatePlayer(player, words)
     })
       .catch(e => {
-        console.log(e)
-        rm.saveForLater(PLAYERS, words)
+        rm.saveForLater(PLAYED_WORDS, {
+          player: player,
+          words: words,
+          type: 0
+        })
       })
   }
 }
@@ -129,30 +133,37 @@ function updatePlayerDirty(player, word) {
   }
   axios.post(PLAYED_WORDS, play)
     .catch(e => {
-      rm.saveForLater(PLAYERS, play)
+      rm.saveForLater(PLAYED_WORDS, {
+        player: player,
+        words: word,
+        type: 1
+      })
     })
 }
 
-// TODO: Add later @Landon
 /**
  * Updates a player's special word count
  * @param {Object} player - player object
  * @param {String} word - special word
  */
-// function updatePlayerDirty(player, words) {
-//   if (!player.isAI) {
-//     axios.post(PLAYED_WORDS, {
-//       word: words,
-//       value: words,
-//       dirty: false,
-//       special: true,
-//       player: player.link
-//     })
-//       .catch(e => {
-//         rm.saveForLater(PLAYERS, words)
-//       })
-//   }
-// }
+function updatePlayerSpecial(player, word) {
+  if (!player.isAI) {
+    axios.post(PLAYED_WORDS, {
+      word: word,
+      value: 0,
+      dirty: false,
+      special: true,
+      player: player.link
+    })
+      .catch(e => {
+        rm.saveForLater(PLAYED_WORDS, {
+          player: player,
+          words: word,
+          type: 2
+        })
+      })
+  }
+}
 
 /**
  * Checks to see if the teams were instantiated on the DB, and if not, make requests to make them
@@ -169,13 +180,15 @@ function checkForTeams() {
           })
         })
           .catch(e => {
-            rm.saveForLater(TEAMS, {name: 'Green'})
+            // rm.saveForLater(TEAMS, {name: 'Green'})
+            logger('failed checkForTeams() in DB.js: ' + e)
           })
       }
     })
     .catch(e => {
-      rm.saveForLater(TEAMS, {name: 'Gold'})
-      rm.saveForLater(TEAMS, {name: 'Green'})
+      // rm.saveForLater(TEAMS, {name: 'Gold'})
+      // rm.saveForLater(TEAMS, {name: 'Green'})
+      logger('failed checkForTeams() in DB.js: ' + e)
     })
 }
 
@@ -210,7 +223,7 @@ function updateWin(team, score, win) {
   }
   axios.post(END_GAME, data)
     .catch(e => {
-      rm.saveForLater(END_GAME)
+      rm.saveForLater(END_GAME, data)
     })
 }
 
@@ -223,6 +236,7 @@ module.exports = {
   pruneResults,
   updatePlayer,
   updatePlayerDirty,
+  updatePlayerSpecial,
   checkForTeams,
   getTeamURL,
   updateWin

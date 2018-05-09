@@ -47,7 +47,7 @@ public class StatsScreen implements Screen {
 //////////////////////////////////////////////////////////////////////////
         batch = new SpriteBatch();
         //sprite = new Sprite(new Texture(Gdx.files.internal("StatsAssets/statsBackground.png")));
-        sprite = new Sprite(new Texture(Gdx.files.internal("Background.jpg")));
+        sprite = new Sprite(new Texture(Gdx.files.internal("Background 2.png")));
        // sprite.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         //sprite.setSize(,Gdx.graphics.getHeight());
 

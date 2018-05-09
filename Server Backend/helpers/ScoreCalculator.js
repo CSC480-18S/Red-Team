@@ -12,7 +12,7 @@ const dg = require('./Debug')
 * @param {Array} gameBoard - board
 */
 module.exports = (words, gameBoard) => {
-  dg('calculating score...', 'debug')
+  dg('calculating score', 'debug')
   let cumulativeScore = 0
   let play = {
     words: []
@@ -37,8 +37,7 @@ module.exports = (words, gameBoard) => {
             default:
               break
           }
-          boardTile.multiplierType = null
-          boardTile.multiplier = null
+          boardTile.nullMultiplier()
           return t.score * letterBonus
         }
       }

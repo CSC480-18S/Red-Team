@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RotateByAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.csc480.game.Engine.GameManager;
@@ -47,6 +48,12 @@ public class GameScreen implements Screen {
     private Viewport view;
     private  OrthographicCamera viewCam;
     GameBoardActor gameBoardActor;
+    private boolean updateGameStatus = false;
+    private boolean triggerGameOverDialog = false;
+    private boolean closeGameOverDialog = false;
+    private String winner;
+    private Array<String> playersScores;
+    private String winningTeam;
 
     private boolean doStateUpdate = false;
 
@@ -60,7 +67,7 @@ public class GameScreen implements Screen {
         infoPanel.UpdatePlayerStatus(2, top.getPlayer().name, top.getPlayer().score);
         infoPanel.UpdatePlayerStatus(3, left.getPlayer().name, left.getPlayer().score);
 
-        //infoPanel.UpdateProgressBars();
+        infoPanel.UpdateProgressBars();
     }
 
     @Override
@@ -85,34 +92,47 @@ public class GameScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         //Set the entire screen to this color
         Gdx.gl.glClearColor(.666f, .666f, .666f, 1);
-        try{
-        //perform the actions of the actors
-        stage.act(delta);
-        //render the actors
-        stage.draw();
-        }catch (NullPointerException n){
-            n.printStackTrace();
-        }
-        if(doStateUpdate){
-            doStateUpdate = false;
-                if(bottom != null){
+//        try{
+            //perform the actions of the actors
+            stage.act(delta);
+            //render the actors
+            stage.draw();
+            GameManager.getInstance().Update();
+            if(updateGameStatus){
+               updateGameStatus = false;
+                if (bottom != null) {
                     bottom.setPlayer(GameManager.getInstance().thePlayers[0]);
                     bottom.updateState();
                 }
-                if(right != null) {
+                if (right != null) {
                     right.setPlayer(GameManager.getInstance().thePlayers[1]);
                     right.updateState();
                 }
-                if(top != null) {
+                if (top != null) {
                     top.setPlayer(GameManager.getInstance().thePlayers[2]);
                     top.updateState();
                 }
-                if(left != null) {
+
+                if (left != null) {
                     left.setPlayer(GameManager.getInstance().thePlayers[3]);
                     left.updateState();
                 }
-               UpdateInfoPanel();
-        }
+                UpdateInfoPanel();
+
+            }
+            if(triggerGameOverDialog){
+                triggerGameOverDialog = false;
+                gameOverActor.update(winner, playersScores, winningTeam);
+                gameOverActor.setVisible(true);
+            }
+            if(closeGameOverDialog){
+                closeGameOverDialog = false;
+                gameOverActor.setVisible(false);
+
+            }
+//        }catch (Exception n){//this is so bad i hate myself for this
+//            n.printStackTrace();
+//        }
     }
 
     @Override
@@ -146,9 +166,11 @@ public class GameScreen implements Screen {
     }
 
     private void BuildStage(OswebbleGame mainGame){
+        if(GameManager.debug)
         System.out.println("Density: "+Gdx.graphics.getDensity());
         //must calculate the aspect ratio to resize properly
         aspectRatio = (float)Gdx.graphics.getHeight() / (float)Gdx.graphics.getWidth();
+        if(GameManager.debug)
         System.out.println("aspectRatio: "+aspectRatio);
 
         //we probably dont want to use bitmapfonts, as they can get blurry
@@ -188,22 +210,22 @@ public class GameScreen implements Screen {
         //bottom
         Group tileRacks = new Group();
         tileRacks.setPosition(GUI_UNIT_SIZE * 1, GUI_UNIT_SIZE * 1);
-        bottom = new HandActor(false);
+        bottom = new HandActor(false, 0);
         tileRacks.addActor(bottom);
         bottom.setPosition(GUI_UNIT_SIZE * 2, GUI_UNIT_SIZE * 0);
         //left
-        left = new HandActor(false);
+        left = new HandActor(false, 1);
         tileRacks.addActor(left);
         left.setPosition(GUI_UNIT_SIZE * 12, GUI_UNIT_SIZE * 2);
         left.rotateBy(90);
         //top
-        top = new HandActor(true);
+        top = new HandActor(true, 2);
         tileRacks.addActor(top);
 //        top.setPosition(GUI_UNIT_SIZE * 10, GUI_UNIT_SIZE * 12);
 //        top.rotateBy(180);
         top.setPosition(GUI_UNIT_SIZE * 2, GUI_UNIT_SIZE * 10.125f);
         //right
-        right = new HandActor(false);
+        right = new HandActor(false, 3);
         tileRacks.addActor(right);
         right.setPosition(GUI_UNIT_SIZE * 0, GUI_UNIT_SIZE * 10);
         right.rotateBy(-90);
@@ -216,6 +238,7 @@ public class GameScreen implements Screen {
         infoPanel.scaleBy(.1f);
         playArea.addActor(infoPanel);
 
+        if(GameManager.debug)
         System.out.println(board.getChildren().size);
         playArea.addActor(board);
         playArea.scaleBy(GUI_UNIT_SIZE * .04f);//had to do this because i originally tested all the sizes at a lower dpi
@@ -254,13 +277,22 @@ public class GameScreen implements Screen {
         stage.addActor(debug);
 
         if(GameManager.getInstance().debug){
-            stage.setDebugAll(true);
-            stage.setDebugInvisible(false);
+//            stage.setDebugAll(true);
+//            stage.setDebugInvisible(false);
         }
 
     }
+    public void QueueUpdatePlayers(){
+        updateGameStatus = true;
+    }
 
-    public void QueueUpdate(){
-        doStateUpdate = true;
+    public void TriggerEndGame(String winner, Array<String> playersScores , String winningTeam){
+        this.winner = winner;
+        this.playersScores = playersScores;
+        this.winningTeam = winningTeam;
+        triggerGameOverDialog = true;
+    }
+    public void TriggerNewGame(){
+        closeGameOverDialog = true;
     }
 }
