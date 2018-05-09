@@ -8,8 +8,7 @@ const db = require('../helpers/DB')
 
 router.get('/', function(req, res, next) {
   // if (!req.session.user) {
-  // checkUserExists(req, res)
-  res.render('register', {error: req.session.error})
+  checkUserExists(req, res)
   // } else {
   //   res.render('login', {user: req.session.user, error: req.session.error})
   // }

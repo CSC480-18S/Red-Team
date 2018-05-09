@@ -20,17 +20,13 @@ ws.onopen = function(event) {
         removeForError(mes.data.error)
         break
       case 'gameOver':
-        // alert(`Scores: \n${JSON.stringify(mes.data.scores, null, 4)}
-        // \nWinner: ${JSON.stringify(mes.data.winner, null, 4)}
-        // \nWinning Team: ${JSON.stringify(mes.data.winningTeam, null, 4)}`)
-
         let scores = mes.data.scores.map((player, index) => {
           return `${index + 1}: ${player.name} | Score: ${player.score}\n`
         })
 
         swal({
           title: 'Game Over!',
-          text: `${scores}
+          text: `${scores.join('')}
           Winning Team: ${mes.data.winningTeam}\n
           Winner: ${mes.data.winner}`,
           icon: 'success',
@@ -82,11 +78,6 @@ function dataUpdate(response) {
   console.log(response)
   this.data.username = response.name
   this.data.tileSlots = generateTiles(response.tiles)
-  // response.position is the position of four players on the server
-  // tested data
-  // var tiles = ['T', 'E', 'S', 'T'];
-  // var isTurn = true;
-  // if (isTurn === false) {
   if (response.isTurn === false) {
     this.data.playTime = 'Wait for your turn...'
     document.getElementById('btnSwap').disabled = true
@@ -165,7 +156,6 @@ function gameOver(response) {
   for (let i = this.data.tilesOnBoardValueAndPosition.length - 1; i >= 0; i--) {
     var t = this.data.tilesOnBoardValueAndPosition[i]
 
-    // if (t != undefined) {
     var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
     square.removeChild(square.firstChild)
     this.data.tilesOnBoardValueAndPosition.pop()
@@ -175,15 +165,12 @@ function gameOver(response) {
   for (var i = 0; i < tileSlotNumber; i++) {
     this.data.tileSlots[i].tile.highlightedColor = '#000000'
   }
-
-  // this.data.currentPlayTileAmount = 0
 }
 
 // response to invalidPlay socket event
 function invalidPlay() {
   for (let i = 0; i < this.data.currentPlayTileAmount; i++) {
     var t = this.data.tilesOnBoardValueAndPosition[this.data.tilesOnBoardValueAndPosition.length - 1]
-    // console.log(t)
 
     if (t != undefined) {
       var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
@@ -213,167 +200,11 @@ function playTime(time) {
   }
 }
 
-// OLD SOCKETS.IO STUFF -- LEFT COMMENTED OUT IN CASE WEBSOCKETS STUFF IS IMPLEMENTED INCORRECTLY
-
-/* ws.on('errorMessage', response => {
-  alert(response.error)
-})
-
-ws.on('gameOver', response => {
-  alert(`${JSON.stringify(response, null, 4)}`)
-})
-
-ws.on('boardUpdate', response => {
-  this.data.goldScore = response.yellow
-  this.data.greenScore = response.green
-
-  this.data.currentPlayTileAmount = 0
-  for (i = 0; i < row; i++) {
-    for (j = 0; j < column; j++) {
-      var square = document.getElementById('square-' + i + '-' + j)
-      if (!square.hasChildNodes()) {
-        if (response.board[i][j] !== null) {
-          var tile = {
-            id: 'playedLetter: ' + response.board[i][j],
-            letter: response.board[i][j],
-            value: tileValue(response.board[i][j]),
-            highlightedColor: undefined,
-            visibility: 'visible'
-          }
-          console.log(tile)
-          var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-          svg.setAttribute('id', tile.id)
-          svg.setAttribute('visibility', 'visible')
-          var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-          rect.setAttribute('x', 0)
-          rect.setAttribute('y', 0)
-          rect.setAttribute('stroke', 'black')
-          rect.setAttribute('stroke-width', '1px')
-          rect.setAttribute('width', '100%')
-          rect.setAttribute('height', '100%')
-          rect.setAttribute('fill', '#D3D3D3')
-          svg.appendChild(rect)
-          var text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-          text.setAttribute('x', '50%')
-          text.setAttribute('y', '60%')
-          text.setAttribute('alignment-baseline', 'middle')
-          text.setAttribute('text-anchor', 'middle')
-          text.setAttribute('fill', undefined)
-          text.textContent = tile.letter
-          svg.appendChild(text)
-          var text2 = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-          text2.setAttribute('x', '70%')
-          text2.setAttribute('y', '30%')
-          text2.setAttribute('fill', undefined)
-          text2.setAttribute('class', 'letter-value')
-          text2.textContent = tile.value
-          svg.appendChild(text2)
-          square.appendChild(svg)
-
-          this.data.tilesOnBoardValueAndPosition.push({tileLetter: tile.letter,
-            xAxis: i,
-            yAxis: j
-          })
-        }
-      }
-    }
-  }
-})
-
-ws.on('play', response => {
-  console.log(response)
-
-  if (response.invalid) {
-    for (let i = 0; i < this.data.currentPlayTileAmount; i++) {
-      var t = this.data.tilesOnBoardValueAndPosition[this.data.tilesOnBoardValueAndPosition.length - 1]
-      // console.log(t)
-
-      if (t != undefined) {
-        var square = document.getElementById('square-' + t.xAxis + '-' + t.yAxis)
-        this.data.tilesOnBoardValueAndPosition.pop()
-        square.removeChild(square.firstChild)
-      }
-    }
-    this.data.selectedTileId = ''
-    for (var i = 0; i < tileSlotNumber; i++) {
-      this.data.tileSlots[i].tile.highlightedColor = '#000000'
-    }
-
-    this.data.currentPlayTileAmount = 0
-  }
-
-  for (let i = 0; i < this.data.tileSlots.length; i++) {
-    this.data.tileSlots[i].hasTile = true
-    this.data.tileSlots[i].tile.visibility = 'visible'
-  }
-})
-
-ws.on('gameEvent', response => {
-  console.log('received gameEvent: ')
-  console.log(response)
-
-  // test data
-  var gameEvent = response.action
-  // gameEvent = response.action;
-  document.getElementById('actualEvent').innerHTML = '<br>'
-  document.getElementById('actualEvent').innerHTML = gameEvent
-})
-
-ws.on('dataUpdate', response => {
-  this.data.isTurn = response.isTurn
-  this.data.score = response.score
-  this.data.playTime = 60
-
-  let time
-  if (this.data.isTurn) {
-    clearInterval(time)
-    time = setInterval(() => {
-      this.data.playTime--
-      if (this.data.playTime % 2 === 0) {
-        this.data.colored = true
-      } else {
-        this.data.colored = false
-      }
-    }, 1000)
-  } else {
-    clearInterval(time)
-    this.data.colored = false
-  }
-
-  console.log('received dataUpdate event: ')
-  console.log(response)
-  this.data.username = response.name
-  this.data.tileSlots = generateTiles(response.tiles)
-  // response.position is the position of four players on the server
-  // tested data
-  // var tiles = ['T', 'E', 'S', 'T'];
-  // var isTurn = true;
-  // if (isTurn === false) {
-  if (response.isTurn === false) {
-    this.data.isMyTurn = 'Wait for your turn...'
-    document.getElementById('btnSwap').disabled = true
-    document.getElementById('btnPlace').disabled = true
-    document.getElementById('btnShuffle').disabled = true
-    for (var i = 0; i < tileSlotNumber; i++) {
-      this.data.tileSlots[i].tile.disabled = true
-    }
-  } else {
-    this.data.isMyTurn = "It's your turn!"
-    document.getElementById('btnSwap').disabled = false
-    document.getElementById('btnPlace').disabled = false
-    document.getElementById('btnShuffle').disabled = false
-    for (var i = 0; i < tileSlotNumber; i++) {
-      this.data.tileSlots[i].tile.disabled = false
-    }
-  }
-}) */
-
 // data object
 var data = {
   selectedTileId: '',
   selectedTileParentId: '',
   selectedSquareId: '',
-  // can change to computed property
   rows: generateTableRows(),
   squares: generateSquares(),
   tileSlots: [],
@@ -385,13 +216,11 @@ var data = {
   username: '',
   greenScore: 0,
   goldScore: 0,
-  // backgcoresroundColor: ["rgb(171,171,171)", "orange", "green"]
   playTime: '',
   isTurn: false,
   score: 0,
   colored: false,
   error: null
-  // backgroundColor: ["rgb(171,171,171)", "orange", "green"]
 }
 
 function generateTableRows() {
@@ -685,17 +514,20 @@ function emitBoard() {
     array[x][y] = tiles[i].tileLetter
   }
 
-  // socket.emit('playWord', array)
   let board = { event: 'playWord', data: {play: array} }
   ws.send(JSON.stringify(board))
 }
 
 function helpFunction() {
-  // alert("-To play a tile on the board, 'Tap' the tile in your hand and then 'Tap' the board where you want to play it. \n -The EXCHANGE button will replace your tiles with a new hand and move on to the next player's turn. \n -The SHUFFLE button will shuffle the tiles in your hand, but will not skip your turn. \n -The DONE button is how you place a word on the board to complete your turn. \n -You will have one minute to play a word or EXCHANGE your hand before your turn is skipped. \n -The GAME EVENT box will flash red when it is your turn and the timer is counting down.")
+  let sentences = [`To play a tile on the board, 'Tap' the tile in your hand and then 'Tap' the board where you want to play it.`, `The EXCHANGE button will replace your tiles with a new hand and move on to the next player's turn.`, `The SHUFFLE button will shuffle the tiles in your hand, but will not skip your turn.`, `The DONE button is how you place a word on the board to complete your turn.`, `You will have one minute to play a word or EXCHANGE your hand before your turn is skipped.`, `The GAME EVENT box will flash red when it is your turn and the timer is counting down.`]
+  let help = sentences.map((sentence, index) => {
+    return `${index + 1}: ${sentence}\n`
+  })
+
   swal({
-    title: "Help",
-    text: `-To play a tile on the board, 'Tap' the tile in your hand and then 'Tap' the board where you want to play it. \n -The EXCHANGE button will replace your tiles with a new hand and move on to the next player's turn. \n -The SHUFFLE button will shuffle the tiles in your hand, but will not skip your turn. \n -The DONE button is how you place a word on the board to complete your turn. \n -You will have one minute to play a word or EXCHANGE your hand before your turn is skipped. \n -The GAME EVENT box will flash red when it is your turn and the timer is counting down.`,
-    icon: "info",
-    button: "Ok!",
-  });
+    title: 'Help',
+    text: `${help.join('')}`,
+    icon: 'info',
+    button: 'Ok!'
+  })
 }
