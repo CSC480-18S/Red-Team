@@ -71,7 +71,7 @@ td {
 }
 
 .wrapper-board {
-  margin: 0 auto;
+  margin: 0.5rem auto;
   width: 315px;
   overflow: auto;
 }
@@ -85,32 +85,6 @@ img {
   margin: 0.5em auto;
   width: 315px;
   overflow: auto;
-}
-
-#teamScores {
-  width: 310px;
-  margin: 0 auto;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: row;
-  -ms-flex-direction: row;
-  flex-direction: row;
-  -ms-flex-pack: distribute;
-  justify-content: space-between;
-  h4 {
-    font-weight: bold;
-    font-size: 22px;
-    &:nth-child(-n + 1) {
-      font-size: 22px;
-      color: #12b24a;
-    }
-    &:nth-child(n + 2) {
-      font-size: 22px;
-      color: #ffcc33;
-    }
-  }
 }
 
 .wrapper-buttons {
