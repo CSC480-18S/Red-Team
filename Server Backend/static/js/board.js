@@ -86,6 +86,12 @@ function dataUpdate(response) {
       this.data.tileSlots[i].tile.disabled = true
     }
   } else {
+    swal({
+      title: `It's your turn!`,
+      text: 'Go place tiles on the board!',
+      icon: 'info',
+      button: 'Ok!'
+    })
     this.data.playTime = "It's your turn!"
     document.getElementById('btnSwap').disabled = false
     document.getElementById('btnPlace').disabled = false
@@ -504,6 +510,19 @@ function emitBoard() {
         array[i][j] = null
       }
     }
+  }
+
+  console.log('here')
+
+  if (this.data.currentPlayTileAmount < 1) {
+    swal({
+      title: 'You must attempt to make a play',
+      text: 'Tiles must be placed on the board before you can submit a play.',
+      icon: 'error',
+      button: 'Ok!'
+    })
+
+    return
   }
 
   var tiles = (this.data.tilesOnBoardValueAndPosition)
