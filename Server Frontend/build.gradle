@@ -46,15 +46,15 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
         compile "de.tomgrill.gdxdialogs:gdx-dialogs-desktop:1.2.5"
-
-
+        
     }
 }
 
 project(":core") {
     apply plugin: "java"
 
-    sourceSets.test.java.srcDirs = ["/test"]
+    sourceSets.test.java.srcDirs = ["test"]
+    sourceSets.test.resources.srcDirs = ["assets"]
 
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
@@ -72,6 +72,12 @@ project(":core") {
 
         testCompile "junit:junit:4.12"
         testCompile "org.mockito:mockito-core:2.2.7"
+
+        testCompile "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+        testCompile "com.badlogicgames.gdx:gdx:$gdxVersion"
+        testCompile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        testCompile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+        testCompile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
 
     }
 }
