@@ -6,14 +6,13 @@ class Tile {
    * @param {Number} y - y position
    * @param {String} multiplier - the multiplier this Tile has
    */
-  constructor(y, x, multiplier) {
+  constructor(y, x, multiplierType, multiplier) {
     this._x = x
     this._y = y
+    this._multiplierType = multiplierType
     this._multiplier = multiplier
     this._letterPlaced = false
     this._letter = null
-    this._playedBy = ''
-    this._timePlayedAt = null
   }
 
   /**
@@ -25,17 +24,17 @@ class Tile {
   }
 
   /**
-   * Played by setter
+   * Multiplier type setter
    */
-  set playedBy(playedBy) {
-    this._playedBy = playedBy
+  set multiplierType(multiplierType) {
+    this._multiplierType = multiplierType
   }
 
   /**
-   * Time played at setter
+   * Multiplier setter
    */
-  set timePlayedAt(timePlayedAt) {
-    this._timePlayedAt = timePlayedAt
+  set multiplier(multiplier) {
+    this._multiplier = multiplier
   }
 
   /**
@@ -50,6 +49,13 @@ class Tile {
    */
   get y() {
     return this._y
+  }
+
+  /**
+   * Multiplier Type Getter
+   */
+  get multiplierType() {
+    return this._multiplierType
   }
 
   /**
@@ -73,18 +79,9 @@ class Tile {
     return this._letter
   }
 
-  /**
-   * Played by getter
-   */
-  get playedBy() {
-    return this._playedBy
-  }
-
-  /**
-   * Time played at getter
-   */
-  get timePlayedAt() {
-    return this._timePlayedAt
+  nullMultiplier() {
+    this.multiplierType = null
+    this.multiplier = null
   }
 }
 

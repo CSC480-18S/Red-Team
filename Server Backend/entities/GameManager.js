@@ -1,269 +1,407 @@
 'use strict'
 /**
- * Imports lodash and axios
- */
-const axios = require('axios')
-/**
- * Imports the Gameboard class
+ * Imports files
  */
 const Gameboard = require('./Gameboard')
+const sc = require('../helpers/ScoreCalculator')
+const ex = require('../helpers/Extractor')
+const dg = require('../helpers/Debug')(true)
+const db = require('../helpers/DB')
+const PlayerManager = require('./PlayerManager')
 
-// remove this once there is a connection to the DB
-const letters = 'abcdefghijklmnopqrstuvwxyz'.split('')
-const tiles = letters.map(t => {
+function GameManager(socketManager) {
+  this.gameboard = Gameboard()
+  this.greenScore = 0
+  this.goldScore = 0
+  this.swaps = 0
+  this.currentPlay = null
+  this.names = ['AI_Bill', 'AI_Tara', 'AI_Richard', 'AI_Xia']
+  this.teams = ['Green', 'Gold', 'Green', 'Gold']
+  this.playerManager = PlayerManager(socketManager, this)
+  this.socketManager = socketManager
+  this.timer = null
+}
+
+GameManager.prototype.getGameBoard = function() {
+  return this.gameboard.board
+}
+
+GameManager.prototype.latestData = function() {
   return {
-    letter: t,
-    score: 1
-  }
-})
-
-// letter distribution, alphabetically
-const letterDist = [9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1]
-let totalLetters = 0
-let intervals = []
-
-class GameManager {
-  constructor(io) {
-    this._board = new Gameboard()
-    this._tileScores = []
-    this._greenScore = 0
-    this._error = 0
-    this._yellowScore = 0
-
-    // set up intervals
-    // push first interval
-    intervals.push(letterDist[0])
-    totalLetters += letterDist[0]
-    // add the rest of the intervals
-    for (let i = 1; i < letterDist.length; ++i) {
-      intervals.push(intervals[i - 1] + letterDist[i])
-      totalLetters += letterDist[i]
-    }
-    this._io = io
-  }
-
-  /**
-   * Board getter
-   */
-  get board() {
-    return this._board.board
-  }
-
-  /**
-   * This is just for a demo
-   * @param {Array} board - board
-   * @param {Object} player - player object
-   */
-  play(board, player) {
-    this._board.replaceBoard(board)
-    this._io.emit('wordPlayed', {
-      playValue: 10,
-      board: board
-    })
-    this._io.emit('gameEvent', {
-      action: `${player.name} just played a word for ${10} points.`
-    })
-    player.isTurn = false
-  }
-
-  // play(board, player) {
-  //   this.wordValidation(trimmed)
-  //     .then(response => {
-  //       console.log('The board now has an answer')
-  //       let placement
-  //       if (response === true) {
-  //         placement = this._board.placeWords(trimmed, user)
-  //       } else {
-  //         return this.handleResponse(this._error, response, res)
-  //       }
-  //       return this.handleResponse(this._board.error, placement, res)
-  //     })
-  //     .catch(e => {
-  //       return res.status(400).json({code: 'D1', title: 'Database Error', desc: e.code})
-  //     })
-  //   console.log('The board is thinking')
-  // }
-
-  /**
-   * Checks to see if word(s) are in the DB
-   * @param {Array} words - words to be checked against the DB
-   */
-  wordValidation(board) {
-    let words = this.extractWords(board)
-    let search = words.map(s => s.word).join(',')
-
-    return axios.get('http://localhost:8090/dictionary/validate?words=' + search)
-      .then(res => {
-        return this.pruneResults(res.data)
-      })
-  }
-
-  /**
-   * Prunes the data set back from the DB to check if anywords are either invalid or bad words
-   * @param {Array} response - word data sent back from DB
-   */
-  pruneResults(response) {
-    for (let word of response) {
-      if (word.bad) {
-        this._error = 6
-        return word.word
-      }
-      if (!word.valid) {
-        this._error = 1
-        return word.word
-      }
-    }
-
-    return true
-  }
-
-  /**
-   * Handles all types of responses that the gameboard can send back to a user.
-   * @param {String} word - word to be piped into the error message
-   */
-  handleResponse(error, word) {
-    const result = {
-      invalid: true
-    }
-    let reason = null
-
-    switch (error) {
-      case 1:
-        reason = 'Not a valid word'
-        break
-      case 2:
-        reason = 'Placed out of the bounds of the board'
-        break
-      case 3:
-        reason = 'Invalid placement'
-        break
-      case 4:
-        reason = 'Word was not played over the center tile'
-        break
-      case 5:
-        reason = 'Word not connected to played tiles'
-        break
-      case 6:
-        reason = 'Word is a bad word'
-        break
-      default:
-        result.invalid = false
-    }
-    if (result.invalid) {
-      result['reason'] = reason.toUpperCase()
-      result['word'] = word.toUpperCase()
-    }
-
-    this._error = 0
-    return res.json(result)
-  }
-
-  /**
-   * Determines what new letters a player will get after they
-   * play their turn.
-   * @param {int} lettersUsed number of letters to generate
-   */
-  getNewLetters(lettersUsed) {
-    let newLetters = []
-
-    // generate the new letters
-    for (let a = 0; a < lettersUsed; ++a) {
-      let index = Math.floor(Math.random() * totalLetters)
-
-      for (let i = 0; i < intervals.length; ++i) {
-        if (index <= intervals[i]) {
-          newLetters.push(letters[i])
-          break
-        }
-      }
-    }
-
-    return newLetters
-  }
-
-  /**
-   * Calculates the score of a play
-   * @param {Object} player - player to add score to
-   * @param {Array} words - array of words to calculate score for
-   * @param {Object} bonus - bonus to factor in
-   */
-  calculateScore(player, words, bonus) {
-    let cumulativeScore = 0
-
-    words.map(w => {
-      let wordArray = w.toUpperCase().split('')
-
-      let score = wordArray.map(l => {
-        for (let t of tiles) {
-          if (t.letter === l) {
-            if (bonus.type === 'letter' && bonus.letter === l) {
-              return t.score * bonus.bonus
-            }
-            return t.score
-          }
-        }
-      }).reduce((prev, curr) => {
-        return prev + curr
-      })
-
-      if (bonus.type === 'word') {
-        score = score * bonus.bonus
-      }
-
-      cumulativeScore += score
-    })
-
-    this.addScore(player, cumulativeScore)
-  }
-
-  /**
-   * Adds the score to the player's score and the team they are on
-   * @param {Object} player - player to add score to
-   * @param {Number} score - score
-   */
-  addScore(player, score) {
-    // Need to update DB as well
-    player.addScore(score)
-
-    switch (player.team) {
-      case 'Green':
-        this._greenScore += score
-        break
-      case 'Yellow':
-        this._yellowScore += score
-        break
-    }
-  }
-
-  /**
-   * Starts a new game by resetting everything
-   */
-  startNewGame() {
-    this.resetScores()
-    this.resetGameboard()
-  }
-
-  /**
-   * Creates a new gameboard and initializes it
-   */
-  resetGameboard() {
-    this._board = new Gameboard()
-  }
-
-  /**
-   * Resets all players' scores
-   */
-  resetScores() {
-    this._greenScore = 0
-    this._yellowScore = 0
-
-    this._players.map(p => {
-      p.resetScore()
-    })
+    board: this.gameboard.sendableBoard(),
+    gold: this.goldScore,
+    green: this.greenScore
   }
 }
 
-/**
- * Exports this file so it can be used by other files.  Keep this at the bottom.
- */
-module.exports = GameManager
+GameManager.prototype.updateStateData = function() {
+  let data = this.latestData()
+  data.players = this.playerManager.getAllPlayers()
+  data.bonus = this.currentPlay === null ? false : this.currentPlay.bonus
+  return data
+}
+
+GameManager.prototype.addPlayer = function(id, socket, isAI, data) {
+  let player = this.playerManager.createPlayer(id, socket, isAI)
+  if (isAI) {
+    player.addInformation(this.generateAIData())
+  } else {
+    player.addInformation(data)
+  }
+
+  let latestData = player.data()
+  latestData.latestData = this.latestData()
+  this.socketManager.emit(id, 'dataUpdate', latestData)
+  this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`${player.name} has joined the game`))
+  this.socketManager.broadcast('SFs', 'updateState', this.updateStateData())
+}
+
+GameManager.prototype.aiNames = function(aiName) {
+  if (aiName === undefined) {
+    return this.names.shift()
+  } else {
+    this.names.push(aiName)
+  }
+}
+
+GameManager.prototype.aiTeams = function(aiTeam) {
+  if (aiTeam === undefined) {
+    return this.teams.shift()
+  } else {
+    this.teams.push(aiTeam)
+  }
+}
+
+GameManager.prototype.generateAIData = function(player) {
+  return {
+    name: this.aiNames(),
+    team: {
+      name: this.aiTeams()
+    }
+  }
+}
+
+GameManager.prototype.determineEvent = function(event, id) {
+  switch (event.event) {
+    case 'playWord':
+      this.attemptPlay(event.data.play, id)
+      break
+    case 'swap':
+      this.swap(id)
+      break
+    default:
+      console.log('something else')
+      console.log(event.data)
+  }
+}
+
+GameManager.prototype.attemptPlay = function(newBoard, id) {
+  let player = this.playerManager.getPlayer(id)
+  const letters = ex.extractLetters(newBoard, this.getGameBoard(), player)
+
+  if (letters.valid) {
+    const words = ex.extractWords(letters.data, newBoard)
+    this.currentPlay = words
+
+    this.wordValidation(words, player)
+      .then(r => {
+        let play = null
+        if (r.valid) {
+          // if invalid type of play, gets the word that was invalid, else is undefined
+          play = this.gameboard.placeWords(this.currentPlay, player)
+          // if the board has attempted to play a word
+          if (play.valid) {
+            let ls = letters.data.map(l => l.letter)
+            this.playerManager.updateTiles(id, ls)
+          }
+          let response = this.determineResponse(play)
+          if (response.valid) {
+            this.validPlay(id)
+          } else {
+            this.invalidPlay(id, response.reason)
+          }
+        } else {
+          // if the word is invalid
+          let response = this.determineResponse(r)
+          return this.invalidPlay(id, response.reason)
+        }
+      })
+      .catch(e => {
+        dg(`${e}`, 'error')
+      })
+  } else {
+
+  }
+}
+
+GameManager.prototype.wordValidation = function(words, player) {
+  const search = words.words.map(s => s.word).join(',')
+
+  dg('checking words against database', 'debug')
+  return db.dictionaryCheck(search).then(r => {
+    return this.pruneResults(r, player)
+  })
+}
+
+GameManager.prototype.pruneResults = function(response, player) {
+  for (let word of response) {
+    if (word.bad) {
+      db.updatePlayerDirty(player, word.word)
+      return {
+        valid: false,
+        error: 6,
+        word: word.word
+      }
+    }
+    if (!word.valid) {
+      return {
+        valid: false,
+        error: 1,
+        word: word.word
+      }
+    }
+    if (word.special) {
+      db.updatePlayerSpecial(player, word.word)
+      this.currentPlay.bonus = true
+    } else {
+      this.currentPlay.bonus = false
+    }
+
+    return {
+      valid: true
+    }
+  }
+}
+
+GameManager.prototype.turnTimer = function(id) {
+  clearInterval(this.timer)
+  let time = 60
+  this.timer = setInterval(() => {
+    if (time === 10) {
+      dg('Turn time is expiring', 'verbose')
+      this.socketManager.emit(id, 'gameEvent', this.generateGameEvent(`You have ${Math.ceil(time)} seconds left!`))
+    }
+
+    if (time > 0) {
+      time--
+      this.socketManager.emit(id, 'playTimer', this.generateTimeLeft(time), () => {
+        clearInterval(this.timer)
+      })
+      dg(`play time left: ${time} -> ${id}`, 'debug')
+    } else {
+      clearInterval(this.timer)
+      dg('Turn time expired', 'verbose')
+      this.currentPlay = null
+      let player = this.playerManager.getPlayer(id)
+      this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`${player.name}'s time has expired`))
+
+      this.updateTurn(id, this.latestData())
+
+      this.swaps++
+      if (this.isGameOver()) {
+        this.gameOver()
+      }
+    }
+  }, 1000)
+}
+
+GameManager.prototype.swap = function(id) {
+  let player = this.playerManager.getPlayer(id)
+  this.currentPlay = null
+  this.swaps++
+
+  if (this.isGameOver()) {
+    clearInterval(this.timer)
+    this.gameOver()
+    return
+  }
+
+  this.playerManager.updateTiles(id)
+  this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`${player.name} has swapped tiles`))
+  this.updateTurn(id, this.latestData())
+  this.socketManager.broadcast('SFs', 'updateState', this.updateStateData())
+}
+
+GameManager.prototype.updateTurn = function(id, latestData) {
+  let newId = this.playerManager.updateTurn(id, this.latestData())
+  this.turnTimer(newId)
+}
+
+GameManager.prototype.isGameOver = function() {
+  return this.swaps === 4
+}
+
+GameManager.prototype.gameOver = function() {
+  dg('all players have swapped tiles, game over', 'info')
+
+  this.socketManager.broadcastAll('gameEvent', this.generateGameEvent('Game over!'))
+
+  let finalScores = []
+  let winner = null
+  let highestScore = 0
+  let players = this.playerManager.getAllPlayers()
+  for (let player of players) {
+    if (player.score > highestScore) {
+      highestScore = player.score
+      winner = player.name
+    }
+    let data = {
+      name: player.name,
+      score: player.score
+    }
+    finalScores.push(data)
+  }
+  let goldWin = this._goldScore > this._greenScore
+  db.updateWin('Gold', this.goldScore, goldWin)
+  db.updateWin('Green', this.greenScore, !goldWin)
+
+  let data = {
+    scores: finalScores,
+    winner: winner === null ? 'No one!' : winner,
+    winningTeam: goldWin ? 'Gold' : 'Green'
+  }
+
+  this.reset()
+  this.playerManager.updatePlayers(this.latestData())
+  this.socketManager.broadcastAll('gameOver', data)
+
+  let timeUntil = 30
+  let timer = setInterval(() => {
+    if (timeUntil > 0) {
+      dg(`${timeUntil}`, 'debug')
+      this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`New game starts in ${timeUntil}`))
+      timeUntil--
+    } else {
+      clearInterval(timer)
+      dg('new game started!', 'info')
+      this.newGame()
+    }
+  }, 1000)
+}
+
+GameManager.prototype.reset = function() {
+  this.currentPlay = null
+  this.swaps = 0
+  this.goldScore = 0
+  this.greenScore = 0
+  this.gameboard = Gameboard()
+
+  this.playerManager.reset(this.latestData())
+  this.socketManager.broadcast('SFs', 'updateState', this.updateStateData())
+}
+
+GameManager.prototype.newGame = function() {
+  if (this.playerManager.getAllPlayers().length === 0) {
+    this.playerManager.firstTurnSet = false
+  } else {
+    this.playerManager.getAllPlayers()[0].isTurn = true
+  }
+  this.playerManager.updatePlayers(this.latestData())
+  this.socketManager.broadcastAll('gameEvent', this.generateGameEvent('New game started!'))
+  this.socketManager.broadcast('SFs', 'newGame')
+  this.socketManager.broadcast('SFs', 'updateState', this.updateStateData())
+}
+
+GameManager.prototype.generateGameEvent = function(action) {
+  return {
+    action: action
+  }
+}
+
+GameManager.prototype.generateTimeLeft = function(time) {
+  return {
+    time: time
+  }
+}
+
+GameManager.prototype.determineResponse = function(play) {
+  let reason = null
+  let valid = false
+
+  switch (play.error) {
+    case 1:
+      reason = `${play.word} is not a valid word`
+      break
+    case 2:
+      reason = `${play.word} Placed out of the bounds of the board`
+      break
+    case 3:
+      reason = `${play.word} placed in invalid position`
+      break
+    case 4:
+      reason = `${play.word} was not played over the center tile`
+      break
+    case 5:
+      reason = `${play.word} not connected to played tiles`
+      break
+    case 6:
+      reason = `${play.word} is a bad word`
+      break
+    case 7:
+      reason = 'You tried to cheat :)'
+      break
+    default:
+      valid = true
+  }
+
+  return {
+    valid,
+    reason
+  }
+}
+
+GameManager.prototype.validPlay = function(id) {
+  dg(`${id} -> valid play`, 'info')
+  this.swaps = 0
+
+  let player = this.playerManager.getPlayer(id)
+
+  let score = this.calculateScore()
+  this.addScore(id, score)
+
+  let words = this.currentPlay.words.map(w => w.word)
+  let action = `${player.name} played ${words} for ${score.totalScore} points`
+
+  this.updateTurn(id, this.latestData())
+
+  this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(action))
+  this.socketManager.broadcast('SFs', 'updateState', this.updateStateData())
+
+  this.currentPlay = null
+}
+
+GameManager.prototype.invalidPlay = function(id, reason) {
+  dg(`${id} -> invalid play`, 'info')
+  this.currentPlay = null
+
+  this.socketManager.emit(id, 'invalidPlay', () => {})
+  this.socketManager.emit(id, 'gameEvent', this.generateGameEvent(reason), () => {})
+  return true
+}
+
+GameManager.prototype.calculateScore = function() {
+  return sc(this.currentPlay.words, this.getGameBoard())
+}
+
+GameManager.prototype.addScore = function(id, score) {
+  let player = this.playerManager.getPlayer(id)
+  this.playerManager.updateScore(id, score.totalScore)
+
+  if (!player.isAI) {
+    db.updatePlayer(player, score.words)
+  }
+
+  switch (player.team) {
+    case 'Green':
+      this.greenScore += score.totalScore
+      break
+    case 'Gold':
+      this.goldScore += score.totalScore
+      break
+  }
+  return true
+}
+
+module.exports = function(socketManager) {
+  return new GameManager(socketManager)
+}

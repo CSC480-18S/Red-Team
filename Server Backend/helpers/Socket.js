@@ -1,7 +1,8 @@
-var socketio = require('socket.io')
-function socket(server) {
-  var io = socketio(server)
-  return io
+'use strict'
+const ws = require('ws')
+module.exports = (server) => {
+  return new ws.Server({
+    server: server,
+    autoAcceptConnections: true
+  })
 }
-
-module.exports = socket

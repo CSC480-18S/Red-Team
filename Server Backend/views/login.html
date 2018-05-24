@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Oswebble | Login</title>
+</head>
+<body onunload="">
+    <% if (error) { %>
+    <div class="alert alert-danger" id="alert-area" role="alert">
+        <%= error %>
+    </div>
+    <% } %>
+    <main id="main-area">
+        <section id="login-area">
+            <div id="login" class="<%= user.team %>">
+                <div id="logo-area">
+                    <img id="logo" src="/static/imgs/logo-min.png" alt="Oswebble">
+                    <h2>Welcome <%= user.username %>!</h2>
+                </div>
+                <div id="button-area">
+                        <button type="button" id="play-button" class="btn btn-lg btn-block
+                        <% if (user.team === 'Gold') { %>
+                        btn-success    
+                        <% } else {%> btn-warning <% } %>">Play!</button>
+                </div>
+                <div id="status-area">
+                    <div class="stats">
+                        <h4>Current Players in game:</h4>
+                        <h1 id="currentPlayerCount">0</h1>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <footer id="footer" class="<% if (user.team === 'Gold') { %>
+                Green    
+                <% } else {%> Gold <% } %>">
+                <div id="copyright"></div>
+        </footer>
+    </main>
+
+    <script type="text/javascript" src="/static/min/js/jquery.min.js"></script>
+
+    <script type="text/javascript">
+        $(window).bind("pageshow", function(event) {
+            if (event.originalEvent.persisted) {
+                window.location.reload(); 
+            }
+        });
+
+        let ws = new WebSocket('ws://localhost:3000')
+
+        ws.onopen = () => {
+            let queue = { event: 'whoAmI', data: { client: 'Q' } }
+            ws.send(JSON.stringify(queue))
+
+            ws.onmessage = (message) => {
+                let mes = JSON.parse(message.data)
+                console.log(mes)
+                switch(mes.event){
+                    case 'currentlyConnected':
+                        updatePlayerCount(mes.data.amount)
+                }
+            }
+        }
+
+        function updatePlayerCount(amount){
+            $('#currentPlayerCount').empty().text(amount)
+            if(amount >= 4){
+                $('#play-button').addClass('btn-danger').prop('disabled', true).empty().append('<i class="fas fa-times"></i> Max Players');
+            } else {
+                $('#play-button').removeClass('btn-danger').prop('disabled', false).empty().append('Play!');
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        $('#copyright').append(`Copyright © ${new Date().getFullYear()}. SUNY Oswego. All Rights Reserved.`);
+    </script>
+
+    <script type="text/javascript">
+        $("#play-button").on('click', function(){
+            window.location = "/game";    
+        });
+    </script>
+
+    <link rel="stylesheet" href="/static/min/css/bootstrap.min.css"></script>
+    <link rel="stylesheet" href="/static/min/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/static/min/css/login.min.css">
+</body>
+</html>

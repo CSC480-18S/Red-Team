@@ -10,10 +10,14 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RotateByAction;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.csc480.game.Engine.GameManager;
 import com.csc480.game.Engine.TestingInputProcessor;
+import com.csc480.game.Engine.TextureManager;
 import com.csc480.game.GUI.Actors.*;
 import com.csc480.game.OswebbleGame;
 
@@ -25,15 +29,18 @@ import com.csc480.game.OswebbleGame;
  *  so that the screen can change screens if need be
  */
 public class GameScreen implements Screen {
+    public static int NUM_GAMES_SINCE_START = 0;
     public static final float TILE_PIXEL_SIZE = 512f;
     public static final float GUI_UNIT_SIZE = 20f;
     public static final int BOARD_SIZE = 11;
     public static float aspectRatio;
     public BitmapFont font;
     OswebbleGame oswebbleGame;
-    public final HandActor top,bottom,left,right;
-    public final InfoPanelActor infoPanel;
-
+    public HandActor top,bottom,left,right;
+    public InfoPanelActor infoPanel;
+    public BonusActor oswego;
+    public GameOverActor gameOverActor;
+    public Label debug;
     float unitScale = 1/TILE_PIXEL_SIZE;
 
     //Scene2D stuff and Actors we need to keep references to
@@ -41,94 +48,18 @@ public class GameScreen implements Screen {
     private Viewport view;
     private  OrthographicCamera viewCam;
     GameBoardActor gameBoardActor;
+    private boolean updateGameStatus = false;
+    private boolean triggerGameOverDialog = false;
+    private boolean closeGameOverDialog = false;
+    private String winner;
+    private Array<String> playersScores;
+    private String winningTeam;
+
+    private boolean doStateUpdate = false;
 
 
     public GameScreen(OswebbleGame mainGame){
-        //must calculate the aspect ratio to resize properly
-        aspectRatio = (float)Gdx.graphics.getHeight() / (float)Gdx.graphics.getWidth();
-        System.out.println("aspectRatio: "+aspectRatio);
-
-        //we probably dont want to use bitmapfonts, as they can get blurry
-        //see https://github.com/libgdx/libgdx/wiki/Gdx-freetype for a better solution
-        font = new BitmapFont();
-        font.setColor(0,0,0,1);
-        font.getData().setScale(1/16f);
-        font.setUseIntegerPositions(false);
-
-        //set the SceneGraph stage
-        viewCam = new OrthographicCamera();
-        view = new FitViewport(Gdx.graphics.getHeight(), Gdx.graphics.getHeight()*aspectRatio, viewCam);
-        view.apply();
-        stage = new Stage(view);
-
-        oswebbleGame = mainGame;
-
-
-        //Define all the Actors
-        Group playArea = new Group();
-
-        //gameBoardActor = new GameBoardActor();
-        GameBoardTable board = new GameBoardTable();
-        board.setName("gameBoard");
-        board.setPosition(GUI_UNIT_SIZE*2.75f,GUI_UNIT_SIZE*2.25f);
-        //gameBoardActor.setBounds(0,0,100,100);
-
-        //gameBoardActor.setName("gameBoard");
-//THIS IS FOR TESTING ONLY //////////////////////////////////////////////////////////////
-        //stage.setKeyboardFocus(gameBoardActor);
-////////////////////////////////////////////////////////////////////////////////////////
-        //playArea.addActor(gameBoardActor);
-
-        //The position of actors is considered from their bottom left corner
-        //bottom
-        Group tileRacks = new Group();
-        tileRacks.setPosition(GUI_UNIT_SIZE * 1, GUI_UNIT_SIZE * 1);
-        bottom = new HandActor(false);
-        tileRacks.addActor(bottom);
-        bottom.setPosition(GUI_UNIT_SIZE * 2, GUI_UNIT_SIZE * 0);
-        //left
-        left = new HandActor(false);
-        tileRacks.addActor(left);
-        left.setPosition(GUI_UNIT_SIZE * 12, GUI_UNIT_SIZE * 2);
-        left.rotateBy(90);
-        //top
-        top = new HandActor(true);
-        tileRacks.addActor(top);
-        top.setPosition(GUI_UNIT_SIZE * 10, GUI_UNIT_SIZE * 12);
-        top.rotateBy(180);
-        //right
-        right = new HandActor(false);
-        tileRacks.addActor(right);
-        right.setPosition(GUI_UNIT_SIZE * 0, GUI_UNIT_SIZE * 10);
-        right.rotateBy(-90);
-        tileRacks.moveBy(-GUI_UNIT_SIZE/2,-GUI_UNIT_SIZE);
-        tileRacks.scaleBy(.1f);
-        playArea.addActor(tileRacks);
-
-        infoPanel = new InfoPanelActor();
-        infoPanel.moveBy(GameScreen.GUI_UNIT_SIZE*14,0);
-        playArea.addActor(infoPanel);
-        System.out.println(board.getChildren().size);
-        playArea.addActor(board);
-        playArea.scaleBy(GUI_UNIT_SIZE * .04f);//had to do this because i originally tested all the sizes at a lower dpi
-
-        stage.addActor(playArea);
-
-        //update the hands with the GM state
-        bottom.setPlayer(GameManager.getInstance().thePlayers[0]);
-        bottom.updateState();
-
-        right.setPlayer(GameManager.getInstance().thePlayers[1]);
-        right.updateState();
-
-        top.setPlayer(GameManager.getInstance().thePlayers[2]);
-        top.updateState();
-
-        left.setPlayer(GameManager.getInstance().thePlayers[3]);
-        left.updateState();
-
-        UpdateInfoPanel();
-
+        BuildStage(mainGame);
     }
     public void UpdateInfoPanel(){
         infoPanel.UpdatePlayerStatus(0, bottom.getPlayer().name, bottom.getPlayer().score);
@@ -136,7 +67,7 @@ public class GameScreen implements Screen {
         infoPanel.UpdatePlayerStatus(2, top.getPlayer().name, top.getPlayer().score);
         infoPanel.UpdatePlayerStatus(3, left.getPlayer().name, left.getPlayer().score);
 
-        //infoPanel.UpdateProgressBars();
+        infoPanel.UpdateProgressBars();
     }
 
     @Override
@@ -160,12 +91,48 @@ public class GameScreen implements Screen {
         //Clear the screen from the last frame
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         //Set the entire screen to this color
-        Gdx.gl.glClearColor(.17f, .17f, .17f, 1);
-        //perform the actions of the actors
-        stage.act(delta);
-        //render the actors
-        stage.draw();
+        Gdx.gl.glClearColor(.666f, .666f, .666f, 1);
+//        try{
+            //perform the actions of the actors
+            stage.act(delta);
+            //render the actors
+            stage.draw();
+            GameManager.getInstance().Update();
+            if(updateGameStatus){
+               updateGameStatus = false;
+                if (bottom != null) {
+                    bottom.setPlayer(GameManager.getInstance().thePlayers[0]);
+                    bottom.updateState();
+                }
+                if (right != null) {
+                    right.setPlayer(GameManager.getInstance().thePlayers[1]);
+                    right.updateState();
+                }
+                if (top != null) {
+                    top.setPlayer(GameManager.getInstance().thePlayers[2]);
+                    top.updateState();
+                }
 
+                if (left != null) {
+                    left.setPlayer(GameManager.getInstance().thePlayers[3]);
+                    left.updateState();
+                }
+                UpdateInfoPanel();
+
+            }
+            if(triggerGameOverDialog){
+                triggerGameOverDialog = false;
+                gameOverActor.update(winner, playersScores, winningTeam);
+                gameOverActor.setVisible(true);
+            }
+            if(closeGameOverDialog){
+                closeGameOverDialog = false;
+                gameOverActor.setVisible(false);
+
+            }
+//        }catch (Exception n){//this is so bad i hate myself for this
+//            n.printStackTrace();
+//        }
     }
 
     @Override
@@ -196,5 +163,136 @@ public class GameScreen implements Screen {
     public void dispose() {
         stage.dispose();
         font.dispose();
+    }
+
+    private void BuildStage(OswebbleGame mainGame){
+        if(GameManager.debug)
+        System.out.println("Density: "+Gdx.graphics.getDensity());
+        //must calculate the aspect ratio to resize properly
+        aspectRatio = (float)Gdx.graphics.getHeight() / (float)Gdx.graphics.getWidth();
+        if(GameManager.debug)
+        System.out.println("aspectRatio: "+aspectRatio);
+
+        //we probably dont want to use bitmapfonts, as they can get blurry
+        //see https://github.com/libgdx/libgdx/wiki/Gdx-freetype for a better solution
+        font = new BitmapFont();
+        font.setColor(0,0,0,1);
+        font.getData().setScale(1/16f);
+        font.setUseIntegerPositions(false);
+
+        //set the SceneGraph stage
+        viewCam = new OrthographicCamera();
+        view = new FitViewport(GUI_UNIT_SIZE * 45, GUI_UNIT_SIZE * 45 * aspectRatio, viewCam);//Gdx.graphics.getHeight(), Gdx.graphics.getHeight()*aspectRatio, viewCam);
+        view.apply();
+        stage = new Stage(view);
+//        stage.setDebugAll(true);
+//        stage.setDebugInvisible(false);
+
+        oswebbleGame = mainGame;
+
+
+        //Define all the Actors
+        Group playArea = new Group();
+
+        //gameBoardActor = new GameBoardActor();
+        GameBoardTable board = new GameBoardTable();
+        board.setName("gameBoard");
+        board.setPosition(GUI_UNIT_SIZE*2.75f,GUI_UNIT_SIZE*2.25f);
+        //gameBoardActor.setBounds(0,0,100,100);
+
+        //gameBoardActor.setName("gameBoard");
+//THIS IS FOR TESTING ONLY //////////////////////////////////////////////////////////////
+        //stage.setKeyboardFocus(gameBoardActor);
+////////////////////////////////////////////////////////////////////////////////////////
+        //playArea.addActor(gameBoardActor);
+
+        //The position of actors is considered from their bottom left corner
+        //bottom
+        Group tileRacks = new Group();
+        tileRacks.setPosition(GUI_UNIT_SIZE * 1, GUI_UNIT_SIZE * 1);
+        bottom = new HandActor(false, 0);
+        tileRacks.addActor(bottom);
+        bottom.setPosition(GUI_UNIT_SIZE * 2, GUI_UNIT_SIZE * 0);
+        //left
+        left = new HandActor(false, 1);
+        tileRacks.addActor(left);
+        left.setPosition(GUI_UNIT_SIZE * 12, GUI_UNIT_SIZE * 2);
+        left.rotateBy(90);
+        //top
+        top = new HandActor(true, 2);
+        tileRacks.addActor(top);
+//        top.setPosition(GUI_UNIT_SIZE * 10, GUI_UNIT_SIZE * 12);
+//        top.rotateBy(180);
+        top.setPosition(GUI_UNIT_SIZE * 2, GUI_UNIT_SIZE * 10.125f);
+        //right
+        right = new HandActor(false, 3);
+        tileRacks.addActor(right);
+        right.setPosition(GUI_UNIT_SIZE * 0, GUI_UNIT_SIZE * 10);
+        right.rotateBy(-90);
+        tileRacks.moveBy(-GUI_UNIT_SIZE/2,-GUI_UNIT_SIZE);
+        tileRacks.scaleBy(.1f);
+        playArea.addActor(tileRacks);
+
+        infoPanel = new InfoPanelActor();
+        infoPanel.moveBy(GameScreen.GUI_UNIT_SIZE*14,0);
+        infoPanel.scaleBy(.1f);
+        playArea.addActor(infoPanel);
+
+        if(GameManager.debug)
+        System.out.println(board.getChildren().size);
+        playArea.addActor(board);
+        playArea.scaleBy(GUI_UNIT_SIZE * .04f);//had to do this because i originally tested all the sizes at a lower dpi
+
+        stage.addActor(playArea);
+
+        //update the hands with the GM state
+        bottom.setPlayer(GameManager.getInstance().thePlayers[0]);
+        bottom.updateState();
+
+        right.setPlayer(GameManager.getInstance().thePlayers[1]);
+        right.updateState();
+
+        top.setPlayer(GameManager.getInstance().thePlayers[2]);
+        top.updateState();
+
+        left.setPlayer(GameManager.getInstance().thePlayers[3]);
+        left.updateState();
+
+        UpdateInfoPanel();
+//        stage.setDebugAll(true);
+//        stage.setDebugInvisible(false);
+        oswego = new BonusActor();//new Image(TextureManager.getInstance().getTileTexture("oswego"));
+        oswego.setScale(.75f);
+        oswego.setPosition(-GUI_UNIT_SIZE*45,GUI_UNIT_SIZE*5);
+        stage.addActor(oswego);
+
+        gameOverActor = new GameOverActor();
+        gameOverActor.scaleBy(.5f);
+        gameOverActor.setPosition(GUI_UNIT_SIZE*5f,GUI_UNIT_SIZE*6f);
+        gameOverActor.setVisible(false);
+        stage.addActor(gameOverActor);
+
+        debug = new Label("", TextureManager.getInstance().ui);
+        debug.setPosition(0,20f);
+        stage.addActor(debug);
+
+        if(GameManager.getInstance().debug){
+//            stage.setDebugAll(true);
+//            stage.setDebugInvisible(false);
+        }
+
+    }
+    public void QueueUpdatePlayers(){
+        updateGameStatus = true;
+    }
+
+    public void TriggerEndGame(String winner, Array<String> playersScores , String winningTeam){
+        this.winner = winner;
+        this.playersScores = playersScores;
+        this.winningTeam = winningTeam;
+        triggerGameOverDialog = true;
+    }
+    public void TriggerNewGame(){
+        closeGameOverDialog = true;
     }
 }

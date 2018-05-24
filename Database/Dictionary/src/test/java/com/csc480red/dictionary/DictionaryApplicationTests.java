@@ -46,8 +46,6 @@ public class DictionaryApplicationTests {
   @Value("classpath:invalidwords.txt")
   private Resource invalidWordsFile;
 
-  private static final int times = 2;
-
   @Before
   public void setup() throws Exception {
     mvc = webAppContextSetup(webApplicationContext).build();

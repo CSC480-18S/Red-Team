@@ -1,6 +1,6 @@
 'use strict'
 /**
- * Imports lodash and axios
+ * Imports lodash
  */
 const _ = require('lodash')
 
@@ -9,240 +9,202 @@ const _ = require('lodash')
  */
 const Tile = require('./Tile')
 
-class Gameboard {
-  constructor() {
-    this._size = 11
-    this._board = new Array(this._size)
-    this._initialized = false
-    this._firstPlay = true
-    this._error = 0
-    this.init()
+function Gameboard() {
+  this.size = 11
+  this.board = new Array(this.size)
+  this.initialized = false
+  this.firstPlay = true
+  this.init()
+}
+
+/**
+ * Creates a double array of Tiles
+ * If this method has already been run, it returns before it can recreate the double array
+ */
+Gameboard.prototype.init = function() {
+  if (this.initialized) {
+    return true
   }
 
-  /**
-   * Sets the board
-   */
-  set board(board) {
-    this._board = board
-  }
+  for (let i = 0; i < this.board.length; i++) {
+    this.board[i] = new Array(this.size)
 
-  /**
-   * Sets initialized
-   */
-  set initialized(initialized) {
-    this._initialized = initialized
-  }
-
-  /**
-   * Sets first play
-   */
-  set firstPlay(firstPlay) {
-    this._firstPlay = firstPlay
-  }
-
-  /**
-   * Sets error
-   */
-  set error(error) {
-    this._error = error
-  }
-
-  /**
-   * Size getter
-   */
-  get size() {
-    return this._size
-  }
-
-  /**
-   * Board getter
-   */
-  get board() {
-    return this._board
-  }
-
-  /**
-   * Initialized getter
-   */
-  get initialized() {
-    return this._initialized
-  }
-
-  /**
-   * First play getter
-   */
-  get firstPlay() {
-    return this._firstPlay
-  }
-
-  /**
-   * Error getter
-   */
-  get error() {
-    return this._error
-  }
-
-  /**
-   * Creates a double array of Tiles
-   * If this method has already been run, it returns before it can recreate the double array
-   */
-  init() {
-    if (this._initialized) {
-      return true
-    }
-
-    for (let i = 0; i < this.board.length; i++) {
-      this.board[i] = new Array(this._size)
-
-      for (let j = 0; j < this.board[0].length; j++) {
-        this.board[i][j] = new Tile(j, i, '1')
+    for (let j = 0; j < this.board[0].length; j++) {
+      let tile = '' + i + j
+      switch (tile) {
+        case '00': case '07': case '24': case '37': case '310': case '42': case '68': case '70': case '73': case '86': case '103': case '1010':
+          this.board[i][j] = new Tile(j, i, 'word', 2)
+          break
+        case '03': case '010': case '26': case '30': case '33': case '48': case '62': case '77': case '710': case '84': case '100': case '107':
+          this.board[i][j] = new Tile(j, i, 'word', 3)
+          break
+        default:
+          this.board[i][j] = new Tile(j, i, null, null)
+          break
       }
     }
-
-    this._initialized = true
   }
 
-  /**
-   * This method is only for a demo to replace the board
-   * @param {Array} board - board
+  this.initialized = true
+}
+
+/**
+   * Creates a board of just characters to be sent to the clients
    */
-  replaceBoard(board) {
-    this.board = board
+Gameboard.prototype.sendableBoard = function() {
+  let board = new Array(this.size)
+
+  for (let i = 0; i < this.board.length; i++) {
+    board[i] = new Array(this.size)
+
+    for (let j = 0; j < this.board[0].length; j++) {
+      board[i][j] = this.board[i][j].letter
+    }
   }
 
+  return board
+}
+
+/**
+ * Method that places words on the baord
+ * @param {Array} words - array of words to place
+ */
+Gameboard.prototype.placeWords = function(words) {
+  const tempBoard = _.cloneDeep(this.board)
+
   /**
-   * Method that places words on the baord
-   * @param {Array} words - array of words to place
+   * For word placement validation
    */
-  placeWords(words, user) {
-    this.error = 0
-    const tempBoard = _.cloneDeep(this.board)
+  let validWordPlacement = false
+  let invalidWord = null
+  let firstPlayBypass = false
+  for (let w of words.words) {
+    let word = this.createWordObject(w)
+    let wordActual = word.word
+
+    for (let i = word.sX; i <= word.eX; i++) {
+      for (let j = word.sY; j <= word.eY; j++) {
+        /**
+       * Check to see if the word was somehow placed out of bounds
+       */
+        if (tempBoard[j][i] === undefined) {
+          return this.validatorDispatcher(false, 2, wordActual)
+        }
+        let l = tempBoard[j][i].letter
+        let wordLetter = w.h ? word.word[i - word.sX].toUpperCase() : word.word[j - word.sY].toUpperCase()
+
+        /**
+       * Validate if the letter placed can be placed there
+       */
+        if (!this.validatePosition(l, wordLetter)) {
+          return this.validatorDispatcher(false, 3, wordActual)
+        }
+
+        /**
+         * Check whether or not the letter to be placed is being placed over a letter already there
+         */
+        if (!validWordPlacement && tempBoard[j][i].letterPlaced) {
+          validWordPlacement = true
+        }
+
+        this.tileSetter(tempBoard[j][i], wordLetter)
+      }
+    }
 
     /**
-     * For word placement validation
+     * Check to see if center tile was played over on the first play
      */
-    let validWordPlacement = false
-    for (let w of words) {
-      let word = this.createWordObject(w)
-
-      for (let i = word.sX; i <= word.eX; i++) {
-        for (let j = word.sY; j <= word.eY; j++) {
-        /**
-         * Check to see if the word was somehow placed out of bounds
-         */
-          if (tempBoard[j][i] === undefined) {
-            this.error = 2
-            return word.word
-          }
-          let l = tempBoard[j][i].letter
-          let wordLetter = w.h ? word.word[i - word.sX].toUpperCase() : word.word[j - word.sY].toUpperCase()
-
-          /**
-         * Validate if the letter placed can be placed there
-         */
-          if (!this.validatePosition(l, wordLetter)) {
-            this.error = 3
-            return word.word
-          }
-
-          /**
-           * Check whether or not the letter to be placed is being placed over a letter already there
-           */
-          if (!validWordPlacement && tempBoard[j][i].letterPlaced) {
-            validWordPlacement = true
-          }
-
-          this.tileSetter(tempBoard[j][i], wordLetter, user)
-        }
+    if (this.firstPlay) {
+      if (!this.validateCenterTile(tempBoard)) {
+        return this.validatorDispatcher(false, 4, wordActual)
       }
-
-      /**
-       * Check to see if center tile was played over on the first play
-       */
-      if (this.firstPlay) {
-        if (!this.validateCenterTile(tempBoard)) {
-          return word.word
-        }
-        continue
-      }
-
-      if (!validWordPlacement) {
-        this.error = 5
-        return word.word
-      }
+      firstPlayBypass = true
+      continue
     }
 
-    this.board = tempBoard
+    if (!validWordPlacement) {
+      invalidWord = wordActual
+    }
   }
-
   /**
+   * Make sure that the entire play has valid placement
+   */
+  if (!firstPlayBypass && !validWordPlacement) {
+    return this.validatorDispatcher(false, 5, invalidWord)
+  }
+  this.board = tempBoard
+  return this.validatorDispatcher(true, 0, words.words)
+}
+
+/**
+ * Dispatches error codes and words from the validatior
+ * @param {Number} v - valid
+ * @param {Number} e - error code
+ * @param {String/Array} w - word(s)
+ */
+Gameboard.prototype.validatorDispatcher = function(v, e, w) {
+  return {
+    valid: v,
+    error: e,
+    word: w
+  }
+}
+
+/**
    * Helper method that sets properties of a tile
    * @param {Object} tile - tile to work with
    * @param {String} letter - letter to be set in the tile
-   * @param {String} user - user that played the letter
    */
-  tileSetter(tile, letter, user) {
-    tile.letter = letter
-    tile.playedBy = user
-    tile.timePlayedAt = new Date().getTime()
+Gameboard.prototype.tileSetter = function(tile, letter) {
+  tile.letter = letter
+}
+
+/**
+ * Creates an object that holds word data
+ * @param {Object} w - word object
+ */
+Gameboard.prototype.createWordObject = function(w) {
+  return {
+    word: w.word,
+    sX: w.x,
+    sY: w.y,
+    eX: w.h ? w.x + w.word.length - 1 : w.x,
+    eY: w.h ? w.y : w.y + w.word.length - 1
   }
+}
 
-  /**
-   * Creates an object that holds word data
-   * @param {Object} w - word object
-   */
-  createWordObject(w) {
-    return {
-      word: w.word,
-      sX: w.x,
-      sY: w.y,
-      eX: w.h ? w.x + w.word.length - 1 : w.x,
-      eY: w.h ? w.y : w.y + w.word.length - 1
-    }
-  }
-
-  /**
-   * Validates whetehr the first played word was played over the center tile
-   * @param {Array} tempBoard - temp board
-   */
-  validateCenterTile(tempBoard) {
-    const c = Math.floor(this.size / 2)
-    if (!tempBoard[c][c].letterPlaced) {
-      this.error = 4
-      return false
-    } else {
-      this.firstPlay = false
-      return true
-    }
-  }
-
-  /**
-   * Validates whether a letter can be placed in the current position
-   * @param {String} currentLetter - the letter that is currently on the board
-   * @param {String} toBePlacedLetter - the letter that is to be placed on the board
-   */
-  validatePosition(currentLetter, toBePlacedLetter) {
-    if (currentLetter === null) {
-      return true
-    } else if (currentLetter === toBePlacedLetter) {
-      return true
-    }
-
+/**
+ * Validates whether the first played word was played over the center tile
+ * @param {Array} tempBoard - temp board
+ */
+Gameboard.prototype.validateCenterTile = function(tempBoard) {
+  const c = Math.floor(this.size / 2)
+  if (!tempBoard[c][c].letterPlaced) {
     return false
+  } else {
+    this.firstPlay = false
+    return true
+  }
+}
+
+/**
+ * Validates whether a letter can be placed in the current position
+ * @param {String} currentLetter - the letter that is currently on the board
+ * @param {String} toBePlacedLetter - the letter that is to be placed on the board
+ */
+Gameboard.prototype.validatePosition = function(currentLetter, toBePlacedLetter) {
+  if (currentLetter === null) {
+    return true
+  } else if (currentLetter === toBePlacedLetter) {
+    return true
   }
 
-  /**
-   * Pulls information about a sepcific tile
-   * X and Y need to be reversed because of the way 2D arrays are created
-   * @param {Number} x - x coordinate
-   * @param {Number} y - y coordinate
-   */
-  tileInformation(x, y) {
-    return this.board[y][x]
-  }
+  return false
 }
 
 /**
  * Exports this file so it can be used by other files.  Keep this at the bottom.
  */
-module.exports = Gameboard
+module.exports = function() {
+  return new Gameboard()
+}

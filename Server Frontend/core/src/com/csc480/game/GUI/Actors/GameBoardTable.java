@@ -4,9 +4,11 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csc480.game.Engine.GameManager;
 import com.csc480.game.Engine.Model.Board;
@@ -20,8 +22,10 @@ public class GameBoardTable extends Group {
         super();
         board = new Table();
         board.setPosition(0,0);
-        board.setHeight(Gdx.graphics.getHeight()/5);
-        board.setWidth(Gdx.graphics.getWidth()/5* GameScreen.aspectRatio);
+        board.setHeight(GameScreen.GUI_UNIT_SIZE*8.8f);
+        board.setWidth(GameScreen.GUI_UNIT_SIZE*8.8f);
+//        board.setHeight(GameScreen.GUI_UNIT_SIZE*9.25f);
+//        board.setWidth(GameScreen.GUI_UNIT_SIZE*9.25f);
         for(int i= 0; i < 11; i++){
             for(int j = 0; j < 11; j++){
                 Image tile = new Image(TextureManager.getInstance().getTileTexture(TextureManager.EMPTY_TILE));
@@ -63,16 +67,50 @@ public class GameBoardTable extends Group {
         setTile(7,10, TextureManager.GOLD_TILE);
 
         setTile(10,0, TextureManager.GOLD_TILE);
-        System.out.println(board.getChildren().size);
         addActor(board);
 
+        board = new Table();
+        board.setPosition(0,GameScreen.GUI_UNIT_SIZE*.125f);
+        board.setHeight(GameScreen.GUI_UNIT_SIZE*8.8f);
+        board.setWidth(GameScreen.GUI_UNIT_SIZE*8.8f);
+//        board.setHeight(GameScreen.GUI_UNIT_SIZE*9.25f);
+//        board.setWidth(GameScreen.GUI_UNIT_SIZE*9.25f);
+        for(int i= 0; i < 11; i++){
+            for(int j = 0; j < 11; j++){
+                Image tile = new Image(TextureManager.getInstance().getTileTexture(TextureManager.INVIS_TILE));
+                tile.setName("`");
+                board.add(tile);
+            }
+            board.row();
+        }
+        addActor(board);
+
+
+
     }
-    public void setTile(int x, int y, String letter){
+    private void setTile(int x, int y, String letter){
         System.out.println("setting tile:"+letter);
         Cell center = board.getCells().get( x+(11*(10-y)) );
-        Image i = new Image(TextureManager.getInstance().getTileTexture(letter));
-        i.setName(letter.toLowerCase());
-        center.setActor(i);
+        if(center.getActor() == null || center.getActor().getName().compareTo(letter.toLowerCase()) != 0){
+            System.out.println("updating tile");
+            Actor a = center.getActor();
+            if(a != null)
+                board.removeActor(a);
+            Image i = new Image(TextureManager.getInstance().getTileTexture(letter));
+            i.setName(letter.toLowerCase());
+            center.setActor(i);
+        }
+    }
+    private void clearTile(int x, int y){
+        Cell center = board.getCells().get( x+(11*(10-y)) );
+        if(center.getActor().getName().compareTo("`") != 0){
+            System.out.println("nullifying tile");
+            Actor a = center.getActor();
+            board.removeActor(a);
+            Image tile = new Image(TextureManager.getInstance().getTileTexture(TextureManager.INVIS_TILE));
+            tile.setName("`");
+            center.setActor(tile);
+        }
     }
 
     @Override
@@ -83,10 +121,11 @@ public class GameBoardTable extends Group {
                 for(int i = 0; i < toDraw.length; i++){
                     for(int j = 0; j < toDraw.length; j++){
                         if(toDraw[i][j] != null){
-
                             if(toDraw[i][j].letter != board.getCells().get( i+(11*(10-j))).getActor().getName().charAt(0)){
                                 setTile(i,j, toDraw[i][j].letter+"");
                             }
+                        }else{
+                            clearTile(i,j);
                         }
                     }
                 }

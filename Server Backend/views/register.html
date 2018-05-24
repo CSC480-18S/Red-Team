@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Oswebble | Login</title>
+</head>
+<body>
+    <% if (error) { %>
+    <div class="alert alert-danger" id="alert-area" role="alert">
+        <%= error %>
+    </div>
+    <% } %>
+    <main id="main-area">
+        <section id="register-area">
+            <div id="register">
+                <div id="logo-area">
+                    <img id="logo" src="/static/imgs/logo-min.png" alt="Oswebble">
+                    <h2>Register!</h2>
+                </div>
+                <form id="form-area" method="POST" action="/register">
+                    <div id="form" class="form-group">
+                        <label for="username">Username</label>
+                        <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                  <div class="input-group-text"><i class="fas fa-user"></i></div>
+                                </div>
+                                <input type="text" class="form-control" name="username" placeholder="Username" required>
+                              </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="team" id="greenTeam" value="Green" required>
+                            <label class="form-check-label" for="greenTeam">
+                                Green Team
+                            </label>
+                            </div>
+                            <div class="form-check">
+                            <input class="form-check-input" type="radio" name="team" id="yellowTeam" value="Gold" required>
+                            <label class="form-check-label" for="yellowTeam">
+                                Gold Team
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-lg btn-block btn-primary">Play!</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        <footer id="footer">
+                <div id="copyright"></div>
+        </footer>
+    </main>
+
+    <script type="text/javascript" src="/static/min/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/min/js/sweetalert.min.js"></script>
+
+    <script type="text/javascript">
+        $(window).bind("pageshow", function(event) {
+            if (event.originalEvent.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
+
+    <script type="text/javascript">
+        $('document').ready(() => {
+            swal({
+              title: "Oswebble Tips:",
+              text: `1. The first word MUST be played over the center tile.\n2. Words must be played either left-to-right or top-to-bottom.\n3. To move a tile onto the board: 'Tap' the tile from your hand to select a tile and then 'Tap' the board to place the tile.\n4. Words need to be placed next to or joined with other words already placed on the board.\n5. Once a word is placed on the board, press 'DONE' to end your turn.\n6. Points are awarded by adding up the number on the tiles that make up the placed word.\n7. Each player will get one minute for their turn.\n8. Players have to exchange a tile or play a word on the board each turn before the timer runs out or their turn will be skipped.\n9. Playing Oswego-themed words like 'shineman', 'lakers', 'oswego', etc. (inlcuding proper nouns) will result in a bonus.\n10. Playing a word over the gold ('DW') or green ('TW') tiles will result in a double or triple-word bonus.`,
+              icon: "info",
+              button: "Got it!",
+            });
+        })
+    </script>
+
+    <script type="text/javascript">
+        $('#copyright').append(`Copyright © ${new Date().getFullYear()}. SUNY Oswego. All Rights Reserved.`);
+    </script>
+
+    <link rel="stylesheet" href="/static/min/css/bootstrap.min.css"></script>
+    <link rel="stylesheet" href="/static/min/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/static/min/css/register.min.css">
+</body>
+</html>

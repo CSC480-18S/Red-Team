@@ -1,12 +1,16 @@
 package com.csc480.game.Engine;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.csc480.game.Engine.Model.AI;
 import com.csc480.game.Engine.Model.Placement;
 import com.csc480.game.Engine.Model.PlayIdea;
+import com.csc480.game.Engine.Model.Player;
+import com.csc480.game.GUI.GameScreen;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.json.JSONArray;
@@ -57,16 +61,37 @@ public class TestingInputProcessor implements InputProcessor {
             GameManager.getInstance().placementsUnderConsideration.clear();
         }
         else if(character == '1'){
-            System.out.println("logging");
-            GameManager.getInstance().LogEvent("event"+c++);
+            System.out.println("testing player UI");
+            GameManager.getInstance().thePlayers[2].name = "I WORK";
+            GameManager.getInstance().theGame.theGameScreen.top.setPlayer(GameManager.getInstance().thePlayers[2]);
+            GameManager.getInstance().theGame.theGameScreen.top.updateState();
         }
         else if(character == '2'){
             //System.out.println("logging");
             GameManager.getInstance().PrintBoardState();
         }
         else if(character == '3'){
+            Array<String> playersScores = new Array<String>();
+            playersScores.add("name scored X points!");
+            playersScores.add("name scored X points!");
+            playersScores.add("name scored X points!");
+            playersScores.add("name scored X points!");
+
+            String winner = "No one";
+                winner = "Congratulations, No One!!!";
+            String winningTeam = "Green";
+            GameManager.getInstance().theGame.theGameScreen.gameOverActor.update(winner,playersScores,winningTeam);
+        }
+        else if(character == '4'){
             //System.out.println("logging");
-            GameManager.getInstance().updatePlayers(GameManager.getInstance().theAIs);
+            GameManager.getInstance().BonusEvent("oswego bonus word has been played");
+        }
+        else if(character == '5'){
+            GameManager.getInstance().theGame.theGameScreen.gameOverActor.update("Some AI prolly", new Array<String>(), "gold");
+            GameManager.getInstance().theGame.theGameScreen.gameOverActor.setVisible(true);
+        }
+        else if(character == '6'){
+            GameManager.getInstance().theGame.theGameScreen.gameOverActor.setVisible(false);
         }
         else if(character == '\'') {
             System.out.println("entering");
@@ -77,65 +102,8 @@ public class TestingInputProcessor implements InputProcessor {
                 GameManager.getInstance().theBoard.addWord(GameManager.getInstance().placementsUnderConsideration);
             GameManager.getInstance().placementsUnderConsideration.clear();
         }
-        else if(character == '\\'){
-            System.out.println("Finding all words for queue");
-            Long startTime = System.nanoTime();
-            String hand = "";
-            for(Placement p : GameManager.getInstance().placementsUnderConsideration){
-                hand+= p.letter;
-            }
-            char[] constraints = new char[hand.length()];
-            Arrays.fill(constraints,(char)0);
-            ArrayList<String> results = WordVerification.getInstance().getWordsFromHand(hand,constraints, 5);
-            System.out.println("finding all possible words took nanos: "+(System.nanoTime()-startTime));
-            for (String s : results)
-                System.out.println(s);
+        else if(character == ']'){
 
-        }else if(character == ']'){
-            System.out.println("AI TEST YOUR THING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            for(int i = 0; i < testHandQueue.length; i++){
-                if(testHandQueue[i] != 0) {
-                    System.out.println("adding to ai:" + testHandQueue[i]);
-                    GameManager.getInstance().theAIs[0].tiles[i] = testHandQueue[i];
-                }
-            }
-            GameManager.getInstance().updatePlayers(GameManager.getInstance().theAIs);
-            System.out.println("Finding all AI plays for tiles");
-            Long startTime = System.nanoTime();
-            GameManager.getInstance().theAIs[0].TESTFindPlays(GameManager.getInstance().theBoard);
-            System.out.println("finding all possible AI plays took nanos: "+(System.nanoTime()-startTime));
-            PlayIdea bestPlay = GameManager.getInstance().theAIs[0].PlayBestWord();
-            while(bestPlay != null && !GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay.placements)){
-                bestPlay = GameManager.getInstance().theAIs[0].PlayBestWord();
-                if(bestPlay == null) break;
-            }
-
-            if(bestPlay != null && bestPlay.myWord != null && GameManager.getInstance().theBoard.verifyWordPlacement(bestPlay.placements)){
-                System.out.println("The AI found made a decent play");
-                //delete this to specify the AI tiles
-                /*
-                for(int i = 0; i < bestPlay.size(); i++){
-                    for(int j = 0; j < testHandQueue.length; j++){
-                        if(bestPlay.get(i).letter == testHandQueue[j]) {
-                            testHandQueue[j] = (char) 0;
-                        }
-                    }
-                }
-                for(int i = 0; i < bestPlay.size(); i++){
-                    for(int j = 0; j < testingAI.tiles.length; j++){
-                        if(bestPlay.get(i).letter == testingAI.tiles[j]) {
-                            testingAI.tiles[j] = (char) 0;
-                        }
-                    }
-                }
-                */
-                for(int i = 0; i < testHandQueue.length; i++){
-                    //if(testHandQueue[i] == 0) testHandQueue[i] = GameManager.getInstance().getNewTiles(1).get(0).charValue();
-                }
-
-                GameManager.getInstance().theBoard.addWord(bestPlay.placements);
-                GameManager.getInstance().placementsUnderConsideration.clear();
-            }
         }else{
             System.out.println("changing to "+character);
             System.out.println("Adding to AI tiles "+character);

@@ -16,15 +16,19 @@ public class TextureManager {
         private static TextureManager instance;
         //public final TextureAtlas textureAtlas;
         public Skin ui;
-        public final Texture rack;
-        public final Texture background;
-        public final Texture tile;
+        //public final Texture rack;
+        public final TextureAtlas.AtlasRegion background;
+        public final TextureAtlas.AtlasRegion infoBackground;
+        public final TextureAtlas.AtlasRegion greenBar;
+        public final TextureAtlas.AtlasRegion goldBar;
+//        public final Texture tile;
         public final TextureAtlas tilesAtlas;
 
         public static final String DARK_TILE = "~Dark";
         public static final String GREEN_TILE = "~Green";
         public static final String GOLD_TILE = "~Gold";
         public static final String BLANK_TILE = "_Blank";
+        public static final String INVIS_TILE = "_Invis";
         public static final String EMPTY_TILE = "~Empty";
 
         public static TextureManager getInstance(){
@@ -35,27 +39,43 @@ public class TextureManager {
 
         private TextureManager(){
             //TextureAtlas uiAtlas = new TextureAtlas();
-            ui = new Skin(Gdx.files.internal("skin/exempleSkin.json"));
+//            ui = new Skin(Gdx.files.internal("skin/exempleSkin.json"));
+            ui = new Skin(Gdx.files.internal("skin/OsweebleSkinFinal.json"));
 //            ui.getFont("font").getData().
-            ui.getFont("font").setUseIntegerPositions(false);
-            ui.getFont("font").getData().setScale(.3f,.3f);
-            rack = new Texture(Gdx.files.internal("rack.jpg"));
+            ui.getFont("BloggerSans").setUseIntegerPositions(false);
+            ui.getFont("BloggerSans").getData().setScale(.2f,.2f);
+            ui.getFont("BloggerSansBold").setUseIntegerPositions(false);
+            ui.getFont("BloggerSansBold").getData().setScale(.2f,.2f);
+            //rack = new Texture(Gdx.files.internal("rack.jpg"));
 
-            tile = new Texture(Gdx.files.internal("temp.png"));
-            tilesAtlas = new TextureAtlas(Gdx.files.internal("tilesAtlas.atlas"));
-            background = new Texture(Gdx.files.internal("Background.jpg"));
+//            tile = new Texture(Gdx.files.internal("temp.png"));
+            tilesAtlas = new TextureAtlas(Gdx.files.internal("images/tilesAtlas.atlas"));
+            background = tilesAtlas.findRegion("Background");
+            infoBackground = tilesAtlas.findRegion("board");
+            greenBar = tilesAtlas.findRegion("greenBar");
+            goldBar = tilesAtlas.findRegion("goldBar");
             //ui.addRegions(uiAtlas);
             //textureAtlas = new TextureAtlas(Gdx.files.internal("spriteAtlas.atlas"));
         }
 
         public TextureAtlas.AtlasRegion getTileTexture(String tile){
+            if(tile.compareTo("_") == 0) return tilesAtlas.findRegion(BLANK_TILE);
             if(tile.length() == 1) tile = tile.toUpperCase();
             return tilesAtlas.findRegion(tile);
-
         }
-        public void Dispose(){
+        public TextureAtlas.AtlasRegion getSlotTexture(){
+            return tilesAtlas.findRegion("slot");
+        }
+        public TextureAtlas.AtlasRegion getGoldWinTexture(){
+        return tilesAtlas.findRegion("goldbanner");
+    }
+        public TextureAtlas.AtlasRegion getGreenWinTexture(){
+        return tilesAtlas.findRegion("greenbanner");
+    }
+
+    public void Dispose(){
             ui.dispose();
-            rack.dispose();
+            //rack.dispose();
             instance = null;
             tilesAtlas.dispose();
            // textureAtlas.dispose();

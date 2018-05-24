@@ -1,177 +1,253 @@
 'use strict'
 
-class PlayerManager {
-  constructor(position, name, team, ai, socket, gameManager, serverManager) {
-    this._name = name
-    this._team = team
-    this._isAI = ai
-    this._socket = socket
-    this._position = position
-    this._tiles = []
-    this._isTurn = false
-    this._score = 0
-    this._gameManager = gameManager
-    this._serverManger = serverManager
-    this.listenForPlayerEvents()
+/**
+ * Imports files
+ */
+const ld = require('../helpers/LetterDistributor')
+const dg = require('../helpers/Debug')(true)
+const Player = require('./Player')
+
+function PlayerManager(socketManager, gameManager) {
+  this.players = {}
+  this.oldData = []
+  this.firstTurnSet = false
+  this.socketManager = socketManager
+  this.gameManager = gameManager
+}
+
+PlayerManager.prototype.getAmountOfPlayers = function() {
+  return Object.keys(this.players).length
+}
+
+PlayerManager.prototype.updatePostitions = function() {
+  Object.keys(this.players).forEach((player, index) => {
+    this.players[player].position = index
+  })
+
+  dg('positions updated', 'debug')
+}
+
+PlayerManager.prototype.createPlayer = function(id, socket, isAI) {
+  // TODO: Distinguish AI from clients @Landon
+  let player = Player(id, isAI, this.getAmountOfPlayers())
+
+  this.players[id] = player
+
+  if (!this.injectOldData(id)) {
+    this.injectTiles(id)
+  }
+  if (!this.firstTurnSet) {
+    player.isTurn = true
+    this.firstTurnSet = true
   }
 
-  /**
-   * Turn setter
-   */
-  set isTurn(turn) {
-    this._isTurn = turn
-  }
+  this.listenForGameActions(socket)
 
-  /**
-   * Name getter
-   */
-  get name() {
-    return this._name
-  }
+  dg(`Player created -> ${id}`, 'debug')
 
-  /**
-   * Position getter
-   */
-  get position() {
-    return this._position
-  }
+  // TODO: DB stuff @Landon
+  // return this.getPlayerInfo(id).then(success => {
+  // if (true) {
+  // if (!this.injectOldData(id)) {
+  //   this.injectTiles(id)
+  // }
+  return player
+  // } else {
+  //   // TODO: Tell player they need to registerI @Landon
+  //   return false
+  // }
+  // })
+}
 
-  /**
-   * Tiles getter
-   */
-  get tiles() {
-    return this._tiles
-  }
+PlayerManager.prototype.listenForGameActions = function(socket) {
+  socket.on('close', () => {
+    let player = this.players[socket.id]
+    if (player.isAI) {
+      this.gameManager.aiNames(player.name)
+      this.gameManager.aiTeams(player.team)
+    }
+    this.removePlayer(player.id)
+    this.socketManager.broadcastAll('gameEvent', this.generateGameEvent(`${player.name} has left the game`))
+    this.socketManager.broadcast('SFs', 'updateState', this.gameManager.updateStateData())
+    this.socketManager.connectAI()
+  })
 
-  /**
-   * Turn getter
-   */
-  get isTurn() {
-    return this._isTurn
-  }
+  socket.on('message', data => {
+    let event = JSON.parse(data)
+    this.gameManager.determineEvent(event, socket.id)
+  })
+}
 
-  /**
-   * Team getter
-   */
-  get team() {
-    return this._team
-  }
-
-  /**
-   * AI getter
-   */
-  get isAI() {
-    return this._isAI
-  }
-
-  /**
-   * Socket getter
-   */
-  get socket() {
-    return this._socket
-  }
-
-  /**
-   * Score getter
-   */
-  get score() {
-    return this._score
-  }
-
-  /**
-   * Listens for events that come from the client
-   */
-  listenForPlayerEvents() {
-    this._socket.on('playWord', board => {
-      console.log(`Client ${this.position} sent playWord`)
-      this._gameManager.play(board, this)
-      this._serverManger.changeTurn(this.position)
-      /** TODO: Take board given, then cross check it with current board
-       * to pluck out played letters and cross check with tiles in hand
-       * to make sure what they sent us is real data and not fake data
-       */
-    })
-
-    this._socket.on('disconnect', () => {
-      this._serverManger.removePlayer(this)
-    })
-  }
-
-  /**
-   * Sent to the user in the event of an invalid play
-   * @param {Object} invalid - hold error information about play
-   */
-  emitInvalidPlay(invalid) {
-    this._socket.emit('play', invalid)
-  }
-
-  /**
-   * Emits to the player if it is their turn
-   * @param {String} playerName - player name
-   */
-  emitWhosTurn(playerName) {
-    this._socket.emit('newTurn', {
-      isTurn: this._isTurn,
-      whosTurn: playerName
-    })
-  }
-
-  /**
-   * Adds details when this position was already occupied by another player controller
-   * @param {Array} tiles - array of tiles
-   * @param {Boolean} isTurn - turn
-   * @param {Number} score - score
-   */
-  addPositionDetails(tiles, isTurn, score) {
-    this._tiles = tiles
-    this._isTurn = isTurn
-    this._score = score
-  }
-
-  /**
-   * Adds tiles to the titles array
-   * @param {Array} tiles - array of tiles to add to the existing tiles
-   */
-  addTiles(tiles) {
-    this._tiles.push(...tiles)
-  }
-
-  /**
-   * Removes tiles from array
-   * @param {Array} tiles - array of tiles to remove
-   */
-  removeTiles(tiles) {
-    let newTiles = []
-
-    this._tiles.forEach(t => {
-      let i = tiles.indexOf(t)
-      if (i === -1) { // if t does not exist in the tiles array
-        newTiles.push(t) // push to new array (letters that aren't being removed)
-      } else { // if t is in the tiles array, remove it from the tiles array so multiple of the same letter is not removed
-        tiles.splice(i, 1)
-      }
-    })
-
-    this._tiles = newTiles
-  }
-
-  /**
-   *
-   * @param {Number} score - score to be added
-   */
-  addScore(score) {
-    this._score += score
-  }
-
-  /**
-   * Resets the player's score
-   */
-  resetScore() {
-    this._score = 0
+PlayerManager.prototype.generateGameEvent = function(action) {
+  return {
+    action: action
   }
 }
 
-/**
- * Exports this file so it can be used by other files.  Keep this at the bottom.
- */
-module.exports = PlayerManager
+PlayerManager.prototype.getPlayer = function(id) {
+  return this.players[id]
+}
+
+PlayerManager.prototype.getAllPlayers = function() {
+  let players = Object.keys(this.players).map(id => {
+    return this.players[id]
+  })
+
+  return players
+}
+
+PlayerManager.prototype.removePlayer = function(id) {
+  this.grabOldData(id)
+  delete this.players[id]
+  this.updatePostitions()
+
+  dg(`Player removed -> ${id}`, 'debug')
+
+  return true
+}
+
+PlayerManager.prototype.updateScore = function(id, score) {
+  let player = this.players[id]
+
+  player.updateScore(score)
+}
+
+PlayerManager.prototype.grabOldData = function(id) {
+  let player = this.players[id]
+
+  this.oldData.push({
+    tiles: player.tiles,
+    isTurn: player.isTurn
+  })
+
+  dg(`Data saved -> ${id}`, 'debug')
+
+  return true
+}
+
+PlayerManager.prototype.injectOldData = function(id) {
+  if (this.oldData.length > 0) {
+    let player = this.players[id]
+    player.injectData(this.oldData[0])
+    this.oldData.splice(0, 1)
+
+    dg(`Data injected -> ${id}`, 'debug')
+
+    return true
+  }
+
+  dg(`Data not injected -> ${id}`, 'debug')
+
+  return false
+}
+
+PlayerManager.prototype.updateTiles = function(id, tilesToBeRemoved) {
+  if (tilesToBeRemoved === undefined) {
+    this.removeTiles(id, this.players[id].tiles)
+  } else {
+    this.removeTiles(id, tilesToBeRemoved)
+  }
+  this.injectTiles(id)
+
+  return true
+}
+
+PlayerManager.prototype.injectTiles = function(id) {
+  let player = this.players[id]
+
+  let tiles = []
+  let lettersToGenerate = 7 - player.tiles.length
+
+  // generate the new letters
+  for (let a = 0; a < lettersToGenerate; a++) {
+    let index = Math.floor(Math.random() * ld.totalLetters)
+
+    for (let i = 0; i < ld.intervals.length; i++) {
+      if (index <= ld.intervals[i]) {
+        tiles.push(ld.letters[i])
+        break
+      }
+    }
+  }
+
+  player.addTiles(tiles)
+
+  dg(`Tiles injected -> ${id}`, 'debug')
+
+  return true
+}
+
+PlayerManager.prototype.removeTiles = function(id, tilesToBeRemoved) {
+  let player = this.players[id]
+
+  let currentHand = player.tiles
+
+  for (let t = tilesToBeRemoved.length - 1; t >= 0; t--) {
+    let tile = tilesToBeRemoved[t]
+    for (let i = currentHand.length - 1; i >= 0; i--) {
+      let letter = currentHand[i]
+      if (tile === letter) {
+        currentHand.splice(i, 1)
+        tilesToBeRemoved.splice(t, 1)
+        break
+      }
+    }
+  }
+
+  player.setTiles(currentHand)
+
+  dg(`Tiles removed -> ${id}`, 'debug')
+
+  return true
+}
+
+PlayerManager.prototype.updateTurn = function(id, latestData) {
+  let player = this.players[id]
+  let position = player.position
+
+  player.isTurn = false
+  do {
+    position++
+    if (position > 3) {
+      position = 0
+    }
+  } while (position >= this.getAmountOfPlayers())
+
+  let players = Object.keys(this.players)
+
+  let p
+  for (let player of players) {
+    p = this.players[player]
+    if (p.position === position) {
+      p.isTurn = true
+      break
+    }
+  }
+
+  this.updatePlayers(latestData)
+
+  return p.id
+}
+
+PlayerManager.prototype.updatePlayers = function(latestData) {
+  let players = this.getAllPlayers()
+
+  players.forEach(player => {
+    let data = player.data()
+    data.latestData = latestData
+    this.socketManager.emit(player.id, 'dataUpdate', data, () => {})
+  })
+}
+
+PlayerManager.prototype.reset = function(latestData) {
+  Object.keys(this.players).forEach((id) => {
+    let player = this.players[id]
+    player.resetScore()
+    player.isTurn = false
+    this.updateTiles(player.id)
+  })
+}
+
+module.exports = function(socketManager, gameManager) {
+  return new PlayerManager(socketManager, gameManager)
+}

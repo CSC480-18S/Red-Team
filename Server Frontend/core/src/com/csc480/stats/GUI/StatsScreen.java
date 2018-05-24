@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.csc480.game.GUI.GameScreen;
 import com.csc480.stats.GUI.Actors.StatsTables;
 import com.csc480.stats.StatsViewer;
 
@@ -21,6 +22,8 @@ public class StatsScreen implements Screen {
     Stage stage;
     private Viewport view;
     private OrthographicCamera viewCam;
+    private StatsTables table;
+    private float updateCounter = 0;
 
 ////////////////////////////////////
     private SpriteBatch batch;
@@ -34,19 +37,25 @@ public class StatsScreen implements Screen {
 
         //set the SceneGraph stage
         viewCam = new OrthographicCamera();
-        view = new FitViewport(Gdx.graphics.getHeight(), Gdx.graphics.getHeight()*aspectRatio, viewCam);
+       // view = new FitViewport(Gdx.graphics.getHeight(), Gdx.graphics.getHeight()*aspectRatio, viewCam);
+       // view = new FitViewport(GameScreen.GUI_UNIT_SIZE * 45, GameScreen.GUI_UNIT_SIZE *45 * aspectRatio, viewCam);
+        //view = new FitViewport(GameScreen.GUI_UNIT_SIZE * 37, GameScreen.GUI_UNIT_SIZE *37 * aspectRatio, viewCam);
+        view = new FitViewport(GameScreen.GUI_UNIT_SIZE * 37, GameScreen.GUI_UNIT_SIZE *37 * aspectRatio, viewCam);
         view.apply();
         stage = new Stage(view);
 
 //////////////////////////////////////////////////////////////////////////
         batch = new SpriteBatch();
-        sprite = new Sprite(new Texture(Gdx.files.internal("StatsAssets/statsBackground.png")));
-        sprite.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        //sprite = new Sprite(new Texture(Gdx.files.internal("StatsAssets/statsBackground.png")));
+        sprite = new Sprite(new Texture(Gdx.files.internal("Background 2.png")));
+       // sprite.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        //sprite.setSize(,Gdx.graphics.getHeight());
 
-        StatsTables table  = new StatsTables();
+        table  = new StatsTables();
+        table.TableLayout();
         //table.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        table.setWidth(Gdx.graphics.getWidth()*aspectRatio);
-        table.setHeight(Gdx.graphics.getHeight() *aspectRatio+30);
+        table.setWidth(GameScreen.GUI_UNIT_SIZE * 37);
+        table.setHeight(GameScreen.GUI_UNIT_SIZE * 37 *aspectRatio);
         //table.setDebug(true);
 
         stage.addActor(table);
@@ -55,6 +64,19 @@ public class StatsScreen implements Screen {
 
 
     }
+    private void updateGUI(){
+        stage.getActors().removeValue(table, true);
+
+        table  = new StatsTables();
+        table.TableLayout();
+        //table.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        table.setWidth(GameScreen.GUI_UNIT_SIZE * 37);
+        table.setHeight(GameScreen.GUI_UNIT_SIZE * 34.5f *aspectRatio);
+        //table.setDebug(true);
+
+        stage.addActor(table);
+    }
+
     @Override
     public void show() {
         aspectRatio = (float)Gdx.graphics.getHeight() / (float)Gdx.graphics.getWidth();
@@ -75,6 +97,15 @@ public class StatsScreen implements Screen {
         sprite.draw(batch);
         batch.end();
         ////////////////////////////
+
+        //Every ten seconds update the stats from the backend
+        if (updateCounter > 10) {
+            updateGUI();
+            updateCounter = 0;
+        } else {
+            updateCounter += delta;
+        }
+
         stage.act(delta);
         //render the actors
         stage.draw();
